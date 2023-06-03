@@ -25,7 +25,7 @@ public struct InputOutputReducer: ReducerProtocol {
         case copyButtonAnimationEnded
     }
 
-//    @Dependency(\.continuousClock) var clock // available in macOS 13
+    //    @Dependency(\.continuousClock) var clock // available in macOS 13
     @Dependency(\.mainQueue) var mainQueue
     @Dependency(\.clipboard) var clipboard
 
@@ -39,8 +39,8 @@ public struct InputOutputReducer: ReducerProtocol {
                 state.copyButtonAnimating = true
                 clipboard.copyString(state.output)
                 return .task {
-//                    try await self.clock.sleep(for: .milliseconds(100))
-                    try await self.mainQueue.sleep(for: .milliseconds(200))
+                    //                    try await self.clock.sleep(for: .milliseconds(100))
+                    try await mainQueue.sleep(for: .milliseconds(200))
                     return .copyButtonAnimationEnded
                 }
             case .saveAsButtonTouched:
