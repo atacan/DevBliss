@@ -16,3 +16,11 @@ The structure is based on pointfree.co's [isowords](https://github.com/pointfree
 
 1. `make start` to set up the pre-commit hooks
 1. `open App/DevBliss.xcodeproj` to open the project in Xcode
+
+## License
+
+MIT
+
+## Similar projects
+
+- [DevToys](https://devtoys.app/)
