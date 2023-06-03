@@ -1,25 +1,20 @@
-//
-// https://github.com/atacan
-// 03.06.23
-	
-
-import SwiftUI
 import ComposableArchitecture
 import InputOutput
+import SwiftUI
 
 struct ContentView: View {
     var body: some View {
         InputOutputView(
-                    store: Store(
-                        initialState: InputOutputReducer.State(
-                            input: "",
-                            output: ""
-                        ),
-                        reducer: InputOutputReducer()._printChanges()
-                    ),
-                    inputEditorTitle: "Input",
-                    outputEditorTitle: "Output"
-                )
+            store: Store(
+                initialState: InputOutputReducer.State(
+                    input: "",
+                    output: ""
+                ),
+                reducer: InputOutputReducer()._printChanges()
+            ),
+            inputEditorTitle: "Input",
+            outputEditorTitle: "Output"
+        )
 
         .padding()
     }
