@@ -99,7 +99,9 @@ public struct InputOutputView: View {
                             viewStore.send(.copyButtonTouched)
                         }
                         .foregroundColor(
-                            viewStore.copyButtonAnimating ? ThemeColor.Text.success : ThemeColor.Text
+                            viewStore.copyButtonAnimating
+                                ? ThemeColor.Text.success
+                                : ThemeColor.Text
                                 .controlText
                         )
                         .font(.footnote)
