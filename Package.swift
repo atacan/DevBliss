@@ -27,7 +27,8 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Theme",
-            dependencies: []
+            dependencies: [
+            ]
         ),
         .target(
             name: "InputOutput",
@@ -41,7 +42,7 @@ let package = Package(
         .target(
             name: "ClipboardClient",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
