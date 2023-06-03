@@ -2,6 +2,8 @@
 
 ## Contributing
 
+The structure is based on pointfree.co's [isowords](https://github.com/pointfreeco/isowords) project. Every feature is a library in the swift package and the app's Xcode project is barebones.
+
 ### Setup
 
 1. `make start` to set up the pre-commit hooks
