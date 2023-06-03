@@ -1,8 +1,11 @@
 # DevBliss
 
-1. [Overview](#overview)
-1. [Contributing](#contributing)
-    1. [Setup](#setup)
+- [DevBliss](#devbliss)
+  - [Overview](#overview)
+  - [Contributing](#contributing)
+    - [Setup](#setup)
+  - [License](#license)
+  - [Similar projects](#similar-projects)
 
 ## Overview
 
