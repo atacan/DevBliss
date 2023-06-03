@@ -37,9 +37,9 @@
 		5A7436F52A2B69C8001DEC2E = {
 			isa = PBXGroup;
 			children = (
+				5AAF55582A2B6AE600A86142 /* DevBliss */,
 				5AAF55592A2B6C2300A86142 /* _Previews */,
 				5A7437002A2B69C8001DEC2E /* DevBliss */,
-				5AAF55582A2B6AE600A86142 /* DevBliss */,
 				5A7436FF2A2B69C8001DEC2E /* Products */,
 			);
 			sourceTree = "<group>";
