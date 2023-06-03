@@ -8,7 +8,7 @@
 --classthreshold 0
 --closingparen balanced
 --closurevoid remove
---commas always
+--commas inline
 --conflictmarkers reject
 --decimalgrouping 3,6
 --elseposition same-line
