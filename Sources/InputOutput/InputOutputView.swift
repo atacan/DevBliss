@@ -98,7 +98,10 @@ public struct InputOutputView: View {
                         Button("Copy") {
                             viewStore.send(.copyButtonTouched)
                         }
-                        .foregroundColor(viewStore.copyButtonAnimating ? .green : ThemeColor.Text.controlText)
+                        .foregroundColor(
+                            viewStore.copyButtonAnimating ? ThemeColor.Text.success : ThemeColor.Text
+                                .controlText
+                        )
                         .font(.footnote)
                         .keyboardShortcut("c", modifiers: [.command, .shift])
 
