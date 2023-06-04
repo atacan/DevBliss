@@ -110,30 +110,6 @@ public struct OutputView: View {
             )
             TextEditor(text: viewStore.binding(\.$text))
                 .font(.monospaced(.body)())
-//                .overlay(
-//                    HStack {
-//                        Button("Copy") {
-//                            viewStore.send(.copyButtonTouched)
-//                        }
-//                        .foregroundColor(
-//                            viewStore.copyButtonAnimating
-//                                ? ThemeColor.Text.success
-//                                : ThemeColor.Text
-//                                .controlText
-//                        )
-//                        .font(.footnote)
-//                        .keyboardShortcut("c", modifiers: [.command, .shift])
-//
-//                        Button("Save As…") {
-//                            viewStore.send(.saveAsButtonTouched)
-//                        }
-//                        .font(.footnote)
-//                        .keyboardShortcut("s", modifiers: [.command, .shift])
-//                    }
-//                    .padding(1),
-//
-//                    alignment: .topTrailing
-//                )
         }
     }
 }
