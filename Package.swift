@@ -15,12 +15,14 @@ let package = Package(
         .library(name: "InputOutput", targets: ["InputOutput"]),
         .library(name: "ClipboardClient", targets: ["ClipboardClient"]),
         .library(name: "HtmlToSwiftClient", targets: ["HtmlToSwiftClient"]),
+        .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.49.1"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "0.1.0"),
         .package(url: "https://github.com/stevengharris/SplitView", from: "3.1.0"),
+        .package(url: "https://github.com/atacan/html-swift", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -46,7 +48,18 @@ let package = Package(
         ),
         .target(
             name: "HtmlToSwiftClient",
-            dependencies: []
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "HtmlSwift", package: "html-swift"),
+            ]
+        ),
+        .target(
+            name: "HtmlToSwiftFeature",
+            dependencies: [
+                "HtmlToSwiftClient",
+                "InputOutput",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ]
         ),
         .testTarget(
             name: "HtmlToSwiftClientTests",
