@@ -29,10 +29,11 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
             switch action {
             case .convertButtonTouched:
                 state.isConversionRequestInFlight = true
-                return .run { [input = state.inputOutput.input] send in
-                    await send(.conversionResponse(TaskResult { try await htmlToSwift.binaryBirds(input) }))
-                }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
+                return
+                    .run { [input = state.inputOutput.input] send in
+                        await send(.conversionResponse(TaskResult { try await htmlToSwift.binaryBirds(input) }))
+                    }
+                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
 
             case let .conversionResponse(.success(swiftCode)):
                 state.isConversionRequestInFlight = false
