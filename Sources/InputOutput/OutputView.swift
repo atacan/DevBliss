@@ -49,8 +49,8 @@ public struct OutputReducer: ReducerProtocol {
     }
 }
 
-public extension OutputReducer.State {
-    mutating func updateText(_ newText: String) -> EffectTask<OutputReducer.Action> {
+extension OutputReducer.State {
+    public mutating func updateText(_ newText: String) -> EffectTask<OutputReducer.Action> {
         text = newText
         return .none
     }

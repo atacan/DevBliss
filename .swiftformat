@@ -17,7 +17,7 @@
 --enumthreshold 0
 --exponentcase lowercase
 --exponentgrouping disabled
---extensionacl on-extension
+--extensionacl on-declarations
 --extensionlength 0
 --extensionmark "MARK: - %t + %c"
 --fractiongrouping disabled
