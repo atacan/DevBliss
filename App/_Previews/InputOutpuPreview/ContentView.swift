@@ -8,7 +8,7 @@ struct ContentView: View {
             store: Store(
                 initialState: InputOutputReducer.State(
                     input: "",
-                    output: ""
+                    output: .init()
                 ),
                 reducer: InputOutputReducer()._printChanges()
             ),

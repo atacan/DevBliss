@@ -8,26 +8,18 @@ public struct InputOutputReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
         @BindingState public var input: String
-        @BindingState public var output: String
-        var copyButtonAnimating: Bool
+        public var output: OutputReducer.State
 
-        public init(input: String = "", output: String = "", copyButtonAnimating: Bool = false) {
+        public init(input: String = "", output: OutputReducer.State = .init()) {
             self.input = input
             self.output = output
-            self.copyButtonAnimating = copyButtonAnimating
         }
     }
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
-        case copyButtonTouched
-        case saveAsButtonTouched
-        case copyButtonAnimationEnded
+        case output(OutputReducer.Action)
     }
-
-    //    @Dependency(\.continuousClock) var clock // available in macOS 13
-    @Dependency(\.mainQueue) var mainQueue
-    @Dependency(\.clipboard) var clipboard
 
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
@@ -35,20 +27,13 @@ public struct InputOutputReducer: ReducerProtocol {
             switch action {
             case .binding:
                 return .none
-            case .copyButtonTouched:
-                state.copyButtonAnimating = true
-                clipboard.copyString(state.output)
-                return .task {
-                    //                    try await self.clock.sleep(for: .milliseconds(100))
-                    try await mainQueue.sleep(for: .milliseconds(200))
-                    return .copyButtonAnimationEnded
-                }
-            case .saveAsButtonTouched:
-                return .none
-            case .copyButtonAnimationEnded:
-                state.copyButtonAnimating = false
+            case .output:
                 return .none
             }
+        }
+
+        Scope(state: \.output, action: /Action.output) {
+            OutputReducer()
         }
     }
 }
@@ -91,35 +76,13 @@ public struct InputOutputView: View {
     }
 
     var outputEditor: some View {
-        VStack {
-            Text(outputEditorTitle)
-            TextEditor(text: viewStore.binding(\.$output))
-                .font(.monospaced(.body)())
-                .overlay(
-                    HStack {
-                        Button("Copy") {
-                            viewStore.send(.copyButtonTouched)
-                        }
-                        .foregroundColor(
-                            viewStore.copyButtonAnimating
-                                ? ThemeColor.Text.success
-                                : ThemeColor.Text
-                                .controlText
-                        )
-                        .font(.footnote)
-                        .keyboardShortcut("c", modifiers: [.command, .shift])
-
-                        Button("Save As…") {
-                            viewStore.send(.saveAsButtonTouched)
-                        }
-                        .font(.footnote)
-                        .keyboardShortcut("s", modifiers: [.command, .shift])
-                    }
-                    .padding(1),
-
-                    alignment: .topTrailing
-                )
-        }
+        OutputView(
+            store: store.scope(
+                state: \.output,
+                action: InputOutputReducer.Action.output
+            ),
+            title: outputEditorTitle
+        )
     }
 }
 
