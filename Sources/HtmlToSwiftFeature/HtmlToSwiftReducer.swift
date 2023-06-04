@@ -50,8 +50,9 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
 
             case let .conversionResponse(.success(swiftCode)):
                 state.isConversionRequestInFlight = false
-                state.inputOutput.output = swiftCode
-                return .none
+                // https://github.com/pointfreeco/swift-composable-architecture/discussions/1952#discussioncomment-5167956
+                return state.inputOutput.output.updateText(swiftCode)
+                    .map { Action.inputOutput(.output($0)) }
             case .conversionResponse(.failure):
                 state.isConversionRequestInFlight = false
                 return .none
