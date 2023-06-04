@@ -1,6 +1,6 @@
 import Dependencies
 
-public struct ClipboardClient: DependencyKey {
+public struct ClipboardClient {
     public var copyString: (String) -> Void
     public var getString: () -> String?
 }
@@ -8,7 +8,7 @@ public struct ClipboardClient: DependencyKey {
 #if os(macOS)
     import Cocoa
 
-    extension ClipboardClient {
+    extension ClipboardClient: DependencyKey {
         public static var liveValue: Self {
             Self(
                 copyString: { text in
@@ -24,7 +24,7 @@ public struct ClipboardClient: DependencyKey {
 #if os(iOS)
     import UIKit
 
-    extension ClipboardClient {
+    extension ClipboardClient: DependencyKey {
         public static var liveValue: Self {
             Self(
                 copyString: { text in
@@ -36,8 +36,8 @@ public struct ClipboardClient: DependencyKey {
     }
 #endif
 
-extension DependencyValues {
-    public var clipboard: ClipboardClient.Value {
+public extension DependencyValues {
+    var clipboard: ClipboardClient.Value {
         get { self[ClipboardClient.self] }
         set { self[ClipboardClient.self] = newValue }
     }

@@ -7,8 +7,8 @@ import Theme
 public struct InputOutputReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
-        @BindingState var input: String
-        @BindingState var output: String
+        @BindingState public var input: String
+        @BindingState public var output: String
         var copyButtonAnimating: Bool
 
         public init(input: String = "", output: String = "", copyButtonAnimating: Bool = false) {
@@ -86,6 +86,7 @@ public struct InputOutputView: View {
         VStack {
             Text(inputEditorTitle)
             TextEditor(text: viewStore.binding(\.$input))
+                .font(.monospaced(.body)())
         }
     }
 
@@ -93,6 +94,7 @@ public struct InputOutputView: View {
         VStack {
             Text(outputEditorTitle)
             TextEditor(text: viewStore.binding(\.$output))
+                .font(.monospaced(.body)())
                 .overlay(
                     HStack {
                         Button("Copy") {
@@ -107,7 +109,7 @@ public struct InputOutputView: View {
                         .font(.footnote)
                         .keyboardShortcut("c", modifiers: [.command, .shift])
 
-                        Button("Save As") {
+                        Button("Save As…") {
                             viewStore.send(.saveAsButtonTouched)
                         }
                         .font(.footnote)

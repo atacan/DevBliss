@@ -1,12 +1,39 @@
 {
   "pins" : [
     {
+      "identity" : "binarybirds-swift-html",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/BinaryBirds-swift-html",
+      "state" : {
+        "revision" : "e07678a77d296e66fa891a9d4d08acc4471d1783",
+        "version" : "1.6.11"
+      }
+    },
+    {
       "identity" : "combine-schedulers",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/combine-schedulers",
       "state" : {
         "revision" : "0625932976b3ae23949f6b816d13bd97f3b40b7c",
         "version" : "0.10.0"
+      }
+    },
+    {
+      "identity" : "html-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/html-swift",
+      "state" : {
+        "branch" : "main",
+        "revision" : "3405f60027b6bf5eb57e5e2b3403901c86e56cb4"
+      }
+    },
+    {
+      "identity" : "pointfreeco-swift-html",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/pointfreeco-swift-html",
+      "state" : {
+        "revision" : "f53c38c4b841841f36afa1866093c908cadaa736",
+        "version" : "0.4.0"
       }
     },
     {
@@ -79,6 +106,33 @@
       "state" : {
         "revision" : "f52eee28bdc6065aa2f8424067e6f04c74bda6e6",
         "version" : "0.7.1"
+      }
+    },
+    {
+      "identity" : "swift-snapshot-testing",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-snapshot-testing.git",
+      "state" : {
+        "revision" : "cef5b3f6f11781dd4591bdd1dd0a3d22bd609334",
+        "version" : "1.11.0"
+      }
+    },
+    {
+      "identity" : "swiftformat",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nicklockwood/SwiftFormat",
+      "state" : {
+        "revision" : "29c5053c803d2f58716aa5028f6ef5e9fd397168",
+        "version" : "0.51.11"
+      }
+    },
+    {
+      "identity" : "swiftsoup",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/scinfu/SwiftSoup.git",
+      "state" : {
+        "revision" : "0e96a20ffd37a515c5c963952d4335c89bed50a6",
+        "version" : "2.6.0"
       }
     },
     {
