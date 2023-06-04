@@ -36,8 +36,8 @@ public struct ClipboardClient {
     }
 #endif
 
-public extension DependencyValues {
-    var clipboard: ClipboardClient.Value {
+extension DependencyValues {
+    public var clipboard: ClipboardClient.Value {
         get { self[ClipboardClient.self] }
         set { self[ClipboardClient.self] = newValue }
     }

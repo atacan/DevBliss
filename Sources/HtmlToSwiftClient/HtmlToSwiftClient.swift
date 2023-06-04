@@ -23,8 +23,8 @@ extension HtmlToSwiftClient: DependencyKey {
     }
 }
 
-public extension DependencyValues {
-    var htmlToSwift: HtmlToSwiftClient.Value {
+extension DependencyValues {
+    public var htmlToSwift: HtmlToSwiftClient.Value {
         get { self[HtmlToSwiftClient.self] }
         set { self[HtmlToSwiftClient.self] = newValue }
     }
