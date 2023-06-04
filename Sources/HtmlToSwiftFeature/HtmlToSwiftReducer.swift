@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Dependencies
+import HtmlSwift
 import HtmlToSwiftClient
 import InputOutput
 import SwiftUI
@@ -9,13 +10,16 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
     public struct State: Equatable {
         var inputOutput: InputOutputReducer.State
         var isConversionRequestInFlight = false
+        @BindingState var dsl: SwiftDSL = .binaryBirds
+        @BindingState var component: HtmlOutputComponent = .fullHtml
 
         public init(inputOutput: InputOutputReducer.State = .init()) {
             self.inputOutput = inputOutput
         }
     }
 
-    public enum Action: Equatable {
+    public enum Action: BindableAction, Equatable {
+        case binding(BindingAction<State>)
         case convertButtonTouched
         case conversionResponse(TaskResult<String>)
         case inputOutput(InputOutputReducer.Action)
@@ -25,13 +29,22 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
     private enum CancelID { case conversionRequest }
 
     public var body: some ReducerProtocol<State, Action> {
+        BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
+            case .binding:
+                return .none
             case .convertButtonTouched:
                 state.isConversionRequestInFlight = true
                 return
-                    .run { [input = state.inputOutput.input] send in
-                        await send(.conversionResponse(TaskResult { try await htmlToSwift.binaryBirds(input) }))
+                    .run { [input = state.inputOutput.input, dsl = state.dsl, component = state.component] send in
+                        await send(
+                            .conversionResponse(
+                                TaskResult {
+                                    try await htmlToSwift.convert(input, for: dsl, output: component)
+                                }
+                            )
+                        )
                     }
                     .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
 
@@ -64,6 +77,23 @@ public struct HtmlToSwiftView: View {
 
     public var body: some View {
         VStack {
+            HStack(alignment: .center) {
+                Spacer()
+                Picker("DSL Library", selection: viewStore.binding(\.$dsl)) {
+                    ForEach(SwiftDSL.allCases) { dsl in
+                        Text(dsl.rawValue)
+                            .tag(dsl)
+                    }
+                }
+                Picker("Component", selection: viewStore.binding(\.$component)) {
+                    ForEach(HtmlOutputComponent.allCases) { component in
+                        Text(component.rawValue)
+                            .tag(component)
+                    }
+                }
+                Spacer()
+            } // <-HStack
+
             Button(action: { viewStore.send(.convertButtonTouched) }) {
                 Text("Convert")
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
@@ -76,5 +106,12 @@ public struct HtmlToSwiftView: View {
                 outputEditorTitle: "Swift"
             )
         }
+    }
+}
+
+// preview
+struct HtmlToSwiftReducer_Previews: PreviewProvider {
+    static var previews: some View {
+        HtmlToSwiftView(store: .init(initialState: .init(), reducer: HtmlToSwiftReducer()))
     }
 }
