@@ -79,33 +79,71 @@ public struct OutputView: View {
 
     public var body: some View {
         VStack {
-            Text(title)
+            HStack {
+                Spacer()
+                Text(title)
+                Spacer()
+            }
+            .overlay(
+                HStack {
+                    Button("Copy") {
+                        viewStore.send(.copyButtonTouched)
+                    }
+                    .foregroundColor(
+                        viewStore.copyButtonAnimating
+                            ? ThemeColor.Text.success
+                            : ThemeColor.Text
+                            .controlText
+                    )
+                    .font(.footnote)
+                    .keyboardShortcut("c", modifiers: [.command, .shift])
+
+                    Button("Save As…") {
+                        viewStore.send(.saveAsButtonTouched)
+                    }
+                    .font(.footnote)
+                    .keyboardShortcut("s", modifiers: [.command, .shift])
+                }
+                .padding(1),
+
+                alignment: .topTrailing
+            )
             TextEditor(text: viewStore.binding(\.$text))
                 .font(.monospaced(.body)())
-                .overlay(
-                    HStack {
-                        Button("Copy") {
-                            viewStore.send(.copyButtonTouched)
-                        }
-                        .foregroundColor(
-                            viewStore.copyButtonAnimating
-                                ? ThemeColor.Text.success
-                                : ThemeColor.Text
-                                .controlText
-                        )
-                        .font(.footnote)
-                        .keyboardShortcut("c", modifiers: [.command, .shift])
-
-                        Button("Save As…") {
-                            viewStore.send(.saveAsButtonTouched)
-                        }
-                        .font(.footnote)
-                        .keyboardShortcut("s", modifiers: [.command, .shift])
-                    }
-                    .padding(1),
-
-                    alignment: .topTrailing
-                )
+//                .overlay(
+//                    HStack {
+//                        Button("Copy") {
+//                            viewStore.send(.copyButtonTouched)
+//                        }
+//                        .foregroundColor(
+//                            viewStore.copyButtonAnimating
+//                                ? ThemeColor.Text.success
+//                                : ThemeColor.Text
+//                                .controlText
+//                        )
+//                        .font(.footnote)
+//                        .keyboardShortcut("c", modifiers: [.command, .shift])
+//
+//                        Button("Save As…") {
+//                            viewStore.send(.saveAsButtonTouched)
+//                        }
+//                        .font(.footnote)
+//                        .keyboardShortcut("s", modifiers: [.command, .shift])
+//                    }
+//                    .padding(1),
+//
+//                    alignment: .topTrailing
+//                )
         }
+    }
+}
+
+// SwiftUI preview
+struct OutputView_Previews: PreviewProvider {
+    static var previews: some View {
+        OutputView(store: Store(
+            initialState: OutputReducer.State(),
+            reducer: OutputReducer()
+        ))
     }
 }
