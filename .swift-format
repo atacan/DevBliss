@@ -36,7 +36,7 @@
       "NeverUseForceTry": true,
       "NeverUseImplicitlyUnwrappedOptionals": true,
       "NoAccessLevelOnExtensionDeclaration": true,
-      "NoBlockComments": true,
+      "NoBlockComments": false,
       "NoCasesWithOnlyFallthrough": true,
       "NoEmptyTrailingClosureParentheses": true,
       "NoLabelsInCasePatterns": true,
