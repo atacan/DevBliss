@@ -11,7 +11,7 @@ let package = Package(
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
-        .library(name: "Theme", targets: ["Theme"]),
+        .library(name: "BlissTheme", targets: ["BlissTheme"]),
         .library(name: "InputOutput", targets: ["InputOutput"]),
         .library(name: "ClipboardClient", targets: ["ClipboardClient"]),
         .library(name: "HtmlToSwiftClient", targets: ["HtmlToSwiftClient"]),
@@ -26,20 +26,22 @@ let package = Package(
         .package(url: "https://github.com/stevengharris/SplitView", from: "3.1.0"),
         .package(url: "https://github.com/atacan/html-swift", branch: "main"),
         .package(url: "https://github.com/nkristek/Highlight.git", branch: "master"),
+        .package(url: "https://github.com/atacan/MacSwiftUI", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
-            name: "Theme",
+            name: "BlissTheme",
             dependencies: []
         ),
         .target(
             name: "InputOutput",
             dependencies: [
                 "ClipboardClient",
-                "Theme",
+                "BlissTheme",
                 .product(name: "SplitView", package: "SplitView"),
+                .product(name: "MacSwiftUI", package: "MacSwiftUI"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
@@ -76,7 +78,6 @@ let package = Package(
             dependencies: [
                 "JsonPrettyClient",
                 "InputOutput",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
         .testTarget(

@@ -1,7 +1,7 @@
+import BlissTheme
 import ClipboardClient
 import ComposableArchitecture
 import SwiftUI
-import Theme
 
 public struct InputEditorReducer: ReducerProtocol {
     public init() {}
