@@ -20,21 +20,31 @@ public struct OutputEditorReducer: ReducerProtocol {
         case outputControls(OutputControlsReducer.Action)
     }
 
+    @Dependency(\.mainQueue) var mainQueue
+    @Dependency(\.clipboard) var clipboard
+
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
+
+        // call it before the main reducer so that animation starts earlier
+        Scope(state: \.outputControls, action: /Action.outputControls) {
+            OutputControlsReducer()
+        }
+
         Reduce<State, Action> { state, action in
             switch action {
             case .binding:
                 return .none
             case .outputControls(.copyButtonTouched):
-                return state.outputControls.setTextToCopy(state.text).map { Action.outputControls($0) }
+                clipboard.copyString(state.text)
+                return .task {
+                    try await mainQueue.sleep(for: .milliseconds(200))
+                    return .outputControls(.copyEnded)
+                }
 
             case .outputControls:
                 return .none
             }
-        }
-        Scope(state: \.outputControls, action: /Action.outputControls) {
-            OutputControlsReducer()
         }
     }
 }

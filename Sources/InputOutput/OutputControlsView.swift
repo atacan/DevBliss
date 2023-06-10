@@ -6,7 +6,6 @@ import Theme
 public struct OutputControlsReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
-        var textToCopy = ""
         var copyButtonAnimating: Bool = false
 
         public init() {}
@@ -18,20 +17,12 @@ public struct OutputControlsReducer: ReducerProtocol {
         case copyEnded
     }
 
-    @Dependency(\.mainQueue) var mainQueue
-    @Dependency(\.clipboard) var clipboard
-
     public var body: some ReducerProtocol<State, Action> {
         Reduce<State, Action> { state, action in
             switch action {
             case .copyButtonTouched:
                 state.copyButtonAnimating = true
-
-                clipboard.copyString(state.textToCopy)
-                return .task {
-                    try await mainQueue.sleep(for: .milliseconds(200))
-                    return .copyEnded
-                }
+                return .none
             case .saveAsButtonTouched:
                 return .none
             case .copyEnded:
@@ -39,13 +30,6 @@ public struct OutputControlsReducer: ReducerProtocol {
                 return .none
             }
         }
-    }
-}
-
-extension OutputControlsReducer.State {
-    public mutating func setTextToCopy(_ newText: String) -> EffectTask<OutputControlsReducer.Action> {
-        textToCopy = newText
-        return .none
     }
 }
 
