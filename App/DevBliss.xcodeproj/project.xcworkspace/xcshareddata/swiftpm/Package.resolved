@@ -37,6 +37,15 @@
       }
     },
     {
+      "identity" : "macswiftui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/MacSwiftUI",
+      "state" : {
+        "branch" : "main",
+        "revision" : "80e50e2ca1b76640873b9c8aca4e81f1bc628f32"
+      }
+    },
+    {
       "identity" : "pointfreeco-swift-html",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/atacan/pointfreeco-swift-html",

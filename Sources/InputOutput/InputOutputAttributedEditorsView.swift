@@ -4,13 +4,13 @@ import ComposableArchitecture
 import SplitView
 import SwiftUI
 
-public struct InputOutputEditorsReducer: ReducerProtocol {
+public struct InputOutputAttributedEditorsReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
         public var input: InputEditorReducer.State
-        public var output: OutputEditorReducer.State
+        public var output: OutputAttributedEditorReducer.State
 
-        public init(input: InputEditorReducer.State = .init(), output: OutputEditorReducer.State = .init()) {
+        public init(input: InputEditorReducer.State = .init(), output: OutputAttributedEditorReducer.State = .init()) {
             self.input = input
             self.output = output
         }
@@ -19,7 +19,7 @@ public struct InputOutputEditorsReducer: ReducerProtocol {
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case input(InputEditorReducer.Action)
-        case output(OutputEditorReducer.Action)
+        case output(OutputAttributedEditorReducer.Action)
     }
 
     public var body: some ReducerProtocol<State, Action> {
@@ -40,14 +40,14 @@ public struct InputOutputEditorsReducer: ReducerProtocol {
         }
 
         Scope(state: \.output, action: /Action.output) {
-            OutputEditorReducer()
+            OutputAttributedEditorReducer()
         }
     }
 }
 
-public struct InputOutputEditorsView: View {
-    let store: StoreOf<InputOutputEditorsReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputOutputEditorsReducer>
+public struct InputOutputAttributedEditorsView: View {
+    let store: StoreOf<InputOutputAttributedEditorsReducer>
+    @ObservedObject var viewStore: ViewStoreOf<InputOutputAttributedEditorsReducer>
 
     let inputEditorTitle: String
     let outputEditorTitle: String
@@ -57,7 +57,11 @@ public struct InputOutputEditorsView: View {
 //    @StateObject var hide = SideHolder.usingUserDefaults(key: "inputOutputSplitSide")
     @StateObject var hide = SideHolder()
 
-    public init(store: StoreOf<InputOutputEditorsReducer>, inputEditorTitle: String, outputEditorTitle: String) {
+    public init(
+        store: StoreOf<InputOutputAttributedEditorsReducer>,
+        inputEditorTitle: String,
+        outputEditorTitle: String
+    ) {
         self.store = store
         self.viewStore = ViewStore(store)
         self.inputEditorTitle = inputEditorTitle
@@ -65,18 +69,6 @@ public struct InputOutputEditorsView: View {
     }
 
     public var body: some View {
-//        #if os(iOS)
-//            VSplit {
-//                inputEditor
-//            } bottom: {
-//                outputEditor
-//            }
-//        #elseif os(macOS)
-//            HSplitView {
-//                inputEditor
-//                outputEditor
-//            }
-//        #endif
         Split(primary: { inputEditor }, secondary: { outputEditor })
             .fraction(fraction)
             .layout(layout)
@@ -111,9 +103,13 @@ public struct InputOutputEditorsView: View {
                         },
                         label: {
                             if hide.side == nil {
-                                Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left")
+                                layout
+                                    .isHorizontal ? Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left") :
+                                    Image(systemName: "dock.arrow.up.rectangle")
                             } else {
-                                Image(systemName: "rectangle.righthalf.inset.filled.arrow.right")
+                                layout
+                                    .isHorizontal ? Image(systemName: "rectangle.righthalf.inset.filled.arrow.right") :
+                                    Image(systemName: "dock.arrow.down.rectangle")
                             }
                         }
                     )
@@ -125,29 +121,29 @@ public struct InputOutputEditorsView: View {
         InputEditorView(
             store: store.scope(
                 state: \.input,
-                action: InputOutputEditorsReducer.Action.input
+                action: InputOutputAttributedEditorsReducer.Action.input
             ),
             title: inputEditorTitle
         )
     }
 
     var outputEditor: some View {
-        OutputEditorView(
+        OutputAttributedEditorView(
             store: store.scope(
                 state: \.output,
-                action: InputOutputEditorsReducer.Action.output
+                action: InputOutputAttributedEditorsReducer.Action.output
             ),
             title: outputEditorTitle
         )
     }
 }
 
-struct InputOutputView_Previews: PreviewProvider {
+struct InputOutputAttributedEditorsView_Previews: PreviewProvider {
     static var previews: some View {
-        InputOutputEditorsView(
+        InputOutputAttributedEditorsView(
             store: Store(
                 initialState: .init(),
-                reducer: InputOutputEditorsReducer()
+                reducer: InputOutputAttributedEditorsReducer()
             ),
             inputEditorTitle: "Input",
             outputEditorTitle: "Output"
