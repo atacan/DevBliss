@@ -18,6 +18,8 @@ let package = Package(
         .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
         .library(name: "JsonPrettyClient", targets: ["JsonPrettyClient"]),
         .library(name: "JsonPrettyFeature", targets: ["JsonPrettyFeature"]),
+        .library(name: "TextCaseConverterClient", targets: ["TextCaseConverterClient"]),
+        .library(name: "TextCaseConverterFeature", targets: ["TextCaseConverterFeature"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -80,6 +82,20 @@ let package = Package(
                 "InputOutput",
             ]
         ),
+        .target(
+            name: "TextCaseConverterClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "TextCaseConverterFeature",
+            dependencies: [
+                "TextCaseConverterClient",
+                "InputOutput",
+            ]
+        ),
+
         .testTarget(
             name: "HtmlToSwiftClientTests",
             dependencies: ["HtmlToSwiftClient"]
