@@ -74,45 +74,8 @@ public struct InputOutputAttributedEditorsView: View {
             .layout(layout)
             .hide(hide)
             .toolbar {
-                ToolbarItem(placement: .automatic) {
-                    Button(
-                        action: {
-                            withAnimation {
-                                layout.toggle()
-                            }
-                        },
-                        label: {
-                            layout
-                                .isHorizontal ? Image(systemName: "rectangle.split.1x2") :
-                                Image(systemName: "rectangle.split.2x1")
-                        }
-                    )
-                    .disabled(hide.side != nil)
-                }
-                ToolbarItem(placement: .automatic) {
-                    Button(
-                        action: {
-                            withAnimation {
-//                                hide.toggle()
-                                if hide.side == nil {
-                                    hide.hide(.primary)
-                                } else {
-                                    hide.toggle()
-                                }
-                            }
-                        },
-                        label: {
-                            if hide.side == nil {
-                                layout
-                                    .isHorizontal ? Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left") :
-                                    Image(systemName: "dock.arrow.up.rectangle")
-                            } else {
-                                layout
-                                    .isHorizontal ? Image(systemName: "rectangle.righthalf.inset.filled.arrow.right") :
-                                    Image(systemName: "dock.arrow.down.rectangle")
-                            }
-                        }
-                    )
+                ToolbarItemGroup {
+                    InputOutputToolbarSplitItems(layout: layout, hide: hide)
                 }
             }
     }
@@ -148,5 +111,52 @@ struct InputOutputAttributedEditorsView_Previews: PreviewProvider {
             inputEditorTitle: "Input",
             outputEditorTitle: "Output"
         )
+    }
+}
+
+struct InputOutputToolbarSplitItems: View {
+    @ObservedObject var layout: LayoutHolder
+    @ObservedObject var hide: SideHolder
+
+    var body: some View {
+        Group {
+            Button(
+                action: {
+                    withAnimation {
+                        layout.toggle()
+                    }
+                },
+                label: {
+                    layout
+                        .isHorizontal ? Image(systemName: "rectangle.split.1x2") :
+                        Image(systemName: "rectangle.split.2x1")
+                }
+            )
+            .disabled(hide.side != nil)
+
+            Button(
+                action: {
+                    withAnimation {
+//                                hide.toggle()
+                        if hide.side == nil {
+                            hide.hide(.primary)
+                        } else {
+                            hide.toggle()
+                        }
+                    }
+                },
+                label: {
+                    if hide.side == nil {
+                        layout
+                            .isHorizontal ? Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left") :
+                            Image(systemName: "dock.arrow.up.rectangle")
+                    } else {
+                        layout
+                            .isHorizontal ? Image(systemName: "rectangle.righthalf.inset.filled.arrow.right") :
+                            Image(systemName: "dock.arrow.down.rectangle")
+                    }
+                }
+            )
+        }
     }
 }

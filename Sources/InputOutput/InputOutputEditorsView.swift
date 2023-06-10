@@ -82,42 +82,7 @@ public struct InputOutputEditorsView: View {
             .layout(layout)
             .hide(hide)
             .toolbar {
-                ToolbarItem(placement: .automatic) {
-                    Button(
-                        action: {
-                            withAnimation {
-                                layout.toggle()
-                            }
-                        },
-                        label: {
-                            layout
-                                .isHorizontal ? Image(systemName: "rectangle.split.1x2") :
-                                Image(systemName: "rectangle.split.2x1")
-                        }
-                    )
-                    .disabled(hide.side != nil)
-                }
-                ToolbarItem(placement: .automatic) {
-                    Button(
-                        action: {
-                            withAnimation {
-//                                hide.toggle()
-                                if hide.side == nil {
-                                    hide.hide(.primary)
-                                } else {
-                                    hide.toggle()
-                                }
-                            }
-                        },
-                        label: {
-                            if hide.side == nil {
-                                Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left")
-                            } else {
-                                Image(systemName: "rectangle.righthalf.inset.filled.arrow.right")
-                            }
-                        }
-                    )
-                }
+                InputOutputToolbarSplitItems(layout: layout, hide: hide)
             }
     }
 
