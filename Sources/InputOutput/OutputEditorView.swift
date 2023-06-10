@@ -26,7 +26,7 @@ public struct OutputEditorReducer: ReducerProtocol {
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
 
-        // call it before the main reducer so that animation starts earlier
+        // call it before the core reducer, so that animation starts earlier
         Scope(state: \.outputControls, action: /Action.outputControls) {
             OutputControlsReducer()
         }

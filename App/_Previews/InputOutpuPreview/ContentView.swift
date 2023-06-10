@@ -4,13 +4,13 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        InputOutputView(
+        InputOutputEditorsView(
             store: Store(
-                initialState: InputOutputReducer.State(
+                initialState: InputOutputEditorsReducer.State(
                     input: "",
                     output: .init()
                 ),
-                reducer: InputOutputReducer()._printChanges()
+                reducer: InputOutputEditorsReducer()._printChanges()
             ),
             inputEditorTitle: "Input",
             outputEditorTitle: "Output"
