@@ -10,8 +10,13 @@ struct ContentView: View {
                     .padding()
             }
         #else
-            HtmlToSwiftView(store: Store(initialState: .init(), reducer: HtmlToSwiftReducer()))
-                .padding()
+            HtmlToSwiftView(
+                store: Store(
+                    initialState: .init(),
+                    reducer: HtmlToSwiftReducer()._printChanges()
+                )
+            )
+            .padding()
         #endif
     }
 }

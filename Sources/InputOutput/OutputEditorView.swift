@@ -7,23 +7,18 @@ public struct OutputEditorReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
         @BindingState public var text: String
-        var copyButtonAnimating: Bool = false
+        var outputControls: OutputControlsReducer.State
 
-        public init(text: String = "") {
+        public init(text: String = "", outputControls: OutputControlsReducer.State = .init()) {
             self.text = text
+            self.outputControls = outputControls
         }
     }
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
-        case copyButtonTouched
-        case saveAsButtonTouched
-        case copyButtonAnimationEnded
+        case outputControls(OutputControlsReducer.Action)
     }
-
-    // @Dependency(\.continuousClock) var clock
-    @Dependency(\.mainQueue) var mainQueue
-    @Dependency(\.clipboard) var clipboard
 
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
@@ -31,20 +26,15 @@ public struct OutputEditorReducer: ReducerProtocol {
             switch action {
             case .binding:
                 return .none
-            case .copyButtonTouched:
-                state.copyButtonAnimating = true
-                clipboard.copyString(state.text)
-                return .task {
-                    //                    try await self.clock.sleep(for: .milliseconds(100))
-                    try await mainQueue.sleep(for: .milliseconds(200))
-                    return .copyButtonAnimationEnded
-                }
-            case .saveAsButtonTouched:
-                return .none
-            case .copyButtonAnimationEnded:
-                state.copyButtonAnimating = false
+            case .outputControls(.copyButtonTouched):
+                return state.outputControls.setTextToCopy(state.text).map { Action.outputControls($0) }
+
+            case .outputControls:
                 return .none
             }
+        }
+        Scope(state: \.outputControls, action: /Action.outputControls) {
+            OutputControlsReducer()
         }
     }
 }
@@ -90,25 +80,10 @@ public struct OutputEditorView: View {
                 Spacer()
             }
             .overlay(
-                HStack {
-                    Button(copyButtonTitle) {
-                        viewStore.send(.copyButtonTouched)
-                    }
-                    .foregroundColor(
-                        viewStore.copyButtonAnimating
-                            ? ThemeColor.Text.success
-                            : ThemeColor.Text
-                            .controlText
-                    )
-                    .font(.footnote)
-                    .keyboardShortcut("c", modifiers: [.command, .shift])
-
-                    Button(saveAsButtonTitle) {
-                        viewStore.send(.saveAsButtonTouched)
-                    }
-                    .font(.footnote)
-                    .keyboardShortcut("s", modifiers: [.command, .shift])
-                }
+                OutputControlsView(
+                    store: store
+                        .scope(state: \.outputControls, action: OutputEditorReducer.Action.outputControls)
+                )
                 .padding(1),
 
                 alignment: .topTrailing
