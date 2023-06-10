@@ -91,8 +91,11 @@ public struct OutputEditorView: View {
             }
             .overlay(
                 OutputControlsView(
-                    store: store
-                        .scope(state: \.outputControls, action: OutputEditorReducer.Action.outputControls)
+                    store:
+                    store.scope(
+                        state: \.outputControls,
+                        action: OutputEditorReducer.Action.outputControls
+                    )
                 )
                 .padding(1),
 
@@ -107,9 +110,11 @@ public struct OutputEditorView: View {
 // SwiftUI preview
 struct OutputView_Previews: PreviewProvider {
     static var previews: some View {
-        OutputEditorView(store: Store(
-            initialState: OutputEditorReducer.State(),
-            reducer: OutputEditorReducer()
-        ))
+        OutputEditorView(
+            store: Store(
+                initialState: OutputEditorReducer.State(),
+                reducer: OutputEditorReducer()
+            )
+        )
     }
 }
