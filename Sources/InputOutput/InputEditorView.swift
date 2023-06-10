@@ -96,8 +96,7 @@ public struct InputEditorView: View {
                     .foregroundColor(
                         viewStore.pasteButtonAnimating
                             ? ThemeColor.Text.success
-                            : ThemeColor.Text
-                            .controlText
+                            : ThemeColor.Text.controlText
                     )
                     .font(.footnote)
                     .keyboardShortcut("p", modifiers: [.command, .shift])
@@ -115,9 +114,11 @@ public struct InputEditorView: View {
 // SwiftUI preview
 struct InputView_Previews: PreviewProvider {
     static var previews: some View {
-        InputEditorView(store: Store(
-            initialState: InputEditorReducer.State(),
-            reducer: InputEditorReducer()
-        ))
+        InputEditorView(
+            store: Store(
+                initialState: InputEditorReducer.State(),
+                reducer: InputEditorReducer()
+            )
+        )
     }
 }

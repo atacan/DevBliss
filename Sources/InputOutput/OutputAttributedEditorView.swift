@@ -59,7 +59,9 @@ extension OutputAttributedEditorReducer.State {
         return .none
     }
 
-    public mutating func updateText(_ newText: NSMutableAttributedString)
+    public mutating func updateText(
+        _ newText: NSMutableAttributedString
+    )
         -> EffectTask<OutputAttributedEditorReducer.Action> {
         text = newText
         return .none
@@ -101,8 +103,12 @@ public struct OutputAttributedEditorView: View {
             }
             .overlay(
                 OutputControlsView(
-                    store: store
-                        .scope(state: \.outputControls, action: OutputAttributedEditorReducer.Action.outputControls)
+                    store:
+                    store
+                        .scope(
+                            state: \.outputControls,
+                            action: OutputAttributedEditorReducer.Action.outputControls
+                        )
                 )
                 .padding(1),
 
@@ -123,10 +129,12 @@ public struct OutputAttributedEditorView: View {
 // SwiftUI preview
 struct OutputAttributedEditorView_Previews: PreviewProvider {
     static var previews: some View {
-        OutputAttributedEditorView(store: Store(
-            initialState: OutputAttributedEditorReducer.State(),
-            reducer: OutputAttributedEditorReducer()
-        ))
+        OutputAttributedEditorView(
+            store: Store(
+                initialState: OutputAttributedEditorReducer.State(),
+                reducer: OutputAttributedEditorReducer()
+            )
+        )
     }
 }
 
@@ -135,7 +143,8 @@ public func errorAttributedString(_ error: String) -> NSAttributedString {
         let textColor = NSColor(ThemeColor.Text.failure)
         let attributes = [
             NSAttributedString.Key.foregroundColor: textColor,
-            NSAttributedString.Key.font: NSFont
+            NSAttributedString.Key.font:
+                NSFont
                 .monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: NSFont.Weight.regular),
         ]
         let attributedString = NSAttributedString(string: error, attributes: attributes)

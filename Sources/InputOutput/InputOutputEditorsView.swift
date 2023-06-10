@@ -54,7 +54,7 @@ public struct InputOutputEditorsView: View {
 
     let fraction = FractionHolder.usingUserDefaults(0.5, key: "inputOutputSplitFraction")
     @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: "inputOutputSplitLayout")
-//    @StateObject var hide = SideHolder.usingUserDefaults(key: "inputOutputSplitSide")
+    //    @StateObject var hide = SideHolder.usingUserDefaults(key: "inputOutputSplitSide")
     @StateObject var hide = SideHolder()
 
     public init(store: StoreOf<InputOutputEditorsReducer>, inputEditorTitle: String, outputEditorTitle: String) {
@@ -65,18 +65,18 @@ public struct InputOutputEditorsView: View {
     }
 
     public var body: some View {
-//        #if os(iOS)
-//            VSplit {
-//                inputEditor
-//            } bottom: {
-//                outputEditor
-//            }
-//        #elseif os(macOS)
-//            HSplitView {
-//                inputEditor
-//                outputEditor
-//            }
-//        #endif
+        //        #if os(iOS)
+        //            VSplit {
+        //                inputEditor
+        //            } bottom: {
+        //                outputEditor
+        //            }
+        //        #elseif os(macOS)
+        //            HSplitView {
+        //                inputEditor
+        //                outputEditor
+        //            }
+        //        #endif
         Split(primary: { inputEditor }, secondary: { outputEditor })
             .fraction(fraction)
             .layout(layout)

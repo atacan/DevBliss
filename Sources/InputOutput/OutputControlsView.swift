@@ -62,8 +62,7 @@ struct OutputControlsView: View {
             .foregroundColor(
                 viewStore.copyButtonAnimating
                     ? ThemeColor.Text.success
-                    : ThemeColor.Text
-                    .controlText
+                    : ThemeColor.Text.controlText
             )
             .font(.footnote)
             .keyboardShortcut("c", modifiers: [.command, .shift])
