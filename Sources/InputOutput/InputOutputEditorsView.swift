@@ -4,7 +4,7 @@ import SplitView
 import SwiftUI
 import Theme
 
-public struct InputOutputReducer: ReducerProtocol {
+public struct InputOutputEditorsReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
         public var input: InputEditorReducer.State
@@ -45,9 +45,9 @@ public struct InputOutputReducer: ReducerProtocol {
     }
 }
 
-public struct InputOutputView: View {
-    let store: StoreOf<InputOutputReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputOutputReducer>
+public struct InputOutputEditorsView: View {
+    let store: StoreOf<InputOutputEditorsReducer>
+    @ObservedObject var viewStore: ViewStoreOf<InputOutputEditorsReducer>
 
     let inputEditorTitle: String
     let outputEditorTitle: String
@@ -57,7 +57,7 @@ public struct InputOutputView: View {
 //    @StateObject var hide = SideHolder.usingUserDefaults(key: "inputOutputSplitSide")
     @StateObject var hide = SideHolder()
 
-    public init(store: StoreOf<InputOutputReducer>, inputEditorTitle: String, outputEditorTitle: String) {
+    public init(store: StoreOf<InputOutputEditorsReducer>, inputEditorTitle: String, outputEditorTitle: String) {
         self.store = store
         self.viewStore = ViewStore(store)
         self.inputEditorTitle = inputEditorTitle
@@ -125,7 +125,7 @@ public struct InputOutputView: View {
         InputEditorView(
             store: store.scope(
                 state: \.input,
-                action: InputOutputReducer.Action.input
+                action: InputOutputEditorsReducer.Action.input
             ),
             title: inputEditorTitle
         )
@@ -135,7 +135,7 @@ public struct InputOutputView: View {
         OutputEditorView(
             store: store.scope(
                 state: \.output,
-                action: InputOutputReducer.Action.output
+                action: InputOutputEditorsReducer.Action.output
             ),
             title: outputEditorTitle
         )
@@ -144,10 +144,10 @@ public struct InputOutputView: View {
 
 struct InputOutputView_Previews: PreviewProvider {
     static var previews: some View {
-        InputOutputView(
+        InputOutputEditorsView(
             store: Store(
                 initialState: .init(),
-                reducer: InputOutputReducer()
+                reducer: InputOutputEditorsReducer()
             ),
             inputEditorTitle: "Input",
             outputEditorTitle: "Output"

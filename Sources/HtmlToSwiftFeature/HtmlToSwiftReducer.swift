@@ -8,12 +8,12 @@ import SwiftUI
 public struct HtmlToSwiftReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
-        var inputOutput: InputOutputReducer.State
+        var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         @BindingState var dsl: SwiftDSL = .binaryBirds
         @BindingState var component: HtmlOutputComponent = .fullHtml
 
-        public init(inputOutput: InputOutputReducer.State = .init()) {
+        public init(inputOutput: InputOutputEditorsReducer.State = .init()) {
             self.inputOutput = inputOutput
         }
     }
@@ -22,7 +22,7 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
         case binding(BindingAction<State>)
         case convertButtonTouched
         case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputReducer.Action)
+        case inputOutput(InputOutputEditorsReducer.Action)
     }
 
     @Dependency(\.htmlToSwift) var htmlToSwift
@@ -62,7 +62,7 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
         }
 
         Scope(state: \.inputOutput, action: /Action.inputOutput) {
-            InputOutputReducer()
+            InputOutputEditorsReducer()
         }
     }
 }
@@ -101,7 +101,7 @@ public struct HtmlToSwiftView: View {
             }
             .keyboardShortcut(.return, modifiers: [.command])
 
-            InputOutputView(
+            InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: HtmlToSwiftReducer.Action.inputOutput),
                 inputEditorTitle: "Html",
                 outputEditorTitle: "Swift"
