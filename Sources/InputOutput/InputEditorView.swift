@@ -3,11 +3,11 @@ import ComposableArchitecture
 import SwiftUI
 import Theme
 
-public struct OutputReducer: ReducerProtocol {
+public struct InputEditorReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
         @BindingState public var text: String
-        var copyButtonAnimating: Bool = false
+        var pasteButtonAnimating: Bool = false
 
         public init(text: String = "") {
             self.text = text
@@ -16,9 +16,9 @@ public struct OutputReducer: ReducerProtocol {
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
-        case copyButtonTouched
-        case saveAsButtonTouched
-        case copyButtonAnimationEnded
+        case pasteButtonTouched
+        // case saveAsButtonTouched
+        case pasteButtonAnimationEnded
     }
 
     // @Dependency(\.continuousClock) var clock
@@ -31,50 +31,54 @@ public struct OutputReducer: ReducerProtocol {
             switch action {
             case .binding:
                 return .none
-            case .copyButtonTouched:
-                state.copyButtonAnimating = true
-                clipboard.copyString(state.text)
+            case .pasteButtonTouched:
+                state.pasteButtonAnimating = true
+                if let clip = clipboard.getString() {
+                    state.text = clip
+                }
                 return .task {
                     //                    try await self.clock.sleep(for: .milliseconds(100))
                     try await mainQueue.sleep(for: .milliseconds(200))
-                    return .copyButtonAnimationEnded
+                    return .pasteButtonAnimationEnded
                 }
-            case .saveAsButtonTouched:
-                return .none
-            case .copyButtonAnimationEnded:
-                state.copyButtonAnimating = false
+            // case .saveAsButtonTouched:
+            // return .none
+            case .pasteButtonAnimationEnded:
+                state.pasteButtonAnimating = false
                 return .none
             }
         }
     }
 }
 
-extension OutputReducer.State {
-    public mutating func updateText(_ newText: String) -> EffectTask<OutputReducer.Action> {
+extension InputEditorReducer.State {
+    public mutating func updateText(_ newText: String) -> EffectTask<InputEditorReducer.Action> {
         text = newText
+        return .none
+    }
+
+    public mutating func updateText(_ newText: NSAttributedString) -> EffectTask<InputEditorReducer.Action> {
+        text = newText.string
         return .none
     }
 }
 
-public struct OutputView: View {
-    let store: StoreOf<OutputReducer>
-    @ObservedObject var viewStore: ViewStoreOf<OutputReducer>
+public struct InputEditorView: View {
+    let store: StoreOf<InputEditorReducer>
+    @ObservedObject var viewStore: ViewStoreOf<InputEditorReducer>
 
     let title: String
-    let copyButtonTitle: String
-    let saveAsButtonTitle: String
+    let pasteButtonTitle: String
 
     public init(
-        store: StoreOf<OutputReducer>,
-        title: String = "Output",
-        copyButtonTitle: String = "Copy",
-        saveAsButtonTitle: String = "Save As…"
+        store: StoreOf<InputEditorReducer>,
+        title: String = "Input",
+        pasteButtonTitle: String = "Paste"
     ) {
         self.store = store
         self.viewStore = ViewStore(store)
         self.title = title
-        self.copyButtonTitle = copyButtonTitle
-        self.saveAsButtonTitle = saveAsButtonTitle
+        self.pasteButtonTitle = pasteButtonTitle
     }
 
     public var body: some View {
@@ -86,27 +90,21 @@ public struct OutputView: View {
             }
             .overlay(
                 HStack {
-                    Button("Copy") {
-                        viewStore.send(.copyButtonTouched)
+                    Button(pasteButtonTitle) {
+                        viewStore.send(.pasteButtonTouched)
                     }
                     .foregroundColor(
-                        viewStore.copyButtonAnimating
+                        viewStore.pasteButtonAnimating
                             ? ThemeColor.Text.success
                             : ThemeColor.Text
                             .controlText
                     )
                     .font(.footnote)
-                    .keyboardShortcut("c", modifiers: [.command, .shift])
-
-                    Button("Save As…") {
-                        viewStore.send(.saveAsButtonTouched)
-                    }
-                    .font(.footnote)
-                    .keyboardShortcut("s", modifiers: [.command, .shift])
+                    .keyboardShortcut("p", modifiers: [.command, .shift])
                 }
                 .padding(1),
 
-                alignment: .topTrailing
+                alignment: .topLeading
             )
             TextEditor(text: viewStore.binding(\.$text))
                 .font(.monospaced(.body)())
@@ -115,11 +113,11 @@ public struct OutputView: View {
 }
 
 // SwiftUI preview
-struct OutputView_Previews: PreviewProvider {
+struct InputView_Previews: PreviewProvider {
     static var previews: some View {
-        OutputView(store: Store(
-            initialState: OutputReducer.State(),
-            reducer: OutputReducer()
+        InputEditorView(store: Store(
+            initialState: InputEditorReducer.State(),
+            reducer: InputEditorReducer()
         ))
     }
 }

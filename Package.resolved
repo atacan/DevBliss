@@ -19,15 +19,6 @@
       }
     },
     {
-      "identity" : "highlight",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/nkristek/Highlight.git",
-      "state" : {
-        "branch" : "master",
-        "revision" : "8e0908cb4b88f629fd8041b361f081ec8486c056"
-      }
-    },
-    {
       "identity" : "html-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/atacan/html-swift",

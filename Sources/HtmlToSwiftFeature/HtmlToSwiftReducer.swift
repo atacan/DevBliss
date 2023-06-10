@@ -41,7 +41,7 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
                         await send(
                             .conversionResponse(
                                 TaskResult {
-                                    try await htmlToSwift.convert(input, for: dsl, output: component)
+                                    try await htmlToSwift.convert(input.text, for: dsl, output: component)
                                 }
                             )
                         )
