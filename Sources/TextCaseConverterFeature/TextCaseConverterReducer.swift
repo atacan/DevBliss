@@ -121,8 +121,8 @@ public struct TextCaseConverterView: View {
 
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: TextCaseConverterReducer.Action.inputOutput),
-                inputEditorTitle: "Html",
-                outputEditorTitle: "Swift"
+                inputEditorTitle: "Input",
+                outputEditorTitle: "Output"
             )
         }
     }
