@@ -7,10 +7,10 @@ import Theme
 public struct InputOutputReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
-        @BindingState public var input: String
-        public var output: OutputReducer.State
+        public var input: InputEditorReducer.State
+        public var output: OutputEditorReducer.State
 
-        public init(input: String = "", output: OutputReducer.State = .init()) {
+        public init(input: InputEditorReducer.State = .init(), output: OutputEditorReducer.State = .init()) {
             self.input = input
             self.output = output
         }
@@ -18,7 +18,8 @@ public struct InputOutputReducer: ReducerProtocol {
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
-        case output(OutputReducer.Action)
+        case input(InputEditorReducer.Action)
+        case output(OutputEditorReducer.Action)
     }
 
     public var body: some ReducerProtocol<State, Action> {
@@ -27,13 +28,19 @@ public struct InputOutputReducer: ReducerProtocol {
             switch action {
             case .binding:
                 return .none
+            case .input:
+                return .none
             case .output:
                 return .none
             }
         }
 
+        Scope(state: \.input, action: /Action.input) {
+            InputEditorReducer()
+        }
+
         Scope(state: \.output, action: /Action.output) {
-            OutputReducer()
+            OutputEditorReducer()
         }
     }
 }
@@ -45,6 +52,11 @@ public struct InputOutputView: View {
     let inputEditorTitle: String
     let outputEditorTitle: String
 
+    let fraction = FractionHolder.usingUserDefaults(0.5, key: "inputOutputSplitFraction")
+    @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: "inputOutputSplitLayout")
+//    @StateObject var hide = SideHolder.usingUserDefaults(key: "inputOutputSplitSide")
+    @StateObject var hide = SideHolder()
+
     public init(store: StoreOf<InputOutputReducer>, inputEditorTitle: String, outputEditorTitle: String) {
         self.store = store
         self.viewStore = ViewStore(store)
@@ -53,30 +65,74 @@ public struct InputOutputView: View {
     }
 
     public var body: some View {
-        #if os(iOS)
-            VSplit {
-                inputEditor
-            } bottom: {
-                outputEditor
+//        #if os(iOS)
+//            VSplit {
+//                inputEditor
+//            } bottom: {
+//                outputEditor
+//            }
+//        #elseif os(macOS)
+//            HSplitView {
+//                inputEditor
+//                outputEditor
+//            }
+//        #endif
+        Split(primary: { inputEditor }, secondary: { outputEditor })
+            .fraction(fraction)
+            .layout(layout)
+            .hide(hide)
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button(
+                        action: {
+                            withAnimation {
+                                layout.toggle()
+                            }
+                        },
+                        label: {
+                            layout
+                                .isHorizontal ? Image(systemName: "rectangle.split.1x2") :
+                                Image(systemName: "rectangle.split.2x1")
+                        }
+                    )
+                    .disabled(hide.side != nil)
+                }
+                ToolbarItem(placement: .automatic) {
+                    Button(
+                        action: {
+                            withAnimation {
+//                                hide.toggle()
+                                if hide.side == nil {
+                                    hide.hide(.primary)
+                                } else {
+                                    hide.toggle()
+                                }
+                            }
+                        },
+                        label: {
+                            if hide.side == nil {
+                                Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left")
+                            } else {
+                                Image(systemName: "rectangle.righthalf.inset.filled.arrow.right")
+                            }
+                        }
+                    )
+                }
             }
-        #elseif os(macOS)
-            HSplitView {
-                inputEditor
-                outputEditor
-            }
-        #endif
     }
 
     var inputEditor: some View {
-        VStack {
-            Text(inputEditorTitle)
-            TextEditor(text: viewStore.binding(\.$input))
-                .font(.monospaced(.body)())
-        }
+        InputEditorView(
+            store: store.scope(
+                state: \.input,
+                action: InputOutputReducer.Action.input
+            ),
+            title: inputEditorTitle
+        )
     }
 
     var outputEditor: some View {
-        OutputView(
+        OutputEditorView(
             store: store.scope(
                 state: \.output,
                 action: InputOutputReducer.Action.output

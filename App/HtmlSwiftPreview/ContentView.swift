@@ -4,8 +4,15 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        HtmlToSwiftView(store: Store(initialState: .init(), reducer: HtmlToSwiftReducer()))
-            .padding()
+        #if os(iOS)
+            NavigationView {
+                HtmlToSwiftView(store: Store(initialState: .init(), reducer: HtmlToSwiftReducer()))
+                    .padding()
+            }
+        #else
+            HtmlToSwiftView(store: Store(initialState: .init(), reducer: HtmlToSwiftReducer()))
+                .padding()
+        #endif
     }
 }
 
