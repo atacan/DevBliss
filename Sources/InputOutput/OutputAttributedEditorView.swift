@@ -120,6 +120,7 @@ public struct OutputAttributedEditorView: View {
                 ScrollView {
                     Text(AttributedString(viewStore.text))
                         .font(.monospaced(.body)())
+                        .textSelection(.enabled)
                 }
             #endif
         }
