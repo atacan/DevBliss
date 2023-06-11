@@ -96,7 +96,7 @@ public struct OutputAttributedEditorView: View {
 
     public var body: some View {
         VStack(alignment: .leading) {
-//            ZStack(alignment: .trailingLastTextBaseline) {
+            //            ZStack(alignment: .trailingLastTextBaseline) {
             HStack {
                 Spacer()
                 Text(title)

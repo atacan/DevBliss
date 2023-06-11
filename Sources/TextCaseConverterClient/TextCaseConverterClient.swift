@@ -11,13 +11,14 @@ extension TextCaseConverterClient: DependencyKey {
                 text
                     .split(separator: textSeperator.rawValue)
                     .map { wordGroup -> String in
-                        targetCase.textStyleType.init(
-                            components:
-                            sourceCase.textStyleType
-                                .init(content: String(wordGroup).trimmingCharacters(in: .whitespaces))
-                                .split()
-                        )
-                        .content
+                        targetCase.textStyleType
+                            .init(
+                                components:
+                                sourceCase.textStyleType
+                                    .init(content: String(wordGroup).trimmingCharacters(in: .whitespaces))
+                                    .split()
+                            )
+                            .content
                     }
                     .joined(separator: String(textSeperator.rawValue))
             }

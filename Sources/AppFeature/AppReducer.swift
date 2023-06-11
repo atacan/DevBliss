@@ -98,12 +98,12 @@ public struct AppReducer: ReducerProtocol {
             TextCaseConverterReducer()
         }
 
-//        Scope(state: \.normal_htmlToSwift, action: /Action.normal_htmlToSwift) {
-//            HtmlToSwiftReducer()
-//        }
-//        Scope(state: \.normal_jsonPretty, action: /Action.normal_jsonPretty) {
-//            JsonPrettyReducer()
-//        }
+        //        Scope(state: \.normal_htmlToSwift, action: /Action.normal_htmlToSwift) {
+        //            HtmlToSwiftReducer()
+        //        }
+        //        Scope(state: \.normal_jsonPretty, action: /Action.normal_jsonPretty) {
+        //            JsonPrettyReducer()
+        //        }
     }
 
     private func handleOtherTool(thisTool: Tool, otherTool: Tool, state: inout State) {
@@ -123,12 +123,13 @@ public struct AppReducer: ReducerProtocol {
         default:
             return
         }
-//        case .htmlToSwift:
-//            state.htmlToSwift = HtmlToSwiftReducer.State.init(input: state.htmlToSwift?.outputText ?? "")
-//        case .jsonPretty:
-//            state.jsonPretty = JsonPrettyReducer.State.init(input: state.htmlToSwift?.outputText ?? "")
-//        case .textCaseConverter:
-//            state.textCaseConverter = TextCaseConverterReducer.State.init(input: state.jsonPretty?.outputText ?? "")
+        //        case .htmlToSwift:
+        //            state.htmlToSwift = HtmlToSwiftReducer.State.init(input: state.htmlToSwift?.outputText ?? "")
+        //        case .jsonPretty:
+        //            state.jsonPretty = JsonPrettyReducer.State.init(input: state.htmlToSwift?.outputText ?? "")
+        //        case .textCaseConverter:
+        //            state.textCaseConverter = TextCaseConverterReducer.State.init(input: state.jsonPretty?.outputText
+        //            ?? "")
     }
 }
 
