@@ -135,50 +135,74 @@ public struct AppView: View {
     public var body: some View {
         NavigationView {
             List {
-                NavigationLinkStore(
-                    store.scope(state: \.$htmlToSwift, action: { .htmlToSwift($0) })
-                ) {
-                    viewStore.send(.navigationLinkTouched(.htmlToSwift))
-                } destination: { store in
-                    HtmlToSwiftView(store: store)
-                } label: {
-                    Text("Html to Swift")
+                Section("Converters") {
+                    NavigationLinkStore(
+                        store.scope(state: \.$htmlToSwift, action: { .htmlToSwift($0) })
+                    ) {
+                        viewStore.send(.navigationLinkTouched(.htmlToSwift))
+                    } destination: { store in
+                        HtmlToSwiftView(store: store)
+                            .navigationTitle("Convert Html code to a DSL in Swift")
+                    } label: {
+                        Text("Html to Swift")
+                    }
+
+                    NavigationLinkStore(
+                        store.scope(state: \.$textCaseConverter, action: { .textCaseConverter($0) })
+                    ) {
+                        viewStore.send(.navigationLinkTouched(.textCaseConverter))
+                    } destination: { store in
+                        TextCaseConverterView(store: store)
+                            .navigationTitle("Convert case of list of words")
+                    } label: {
+                        Text("Text Case Converter")
+                    }
                 }
 
-                NavigationLinkStore(
-                    store.scope(state: \.$jsonPretty, action: { .jsonPretty($0) })
-                ) {
-                    viewStore.send(.navigationLinkTouched(.jsonPretty))
-                } destination: { store in
-                    JsonPrettyView(store: store)
-                } label: {
-                    Text("Json Format")
+                Section("Formatters") {
+                    NavigationLinkStore(
+                        store.scope(state: \.$jsonPretty, action: { .jsonPretty($0) })
+                    ) {
+                        viewStore.send(.navigationLinkTouched(.jsonPretty))
+                    } destination: { store in
+                        JsonPrettyView(store: store)
+                            .navigationTitle("Pretty print and Highlight Json")
+                    } label: {
+                        Text("Json Format")
+                    }
                 }
 
-                NavigationLinkStore(
-                    store.scope(state: \.$textCaseConverter, action: { .textCaseConverter($0) })
-                ) {
-                    viewStore.send(.navigationLinkTouched(.textCaseConverter))
-                } destination: { store in
-                    TextCaseConverterView(store: store)
-                } label: {
-                    Text("Text Case Converter")
-                }
-
-                NavigationLinkStore(
-                    store.scope(state: \.$uuidGenerator, action: { .uuidGenerator($0) })
-                ) {
-                    viewStore.send(.navigationLinkTouched(.uuidGenerator))
-                } destination: { store in
-                    UUIDGeneratorView(store: store)
-                } label: {
-                    Text("UUID Generator")
+                Section("Generators") {
+                    NavigationLinkStore(
+                        store.scope(state: \.$uuidGenerator, action: { .uuidGenerator($0) })
+                    ) {
+                        viewStore.send(.navigationLinkTouched(.uuidGenerator))
+                    } destination: { store in
+                        UUIDGeneratorView(store: store)
+                            .navigationTitle("Generate UUIDs")
+                    } label: {
+                        Text("UUID Generator")
+                    }
                 }
             }
             .listStyle(.sidebar)
             #if os(macOS)
                 // it falls behind window toolbar and becomes unclickable
                 .padding(.top)
+                .toolbar {
+                    ToolbarItem {
+                        Button {
+                            NSApp.keyWindow?.firstResponder?.tryToPerform(
+                                #selector(NSSplitViewController.toggleSidebar(_:)),
+                                with: nil
+                            )
+                        } label: {
+                            Label("Toggle sidebar", systemImage: "sidebar.left")
+                        }
+                        .keyboardShortcut("l", modifiers: [.command, .shift])
+                        .help("Toggle sidebar (Command+Shift+L)")
+                    }
+                }
             #endif
 
             Text(
