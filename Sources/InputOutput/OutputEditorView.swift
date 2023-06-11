@@ -89,21 +89,21 @@ public struct OutputEditorView: View {
                 Text(title)
                 Spacer()
             }
-            .overlay(
-                OutputControlsView(
-                    store:
-                    store.scope(
-                        state: \.outputControls,
-                        action: OutputEditorReducer.Action.outputControls
-                    )
-                )
-                .padding(),
-
-                alignment: .topTrailing
-            )
             TextEditor(text: viewStore.binding(\.$text))
                 .font(.monospaced(.body)())
         }
+        .overlay(
+            OutputControlsView(
+                store:
+                store.scope(
+                    state: \.outputControls,
+                    action: OutputEditorReducer.Action.outputControls
+                )
+            )
+            .padding(),
+
+            alignment: .topTrailing
+        )
     }
 }
 

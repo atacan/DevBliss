@@ -88,29 +88,29 @@ public struct InputEditorView: View {
                 Text(title)
                 Spacer()
             }
-            .overlay(
-                HStack {
-                    Button {
-                        viewStore.send(.pasteButtonTouched)
-                    } label: {
-                        Image(systemName: "doc.on.clipboard.fill")
-                    } // <-Button
-                    .foregroundColor(
-                        viewStore.pasteButtonAnimating
-                            ? ThemeColor.Text.success
-                            : ThemeColor.Text.controlText
-                    )
-                    .font(.footnote)
-                    .keyboardShortcut("p", modifiers: [.command, .shift])
-                    .help("Paste from clipboard (Command+Shift+P)")
-                }
-                .padding(),
-
-                alignment: .topLeading
-            )
             TextEditor(text: viewStore.binding(\.$text))
                 .font(.monospaced(.body)())
         }
+        .overlay(
+            HStack {
+                Button {
+                    viewStore.send(.pasteButtonTouched)
+                } label: {
+                    Image(systemName: "doc.on.clipboard.fill")
+                } // <-Button
+                .foregroundColor(
+                    viewStore.pasteButtonAnimating
+                        ? ThemeColor.Text.success
+                        : ThemeColor.Text.controlText
+                )
+                .font(.footnote)
+                .keyboardShortcut("p", modifiers: [.command, .shift])
+                .help("Paste from clipboard (Command+Shift+P)")
+            }
+            .padding(),
+
+            alignment: .topLeading
+        )
     }
 }
 

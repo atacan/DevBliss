@@ -102,19 +102,6 @@ public struct OutputAttributedEditorView: View {
                 Text(title)
                 Spacer()
             }
-            .overlay(
-                OutputControlsView(
-                    store:
-                    store
-                        .scope(
-                            state: \.outputControls,
-                            action: OutputAttributedEditorReducer.Action.outputControls
-                        )
-                )
-                .padding(),
-                //            } // <-ZStack
-                alignment: .topTrailing
-            )
             #if os(macOS)
                 MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
             #elseif os(iOS)
@@ -125,6 +112,19 @@ public struct OutputAttributedEditorView: View {
                 }
             #endif
         }
+        .overlay(
+            OutputControlsView(
+                store:
+                store
+                    .scope(
+                        state: \.outputControls,
+                        action: OutputAttributedEditorReducer.Action.outputControls
+                    )
+            )
+            .padding(),
+            //            } // <-ZStack
+            alignment: .topTrailing
+        )
     }
 }
 
