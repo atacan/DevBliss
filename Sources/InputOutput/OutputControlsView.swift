@@ -97,7 +97,7 @@ struct OutputControlsView: View {
             .help("Input it to the other tools (Command+Shift+U)")
             .popover(isPresented: $isOtherToolsPopoverVisible) {
                 VStack(alignment: .leading) {
-                    ForEach(Tool.allCases) { tool in
+                    ForEach(Tool.allCases.filter(\.isInputtable)) { tool in
                         Button(action: {
                             isOtherToolsPopoverVisible = false
                             viewStore.send(.inputOtherToolButtonTouched(tool))
