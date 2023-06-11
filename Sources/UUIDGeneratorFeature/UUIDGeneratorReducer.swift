@@ -7,14 +7,17 @@ public struct UUIDGeneratorReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
         @BindingState var count: Int
+        @BindingState var textCase: TextCase
         var output: OutputEditorReducer.State
         var isGenerating: Bool = false
 
         public init(
             count: Int = 1,
+            textCase: TextCase = .upper,
             output: OutputEditorReducer.State = .init()
         ) {
             self.count = count
+            self.textCase = textCase
             self.output = output
         }
 
@@ -43,9 +46,9 @@ public struct UUIDGeneratorReducer: ReducerProtocol {
                 state.isGenerating = true
                 return
                     .run {
-                        [count = state.count] send in
+                        [count = state.count, textCase = state.textCase] send in
                         await send(.generationResponse(TaskResult {
-                            try await uuidGenerator.generating(count)
+                            try await uuidGenerator.generating(count, textCase)
                         }))
                     }
                     .cancellable(id: CancelID.generationRequest, cancelInFlight: true)
@@ -90,7 +93,12 @@ public struct UUIDGeneratorView: View {
 //                }
 //                .frame(maxWidth: 250)
 //            }
-            IntegerTextField(value: viewStore.binding(\.$count), range: 1 ... 1_000_000)
+            HStack { IntegerTextField(value: viewStore.binding(\.$count), range: 1 ... 1_000_000)
+                Picker("", selection: viewStore.binding(\.$textCase)) {
+                    Text("lowercase").tag(TextCase.lower)
+                    Text("UPPERCASE").tag(TextCase.upper)
+                }
+            }
             Button {
                 viewStore.send(.generateButtonTouched)
             } label: {
