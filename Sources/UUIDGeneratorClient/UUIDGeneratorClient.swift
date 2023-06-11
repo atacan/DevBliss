@@ -4,8 +4,14 @@ import Foundation
 public struct UUIDGeneratorClient {
     public var generate: @Sendable (Int) async throws -> [String]
 
-    public func generating(_ count: Int) async throws -> String {
-        try await generate(count).joined(separator: "\n")
+    public func generating(_ count: Int, _ textCase: TextCase = .upper) async throws -> String {
+        let uuids = try await generate(count).joined(separator: "\n")
+        switch textCase {
+        case .lower:
+            return uuids.lowercased()
+        case .upper:
+            return uuids
+        }
     }
 }
 
@@ -22,4 +28,9 @@ extension DependencyValues {
         get { self[UUIDGeneratorClient.self] }
         set { self[UUIDGeneratorClient.self] = newValue }
     }
+}
+
+public enum TextCase: CaseIterable {
+    case lower
+    case upper
 }
