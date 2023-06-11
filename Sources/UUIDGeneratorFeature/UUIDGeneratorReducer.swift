@@ -124,6 +124,7 @@ struct SwiftUIView_Previews: PreviewProvider {
     }
 }
 
+// BUG: on macOS although the value stays 1+, the text field shows zero
 struct IntegerTextField: View {
     @Binding var value: Int
     let range: ClosedRange<Int>
