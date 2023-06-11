@@ -2,6 +2,7 @@ public enum Tool: CaseIterable, Identifiable {
     case htmlToSwift
     case jsonPretty
     case textCaseConverter
+    case uuidGenerator
 
     public var id: Self { self }
 
@@ -13,6 +14,21 @@ public enum Tool: CaseIterable, Identifiable {
             return "JSON Formatter"
         case .textCaseConverter:
             return "Text Case Converter"
+        case .uuidGenerator:
+            return "UUID Generator"
+        }
+    }
+
+    public var isInputtable: Bool {
+        switch self {
+        case .htmlToSwift:
+            return true
+        case .jsonPretty:
+            return true
+        case .textCaseConverter:
+            return true
+        case .uuidGenerator:
+            return false
         }
     }
 }

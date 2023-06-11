@@ -4,6 +4,7 @@ import JsonPrettyFeature
 import SharedModels
 import SwiftUI
 import TextCaseConverterFeature
+import UUIDGeneratorFeature
 
 public struct AppReducer: ReducerProtocol {
     public init() {}
@@ -13,19 +14,22 @@ public struct AppReducer: ReducerProtocol {
         @PresentationState var htmlToSwift: HtmlToSwiftReducer.State?
         @PresentationState var jsonPretty: JsonPrettyReducer.State?
         @PresentationState var textCaseConverter: TextCaseConverterReducer.State?
+        @PresentationState var uuidGenerator: UUIDGeneratorReducer.State?
 
         public init(
             // normal_htmlToSwift: HtmlToSwiftReducer.State = .init(),
             // normal_jsonPretty: JsonPrettyReducer.State = .init(),
             htmlToSwift: HtmlToSwiftReducer.State? = nil,
             jsonPretty: JsonPrettyReducer.State? = nil,
-            textCaseConverter: TextCaseConverterReducer.State? = nil
+            textCaseConverter: TextCaseConverterReducer.State? = nil,
+            uuidGenerator: UUIDGeneratorReducer.State? = nil
         ) {
             // // self.normal_htmlToSwift = normal_htmlToSwift
             // // self.normal_jsonPretty = normal_jsonPretty
             self.htmlToSwift = htmlToSwift
             self.jsonPretty = jsonPretty
             self.textCaseConverter = textCaseConverter
+            self.uuidGenerator = uuidGenerator
         }
     }
 
@@ -35,6 +39,7 @@ public struct AppReducer: ReducerProtocol {
         case htmlToSwift(PresentationAction<HtmlToSwiftReducer.Action>)
         case jsonPretty(PresentationAction<JsonPrettyReducer.Action>)
         case textCaseConverter(PresentationAction<TextCaseConverterReducer.Action>)
+        case uuidGenerator(PresentationAction<UUIDGeneratorReducer.Action>)
         case navigationLinkTouched(Tool)
     }
 
@@ -67,11 +72,18 @@ public struct AppReducer: ReducerProtocol {
             ):
                 handleOtherTool(thisTool: .textCaseConverter, otherTool: otherTool, state: &state)
                 return .none
+            case let .uuidGenerator(
+                .presented(.output(.outputControls(.inputOtherToolButtonTouched(otherTool))))
+            ):
+                handleOtherTool(thisTool: .uuidGenerator, otherTool: otherTool, state: &state)
+                return .none
             case .htmlToSwift:
                 return .none
             case .jsonPretty:
                 return .none
             case .textCaseConverter:
+                return .none
+            case .uuidGenerator:
                 return .none
 
             case let .navigationLinkTouched(tool):
@@ -85,6 +97,9 @@ public struct AppReducer: ReducerProtocol {
                 case .textCaseConverter:
                     state.textCaseConverter = .init()
                     return .none
+                case .uuidGenerator:
+                    state.uuidGenerator = .init()
+                    return .none
                 }
             }
         }
@@ -96,6 +111,9 @@ public struct AppReducer: ReducerProtocol {
         }
         .ifLet(\.$textCaseConverter, action: /Action.textCaseConverter) {
             TextCaseConverterReducer()
+        }
+        .ifLet(\.$uuidGenerator, action: /Action.uuidGenerator) {
+            UUIDGeneratorReducer()
         }
 
         //        Scope(state: \.normal_htmlToSwift, action: /Action.normal_htmlToSwift) {
@@ -120,6 +138,12 @@ public struct AppReducer: ReducerProtocol {
             state.htmlToSwift = HtmlToSwiftReducer.State(input: state.textCaseConverter?.outputText ?? "")
         case (.textCaseConverter, .jsonPretty):
             state.jsonPretty = JsonPrettyReducer.State(input: state.textCaseConverter?.outputText ?? "")
+        case (.uuidGenerator, .htmlToSwift):
+            state.htmlToSwift = HtmlToSwiftReducer.State(input: state.uuidGenerator?.outputText ?? "")
+        case (.uuidGenerator, .jsonPretty):
+            state.jsonPretty = JsonPrettyReducer.State(input: state.uuidGenerator?.outputText ?? "")
+        case (.uuidGenerator, .textCaseConverter):
+            state.textCaseConverter = TextCaseConverterReducer.State(input: state.uuidGenerator?.outputText ?? "")
         default:
             return
         }
@@ -172,6 +196,16 @@ public struct AppView: View {
                     TextCaseConverterView(store: store)
                 } label: {
                     Text("Text Case Converter")
+                }
+
+                NavigationLinkStore(
+                    store.scope(state: \.$uuidGenerator, action: { .uuidGenerator($0) })
+                ) {
+                    viewStore.send(.navigationLinkTouched(.uuidGenerator))
+                } destination: { store in
+                    UUIDGeneratorView(store: store)
+                } label: {
+                    Text("UUID Generator")
                 }
 
                 // NavigationLink(

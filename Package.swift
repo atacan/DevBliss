@@ -22,6 +22,8 @@ let package = Package(
         .library(name: "SharedModels", targets: ["SharedModels"]),
         .library(name: "TextCaseConverterClient", targets: ["TextCaseConverterClient"]),
         .library(name: "TextCaseConverterFeature", targets: ["TextCaseConverterFeature"]),
+        .library(name: "UUIDGeneratorClient", targets: ["UUIDGeneratorClient"]),
+        .library(name: "UUIDGeneratorFeature", targets: ["UUIDGeneratorFeature"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -42,6 +44,7 @@ let package = Package(
                 "HtmlToSwiftFeature",
                 "JsonPrettyFeature",
                 "TextCaseConverterFeature",
+                "UUIDGeneratorFeature",
                 "SharedModels",
             ]
         ),
@@ -105,6 +108,19 @@ let package = Package(
             name: "TextCaseConverterFeature",
             dependencies: [
                 "TextCaseConverterClient",
+                "InputOutput",
+            ]
+        ),
+        .target(
+            name: "UUIDGeneratorClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "UUIDGeneratorFeature",
+            dependencies: [
+                "UUIDGeneratorClient",
                 "InputOutput",
             ]
         ),
