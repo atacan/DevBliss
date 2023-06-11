@@ -54,11 +54,12 @@ public struct TextCaseConverterReducer: ReducerProtocol {
             case .convertButtonTouched:
                 state.isConversionRequestInFlight = true
                 return
-                    .run { [
-                        input = state.inputOutput.input,
-                        sourceCase = state.sourceCase,
-                        targetCase = state.targetCase
-                    ] send in
+                    .run {
+                        [
+                            input = state.inputOutput.input,
+                            sourceCase = state.sourceCase,
+                            targetCase = state.targetCase
+                        ] send in
                         await send(
                             .conversionResponse(
                                 TaskResult {

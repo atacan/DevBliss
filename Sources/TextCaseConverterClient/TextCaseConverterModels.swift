@@ -46,8 +46,8 @@ public enum WordGroupCase: String, CaseIterable, Identifiable {
             return Title.self
             //    case .sentence:
             //        return Sentence.self
-//        default:
-//            return Snake.self
+            //        default:
+            //            return Snake.self
         }
     }
 }
@@ -90,12 +90,13 @@ extension TextStyle {
             for pattern in regexPatterns {
                 let regex = try? NSRegularExpression(pattern: pattern, options: [])
                 let range = NSRange(location: 0, length: output.count)
-                if let outputInter = regex?.stringByReplacingMatches(
-                    in: output,
-                    options: [],
-                    range: range,
-                    withTemplate: "$1\(sep)$2"
-                ) {
+                if let outputInter = regex?
+                    .stringByReplacingMatches(
+                        in: output,
+                        options: [],
+                        range: range,
+                        withTemplate: "$1\(sep)$2"
+                    ) {
                     output = outputInter
                 }
             }
@@ -171,8 +172,9 @@ struct Title: TextStyle {
 struct Camel: TextStyle {
     static var style = WordGroupCase.camel
     static var separator = ""
-    static var splitSeparator = WordCaseSplitSeparator
-        .regex(["([A-Z]+)([A-Z][a-z]|[0-9])", "([a-z])([A-Z]|[0-9])", "([0-9])([A-Z])"])
+    static var splitSeparator =
+        WordCaseSplitSeparator
+            .regex(["([A-Z]+)([A-Z][a-z]|[0-9])", "([a-z])([A-Z]|[0-9])", "([0-9])([A-Z])"])
     static var firstWordCase = WordCase.lowercase
     static var restWordCase = WordCase.capital
     var content: String
@@ -190,8 +192,9 @@ struct Camel: TextStyle {
 struct Pascal: TextStyle {
     static var style = WordGroupCase.camel
     static var separator = ""
-    static var splitSeparator = WordCaseSplitSeparator
-        .regex(["([A-Z]+)([A-Z][a-z]|[0-9])", "([a-z])([A-Z]|[0-9])", "([0-9])([A-Z])"])
+    static var splitSeparator =
+        WordCaseSplitSeparator
+            .regex(["([A-Z]+)([A-Z][a-z]|[0-9])", "([a-z])([A-Z]|[0-9])", "([0-9])([A-Z])"])
     static var firstWordCase = WordCase.capital
     static var restWordCase = WordCase.capital
     var content: String

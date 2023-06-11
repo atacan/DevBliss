@@ -120,9 +120,6 @@
 				5AAF55582A2B6AE600A86142 /* DevBliss */,
 				5AAF55592A2B6C2300A86142 /* _Previews */,
 				5A7437002A2B69C8001DEC2E /* DevBliss */,
-				5AD9B05B2A2C0CC500DD8833 /* HtmlSwiftPreview */,
-				5AA0CFE32A34B9B00013132B /* JsonPrettyPreview */,
-				5AA0CFF82A34E96D0013132B /* TextCaseConverterPreview */,
 				5A7436FF2A2B69C8001DEC2E /* Products */,
 				5AD9B0502A2BCB4B00DD8833 /* Frameworks */,
 			);
@@ -169,7 +166,8 @@
 				5AA0CFEA2A34B9B10013132B /* JsonPrettyPreview.entitlements */,
 				5AA0CFEB2A34B9B10013132B /* Preview Content */,
 			);
-			path = JsonPrettyPreview;
+			name = JsonPrettyPreview;
+			path = ../JsonPrettyPreview;
 			sourceTree = "<group>";
 		};
 		5AA0CFEB2A34B9B10013132B /* Preview Content */ = {
@@ -203,6 +201,9 @@
 		5AAF55592A2B6C2300A86142 /* _Previews */ = {
 			isa = PBXGroup;
 			children = (
+				5AA0CFE32A34B9B00013132B /* JsonPrettyPreview */,
+				5AA0CFF82A34E96D0013132B /* TextCaseConverterPreview */,
+				5AD9B05B2A2C0CC500DD8833 /* HtmlSwiftPreview */,
 				5AD9B0422A2BCADA00DD8833 /* InputOutpuPreview */,
 			);
 			path = _Previews;
