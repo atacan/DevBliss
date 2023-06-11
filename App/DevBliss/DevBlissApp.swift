@@ -6,5 +6,7 @@ struct DevBlissApp: App {
         WindowGroup {
             ContentView()
         }
+        .windowStyle(.titleBar)
+        .windowToolbarStyle(.unified(showsTitle: true))
     }
 }
