@@ -9,23 +9,17 @@ import UUIDGeneratorFeature
 public struct AppReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
-        // var normal_htmlToSwift: HtmlToSwiftReducer.State
-        // var normal_jsonPretty: JsonPrettyReducer.State
         @PresentationState var htmlToSwift: HtmlToSwiftReducer.State?
         @PresentationState var jsonPretty: JsonPrettyReducer.State?
         @PresentationState var textCaseConverter: TextCaseConverterReducer.State?
         @PresentationState var uuidGenerator: UUIDGeneratorReducer.State?
 
         public init(
-            // normal_htmlToSwift: HtmlToSwiftReducer.State = .init(),
-            // normal_jsonPretty: JsonPrettyReducer.State = .init(),
             htmlToSwift: HtmlToSwiftReducer.State? = nil,
             jsonPretty: JsonPrettyReducer.State? = nil,
             textCaseConverter: TextCaseConverterReducer.State? = nil,
             uuidGenerator: UUIDGeneratorReducer.State? = nil
         ) {
-            // // self.normal_htmlToSwift = normal_htmlToSwift
-            // // self.normal_jsonPretty = normal_jsonPretty
             self.htmlToSwift = htmlToSwift
             self.jsonPretty = jsonPretty
             self.textCaseConverter = textCaseConverter
@@ -34,8 +28,6 @@ public struct AppReducer: ReducerProtocol {
     }
 
     public enum Action: Equatable {
-        // case normal_htmlToSwift(HtmlToSwiftReducer.Action)
-        // case normal_jsonPretty(JsonPrettyReducer.Action)
         case htmlToSwift(PresentationAction<HtmlToSwiftReducer.Action>)
         case jsonPretty(PresentationAction<JsonPrettyReducer.Action>)
         case textCaseConverter(PresentationAction<TextCaseConverterReducer.Action>)
@@ -46,17 +38,6 @@ public struct AppReducer: ReducerProtocol {
     public var body: some ReducerProtocol<State, Action> {
         Reduce<State, Action> { state, action in
             switch action {
-            //            case .normal_htmlToSwift(.inputOutput(.output(.outputControls(.saveAsButtonTouched)))):
-            //                state.jsonPretty = .init()
-            //                return .none
-            //            case .normal_jsonPretty(.inputOutput(.output(.outputControls(.saveAsButtonTouched)))):
-            //                state.normal_htmlToSwift = .init()
-            //                return .none
-
-            // case .normal_htmlToSwift:
-            //     return .none
-            // case .normal_jsonPretty:
-            //     return .none
             case let .htmlToSwift(
                 .presented(.inputOutput(.output(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
             ):
@@ -115,13 +96,6 @@ public struct AppReducer: ReducerProtocol {
         .ifLet(\.$uuidGenerator, action: /Action.uuidGenerator) {
             UUIDGeneratorReducer()
         }
-
-        //        Scope(state: \.normal_htmlToSwift, action: /Action.normal_htmlToSwift) {
-        //            HtmlToSwiftReducer()
-        //        }
-        //        Scope(state: \.normal_jsonPretty, action: /Action.normal_jsonPretty) {
-        //            JsonPrettyReducer()
-        //        }
     }
 
     private func handleOtherTool(thisTool: Tool, otherTool: Tool, state: inout State) {
@@ -147,13 +121,6 @@ public struct AppReducer: ReducerProtocol {
         default:
             return
         }
-        //        case .htmlToSwift:
-        //            state.htmlToSwift = HtmlToSwiftReducer.State.init(input: state.htmlToSwift?.outputText ?? "")
-        //        case .jsonPretty:
-        //            state.jsonPretty = JsonPrettyReducer.State.init(input: state.htmlToSwift?.outputText ?? "")
-        //        case .textCaseConverter:
-        //            state.textCaseConverter = TextCaseConverterReducer.State.init(input: state.jsonPretty?.outputText
-        //            ?? "")
     }
 }
 
@@ -207,29 +174,12 @@ public struct AppView: View {
                 } label: {
                     Text("UUID Generator")
                 }
-
-                // NavigationLink(
-                //     "Basics",
-                //     destination: HtmlToSwiftView(
-
-                //         store: self.store.scope(
-                //             state: \.normal_htmlToSwift,
-                //             action: AppReducer.Action.normal_htmlToSwift
-                //         )
-                //     )
-                // )
-
-                // NavigationLink(
-                //     "normal json pretty",
-                //     destination: JsonPrettyView(
-                //         store: self.store.scope(
-                //             state: \.normal_jsonPretty,
-                //             action: AppReducer.Action.normal_jsonPretty
-                //         )
-                //     )
-                // )
             }
             .listStyle(.sidebar)
+            #if os(macOS)
+                // it falls behind window toolbar and becomes unclickable
+                .padding(.top)
+            #endif
 
             Text(
                 "\(Image(systemName: "rectangle.leadinghalf.inset.filled.arrow.leading"))  Choose a tool from the Sidebar"
