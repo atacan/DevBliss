@@ -96,6 +96,7 @@ public struct OutputAttributedEditorView: View {
 
     public var body: some View {
         VStack(alignment: .leading) {
+//            ZStack(alignment: .trailingLastTextBaseline) {
             HStack {
                 Spacer()
                 Text(title)
@@ -110,8 +111,8 @@ public struct OutputAttributedEditorView: View {
                             action: OutputAttributedEditorReducer.Action.outputControls
                         )
                 )
-                .padding(1),
-
+                .padding(),
+                //            } // <-ZStack
                 alignment: .topTrailing
             )
             #if os(macOS)

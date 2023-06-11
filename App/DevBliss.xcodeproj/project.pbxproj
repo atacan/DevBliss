@@ -21,6 +21,7 @@
 		5AA0CFFE2A34E96F0013132B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AA0CFFD2A34E96F0013132B /* Assets.xcassets */; };
 		5AA0D0022A34E96F0013132B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AA0D0012A34E96F0013132B /* Preview Assets.xcassets */; };
 		5AA0D0072A34E97E0013132B /* TextCaseConverterFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 5AA0D0062A34E97E0013132B /* TextCaseConverterFeature */; };
+		5AA0D0092A3508BC0013132B /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 5AA0D0082A3508BC0013132B /* AppFeature */; };
 		5AD9B0442A2BCADA00DD8833 /* InputOutpuPreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD9B0432A2BCADA00DD8833 /* InputOutpuPreviewApp.swift */; };
 		5AD9B0462A2BCADA00DD8833 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD9B0452A2BCADA00DD8833 /* ContentView.swift */; };
 		5AD9B0482A2BCADA00DD8833 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AD9B0472A2BCADA00DD8833 /* Assets.xcassets */; };
@@ -73,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AA0D0092A3508BC0013132B /* AppFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,6 +271,9 @@
 			dependencies = (
 			);
 			name = DevBliss;
+			packageProductDependencies = (
+				5AA0D0082A3508BC0013132B /* AppFeature */,
+			);
 			productName = DevBliss;
 			productReference = 5A7436FE2A2B69C8001DEC2E /* DevBliss.app */;
 			productType = "com.apple.product-type.application";
@@ -1037,6 +1042,10 @@
 		5AA0D0062A34E97E0013132B /* TextCaseConverterFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TextCaseConverterFeature;
+		};
+		5AA0D0082A3508BC0013132B /* AppFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppFeature;
 		};
 		5AD9B0512A2BCB4B00DD8833 /* InputOutput */ = {
 			isa = XCSwiftPackageProductDependency;

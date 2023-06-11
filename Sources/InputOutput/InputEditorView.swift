@@ -90,9 +90,11 @@ public struct InputEditorView: View {
             }
             .overlay(
                 HStack {
-                    Button(pasteButtonTitle) {
+                    Button {
                         viewStore.send(.pasteButtonTouched)
-                    }
+                    } label: {
+                        Image(systemName: "doc.on.clipboard.fill")
+                    } // <-Button
                     .foregroundColor(
                         viewStore.pasteButtonAnimating
                             ? ThemeColor.Text.success
@@ -100,8 +102,9 @@ public struct InputEditorView: View {
                     )
                     .font(.footnote)
                     .keyboardShortcut("p", modifiers: [.command, .shift])
+                    .help("Paste from clipboard (Command+Shift+P)")
                 }
-                .padding(1),
+                .padding(),
 
                 alignment: .topLeading
             )

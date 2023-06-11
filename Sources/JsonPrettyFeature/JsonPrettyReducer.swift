@@ -14,6 +14,14 @@ public struct JsonPrettyReducer: ReducerProtocol {
         public init(inputOutput: InputOutputAttributedEditorsReducer.State = .init()) {
             self.inputOutput = inputOutput
         }
+
+        public init(input: String, output: String = "") {
+            self.inputOutput = .init(input: .init(text: input), output: .init(text: .init(string: output)))
+        }
+
+        public var outputText: String {
+            inputOutput.output.text.string
+        }
     }
 
     public enum Action: BindableAction, Equatable {

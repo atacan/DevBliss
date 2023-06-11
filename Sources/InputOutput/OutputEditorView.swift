@@ -97,7 +97,7 @@ public struct OutputEditorView: View {
                         action: OutputEditorReducer.Action.outputControls
                     )
                 )
-                .padding(1),
+                .padding(),
 
                 alignment: .topTrailing
             )
