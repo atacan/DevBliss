@@ -16,6 +16,14 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
         public init(inputOutput: InputOutputEditorsReducer.State = .init()) {
             self.inputOutput = inputOutput
         }
+
+        public init(input: String, output: String = "") {
+            self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
+        }
+
+        public var outputText: String {
+            inputOutput.output.text
+        }
     }
 
     public enum Action: BindableAction, Equatable {

@@ -11,6 +11,7 @@ let package = Package(
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
+        .library(name: "AppFeature", targets: ["AppFeature"]),
         .library(name: "BlissTheme", targets: ["BlissTheme"]),
         .library(name: "InputOutput", targets: ["InputOutput"]),
         .library(name: "ClipboardClient", targets: ["ClipboardClient"]),
@@ -18,6 +19,7 @@ let package = Package(
         .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
         .library(name: "JsonPrettyClient", targets: ["JsonPrettyClient"]),
         .library(name: "JsonPrettyFeature", targets: ["JsonPrettyFeature"]),
+        .library(name: "SharedModels", targets: ["SharedModels"]),
         .library(name: "TextCaseConverterClient", targets: ["TextCaseConverterClient"]),
         .library(name: "TextCaseConverterFeature", targets: ["TextCaseConverterFeature"]),
     ],
@@ -33,6 +35,16 @@ let package = Package(
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
+
+        .target(
+            name: "AppFeature",
+            dependencies: [
+                "HtmlToSwiftFeature",
+                "JsonPrettyFeature",
+                "TextCaseConverterFeature",
+                "SharedModels",
+            ]
+        ),
         .target(
             name: "BlissTheme",
             dependencies: []
@@ -42,6 +54,7 @@ let package = Package(
             dependencies: [
                 "ClipboardClient",
                 "BlissTheme",
+                "SharedModels",
                 .product(name: "SplitView", package: "SplitView"),
                 .product(name: "MacSwiftUI", package: "MacSwiftUI"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
@@ -93,6 +106,11 @@ let package = Package(
             dependencies: [
                 "TextCaseConverterClient",
                 "InputOutput",
+            ]
+        ),
+        .target(
+            name: "SharedModels",
+            dependencies: [
             ]
         ),
 

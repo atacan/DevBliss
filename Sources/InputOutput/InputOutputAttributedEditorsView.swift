@@ -53,7 +53,8 @@ public struct InputOutputAttributedEditorsView: View {
     let outputEditorTitle: String
 
     let fraction = FractionHolder.usingUserDefaults(0.5, key: "inputOutputSplitFraction")
-    @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: "inputOutputSplitLayout")
+    @StateObject var layout = LayoutHolder.usingUserDefaults(.vertical, key: "inputOutputSplitLayout")
+//    @StateObject var layout = LayoutHolder(.vertical)
     //    @StateObject var hide = SideHolder.usingUserDefaults(key: "inputOutputSplitSide")
     @StateObject var hide = SideHolder()
 

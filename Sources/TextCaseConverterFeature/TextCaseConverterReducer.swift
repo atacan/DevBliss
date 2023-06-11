@@ -24,6 +24,15 @@ public struct TextCaseConverterReducer: ReducerProtocol {
             self.targetCase = targetCase
             self.textSeperator = textSeperator
         }
+
+        public init(input: String, output: String = "") {
+            self.init()
+            self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
+        }
+
+        public var outputText: String {
+            inputOutput.output.text
+        }
     }
 
     public enum Action: BindableAction, Equatable {
