@@ -99,6 +99,7 @@ public struct UUIDGeneratorView: View {
                     Text("UPPERCASE").tag(TextCase.upper)
                 }
             }
+            .frame(maxWidth: 250)
             Button {
                 viewStore.send(.generateButtonTouched)
             } label: {
