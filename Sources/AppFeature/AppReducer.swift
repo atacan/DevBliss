@@ -155,7 +155,7 @@ public struct AppView: View {
                         TextCaseConverterView(store: store)
                             .navigationTitle("Convert case of list of words")
                     } label: {
-                        Text("Text Case Converter")
+                        Text("Text Case")
                     }
                 }
 
@@ -168,7 +168,7 @@ public struct AppView: View {
                         JsonPrettyView(store: store)
                             .navigationTitle("Pretty print and Highlight Json")
                     } label: {
-                        Text("Json Format")
+                        Text("Json")
                     }
                 }
 
@@ -181,7 +181,7 @@ public struct AppView: View {
                         UUIDGeneratorView(store: store)
                             .navigationTitle("Generate UUIDs")
                     } label: {
-                        Text("UUID Generator")
+                        Text("UUID")
                     }
                 }
             }
