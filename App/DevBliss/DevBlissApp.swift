@@ -6,7 +6,9 @@ struct DevBlissApp: App {
         WindowGroup {
             ContentView()
         }
+        #if os(macOS)
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: true))
+        #endif
     }
 }
