@@ -19,12 +19,30 @@
       }
     },
     {
+      "identity" : "highlight",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nkristek/Highlight.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "8e0908cb4b88f629fd8041b361f081ec8486c056"
+      }
+    },
+    {
       "identity" : "html-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/atacan/html-swift",
       "state" : {
         "branch" : "main",
         "revision" : "e436ee4e8c9ab9364f5ce933edb8aa409fe116a5"
+      }
+    },
+    {
+      "identity" : "macswiftui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/MacSwiftUI",
+      "state" : {
+        "branch" : "main",
+        "revision" : "80e50e2ca1b76640873b9c8aca4e81f1bc628f32"
       }
     },
     {

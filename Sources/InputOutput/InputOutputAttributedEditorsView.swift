@@ -163,3 +163,5 @@ struct InputOutputToolbarSplitItems: View {
         }
     }
 }
+
+extension NSAttributedString: @unchecked Sendable {}
