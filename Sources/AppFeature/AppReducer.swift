@@ -143,6 +143,7 @@ public struct AppView: View {
                     } destination: { store in
                         HtmlToSwiftView(store: store)
                             .navigationTitle("Convert Html code to a DSL in Swift")
+                            .padding(.top)
                     } label: {
                         Text("Html to Swift")
                     }
@@ -154,6 +155,7 @@ public struct AppView: View {
                     } destination: { store in
                         TextCaseConverterView(store: store)
                             .navigationTitle("Convert case of list of words")
+                            .padding(.top)
                     } label: {
                         Text("Text Case")
                     }
@@ -167,6 +169,7 @@ public struct AppView: View {
                     } destination: { store in
                         JsonPrettyView(store: store)
                             .navigationTitle("Pretty print and Highlight Json")
+                            .padding(.top)
                     } label: {
                         Text("Json")
                     }
@@ -180,15 +183,17 @@ public struct AppView: View {
                     } destination: { store in
                         UUIDGeneratorView(store: store)
                             .navigationTitle("Generate UUIDs")
+                            .padding(.top)
                     } label: {
                         Text("UUID")
                     }
                 }
             }
             .listStyle(.sidebar)
+            .frame(minWidth: 150) // to keep the toggle-sidebar button above the sidebar
             #if os(macOS)
                 // it falls behind window toolbar and becomes unclickable
-                .padding(.top)
+                // .padding(.top)
                 .toolbar {
                     ToolbarItem {
                         Button {

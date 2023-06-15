@@ -122,6 +122,7 @@ public struct TextCaseConverterView: View {
                 }
                 Spacer()
             } // <-HStack
+            .frame(maxWidth: 550)
 
             Button(action: { viewStore.send(.convertButtonTouched) }) {
                 Text("Convert")
