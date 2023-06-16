@@ -88,8 +88,7 @@ public struct InputEditorView: View {
                 Text(title)
                 Spacer()
             }
-            TextEditor(text: viewStore.binding(\.$text))
-                .font(.monospaced(.body)())
+            MyPlainTextEditor(text: viewStore.binding(\.$text))
         }
         .overlay(
             HStack {
