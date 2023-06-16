@@ -2,6 +2,7 @@ import BlissTheme
 import ClipboardClient
 import ComposableArchitecture
 import SwiftUI
+import MacSwiftUI
 
 public struct OutputEditorReducer: ReducerProtocol {
     public init() {}
@@ -89,8 +90,7 @@ public struct OutputEditorView: View {
                 Text(title)
                 Spacer()
             }
-            TextEditor(text: viewStore.binding(\.$text))
-                .font(.monospaced(.body)())
+            MyPlainTextEditor(text: viewStore.binding(\.$text))
         }
         .overlay(
             OutputControlsView(
@@ -116,5 +116,19 @@ struct OutputView_Previews: PreviewProvider {
                 reducer: OutputEditorReducer()
             )
         )
+    }
+}
+
+struct MyPlainTextEditor: View {
+    @Binding var text: String
+    
+    var body: some View {
+        #if os(macOS)
+            PlainMacEditorView(text: $text)
+        #elseif os(iOS)
+            TextEditor(text: $text)
+                .font(.monospaced(.body)())
+        #endif
+        
     }
 }
