@@ -128,6 +128,8 @@ struct MyPlainTextEditor: View {
         #elseif os(iOS)
             TextEditor(text: $text)
                 .font(.monospaced(.body)())
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
         #endif
         
     }

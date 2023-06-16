@@ -5,6 +5,7 @@ import SharedModels
 import SwiftUI
 import TextCaseConverterFeature
 import UUIDGeneratorFeature
+import PrefixSuffixFeature
 
 public struct AppReducer: ReducerProtocol {
     public init() {}
@@ -13,17 +14,20 @@ public struct AppReducer: ReducerProtocol {
         @PresentationState var jsonPretty: JsonPrettyReducer.State?
         @PresentationState var textCaseConverter: TextCaseConverterReducer.State?
         @PresentationState var uuidGenerator: UUIDGeneratorReducer.State?
+        @PresentationState var prefixSuffix: PrefixSuffixReducer.State?
 
         public init(
             htmlToSwift: HtmlToSwiftReducer.State? = nil,
             jsonPretty: JsonPrettyReducer.State? = nil,
             textCaseConverter: TextCaseConverterReducer.State? = nil,
-            uuidGenerator: UUIDGeneratorReducer.State? = nil
+            uuidGenerator: UUIDGeneratorReducer.State? = nil,
+            prefixSuffix: PrefixSuffixReducer.State? = nil
         ) {
             self.htmlToSwift = htmlToSwift
             self.jsonPretty = jsonPretty
             self.textCaseConverter = textCaseConverter
             self.uuidGenerator = uuidGenerator
+            self.prefixSuffix = prefixSuffix
         }
     }
 
@@ -32,6 +36,7 @@ public struct AppReducer: ReducerProtocol {
         case jsonPretty(PresentationAction<JsonPrettyReducer.Action>)
         case textCaseConverter(PresentationAction<TextCaseConverterReducer.Action>)
         case uuidGenerator(PresentationAction<UUIDGeneratorReducer.Action>)
+        case prefixSuffix(PresentationAction<PrefixSuffixReducer.Action>)
         case navigationLinkTouched(Tool)
     }
 
@@ -58,6 +63,9 @@ public struct AppReducer: ReducerProtocol {
             ):
                 handleOtherTool(thisTool: .uuidGenerator, otherTool: otherTool, state: &state)
                 return .none
+            case let .prefixSuffix(.presented(.inputOutput(.output(.outputControls(.inputOtherToolButtonTouched(otherTool)))))):
+                handleOtherTool(thisTool: .prefixSuffix, otherTool: otherTool, state: &state)
+                return .none
             case .htmlToSwift:
                 return .none
             case .jsonPretty:
@@ -65,6 +73,8 @@ public struct AppReducer: ReducerProtocol {
             case .textCaseConverter:
                 return .none
             case .uuidGenerator:
+                return .none
+            case .prefixSuffix:
                 return .none
 
             case let .navigationLinkTouched(tool):
@@ -81,6 +91,9 @@ public struct AppReducer: ReducerProtocol {
                 case .uuidGenerator:
                     state.uuidGenerator = .init()
                     return .none
+                case .prefixSuffix:
+                    state.prefixSuffix = .init()
+                    return .none
                 }
             }
         }
@@ -96,28 +109,51 @@ public struct AppReducer: ReducerProtocol {
         .ifLet(\.$uuidGenerator, action: /Action.uuidGenerator) {
             UUIDGeneratorReducer()
         }
+        .ifLet(\.$prefixSuffix, action: /Action.prefixSuffix) {
+            PrefixSuffixReducer()
+        }
     }
 
     private func handleOtherTool(thisTool: Tool, otherTool: Tool, state: inout State) {
         switch (thisTool, otherTool) {
+        //
         case (.htmlToSwift, .jsonPretty):
             state.jsonPretty = JsonPrettyReducer.State(input: state.htmlToSwift?.outputText ?? "")
         case (.htmlToSwift, .textCaseConverter):
             state.textCaseConverter = TextCaseConverterReducer.State(input: state.htmlToSwift?.outputText ?? "")
+        case (.htmlToSwift, .prefixSuffix):
+            state.prefixSuffix = PrefixSuffixReducer.State(input: state.htmlToSwift?.outputText ?? "")
+        //
         case (.jsonPretty, .htmlToSwift):
             state.htmlToSwift = HtmlToSwiftReducer.State(input: state.jsonPretty?.outputText ?? "")
         case (.jsonPretty, .textCaseConverter):
             state.textCaseConverter = TextCaseConverterReducer.State(input: state.jsonPretty?.outputText ?? "")
+        case (.jsonPretty, .prefixSuffix):
+            state.prefixSuffix = PrefixSuffixReducer.State(input: state.jsonPretty?.outputText ?? "")
+        //
         case (.textCaseConverter, .htmlToSwift):
             state.htmlToSwift = HtmlToSwiftReducer.State(input: state.textCaseConverter?.outputText ?? "")
         case (.textCaseConverter, .jsonPretty):
             state.jsonPretty = JsonPrettyReducer.State(input: state.textCaseConverter?.outputText ?? "")
+        case (.textCaseConverter, .prefixSuffix):
+            state.prefixSuffix = PrefixSuffixReducer.State(input: state.textCaseConverter?.outputText ?? "")
+        //
         case (.uuidGenerator, .htmlToSwift):
             state.htmlToSwift = HtmlToSwiftReducer.State(input: state.uuidGenerator?.outputText ?? "")
         case (.uuidGenerator, .jsonPretty):
             state.jsonPretty = JsonPrettyReducer.State(input: state.uuidGenerator?.outputText ?? "")
         case (.uuidGenerator, .textCaseConverter):
             state.textCaseConverter = TextCaseConverterReducer.State(input: state.uuidGenerator?.outputText ?? "")
+        case (.uuidGenerator, .prefixSuffix):
+            state.prefixSuffix = PrefixSuffixReducer.State(input: state.uuidGenerator?.outputText ?? "")
+        //
+        case (.prefixSuffix, .htmlToSwift):
+            state.htmlToSwift = HtmlToSwiftReducer.State(input: state.prefixSuffix?.outputText ?? "")
+        case (.prefixSuffix, .jsonPretty):
+            state.jsonPretty = JsonPrettyReducer.State(input: state.prefixSuffix?.outputText ?? "")
+        case (.prefixSuffix, .textCaseConverter):
+            state.textCaseConverter = TextCaseConverterReducer.State(input: state.prefixSuffix?.outputText ?? "")
+        
         default:
             return
         }
@@ -158,6 +194,18 @@ public struct AppView: View {
                             .padding(.top)
                     } label: {
                         Text("Text Case")
+                    }
+
+                    NavigationLinkStore(
+                        store.scope(state: \.$prefixSuffix, action: { .prefixSuffix($0) })
+                    ) {
+                        viewStore.send(.navigationLinkTouched(.prefixSuffix))
+                    } destination: { store in
+                        PrefixSuffixView(store: store)
+                            .navigationTitle("Replace and add prefix or suffix to each line")
+                            .padding(.top)
+                    } label: {
+                        Text("Prefix Suffix")
                     }
                 }
 

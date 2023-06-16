@@ -19,6 +19,8 @@ let package = Package(
         .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
         .library(name: "JsonPrettyClient", targets: ["JsonPrettyClient"]),
         .library(name: "JsonPrettyFeature", targets: ["JsonPrettyFeature"]),
+        .library(name: "PrefixSuffixClient", targets: ["PrefixSuffixClient"]),
+        .library(name: "PrefixSuffixFeature", targets: ["PrefixSuffixFeature"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
         .library(name: "TextCaseConverterClient", targets: ["TextCaseConverterClient"]),
         .library(name: "TextCaseConverterFeature", targets: ["TextCaseConverterFeature"]),
@@ -45,6 +47,7 @@ let package = Package(
                 "JsonPrettyFeature",
                 "TextCaseConverterFeature",
                 "UUIDGeneratorFeature",
+                "PrefixSuffixFeature",
                 "SharedModels",
             ]
         ),
@@ -95,6 +98,25 @@ let package = Package(
             name: "JsonPrettyFeature",
             dependencies: [
                 "JsonPrettyClient",
+                "InputOutput",
+            ]
+        ),
+        .target(
+            name: "PrefixSuffixClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .testTarget(
+            name: "PrefixSuffixClientTests",
+            dependencies: [
+                "PrefixSuffixClient",
+            ]
+        ),
+        .target(
+            name: "PrefixSuffixFeature",
+            dependencies: [
+                "PrefixSuffixClient",
                 "InputOutput",
             ]
         ),
