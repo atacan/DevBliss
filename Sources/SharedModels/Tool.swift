@@ -3,6 +3,7 @@ public enum Tool: CaseIterable, Identifiable {
     case jsonPretty
     case textCaseConverter
     case uuidGenerator
+    case prefixSuffix
 
     public var id: Self { self }
 
@@ -16,6 +17,8 @@ public enum Tool: CaseIterable, Identifiable {
             return "Text Case Converter"
         case .uuidGenerator:
             return "UUID Generator"
+        case .prefixSuffix:
+            return "Prefix Suffix"
         }
     }
 
@@ -29,6 +32,8 @@ public enum Tool: CaseIterable, Identifiable {
             return true
         case .uuidGenerator:
             return false
+        case .prefixSuffix:
+            return true
         }
     }
 }
