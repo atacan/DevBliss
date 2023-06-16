@@ -89,21 +89,32 @@ public struct PrefixSuffixView: View {
 
     public var body: some View {
         VStack {
-            HStack(alignment: .center) {
-                Spacer()
-                VStack{
+            VStack(alignment: .center) {
+                HStack{
+                    Text("Prefix")
                     TextField("Replace prefix", text: viewStore.binding(\.$configuration.prefixReplace))
+                        .font(.monospaced(.body)())
+                        .help("Replace prefix if available")
                     TextField("with", text: viewStore.binding(\.$configuration.prefixReplaceWith))
-                    TextField("Add Prefix", text: viewStore.binding(\.$configuration.prefixAdd))
+                        .font(.monospaced(.body)())
+                        .help("the prefix written previously will be replaced with this")
+                    TextField("Then add Prefix", text: viewStore.binding(\.$configuration.prefixAdd))
+                        .font(.monospaced(.body)())
+                        .help("Then add Prefix")
                 }
                 
-                VStack{
+                HStack{
+                    Text("Suffix")
                     TextField("Replace suffix", text: viewStore.binding(\.$configuration.suffixReplace))
+                        .font(.monospaced(.body)())
+                        .help("Replace suffix if available")
                     TextField("with", text: viewStore.binding(\.$configuration.suffixReplaceWith))
-                    TextField("Add Suffix", text: viewStore.binding(\.$configuration.suffixAdd))
+                        .font(.monospaced(.body)())
+                        .help("the suffix written previously will be replaced with this")
+                    TextField("Then add Suffix", text: viewStore.binding(\.$configuration.suffixAdd))
+                        .font(.monospaced(.body)())
+                        .help("Then add Suffix")
                 }
-                    
-                Spacer()
             }  // <-HStack
             .autocorrectionDisabled()
             #if os(iOS)
