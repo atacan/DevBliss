@@ -4,6 +4,7 @@ public enum Tool: CaseIterable, Identifiable {
     case textCaseConverter
     case uuidGenerator
     case prefixSuffix
+    case regexMatches
 
     public var id: Self { self }
 
@@ -19,6 +20,8 @@ public enum Tool: CaseIterable, Identifiable {
             return "UUID Generator"
         case .prefixSuffix:
             return "Prefix Suffix"
+        case .regexMatches:
+            return "Regex Matches"
         }
     }
 
@@ -33,6 +36,8 @@ public enum Tool: CaseIterable, Identifiable {
         case .uuidGenerator:
             return false
         case .prefixSuffix:
+            return true
+        case .regexMatches:
             return true
         }
     }
