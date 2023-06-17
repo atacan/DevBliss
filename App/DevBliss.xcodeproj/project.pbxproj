@@ -32,6 +32,11 @@
 		5AD9B0612A2C0CC600DD8833 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AD9B0602A2C0CC600DD8833 /* Assets.xcassets */; };
 		5AD9B0652A2C0CC600DD8833 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AD9B0642A2C0CC600DD8833 /* Preview Assets.xcassets */; };
 		5AD9B06A2A2C0CD700DD8833 /* HtmlToSwiftFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 5AD9B0692A2C0CD700DD8833 /* HtmlToSwiftFeature */; };
+		79BE84812A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BE84802A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift */; };
+		79BE84832A3DD4CC006822F5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BE84822A3DD4CC006822F5 /* ContentView.swift */; };
+		79BE84852A3DD4CD006822F5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79BE84842A3DD4CD006822F5 /* Assets.xcassets */; };
+		79BE84892A3DD4CD006822F5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79BE84882A3DD4CD006822F5 /* Preview Assets.xcassets */; };
+		79BE848E2A3DD4DA006822F5 /* RegexMatchesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 79BE848D2A3DD4DA006822F5 /* RegexMatchesFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,6 +72,12 @@
 		5AD9B0602A2C0CC600DD8833 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5AD9B0622A2C0CC600DD8833 /* HtmlSwiftPreview.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HtmlSwiftPreview.entitlements; sourceTree = "<group>"; };
 		5AD9B0642A2C0CC600DD8833 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		79BE847E2A3DD4CC006822F5 /* PreviewRegexMatches.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PreviewRegexMatches.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		79BE84802A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewRegexMatchesApp.swift; sourceTree = "<group>"; };
+		79BE84822A3DD4CC006822F5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		79BE84842A3DD4CD006822F5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		79BE84862A3DD4CD006822F5 /* PreviewRegexMatches.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PreviewRegexMatches.entitlements; sourceTree = "<group>"; };
+		79BE84882A3DD4CD006822F5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +121,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		79BE847B2A3DD4CC006822F5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79BE848E2A3DD4DA006822F5 /* RegexMatchesFeature in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -120,6 +139,7 @@
 				5AAF55582A2B6AE600A86142 /* DevBliss */,
 				5AAF55592A2B6C2300A86142 /* _Previews */,
 				5A7437002A2B69C8001DEC2E /* DevBliss */,
+				79BE847F2A3DD4CC006822F5 /* PreviewRegexMatches */,
 				5A7436FF2A2B69C8001DEC2E /* Products */,
 				5AD9B0502A2BCB4B00DD8833 /* Frameworks */,
 			);
@@ -133,6 +153,7 @@
 				5AD9B05A2A2C0CC500DD8833 /* HtmlSwiftPreview.app */,
 				5AA0CFE22A34B9B00013132B /* JsonPrettyPreview.app */,
 				5AA0CFF72A34E96D0013132B /* TextCaseConverterPreview.app */,
+				79BE847E2A3DD4CC006822F5 /* PreviewRegexMatches.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -256,6 +277,26 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		79BE847F2A3DD4CC006822F5 /* PreviewRegexMatches */ = {
+			isa = PBXGroup;
+			children = (
+				79BE84802A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift */,
+				79BE84822A3DD4CC006822F5 /* ContentView.swift */,
+				79BE84842A3DD4CD006822F5 /* Assets.xcassets */,
+				79BE84862A3DD4CD006822F5 /* PreviewRegexMatches.entitlements */,
+				79BE84872A3DD4CD006822F5 /* Preview Content */,
+			);
+			path = PreviewRegexMatches;
+			sourceTree = "<group>";
+		};
+		79BE84872A3DD4CD006822F5 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				79BE84882A3DD4CD006822F5 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -359,6 +400,26 @@
 			productReference = 5AD9B05A2A2C0CC500DD8833 /* HtmlSwiftPreview.app */;
 			productType = "com.apple.product-type.application";
 		};
+		79BE847D2A3DD4CC006822F5 /* PreviewRegexMatches */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 79BE848C2A3DD4CD006822F5 /* Build configuration list for PBXNativeTarget "PreviewRegexMatches" */;
+			buildPhases = (
+				79BE847A2A3DD4CC006822F5 /* Sources */,
+				79BE847B2A3DD4CC006822F5 /* Frameworks */,
+				79BE847C2A3DD4CC006822F5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PreviewRegexMatches;
+			packageProductDependencies = (
+				79BE848D2A3DD4DA006822F5 /* RegexMatchesFeature */,
+			);
+			productName = PreviewRegexMatches;
+			productReference = 79BE847E2A3DD4CC006822F5 /* PreviewRegexMatches.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -366,7 +427,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1420;
+				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1420;
 				TargetAttributes = {
 					5A7436FD2A2B69C8001DEC2E = {
@@ -383,6 +444,9 @@
 					};
 					5AD9B0592A2C0CC500DD8833 = {
 						CreatedOnToolsVersion = 14.2;
+					};
+					79BE847D2A3DD4CC006822F5 = {
+						CreatedOnToolsVersion = 15.0;
 					};
 				};
 			};
@@ -404,6 +468,7 @@
 				5AD9B0592A2C0CC500DD8833 /* HtmlSwiftPreview */,
 				5AA0CFE12A34B9B00013132B /* JsonPrettyPreview */,
 				5AA0CFF62A34E96D0013132B /* TextCaseConverterPreview */,
+				79BE847D2A3DD4CC006822F5 /* PreviewRegexMatches */,
 			);
 		};
 /* End PBXProject section */
@@ -454,6 +519,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		79BE847C2A3DD4CC006822F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79BE84892A3DD4CD006822F5 /* Preview Assets.xcassets in Resources */,
+				79BE84852A3DD4CD006822F5 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -499,6 +573,15 @@
 			files = (
 				5AD9B05F2A2C0CC500DD8833 /* ContentView.swift in Sources */,
 				5AD9B05D2A2C0CC500DD8833 /* HtmlSwiftPreviewApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		79BE847A2A3DD4CC006822F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79BE84832A3DD4CC006822F5 /* ContentView.swift in Sources */,
+				79BE84812A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -691,10 +774,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = JsonPrettyPreview/JsonPrettyPreview.entitlements;
+				CODE_SIGN_ENTITLEMENTS = _Previews/JsonPrettyPreview/JsonPrettyPreview.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"JsonPrettyPreview/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"_Previews/JsonPrettyPreview/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -727,10 +810,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = JsonPrettyPreview/JsonPrettyPreview.entitlements;
+				CODE_SIGN_ENTITLEMENTS = _Previews/JsonPrettyPreview/JsonPrettyPreview.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"JsonPrettyPreview/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"_Previews/JsonPrettyPreview/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -909,10 +992,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = HtmlSwiftPreview/HtmlSwiftPreview.entitlements;
+				CODE_SIGN_ENTITLEMENTS = _Previews/HtmlSwiftPreview/HtmlSwiftPreview.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"HtmlSwiftPreview/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"_Previews/HtmlSwiftPreview/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -945,10 +1028,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = HtmlSwiftPreview/HtmlSwiftPreview.entitlements;
+				CODE_SIGN_ENTITLEMENTS = _Previews/HtmlSwiftPreview/HtmlSwiftPreview.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"HtmlSwiftPreview/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"_Previews/HtmlSwiftPreview/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -967,6 +1050,87 @@
 				MACOSX_DEPLOYMENT_TARGET = 12.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.actondon.HtmlSwiftPreview;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		79BE848A2A3DD4CD006822F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PreviewRegexMatches/PreviewRegexMatches.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PreviewRegexMatches/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atacan.PreviewRegexMatches;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		79BE848B2A3DD4CD006822F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PreviewRegexMatches/PreviewRegexMatches.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PreviewRegexMatches/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atacan.PreviewRegexMatches;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -1033,6 +1197,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		79BE848C2A3DD4CD006822F5 /* Build configuration list for PBXNativeTarget "PreviewRegexMatches" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				79BE848A2A3DD4CD006822F5 /* Debug */,
+				79BE848B2A3DD4CD006822F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1055,6 +1228,10 @@
 		5AD9B0692A2C0CD700DD8833 /* HtmlToSwiftFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = HtmlToSwiftFeature;
+		};
+		79BE848D2A3DD4DA006822F5 /* RegexMatchesFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RegexMatchesFeature;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
