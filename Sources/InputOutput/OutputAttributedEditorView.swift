@@ -55,7 +55,7 @@ public struct OutputAttributedEditorReducer: ReducerProtocol {
 
 extension OutputAttributedEditorReducer.State {
     public mutating func updateText(_ newText: String) -> EffectTask<OutputAttributedEditorReducer.Action> {
-        text = .init(string: newText)
+        text = .init(attributedString: regularAttributedString(newText))
         return .none
     }
 
