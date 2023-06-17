@@ -101,7 +101,7 @@ public struct HtmlToSwiftView: View {
                     }
                 }
                 Spacer()
-            } // <-HStack
+            }  // <-HStack
             .frame(maxWidth: 450)
 
             Button(action: { viewStore.send(.convertButtonTouched) }) {

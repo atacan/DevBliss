@@ -11,9 +11,11 @@ public struct InputAttributedTwoOutputAttributedEditorsReducer: ReducerProtocol 
         public var output: OutputAttributedEditorReducer.State
         public var outputSecond: OutputAttributedEditorReducer.State
 
-        public init(input: InputAttributedEditorReducer.State = .init(),
-                    output: OutputAttributedEditorReducer.State = .init(),
-                    outputSecond: OutputAttributedEditorReducer.State = .init()) {
+        public init(
+            input: InputAttributedEditorReducer.State = .init(),
+            output: OutputAttributedEditorReducer.State = .init(),
+            outputSecond: OutputAttributedEditorReducer.State = .init()
+        ) {
             self.input = input
             self.output = output
             self.outputSecond = outputSecond
@@ -84,21 +86,25 @@ public struct InputAttributedTwoOutputAttributedEditorsView: View {
     }
 
     public var body: some View {
-        Split(primary: { inputEditor }, 
-        secondary: { 
-            Split(primary: { outputEditor },
-                secondary: { outputSecondEditor })
-            .layout(layout.value == .horizontal ? LayoutHolder(.vertical) : LayoutHolder(.horizontal))
+        Split(
+            primary: { inputEditor },
 
-        })
-            .fraction(fraction)
-            .layout(layout)
-            .hide(hide)
-            .toolbar {
-                ToolbarItemGroup {
-                    InputOutputToolbarSplitItems(layout: layout, hide: hide)
-                }
+            secondary: {
+                Split(
+                    primary: { outputEditor },
+                    secondary: { outputSecondEditor }
+                )
+                .layout(layout.value == .horizontal ? LayoutHolder(.vertical) : LayoutHolder(.horizontal))
             }
+        )
+        .fraction(fraction)
+        .layout(layout)
+        .hide(hide)
+        .toolbar {
+            ToolbarItemGroup {
+                InputOutputToolbarSplitItems(layout: layout, hide: hide)
+            }
+        }
     }
 
     var inputEditor: some View {

@@ -1,15 +1,11 @@
-//
-// https://github.com/atacan
-// 17.06.23
-
+import CoreGraphics
 import Dependencies
 import Foundation
-import CoreGraphics
 import SwiftUI
 
 public struct RegexMatchesClient {
     public var matches:
-    @Sendable (NSAttributedString, String, RegexMatchesConfig) async throws -> RegexMatchesHighlightOutput
+        @Sendable (NSAttributedString, String, RegexMatchesConfig) async throws -> RegexMatchesHighlightOutput
 }
 
 extension RegexMatchesClient: DependencyKey {
@@ -32,11 +28,11 @@ func matchRegex(
     guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else {
         return []
     }
-    
+
     let string = attributedString.string
     let range = NSRange(location: 0, length: string.utf16.count)
     let matches = regex.matches(in: string, options: [], range: range)
-    
+
     return matches.map { match in
         let matchString = (string as NSString).substring(with: match.range)
         let groupRanges = (0 ..< match.numberOfRanges)
@@ -71,8 +67,8 @@ public struct RegexMatchesHighlightOutput: Equatable {
 public struct RegexMatchesConfig: Equatable {
     let wholeMatchColor: CGColor
     let capturedGroupColor: CGColor
-    
-    public init (
+
+    public init(
         wholeMatchColor: CGColor,
         capturedGroupColor: CGColor
     ) {
@@ -88,15 +84,15 @@ func highlightRegexMatches(
 ) -> RegexMatchesHighlightOutput {
     let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
     let matchOutputs = matchRegex(in: attributedString, pattern: pattern)
-    
+
     for matchOutput in matchOutputs {
-#if os(macOS)
-        let wholeMatchColor = NSColor(cgColor: config.wholeMatchColor)
-        let captureColor = NSColor(cgColor: config.capturedGroupColor)
-#else
-        let wholeMatchColor = UIColor(cgColor: config.wholeMatchColor)
-        let captureColor = UIColor(cgColor: config.capturedGroupColor)
-#endif
+        #if os(macOS)
+            let wholeMatchColor = NSColor(cgColor: config.wholeMatchColor)
+            let captureColor = NSColor(cgColor: config.capturedGroupColor)
+        #else
+            let wholeMatchColor = UIColor(cgColor: config.wholeMatchColor)
+            let captureColor = UIColor(cgColor: config.capturedGroupColor)
+        #endif
         let wholeMatchAttributes: [NSAttributedString.Key: Any] = [
             .backgroundColor: wholeMatchColor
         ]
@@ -108,6 +104,6 @@ func highlightRegexMatches(
             mutableAttributedString.addAttributes(captureAttributes, range: range)
         }
     }
-    
+
     return .init(highlighted: mutableAttributedString, output: matchOutputs)
 }

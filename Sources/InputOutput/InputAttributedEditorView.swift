@@ -101,22 +101,31 @@ public struct InputAttributedEditorView: View {
             #if os(macOS)
                 MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
             #elseif os(iOS)
-//                ScrollView {
-//                    Text(AttributedString(viewStore.text))
-//                        .font(.monospaced(.body)())
-//                        .textSelection(.enabled)
-                    TextEditor(text: viewStore.binding(get: { state in
-                        state.text.string
-                    }, send: { newValue in
+                //                ScrollView {
+                //                    Text(AttributedString(viewStore.text))
+                //                        .font(.monospaced(.body)())
+                //                        .textSelection(.enabled)
+                TextEditor(
+                    text: viewStore.binding(
+                        get: { state in
+                            state.text.string
+                        },
+                        send: { newValue in
                             .binding(.set(\.$text, .init(string: newValue)))
-                    }))
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .font(.init(UIFont.monospacedSystemFont(
-                        ofSize: UIFont.systemFontSize,
-                        weight: UIFont.Weight.regular
-                    )))
-//                }
+                        }
+                    )
+                )
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .font(
+                    .init(
+                        UIFont.monospacedSystemFont(
+                            ofSize: UIFont.systemFontSize,
+                            weight: UIFont.Weight.regular
+                        )
+                    )
+                )
+            //                }
             #endif
         }
         .overlay(

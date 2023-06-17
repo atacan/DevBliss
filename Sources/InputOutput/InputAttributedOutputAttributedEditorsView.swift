@@ -10,7 +10,10 @@ public struct InputAttributedOutputAttributedEditorsReducer: ReducerProtocol {
         public var input: InputAttributedEditorReducer.State
         public var output: OutputAttributedEditorReducer.State
 
-        public init(input: InputAttributedEditorReducer.State = .init(), output: OutputAttributedEditorReducer.State = .init()) {
+        public init(
+            input: InputAttributedEditorReducer.State = .init(),
+            output: OutputAttributedEditorReducer.State = .init()
+        ) {
             self.input = input
             self.output = output
         }

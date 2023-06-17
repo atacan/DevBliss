@@ -61,7 +61,11 @@ public struct AppReducer: ReducerProtocol {
             case let .textCaseConverter(
                 .presented(.inputOutput(.output(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
             ):
-                handleOtherTool(thisToolOutput: state.textCaseConverter?.outputText, otherTool: otherTool, state: &state)
+                handleOtherTool(
+                    thisToolOutput: state.textCaseConverter?.outputText,
+                    otherTool: otherTool,
+                    state: &state
+                )
                 return .none
             case let .uuidGenerator(
                 .presented(.output(.outputControls(.inputOtherToolButtonTouched(otherTool))))
@@ -81,7 +85,11 @@ public struct AppReducer: ReducerProtocol {
             case let .regexMatches(
                 .presented(.inputOutput(.outputSecond(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
             ):
-                handleOtherTool(thisToolOutput: state.regexMatches?.outputSecondText, otherTool: otherTool, state: &state)
+                handleOtherTool(
+                    thisToolOutput: state.regexMatches?.outputSecondText,
+                    otherTool: otherTool,
+                    state: &state
+                )
                 return .none
             case .htmlToSwift:
                 return .none
@@ -154,7 +162,6 @@ public struct AppReducer: ReducerProtocol {
         case .uuidGenerator:
             break
         }
-
     }
 }
 

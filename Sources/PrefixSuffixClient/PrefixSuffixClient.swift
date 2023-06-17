@@ -1,7 +1,3 @@
-//
-// https://github.com/atacan
-// 16.06.23
-
 import Dependencies
 import Foundation
 
@@ -50,10 +46,10 @@ extension PrefixSuffixClient: DependencyKey {
 }
 
 extension DependencyValues {
-   public var prefixSuffix: PrefixSuffixClient {
-       get { self[PrefixSuffixClient.self] }
-       set { self[PrefixSuffixClient.self] = newValue }
-   }
+    public var prefixSuffix: PrefixSuffixClient {
+        get { self[PrefixSuffixClient.self] }
+        set { self[PrefixSuffixClient.self] = newValue }
+    }
 }
 
 extension String {
@@ -62,16 +58,16 @@ extension String {
     }
 
     fileprivate mutating func replace(prefix: String, with newValue: String) {
-        if self.hasPrefix(prefix) {
-            self = String(self.dropFirst(prefix.count))
-            self.prepend(newValue)
+        if hasPrefix(prefix) {
+            self = String(dropFirst(prefix.count))
+            prepend(newValue)
         }
     }
 
     fileprivate mutating func replace(suffix: String, with newValue: String) {
-        if self.hasSuffix(suffix) {
-            self = String(self.dropLast(suffix.count))
-            self.append(newValue)
+        if hasSuffix(suffix) {
+            self = String(dropLast(suffix.count))
+            append(newValue)
         }
     }
 

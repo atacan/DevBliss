@@ -66,7 +66,7 @@ struct OutputControlsView: View {
                 viewStore.send(.copyButtonTouched)
             } label: {
                 Image(systemName: "doc.on.clipboard")
-            } // <-Button
+            }  // <-Button
             .foregroundColor(
                 viewStore.copyButtonAnimating
                     ? ThemeColor.Text.success
@@ -80,7 +80,7 @@ struct OutputControlsView: View {
                 viewStore.send(.saveAsButtonTouched)
             } label: {
                 Image(systemName: "opticaldiscdrive")
-            } // <-Button
+            }  // <-Button
 
             .font(.footnote)
             .keyboardShortcut("s", modifiers: [.command, .shift])
@@ -90,7 +90,7 @@ struct OutputControlsView: View {
                 isOtherToolsPopoverVisible = true
             } label: {
                 Image(systemName: "square.and.arrow.up")
-            } // <-Button
+            }  // <-Button
 
             .font(.footnote)
             .keyboardShortcut("u", modifiers: [.command, .shift])
@@ -108,8 +108,8 @@ struct OutputControlsView: View {
                         }
                         .buttonStyle(.plain)
                         Divider()
-                    } // <-ForEach
-                } // <-VStack
+                    }  // <-ForEach
+                }  // <-VStack
                 .padding()
             }
         }
