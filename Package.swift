@@ -21,6 +21,8 @@ let package = Package(
         .library(name: "JsonPrettyFeature", targets: ["JsonPrettyFeature"]),
         .library(name: "PrefixSuffixClient", targets: ["PrefixSuffixClient"]),
         .library(name: "PrefixSuffixFeature", targets: ["PrefixSuffixFeature"]),
+        .library(name: "RegexMatchesClient", targets: ["RegexMatchesClient"]),
+        .library(name: "RegexMatchesFeature", targets: ["RegexMatchesFeature"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
         .library(name: "TextCaseConverterClient", targets: ["TextCaseConverterClient"]),
         .library(name: "TextCaseConverterFeature", targets: ["TextCaseConverterFeature"]),
@@ -48,6 +50,7 @@ let package = Package(
                 "TextCaseConverterFeature",
                 "UUIDGeneratorFeature",
                 "PrefixSuffixFeature",
+                "RegexMatchesFeature",
                 "SharedModels",
             ]
         ),
@@ -117,6 +120,25 @@ let package = Package(
             name: "PrefixSuffixFeature",
             dependencies: [
                 "PrefixSuffixClient",
+                "InputOutput",
+            ]
+        ),
+        .target(
+            name: "RegexMatchesClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .testTarget(
+            name: "RegexMatchesClientTests",
+            dependencies: [
+                "RegexMatchesClient",
+            ]
+        ),
+        .target(
+            name: "RegexMatchesFeature",
+            dependencies: [
+                "RegexMatchesClient",
                 "InputOutput",
             ]
         ),
