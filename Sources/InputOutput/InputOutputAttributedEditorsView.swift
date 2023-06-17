@@ -141,7 +141,8 @@ struct InputOutputToolbarSplitItems: View {
                         //                                hide.toggle()
                         if hide.side == nil {
                             hide.hide(.primary)
-                        } else {
+                        }
+                        else {
                             hide.toggle()
                         }
                     }
@@ -152,7 +153,8 @@ struct InputOutputToolbarSplitItems: View {
                             .isHorizontal
                             ? Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left")
                             : Image(systemName: "dock.arrow.up.rectangle")
-                    } else {
+                    }
+                    else {
                         layout
                             .isHorizontal
                             ? Image(systemName: "rectangle.righthalf.inset.filled.arrow.right")

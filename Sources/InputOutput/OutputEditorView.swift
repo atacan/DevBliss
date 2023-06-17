@@ -1,8 +1,8 @@
 import BlissTheme
 import ClipboardClient
 import ComposableArchitecture
-import SwiftUI
 import MacSwiftUI
+import SwiftUI
 
 public struct OutputEditorReducer: ReducerProtocol {
     public init() {}
@@ -95,10 +95,10 @@ public struct OutputEditorView: View {
         .overlay(
             OutputControlsView(
                 store:
-                store.scope(
-                    state: \.outputControls,
-                    action: OutputEditorReducer.Action.outputControls
-                )
+                    store.scope(
+                        state: \.outputControls,
+                        action: OutputEditorReducer.Action.outputControls
+                    )
             )
             .padding(),
 
@@ -121,7 +121,7 @@ struct OutputView_Previews: PreviewProvider {
 
 struct MyPlainTextEditor: View {
     @Binding var text: String
-    
+
     var body: some View {
         #if os(macOS)
             PlainMacEditorView(text: $text)
@@ -131,6 +131,5 @@ struct MyPlainTextEditor: View {
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
         #endif
-        
     }
 }

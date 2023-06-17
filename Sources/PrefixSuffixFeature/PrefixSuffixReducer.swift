@@ -90,40 +90,48 @@ public struct PrefixSuffixView: View {
     public var body: some View {
         VStack {
             HStack(alignment: .center) {
-                VStack{
+                VStack {
                     Text("Prefix")
                     Group {
-                    TextField("Replace prefix", text: viewStore.binding(\.$configuration.prefixReplace))
-                                            .help("Replace prefix if available")
-                                        TextField("with", text: viewStore.binding(\.$configuration.prefixReplaceWith))
-                                                                                        .help("the prefix written previously will be replaced with this")
-                                        TextField("Then add Prefix", text: viewStore.binding(\.$configuration.prefixAdd))
-                                            .help("Then add Prefix")
-                    } // <-Group
+                        TextField("Replace prefix", text: viewStore.binding(\.$configuration.prefixReplace))
+                        .help("Replace prefix if available")
+                        TextField("with", text: viewStore.binding(\.$configuration.prefixReplaceWith))
+                        .help(
+                            "the prefix written previously will be replaced with this"
+                        )
+                        TextField(
+                            "Then add Prefix",
+                            text: viewStore.binding(\.$configuration.prefixAdd)
+                        )
+                        .help("Then add Prefix")
+                    }  // <-Group
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
                 }
-                
-                VStack{
+
+                VStack {
                     Text("Suffix")
                     Group {
-                    TextField("Replace suffix", text: viewStore.binding(\.$configuration.suffixReplace))
-                                            
-                                            .help("Replace suffix if available")
-                                        TextField("with", text: viewStore.binding(\.$configuration.suffixReplaceWith))
-                                            
-                                            .help("the suffix written previously will be replaced with this")
-                                        TextField("Then add Suffix", text: viewStore.binding(\.$configuration.suffixAdd))
-                                            
-                                            .help("Then add Suffix")
-                    } // <-Group
+                        TextField("Replace suffix", text: viewStore.binding(\.$configuration.suffixReplace))
+
+                        .help("Replace suffix if available")
+                        TextField("with", text: viewStore.binding(\.$configuration.suffixReplaceWith))
+
+                        .help("the suffix written previously will be replaced with this")
+                        TextField(
+                            "Then add Suffix",
+                            text: viewStore.binding(\.$configuration.suffixAdd)
+                        )
+
+                        .help("Then add Suffix")
+                    }  // <-Group
                     .font(.monospaced(.body)())
-                                        .textFieldStyle(.roundedBorder)
+                    .textFieldStyle(.roundedBorder)
                 }
             }  // <-HStack
             .autocorrectionDisabled()
             #if os(iOS)
-            .textInputAutocapitalization(.never)
+                .textInputAutocapitalization(.never)
             #endif
             .frame(maxWidth: 850)
 

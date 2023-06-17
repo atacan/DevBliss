@@ -7,8 +7,8 @@ struct DevBlissApp: App {
             ContentView()
         }
         #if os(macOS)
-        .windowStyle(.titleBar)
-        .windowToolbarStyle(.unified(showsTitle: true))
+            .windowStyle(.titleBar)
+            .windowToolbarStyle(.unified(showsTitle: true))
         #endif
     }
 }

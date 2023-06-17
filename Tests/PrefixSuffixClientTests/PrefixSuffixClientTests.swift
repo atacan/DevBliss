@@ -1,12 +1,21 @@
-import XCTest
 import Dependencies
+import XCTest
+
 @testable import PrefixSuffixClient
 
 class PrefixSuffixClientTests: XCTestCase {
     @Dependency(\.prefixSuffix) var prefixSuffixClient
-    
+
     func testConversionWithoutWhiteSpaceLiveValue() async throws {
-        let config = PrefixSuffixConfig(prefixReplace: "let", prefixReplaceWith: "var", prefixAdd: "@State ", suffixReplace: "?", suffixReplaceWith: "", suffixAdd: " = .init()", trimWhiteSpace: false)
+        let config = PrefixSuffixConfig(
+            prefixReplace: "let",
+            prefixReplaceWith: "var",
+            prefixAdd: "@State ",
+            suffixReplace: "?",
+            suffixReplaceWith: "",
+            suffixAdd: " = .init()",
+            trimWhiteSpace: false
+        )
         let input = """
                 let fluentTimeTrigger: FluentTimestampTrigger?
                 let childrenKeyPath: String?
@@ -18,12 +27,20 @@ class PrefixSuffixClientTests: XCTestCase {
               @State var name: String let fluentDataType: FluentDataType let isOptional: Bool let optionalSuffix: String = .init()
             """
         let result = try await PrefixSuffixClient.liveValue.convert(input, config)
-//        let result = try await prefixSuffixClient.convert(input, config)
+        //        let result = try await prefixSuffixClient.convert(input, config)
         XCTAssertEqual(result, output)
     }
-    
+
     func testConversionWithWhiteSpaceLiveValue() async throws {
-        let config = PrefixSuffixConfig(prefixReplace: "let", prefixReplaceWith: "var", prefixAdd: "@State ", suffixReplace: "?", suffixReplaceWith: "", suffixAdd: " = .init()", trimWhiteSpace: true)
+        let config = PrefixSuffixConfig(
+            prefixReplace: "let",
+            prefixReplaceWith: "var",
+            prefixAdd: "@State ",
+            suffixReplace: "?",
+            suffixReplaceWith: "",
+            suffixAdd: " = .init()",
+            trimWhiteSpace: true
+        )
         let input = """
                 let fluentTimeTrigger: FluentTimestampTrigger?
                 let childrenKeyPath: String?
@@ -37,5 +54,4 @@ class PrefixSuffixClientTests: XCTestCase {
         let result = try await PrefixSuffixClient.liveValue.convert(input, config)
         XCTAssertEqual(result, output)
     }
-
 }

@@ -95,7 +95,7 @@ public struct InputEditorView: View {
                     viewStore.send(.pasteButtonTouched)
                 } label: {
                     Image(systemName: "doc.on.clipboard.fill")
-                } // <-Button
+                }  // <-Button
                 .foregroundColor(
                     viewStore.pasteButtonAnimating
                         ? ThemeColor.Text.success

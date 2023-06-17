@@ -44,7 +44,8 @@ extension JsonPrettyClient: DependencyKey {
 
                     let highlighted = JsonSyntaxHighlightProvider.shared.highlight(jsonString, as: .json)
                     return continuation.resume(returning: highlighted)
-                } catch {
+                }
+                catch {
                     return continuation.resume(throwing: error)
                 }
             }

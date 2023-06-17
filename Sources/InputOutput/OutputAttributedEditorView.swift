@@ -62,7 +62,8 @@ extension OutputAttributedEditorReducer.State {
     public mutating func updateText(
         _ newText: NSMutableAttributedString
     )
-        -> EffectTask<OutputAttributedEditorReducer.Action> {
+        -> EffectTask<OutputAttributedEditorReducer.Action>
+    {
         text = newText
         return .none
     }
@@ -115,7 +116,7 @@ public struct OutputAttributedEditorView: View {
         .overlay(
             OutputControlsView(
                 store:
-                store
+                    store
                     .scope(
                         state: \.outputControls,
                         action: OutputAttributedEditorReducer.Action.outputControls

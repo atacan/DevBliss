@@ -47,9 +47,13 @@ public struct UUIDGeneratorReducer: ReducerProtocol {
                 return
                     .run {
                         [count = state.count, textCase = state.textCase] send in
-                        await send(.generationResponse(TaskResult {
-                            try await uuidGenerator.generating(count, textCase)
-                        }))
+                        await send(
+                            .generationResponse(
+                                TaskResult {
+                                    try await uuidGenerator.generating(count, textCase)
+                                }
+                            )
+                        )
                     }
                     .cancellable(id: CancelID.generationRequest, cancelInFlight: true)
             case let .generationResponse(.success(uuids)):
@@ -81,19 +85,20 @@ public struct UUIDGeneratorView: View {
 
     public var body: some View {
         VStack(alignment: .center) {
-//            HStack {
-//                //            TextField("How many?", value: viewStore.binding(\.$count), formatter: NumberFormatter())
-//                //                .textFieldStyle(RoundedBorderTextFieldStyle())
-//                //                .frame(maxWidth: 100)
-//                //            Stepper("", value: viewStore.binding(\.$count), in: 1...1_000_000)
-//                Stepper(value: viewStore.binding(\.$count), in: 1 ... 1000) {
-//                    //                Text("sdfkjds")
-//                    TextField("How many?", value: viewStore.binding(\.$count), formatter: NumberFormatter())
-//                        .textFieldStyle(RoundedBorderTextFieldStyle())
-//                }
-//                .frame(maxWidth: 250)
-//            }
-            HStack { IntegerTextField(value: viewStore.binding(\.$count), range: 1 ... 1_000_000)
+            //            HStack {
+            //                //            TextField("How many?", value: viewStore.binding(\.$count), formatter: NumberFormatter())
+            //                //                .textFieldStyle(RoundedBorderTextFieldStyle())
+            //                //                .frame(maxWidth: 100)
+            //                //            Stepper("", value: viewStore.binding(\.$count), in: 1...1_000_000)
+            //                Stepper(value: viewStore.binding(\.$count), in: 1 ... 1000) {
+            //                    //                Text("sdfkjds")
+            //                    TextField("How many?", value: viewStore.binding(\.$count), formatter: NumberFormatter())
+            //                        .textFieldStyle(RoundedBorderTextFieldStyle())
+            //                }
+            //                .frame(maxWidth: 250)
+            //            }
+            HStack {
+                IntegerTextField(value: viewStore.binding(\.$count), range: 1 ... 1_000_000)
                 Picker("", selection: viewStore.binding(\.$textCase)) {
                     Text("lowercase").tag(TextCase.lower)
                     Text("UPPERCASE").tag(TextCase.upper)
@@ -104,13 +109,15 @@ public struct UUIDGeneratorView: View {
                 viewStore.send(.generateButtonTouched)
             } label: {
                 Text("Generate")
-            } // <-Button
+            }  // <-Button
 
-            OutputEditorView(store: store.scope(
-                state: \.output,
-                action: UUIDGeneratorReducer.Action.output
-            ))
-        } // <-VStack
+            OutputEditorView(
+                store: store.scope(
+                    state: \.output,
+                    action: UUIDGeneratorReducer.Action.output
+                )
+            )
+        }  // <-VStack
     }
 }
 
@@ -132,18 +139,23 @@ struct IntegerTextField: View {
 
     var body: some View {
         HStack {
-            Stepper(value: Binding(
-                get: { value },
-                set: { value = $0.clamped(to: range) }
-            )) {
-                TextField("", text: Binding(
-                    get: { "\(value)" },
-                    set: {
-                        if let newValue = Int($0) {
-                            value = newValue.clamped(to: range)
+            Stepper(
+                value: Binding(
+                    get: { value },
+                    set: { value = $0.clamped(to: range) }
+                )
+            ) {
+                TextField(
+                    "",
+                    text: Binding(
+                        get: { "\(value)" },
+                        set: {
+                            if let newValue = Int($0) {
+                                value = newValue.clamped(to: range)
+                            }
                         }
-                    }
-                ))
+                    )
+                )
                 .textFieldStyle(RoundedBorderTextFieldStyle())
             }
             .frame(maxWidth: 250)
