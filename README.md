@@ -12,7 +12,15 @@
 DevBliss is a bag of tools to help developers be more productive. We want to use such tools locally instead of in an online website with bunch of ads and privacy concerns.
 
 ## Tools
-1. 
+- Converters
+  1. Html to Swift
+  2. Text Case
+  3. Prefix Suffix Replace and Add
+  4. Regex Match Extract
+- Formatters
+  1. JSON
+- Generators
+  1. UUID 
 
 ## Contributing
 
