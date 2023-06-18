@@ -18,6 +18,8 @@ let package = Package(
         .library(name: "FilePanelsClient", targets: ["FilePanelsClient"]),
         .library(name: "HtmlToSwiftClient", targets: ["HtmlToSwiftClient"]),
         .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
+        .library(name: "IDESnippetClient", targets: ["IDESnippetClient"]),
+        .library(name: "IDESnippetFeature", targets: ["IDESnippetFeature"]),
         .library(name: "JsonPrettyClient", targets: ["JsonPrettyClient"]),
         .library(name: "JsonPrettyFeature", targets: ["JsonPrettyFeature"]),
         .library(name: "PrefixSuffixClient", targets: ["PrefixSuffixClient"]),
@@ -65,6 +67,7 @@ let package = Package(
                 "ClipboardClient",
                 "BlissTheme",
                 "SharedModels",
+                "FilePanelsClient",
                 .product(name: "SplitView", package: "SplitView"),
                 .product(name: "MacSwiftUI", package: "MacSwiftUI"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
@@ -95,6 +98,20 @@ let package = Package(
                 "HtmlToSwiftClient",
                 "InputOutput",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ]
+        ),
+        .target(
+            name: "IDESnippetClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies")
+            ]
+        ),
+        .target(
+            name: "IDESnippetFeature",
+            dependencies: [
+                "IDESnippetClient",
+                "InputOutput",
+                "FilePanelsClient",
             ]
         ),
         .target(

@@ -16,6 +16,13 @@
         }
     }
 
+    extension DependencyValues {
+        public var filePanels: FilePanelsClient.Value {
+            get { self[FilePanelsClient.self] }
+            set { self[FilePanelsClient.self] = newValue }
+        }
+    }
+
     private func saveWithPanel(_ metadata: SavePanelMetadata) {
         let savePanel = NSSavePanel()
         savePanel.canCreateDirectories = true
@@ -36,6 +43,20 @@
         let prompt: String
         let allowedFileTypes: [String]
         let textToSave: String
+
+        public init(
+            title: String = "Save your text",
+            message: String = "Choose a location and name your file",
+            prompt: String = "Save",
+            allowedFileTypes: [String] = [],
+            textToSave: String
+        ) {
+            self.title = title
+            self.message = message
+            self.prompt = prompt
+            self.allowedFileTypes = allowedFileTypes
+            self.textToSave = textToSave
+        }
     }
 
 #endif
