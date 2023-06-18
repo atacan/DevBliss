@@ -9,9 +9,9 @@
   - [Getting Started](#getting-started)
   - [Contribute](#contribute)
   - [Conclusion](#conclusion)
-  - [Keywords](#keywords)
   - [License](#license)
   - [Similar projects](#similar-projects)
+  - [Keywords](#keywords)
 
 
 Welcome to DevBliss, a highly versatile and user-friendly software tool developed to boost your productivity as a developer. Built to operate locally on your macOS and iOS devices, DevBliss equips you with a suite of tools that are not just free of intrusive advertisements, but also prioritize your privacy by keeping all operations on your device.
@@ -63,8 +63,14 @@ Our architectural framework takes inspiration from pointfree.co's [isowords](htt
 
 DevBliss is more than just a development tool - it's a catalyst for your coding productivity, a guardian of your privacy, and a platform that grows with your contributions. Experience the bliss of development with DevBliss - your local development powerhouse.
 
-## Keywords
+## License
 
+MIT
+
+## Similar projects
+- [DevToys](https://devtoys.app/) (Windows only)
+
+## Keywords
 - DevBliss
 - Development Tools
 - macOS Apps
@@ -78,11 +84,3 @@ DevBliss is more than just a development tool - it's a catalyst for your coding 
 - Local Development Tools
 - Privacy Focused Tools
 - Ad-free Development Tools
-
-## License
-
-MIT
-
-## Similar projects
-
-- [DevToys](https://devtoys.app/) (Windows only)
