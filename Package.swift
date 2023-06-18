@@ -15,6 +15,7 @@ let package = Package(
         .library(name: "BlissTheme", targets: ["BlissTheme"]),
         .library(name: "InputOutput", targets: ["InputOutput"]),
         .library(name: "ClipboardClient", targets: ["ClipboardClient"]),
+        .library(name: "FilePanelsClient", targets: ["FilePanelsClient"]),
         .library(name: "HtmlToSwiftClient", targets: ["HtmlToSwiftClient"]),
         .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
         .library(name: "JsonPrettyClient", targets: ["JsonPrettyClient"]),
@@ -73,6 +74,12 @@ let package = Package(
             name: "ClipboardClient",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies")
+            ]
+        ),
+        .target(
+            name: "FilePanelsClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
