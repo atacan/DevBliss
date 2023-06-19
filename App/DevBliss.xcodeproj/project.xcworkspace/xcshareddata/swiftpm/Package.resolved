@@ -55,6 +55,15 @@
       }
     },
     {
+      "identity" : "snipit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/SnipIt.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a512456f5a91719ac62056809d6a6cbcd643216b"
+      }
+    },
+    {
       "identity" : "splitview",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/stevengharris/SplitView",
@@ -160,6 +169,15 @@
       "state" : {
         "revision" : "db81007362f998654239021ca9308a264e59d3e2",
         "version" : "0.7.2"
+      }
+    },
+    {
+      "identity" : "swxmlhash",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/drmohundro/SWXMLHash.git",
+      "state" : {
+        "revision" : "a853604c9e9a83ad9954c7e3d2a565273982471f",
+        "version" : "7.0.2"
       }
     },
     {

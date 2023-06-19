@@ -32,6 +32,11 @@
 		5AD9B0612A2C0CC600DD8833 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AD9B0602A2C0CC600DD8833 /* Assets.xcassets */; };
 		5AD9B0652A2C0CC600DD8833 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AD9B0642A2C0CC600DD8833 /* Preview Assets.xcassets */; };
 		5AD9B06A2A2C0CD700DD8833 /* HtmlToSwiftFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 5AD9B0692A2C0CD700DD8833 /* HtmlToSwiftFeature */; };
+		79B35BCB2A40F7D600A26E59 /* PreviewFileSaveOpenApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79B35BCA2A40F7D600A26E59 /* PreviewFileSaveOpenApp.swift */; };
+		79B35BCD2A40F7D600A26E59 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79B35BCC2A40F7D600A26E59 /* ContentView.swift */; };
+		79B35BCF2A40F7D700A26E59 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79B35BCE2A40F7D700A26E59 /* Assets.xcassets */; };
+		79B35BD32A40F7D700A26E59 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79B35BD22A40F7D700A26E59 /* Preview Assets.xcassets */; };
+		79B35BD82A40F7EC00A26E59 /* FilePanelsClient in Frameworks */ = {isa = PBXBuildFile; productRef = 79B35BD72A40F7EC00A26E59 /* FilePanelsClient */; };
 		79BE84812A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BE84802A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift */; };
 		79BE84832A3DD4CC006822F5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BE84822A3DD4CC006822F5 /* ContentView.swift */; };
 		79BE84852A3DD4CD006822F5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79BE84842A3DD4CD006822F5 /* Assets.xcassets */; };
@@ -72,6 +77,12 @@
 		5AD9B0602A2C0CC600DD8833 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5AD9B0622A2C0CC600DD8833 /* HtmlSwiftPreview.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HtmlSwiftPreview.entitlements; sourceTree = "<group>"; };
 		5AD9B0642A2C0CC600DD8833 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		79B35BC82A40F7D600A26E59 /* PreviewFileSaveOpen.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PreviewFileSaveOpen.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		79B35BCA2A40F7D600A26E59 /* PreviewFileSaveOpenApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewFileSaveOpenApp.swift; sourceTree = "<group>"; };
+		79B35BCC2A40F7D600A26E59 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		79B35BCE2A40F7D700A26E59 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		79B35BD02A40F7D700A26E59 /* PreviewFileSaveOpen.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PreviewFileSaveOpen.entitlements; sourceTree = "<group>"; };
+		79B35BD22A40F7D700A26E59 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		79BE847E2A3DD4CC006822F5 /* PreviewRegexMatches.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PreviewRegexMatches.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		79BE84802A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewRegexMatchesApp.swift; sourceTree = "<group>"; };
 		79BE84822A3DD4CC006822F5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -121,6 +132,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		79B35BC52A40F7D600A26E59 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79B35BD82A40F7EC00A26E59 /* FilePanelsClient in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		79BE847B2A3DD4CC006822F5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -140,6 +159,7 @@
 				5AAF55592A2B6C2300A86142 /* _Previews */,
 				5A7437002A2B69C8001DEC2E /* DevBliss */,
 				79BE847F2A3DD4CC006822F5 /* PreviewRegexMatches */,
+				79B35BC92A40F7D600A26E59 /* PreviewFileSaveOpen */,
 				5A7436FF2A2B69C8001DEC2E /* Products */,
 				5AD9B0502A2BCB4B00DD8833 /* Frameworks */,
 			);
@@ -154,6 +174,7 @@
 				5AA0CFE22A34B9B00013132B /* JsonPrettyPreview.app */,
 				5AA0CFF72A34E96D0013132B /* TextCaseConverterPreview.app */,
 				79BE847E2A3DD4CC006822F5 /* PreviewRegexMatches.app */,
+				79B35BC82A40F7D600A26E59 /* PreviewFileSaveOpen.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -273,6 +294,26 @@
 			isa = PBXGroup;
 			children = (
 				5AD9B0642A2C0CC600DD8833 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		79B35BC92A40F7D600A26E59 /* PreviewFileSaveOpen */ = {
+			isa = PBXGroup;
+			children = (
+				79B35BCA2A40F7D600A26E59 /* PreviewFileSaveOpenApp.swift */,
+				79B35BCC2A40F7D600A26E59 /* ContentView.swift */,
+				79B35BCE2A40F7D700A26E59 /* Assets.xcassets */,
+				79B35BD02A40F7D700A26E59 /* PreviewFileSaveOpen.entitlements */,
+				79B35BD12A40F7D700A26E59 /* Preview Content */,
+			);
+			path = PreviewFileSaveOpen;
+			sourceTree = "<group>";
+		};
+		79B35BD12A40F7D700A26E59 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				79B35BD22A40F7D700A26E59 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -400,6 +441,26 @@
 			productReference = 5AD9B05A2A2C0CC500DD8833 /* HtmlSwiftPreview.app */;
 			productType = "com.apple.product-type.application";
 		};
+		79B35BC72A40F7D600A26E59 /* PreviewFileSaveOpen */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 79B35BD62A40F7D700A26E59 /* Build configuration list for PBXNativeTarget "PreviewFileSaveOpen" */;
+			buildPhases = (
+				79B35BC42A40F7D600A26E59 /* Sources */,
+				79B35BC52A40F7D600A26E59 /* Frameworks */,
+				79B35BC62A40F7D600A26E59 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PreviewFileSaveOpen;
+			packageProductDependencies = (
+				79B35BD72A40F7EC00A26E59 /* FilePanelsClient */,
+			);
+			productName = PreviewFileSaveOpen;
+			productReference = 79B35BC82A40F7D600A26E59 /* PreviewFileSaveOpen.app */;
+			productType = "com.apple.product-type.application";
+		};
 		79BE847D2A3DD4CC006822F5 /* PreviewRegexMatches */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 79BE848C2A3DD4CD006822F5 /* Build configuration list for PBXNativeTarget "PreviewRegexMatches" */;
@@ -445,6 +506,9 @@
 					5AD9B0592A2C0CC500DD8833 = {
 						CreatedOnToolsVersion = 14.2;
 					};
+					79B35BC72A40F7D600A26E59 = {
+						CreatedOnToolsVersion = 15.0;
+					};
 					79BE847D2A3DD4CC006822F5 = {
 						CreatedOnToolsVersion = 15.0;
 					};
@@ -469,6 +533,7 @@
 				5AA0CFE12A34B9B00013132B /* JsonPrettyPreview */,
 				5AA0CFF62A34E96D0013132B /* TextCaseConverterPreview */,
 				79BE847D2A3DD4CC006822F5 /* PreviewRegexMatches */,
+				79B35BC72A40F7D600A26E59 /* PreviewFileSaveOpen */,
 			);
 		};
 /* End PBXProject section */
@@ -516,6 +581,15 @@
 			files = (
 				5AD9B0652A2C0CC600DD8833 /* Preview Assets.xcassets in Resources */,
 				5AD9B0612A2C0CC600DD8833 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		79B35BC62A40F7D600A26E59 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79B35BD32A40F7D700A26E59 /* Preview Assets.xcassets in Resources */,
+				79B35BCF2A40F7D700A26E59 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -573,6 +647,15 @@
 			files = (
 				5AD9B05F2A2C0CC500DD8833 /* ContentView.swift in Sources */,
 				5AD9B05D2A2C0CC500DD8833 /* HtmlSwiftPreviewApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		79B35BC42A40F7D600A26E59 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79B35BCD2A40F7D600A26E59 /* ContentView.swift in Sources */,
+				79B35BCB2A40F7D600A26E59 /* PreviewFileSaveOpenApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1059,6 +1142,87 @@
 			};
 			name = Release;
 		};
+		79B35BD42A40F7D700A26E59 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PreviewFileSaveOpen/PreviewFileSaveOpen.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PreviewFileSaveOpen/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atacan.PreviewFileSaveOpen;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		79B35BD52A40F7D700A26E59 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PreviewFileSaveOpen/PreviewFileSaveOpen.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PreviewFileSaveOpen/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atacan.PreviewFileSaveOpen;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		79BE848A2A3DD4CD006822F5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1197,6 +1361,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		79B35BD62A40F7D700A26E59 /* Build configuration list for PBXNativeTarget "PreviewFileSaveOpen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				79B35BD42A40F7D700A26E59 /* Debug */,
+				79B35BD52A40F7D700A26E59 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		79BE848C2A3DD4CD006822F5 /* Build configuration list for PBXNativeTarget "PreviewRegexMatches" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1228,6 +1401,10 @@
 		5AD9B0692A2C0CD700DD8833 /* HtmlToSwiftFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = HtmlToSwiftFeature;
+		};
+		79B35BD72A40F7EC00A26E59 /* FilePanelsClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FilePanelsClient;
 		};
 		79BE848D2A3DD4DA006822F5 /* RegexMatchesFeature */ = {
 			isa = XCSwiftPackageProductDependency;

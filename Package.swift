@@ -40,6 +40,7 @@ let package = Package(
         .package(url: "https://github.com/atacan/html-swift", branch: "main"),
         .package(url: "https://github.com/nkristek/Highlight.git", branch: "master"),
         .package(url: "https://github.com/atacan/MacSwiftUI", branch: "main"),
+        .package(url: "https://github.com/atacan/SnipIt.git", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -103,7 +104,8 @@ let package = Package(
         .target(
             name: "IDESnippetClient",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "SnipIt", package: "SnipIt"),
             ]
         ),
         .target(
