@@ -83,7 +83,7 @@ let package = Package(
         .target(
             name: "FilePanelsClient",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Dependencies", package: "swift-dependencies")
             ]
         ),
         .target(

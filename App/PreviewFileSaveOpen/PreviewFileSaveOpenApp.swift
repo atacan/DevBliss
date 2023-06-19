@@ -1,8 +1,3 @@
-//
-// https://github.com/atacan
-// 19.06.23
-	
-
 import SwiftUI
 
 @main

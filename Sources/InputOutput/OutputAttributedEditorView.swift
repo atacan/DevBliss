@@ -26,8 +26,8 @@ public struct OutputAttributedEditorReducer: ReducerProtocol {
 
     @Dependency(\.mainQueue) var mainQueue
     @Dependency(\.clipboard) var clipboard
-#if os(macOS)
-    @Dependency(\.filePanels) var filePanels
+    #if os(macOS)
+        @Dependency(\.filePanels) var filePanels
     #endif
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
@@ -48,8 +48,8 @@ public struct OutputAttributedEditorReducer: ReducerProtocol {
                     return .outputControls(.copyEnded)
                 }
             case .outputControls(.saveAsButtonTouched):
-#if os(macOS)
-                filePanels.savePanel(.init(textToSave: state.text.string))
+                #if os(macOS)
+                    filePanels.savePanel(.init(textToSave: state.text.string))
                 #endif
                 return .none
 

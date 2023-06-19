@@ -1,10 +1,5 @@
-//
-// https://github.com/atacan
-// 18.06.23
-	
-
-import Foundation
 import Dependencies
+import Foundation
 
 public struct IDESnippetClient {
     public var convert: @Sendable () async throws -> Void
@@ -18,4 +13,5 @@ public struct IDESnippetClient {
 // create a list of snippets from the source
 // convert them one by one to the target sniptable types
 // // if target is Xcode every snippet will be different file, otherwise combine them into one file
-// // // library needs function for that. output method is only for one single snippet. static func maybe that takes array of instances
+// // // library needs function for that. output method is only for one single snippet. static func maybe that takes
+// /array of instances

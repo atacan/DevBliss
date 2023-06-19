@@ -1,9 +1,9 @@
 import BlissTheme
 import ClipboardClient
 import ComposableArchitecture
+import FilePanelsClient
 import MacSwiftUI
 import SwiftUI
-import FilePanelsClient
 
 public struct OutputEditorReducer: ReducerProtocol {
     public init() {}
@@ -24,8 +24,8 @@ public struct OutputEditorReducer: ReducerProtocol {
 
     @Dependency(\.mainQueue) var mainQueue
     @Dependency(\.clipboard) var clipboard
-#if os(macOS)
-    @Dependency(\.filePanels) var filePanels
+    #if os(macOS)
+        @Dependency(\.filePanels) var filePanels
     #endif
 
     public var body: some ReducerProtocol<State, Action> {
@@ -47,8 +47,8 @@ public struct OutputEditorReducer: ReducerProtocol {
                     return .outputControls(.copyEnded)
                 }
             case .outputControls(.saveAsButtonTouched):
-#if os(macOS)
-                filePanels.savePanel(.init(textToSave: state.text))
+                #if os(macOS)
+                    filePanels.savePanel(.init(textToSave: state.text))
                 #endif
                 return .none
             case .outputControls:

@@ -86,13 +86,15 @@ public struct UUIDGeneratorView: View {
     public var body: some View {
         VStack(alignment: .center) {
             //            HStack {
-            //                //            TextField("How many?", value: viewStore.binding(\.$count), formatter: NumberFormatter())
+            //                //            TextField("How many?", value: viewStore.binding(\.$count), formatter:
+            //                /NumberFormatter())
             //                //                .textFieldStyle(RoundedBorderTextFieldStyle())
             //                //                .frame(maxWidth: 100)
             //                //            Stepper("", value: viewStore.binding(\.$count), in: 1...1_000_000)
             //                Stepper(value: viewStore.binding(\.$count), in: 1 ... 1000) {
             //                    //                Text("sdfkjds")
-            //                    TextField("How many?", value: viewStore.binding(\.$count), formatter: NumberFormatter())
+            //                    TextField("How many?", value: viewStore.binding(\.$count), formatter:
+            //                    NumberFormatter())
             //                        .textFieldStyle(RoundedBorderTextFieldStyle())
             //                }
             //                .frame(maxWidth: 250)
