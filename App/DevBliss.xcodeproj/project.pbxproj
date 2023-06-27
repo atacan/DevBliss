@@ -37,6 +37,11 @@
 		79BE84852A3DD4CD006822F5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79BE84842A3DD4CD006822F5 /* Assets.xcassets */; };
 		79BE84892A3DD4CD006822F5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79BE84882A3DD4CD006822F5 /* Preview Assets.xcassets */; };
 		79BE848E2A3DD4DA006822F5 /* RegexMatchesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 79BE848D2A3DD4DA006822F5 /* RegexMatchesFeature */; };
+		79FED3952A4B870C00160C35 /* PreviewSwiftPrettyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FED3942A4B870C00160C35 /* PreviewSwiftPrettyApp.swift */; };
+		79FED3972A4B870C00160C35 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FED3962A4B870C00160C35 /* ContentView.swift */; };
+		79FED3992A4B870C00160C35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79FED3982A4B870C00160C35 /* Assets.xcassets */; };
+		79FED39D2A4B870C00160C35 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79FED39C2A4B870C00160C35 /* Preview Assets.xcassets */; };
+		79FED3A22A4B883F00160C35 /* SwiftPrettyFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 79FED3A12A4B883F00160C35 /* SwiftPrettyFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +83,12 @@
 		79BE84842A3DD4CD006822F5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		79BE84862A3DD4CD006822F5 /* PreviewRegexMatches.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PreviewRegexMatches.entitlements; sourceTree = "<group>"; };
 		79BE84882A3DD4CD006822F5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		79FED3922A4B870B00160C35 /* PreviewSwiftPretty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PreviewSwiftPretty.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		79FED3942A4B870C00160C35 /* PreviewSwiftPrettyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSwiftPrettyApp.swift; sourceTree = "<group>"; };
+		79FED3962A4B870C00160C35 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		79FED3982A4B870C00160C35 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		79FED39A2A4B870C00160C35 /* PreviewSwiftPretty.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PreviewSwiftPretty.entitlements; sourceTree = "<group>"; };
+		79FED39C2A4B870C00160C35 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +140,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		79FED38F2A4B870B00160C35 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79FED3A22A4B883F00160C35 /* SwiftPrettyFeature in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -140,6 +159,7 @@
 				5AAF55592A2B6C2300A86142 /* _Previews */,
 				5A7437002A2B69C8001DEC2E /* DevBliss */,
 				79BE847F2A3DD4CC006822F5 /* PreviewRegexMatches */,
+				79FED3932A4B870C00160C35 /* PreviewSwiftPretty */,
 				5A7436FF2A2B69C8001DEC2E /* Products */,
 				5AD9B0502A2BCB4B00DD8833 /* Frameworks */,
 			);
@@ -154,6 +174,7 @@
 				5AA0CFE22A34B9B00013132B /* JsonPrettyPreview.app */,
 				5AA0CFF72A34E96D0013132B /* TextCaseConverterPreview.app */,
 				79BE847E2A3DD4CC006822F5 /* PreviewRegexMatches.app */,
+				79FED3922A4B870B00160C35 /* PreviewSwiftPretty.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -297,6 +318,26 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		79FED3932A4B870C00160C35 /* PreviewSwiftPretty */ = {
+			isa = PBXGroup;
+			children = (
+				79FED3942A4B870C00160C35 /* PreviewSwiftPrettyApp.swift */,
+				79FED3962A4B870C00160C35 /* ContentView.swift */,
+				79FED3982A4B870C00160C35 /* Assets.xcassets */,
+				79FED39A2A4B870C00160C35 /* PreviewSwiftPretty.entitlements */,
+				79FED39B2A4B870C00160C35 /* Preview Content */,
+			);
+			path = PreviewSwiftPretty;
+			sourceTree = "<group>";
+		};
+		79FED39B2A4B870C00160C35 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				79FED39C2A4B870C00160C35 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -420,6 +461,26 @@
 			productReference = 79BE847E2A3DD4CC006822F5 /* PreviewRegexMatches.app */;
 			productType = "com.apple.product-type.application";
 		};
+		79FED3912A4B870B00160C35 /* PreviewSwiftPretty */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 79FED3A02A4B870C00160C35 /* Build configuration list for PBXNativeTarget "PreviewSwiftPretty" */;
+			buildPhases = (
+				79FED38E2A4B870B00160C35 /* Sources */,
+				79FED38F2A4B870B00160C35 /* Frameworks */,
+				79FED3902A4B870B00160C35 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PreviewSwiftPretty;
+			packageProductDependencies = (
+				79FED3A12A4B883F00160C35 /* SwiftPrettyFeature */,
+			);
+			productName = PreviewSwiftPretty;
+			productReference = 79FED3922A4B870B00160C35 /* PreviewSwiftPretty.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -448,6 +509,9 @@
 					79BE847D2A3DD4CC006822F5 = {
 						CreatedOnToolsVersion = 15.0;
 					};
+					79FED3912A4B870B00160C35 = {
+						CreatedOnToolsVersion = 15.0;
+					};
 				};
 			};
 			buildConfigurationList = 5A7436F92A2B69C8001DEC2E /* Build configuration list for PBXProject "DevBliss" */;
@@ -469,6 +533,7 @@
 				5AA0CFE12A34B9B00013132B /* JsonPrettyPreview */,
 				5AA0CFF62A34E96D0013132B /* TextCaseConverterPreview */,
 				79BE847D2A3DD4CC006822F5 /* PreviewRegexMatches */,
+				79FED3912A4B870B00160C35 /* PreviewSwiftPretty */,
 			);
 		};
 /* End PBXProject section */
@@ -528,6 +593,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		79FED3902A4B870B00160C35 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79FED39D2A4B870C00160C35 /* Preview Assets.xcassets in Resources */,
+				79FED3992A4B870C00160C35 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -582,6 +656,15 @@
 			files = (
 				79BE84832A3DD4CC006822F5 /* ContentView.swift in Sources */,
 				79BE84812A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		79FED38E2A4B870B00160C35 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79FED3972A4B870C00160C35 /* ContentView.swift in Sources */,
+				79FED3952A4B870C00160C35 /* PreviewSwiftPrettyApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1140,6 +1223,87 @@
 			};
 			name = Release;
 		};
+		79FED39E2A4B870C00160C35 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PreviewSwiftPretty/PreviewSwiftPretty.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PreviewSwiftPretty/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atacan.PreviewSwiftPretty;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		79FED39F2A4B870C00160C35 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PreviewSwiftPretty/PreviewSwiftPretty.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PreviewSwiftPretty/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atacan.PreviewSwiftPretty;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1206,6 +1370,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		79FED3A02A4B870C00160C35 /* Build configuration list for PBXNativeTarget "PreviewSwiftPretty" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				79FED39E2A4B870C00160C35 /* Debug */,
+				79FED39F2A4B870C00160C35 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1232,6 +1405,10 @@
 		79BE848D2A3DD4DA006822F5 /* RegexMatchesFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RegexMatchesFeature;
+		};
+		79FED3A12A4B883F00160C35 /* SwiftPrettyFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwiftPrettyFeature;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
