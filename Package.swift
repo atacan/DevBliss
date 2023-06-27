@@ -25,6 +25,8 @@ let package = Package(
         .library(name: "RegexMatchesClient", targets: ["RegexMatchesClient"]),
         .library(name: "RegexMatchesFeature", targets: ["RegexMatchesFeature"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
+        .library(name: "SwiftPrettyClient", targets: ["SwiftPrettyClient"]),
+        .library(name: "SwiftPrettyFeature", targets: ["SwiftPrettyFeature"]),
         .library(name: "TextCaseConverterClient", targets: ["TextCaseConverterClient"]),
         .library(name: "TextCaseConverterFeature", targets: ["TextCaseConverterFeature"]),
         .library(name: "UUIDGeneratorClient", targets: ["UUIDGeneratorClient"]),
@@ -38,6 +40,7 @@ let package = Package(
         .package(url: "https://github.com/atacan/html-swift", branch: "main"),
         .package(url: "https://github.com/nkristek/Highlight.git", branch: "master"),
         .package(url: "https://github.com/atacan/MacSwiftUI", branch: "main"),
+        .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.51.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -146,6 +149,20 @@ let package = Package(
             name: "RegexMatchesFeature",
             dependencies: [
                 "RegexMatchesClient",
+                "InputOutput",
+            ]
+        ),
+        .target(
+            name: "SwiftPrettyClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "SwiftFormat", package: "SwiftFormat"),
+            ]
+        ),
+        .target(
+            name: "SwiftPrettyFeature",
+            dependencies: [
+                "SwiftPrettyClient",
                 "InputOutput",
             ]
         ),
