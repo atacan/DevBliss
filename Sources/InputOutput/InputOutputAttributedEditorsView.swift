@@ -134,6 +134,11 @@ struct InputOutputToolbarSplitItems: View {
                 }
             )
             .disabled(hide.side != nil)
+            .accessibilityLabel(layout
+                .isHorizontal ? "vertical split" : "horizontal split"
+                                )
+            .accessibilityHint(layout
+                .isHorizontal ? "the input and output editor will be located next to each other" : "the input and output editor will be located underneath each other")
 
             Button(
                 action: {
