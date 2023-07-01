@@ -292,6 +292,7 @@ public struct AppView: View {
             }
             .listStyle(.sidebar)
             .frame(minWidth: 150)  // to keep the toggle-sidebar button above the sidebar
+            .accessibilityLabel("Sidebar with the list of tools")
             #if os(macOS)
                 // it falls behind window toolbar and becomes unclickable
                 // .padding(.top)
