@@ -125,9 +125,10 @@ public struct OutputAttributedEditorView: View {
                         .sheet(isPresented: $isActivitySheetPresented) {
                     ActivityView(
                         isSheetPresented: $isActivitySheetPresented,
-                        activityItems: [text],
+                        activityItems: [viewStore.text],
                         applicationActivities: []
                     )
+                    
                 }
                 }
             #endif
