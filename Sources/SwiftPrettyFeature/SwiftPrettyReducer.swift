@@ -27,7 +27,7 @@ public struct SwiftPrettyReducer: ReducerProtocol {
         public init(input: String, output: String = "") {
             self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
             self.lockwoodConfig = .init(text: blissConfigLockwood)
-            useLockwood = true
+            self.useLockwood = true
         }
 
         public var outputText: String {
@@ -108,9 +108,9 @@ public struct SwiftPrettyView: View {
         VSplit {
             VStack {
                 //            DisclosureGroup("Configuration", isExpanded: $configIsExpanded) {
-//                Toggle("Use Lockwood", isOn: viewStore.binding(\.$useLockwood))
-//                    .toggleStyle(.automatic)
-//                    .frame(width: .nan)
+                //                Toggle("Use Lockwood", isOn: viewStore.binding(\.$useLockwood))
+                //                    .toggleStyle(.automatic)
+                //                    .frame(width: .nan)
                 lockwoodEditor
                     .padding()
                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -123,14 +123,12 @@ public struct SwiftPrettyView: View {
                 .keyboardShortcut(.return, modifiers: [.command])
             }
         } bottom: {
-
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: SwiftPrettyReducer.Action.inputOutput),
                 inputEditorTitle: "Raw",
                 outputEditorTitle: "Pretty"
             )
         }
-
     }
 
     var lockwoodEditor: some View {

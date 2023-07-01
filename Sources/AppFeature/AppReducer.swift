@@ -4,10 +4,10 @@ import JsonPrettyFeature
 import PrefixSuffixFeature
 import RegexMatchesFeature
 import SharedModels
+import SwiftPrettyFeature
 import SwiftUI
 import TextCaseConverterFeature
 import UUIDGeneratorFeature
-import SwiftPrettyFeature
 
 public struct AppReducer: ReducerProtocol {
     public init() {}

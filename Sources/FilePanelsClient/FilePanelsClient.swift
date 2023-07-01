@@ -1,6 +1,6 @@
 #if os(macOS)
-    import Dependencies
     import Cocoa
+    import Dependencies
 
     public struct FilePanelsClient {
         // public var openPanel: () -> URL
@@ -26,7 +26,9 @@
         savePanel.message = metadata.message
         savePanel.prompt = metadata.prompt
         let response = savePanel.runModal()
-        guard response == .OK, let saveURL = savePanel.url else { return }
+        guard response == .OK, let saveURL = savePanel.url else {
+            return
+        }
         try? metadata.textToSave.write(to: saveURL, atomically: true, encoding: .utf8)
     }
 
