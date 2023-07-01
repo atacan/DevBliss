@@ -7,6 +7,7 @@ import SharedModels
 import SwiftUI
 import TextCaseConverterFeature
 import UUIDGeneratorFeature
+import SwiftPrettyFeature
 
 public struct AppReducer: ReducerProtocol {
     public init() {}
@@ -17,6 +18,7 @@ public struct AppReducer: ReducerProtocol {
         @PresentationState var uuidGenerator: UUIDGeneratorReducer.State?
         @PresentationState var prefixSuffix: PrefixSuffixReducer.State?
         @PresentationState var regexMatches: RegexMatchesReducer.State?
+        @PresentationState var swiftPrettyLockwood: SwiftPrettyReducer.State?
 
         public init(
             htmlToSwift: HtmlToSwiftReducer.State? = nil,
@@ -24,7 +26,8 @@ public struct AppReducer: ReducerProtocol {
             textCaseConverter: TextCaseConverterReducer.State? = nil,
             uuidGenerator: UUIDGeneratorReducer.State? = nil,
             prefixSuffix: PrefixSuffixReducer.State? = nil,
-            regexMatches: RegexMatchesReducer.State? = nil
+            regexMatches: RegexMatchesReducer.State? = nil,
+            swiftPrettyLockwood: SwiftPrettyReducer.State? = nil
         ) {
             self.htmlToSwift = htmlToSwift
             self.jsonPretty = jsonPretty
@@ -32,6 +35,7 @@ public struct AppReducer: ReducerProtocol {
             self.uuidGenerator = uuidGenerator
             self.prefixSuffix = prefixSuffix
             self.regexMatches = regexMatches
+            self.swiftPrettyLockwood = swiftPrettyLockwood
         }
     }
 
@@ -42,6 +46,7 @@ public struct AppReducer: ReducerProtocol {
         case uuidGenerator(PresentationAction<UUIDGeneratorReducer.Action>)
         case prefixSuffix(PresentationAction<PrefixSuffixReducer.Action>)
         case regexMatches(PresentationAction<RegexMatchesReducer.Action>)
+        case swiftPrettyLockwood(PresentationAction<SwiftPrettyReducer.Action>)
         case navigationLinkTouched(Tool)
     }
 
@@ -91,6 +96,15 @@ public struct AppReducer: ReducerProtocol {
                     state: &state
                 )
                 return .none
+            case let .swiftPrettyLockwood(
+                .presented(.inputOutput(.output(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
+            ):
+                handleOtherTool(
+                    thisToolOutput: state.swiftPrettyLockwood?.outputText,
+                    otherTool: otherTool,
+                    state: &state
+                )
+                return .none
             case .htmlToSwift:
                 return .none
             case .jsonPretty:
@@ -102,6 +116,8 @@ public struct AppReducer: ReducerProtocol {
             case .prefixSuffix:
                 return .none
             case .regexMatches:
+                return .none
+            case .swiftPrettyLockwood:
                 return .none
 
             case let .navigationLinkTouched(tool):
@@ -124,6 +140,9 @@ public struct AppReducer: ReducerProtocol {
                 case .regexMatches:
                     state.regexMatches = .init()
                     return .none
+                case .swiftPrettyLockwood:
+                    state.swiftPrettyLockwood = .init()
+                    return .none
                 }
             }
         }
@@ -145,6 +164,9 @@ public struct AppReducer: ReducerProtocol {
         .ifLet(\.$regexMatches, action: /Action.regexMatches) {
             RegexMatchesReducer()
         }
+        .ifLet(\.$swiftPrettyLockwood, action: /Action.swiftPrettyLockwood) {
+            SwiftPrettyReducer()
+        }
     }
 
     private func handleOtherTool(thisToolOutput: String?, otherTool: Tool, state: inout State) {
@@ -161,6 +183,8 @@ public struct AppReducer: ReducerProtocol {
             state.regexMatches = RegexMatchesReducer.State(input: thisToolOutput ?? "")
         case .uuidGenerator:
             break
+        case .swiftPrettyLockwood:
+            state.swiftPrettyLockwood = SwiftPrettyReducer.State(input: thisToolOutput ?? "")
         }
     }
 }
@@ -237,6 +261,18 @@ public struct AppView: View {
                         .padding(.top)
                     } label: {
                         Text("Json")
+                    }
+
+                    NavigationLinkStore(
+                        store.scope(state: \.$swiftPrettyLockwood, action: { .swiftPrettyLockwood($0) })
+                    ) {
+                        viewStore.send(.navigationLinkTouched(.swiftPrettyLockwood))
+                    } destination: { store in
+                        SwiftPrettyView(store: store)
+                        .navigationTitle("Pretty print Swift code")
+                        .padding(.top)
+                    } label: {
+                        Text("Swift")
                     }
                 }
 

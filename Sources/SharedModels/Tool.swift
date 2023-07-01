@@ -5,6 +5,7 @@ public enum Tool: CaseIterable, Identifiable {
     case uuidGenerator
     case prefixSuffix
     case regexMatches
+    case swiftPrettyLockwood
 
     public var id: Self { self }
 
@@ -22,6 +23,8 @@ public enum Tool: CaseIterable, Identifiable {
             return "Prefix Suffix"
         case .regexMatches:
             return "Regex Matches"
+        case .swiftPrettyLockwood:
+            return "Swift Pretty"
         }
     }
 
@@ -38,6 +41,8 @@ public enum Tool: CaseIterable, Identifiable {
         case .prefixSuffix:
             return true
         case .regexMatches:
+            return true
+        case .swiftPrettyLockwood:
             return true
         }
     }

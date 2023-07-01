@@ -49,13 +49,14 @@ let package = Package(
         .target(
             name: "AppFeature",
             dependencies: [
+                "SharedModels",
                 "HtmlToSwiftFeature",
                 "JsonPrettyFeature",
                 "TextCaseConverterFeature",
                 "UUIDGeneratorFeature",
                 "PrefixSuffixFeature",
                 "RegexMatchesFeature",
-                "SharedModels",
+                "SwiftPrettyFeature",
             ]
         ),
         .target(
