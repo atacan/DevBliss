@@ -69,6 +69,7 @@ let package = Package(
                 "ClipboardClient",
                 "BlissTheme",
                 "SharedModels",
+                "FilePanelsClient",
                 .product(name: "SplitView", package: "SplitView"),
                 .product(name: "MacSwiftUI", package: "MacSwiftUI"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),

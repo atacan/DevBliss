@@ -89,14 +89,20 @@ struct OutputControlsView: View {
             Button {
                 isOtherToolsPopoverVisible = true
             } label: {
-                Image(systemName: "square.and.arrow.up")
+                Image(systemName: "wand.and.rays.inverse")
             }  // <-Button
-
             .font(.footnote)
             .keyboardShortcut("u", modifiers: [.command, .shift])
             .help("Input it to the other tools (Command+Shift+U)")
             .popover(isPresented: $isOtherToolsPopoverVisible) {
                 VStack(alignment: .leading) {
+                    HStack(alignment: .lastTextBaseline) {
+                        Image(systemName: "square.and.pencil")
+                        Text("Move the output to one of the tools as input")
+                            .lineLimit(nil)
+                            .font(.headline)
+                    }
+                        .padding(.bottom)
                     ForEach(Tool.allCases.filter(\.isInputtable)) { tool in
                         Button(action: {
                             isOtherToolsPopoverVisible = false

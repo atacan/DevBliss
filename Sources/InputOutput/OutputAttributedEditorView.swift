@@ -2,6 +2,7 @@ import BlissTheme
 import ClipboardClient
 import ComposableArchitecture
 import SwiftUI
+import FilePanelsClient
 
 #if os(macOS)
     import MacSwiftUI
@@ -12,6 +13,7 @@ public struct OutputAttributedEditorReducer: ReducerProtocol {
     public struct State: Equatable {
         @BindingState public var text: NSMutableAttributedString
         var outputControls: OutputControlsReducer.State
+        @BindingState var isActivitySheetPresented: Bool = false
 
         public init(text: NSMutableAttributedString = .init(), outputControls: OutputControlsReducer.State = .init()) {
             self.text = text
@@ -26,6 +28,9 @@ public struct OutputAttributedEditorReducer: ReducerProtocol {
 
     @Dependency(\.mainQueue) var mainQueue
     @Dependency(\.clipboard) var clipboard
+    #if os(macOS)
+    @Dependency(\.filePanel) var filePanel
+    #endif
 
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
@@ -45,7 +50,13 @@ public struct OutputAttributedEditorReducer: ReducerProtocol {
                     try await mainQueue.sleep(for: .milliseconds(200))
                     return .outputControls(.copyEnded)
                 }
-
+case .outputControls(.saveAsButtonTouched):
+                #if os(macOS)
+                filePanel.saveWithPanel(.init(textToSave: state.text.string))
+                #else
+                    state.isActivitySheetPresented = true
+                #endif
+                return .none
             case .outputControls:
                 return .none
             }
@@ -77,6 +88,7 @@ extension OutputAttributedEditorReducer.State {
 public struct OutputAttributedEditorView: View {
     let store: StoreOf<OutputAttributedEditorReducer>
     @ObservedObject var viewStore: ViewStoreOf<OutputAttributedEditorReducer>
+    @State var isActivitySheetPresented: Bool = false
 
     let title: String
     let copyButtonTitle: String
@@ -110,6 +122,13 @@ public struct OutputAttributedEditorView: View {
                     Text(AttributedString(viewStore.text))
                         .font(.monospaced(.body)())
                         .textSelection(.enabled)
+                        .sheet(isPresented: $isActivitySheetPresented) {
+                    ActivityView(
+                        isSheetPresented: $isActivitySheetPresented,
+                        activityItems: [text],
+                        applicationActivities: []
+                    )
+                }
                 }
             #endif
         }
