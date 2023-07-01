@@ -1,11 +1,6 @@
-//
-// https://github.com/atacan
-// 27.06.23
-	
-
-import SwiftUI
-import SwiftPrettyFeature
 import ComposableArchitecture
+import SwiftPrettyFeature
+import SwiftUI
 
 struct ContentView: View {
     var body: some View {
