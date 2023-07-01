@@ -113,8 +113,7 @@ public struct SwiftPrettyView: View {
 //                    .frame(width: .nan)
                 lockwoodEditor
                     .padding()
-                    .shadow(radius: 5)
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 //            }
 
                 Button(action: { viewStore.send(.convertButtonTouched) }) {
