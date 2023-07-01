@@ -90,6 +90,7 @@ public struct PrefixSuffixView: View {
     public var body: some View {
         VStack {
             HStack(alignment: .center) {
+                Image(systemName: "arrow.forward")
                 VStack {
                     Text("Prefix")
                     Group {
@@ -108,7 +109,7 @@ public struct PrefixSuffixView: View {
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
                 }
-
+                Image(systemName: "arrow.forward.square.fill")
                 VStack {
                     Text("Suffix")
                     Group {
@@ -128,6 +129,7 @@ public struct PrefixSuffixView: View {
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
                 }
+                Image(systemName: "arrow.forward.to.line")
             }  // <-HStack
             .autocorrectionDisabled()
             #if os(iOS)
