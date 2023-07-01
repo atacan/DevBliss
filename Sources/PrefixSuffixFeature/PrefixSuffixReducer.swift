@@ -82,6 +82,16 @@ public struct PrefixSuffixView: View {
     let store: StoreOf<PrefixSuffixReducer>
     @ObservedObject var viewStore: ViewStoreOf<PrefixSuffixReducer>
 
+    @FocusState private var focusedField: Field?
+    enum Field: Int, Hashable {
+        case prefixReplace
+        case prefixReplaceWith
+        case prefixAdd
+        case suffixReplace
+        case suffixReplaceWith
+        case suffixAdd
+    }
+
     public init(store: StoreOf<PrefixSuffixReducer>) {
         self.store = store
         self.viewStore = ViewStore(store)
@@ -95,16 +105,25 @@ public struct PrefixSuffixView: View {
                     Text("Prefix")
                     Group {
                         TextField("Replace prefix", text: viewStore.binding(\.$configuration.prefixReplace))
+                        .focused($focusedField, equals: .prefixReplace)
+                        .onSubmit { self.focusNextField($focusedField) }
                         .help("Replace prefix if available")
+
                         TextField("with", text: viewStore.binding(\.$configuration.prefixReplaceWith))
+                        .focused($focusedField, equals: .prefixReplaceWith)
+                        .onSubmit { self.focusNextField($focusedField) }
                         .help(
                             "the prefix written previously will be replaced with this"
                         )
+
                         TextField(
                             "Then add Prefix",
                             text: viewStore.binding(\.$configuration.prefixAdd)
                         )
+                        .focused($focusedField, equals: .prefixAdd)
+                        .onSubmit { self.focusNextField($focusedField) }
                         .help("Then add Prefix")
+
                     }  // <-Group
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
@@ -114,22 +133,28 @@ public struct PrefixSuffixView: View {
                     Text("Suffix")
                     Group {
                         TextField("Replace suffix", text: viewStore.binding(\.$configuration.suffixReplace))
-
+                        .focused($focusedField, equals: .suffixReplace)
+                        .onSubmit { self.focusNextField($focusedField) }
                         .help("Replace suffix if available")
-                        TextField("with", text: viewStore.binding(\.$configuration.suffixReplaceWith))
 
+                        TextField("with", text: viewStore.binding(\.$configuration.suffixReplaceWith))
+                        .focused($focusedField, equals: .suffixReplaceWith)
+                        .onSubmit { self.focusNextField($focusedField) }
                         .help("the suffix written previously will be replaced with this")
+
                         TextField(
                             "Then add Suffix",
                             text: viewStore.binding(\.$configuration.suffixAdd)
                         )
-
+                        .focused($focusedField, equals: .suffixAdd)
+                        .onSubmit { self.focusNextField($focusedField) }
                         .help("Then add Suffix")
+
                     }  // <-Group
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
                 }
-                Image(systemName: "arrow.forward.to.line")
+                Image(systemName: "backward.end")
             }  // <-HStack
             .autocorrectionDisabled()
             #if os(iOS)
@@ -149,6 +174,9 @@ public struct PrefixSuffixView: View {
                 outputEditorTitle: "Output"
             )
         }
+        .onAppear {
+            focusedField = .prefixReplace
+        }
     }
 }
 
@@ -156,5 +184,56 @@ public struct PrefixSuffixView: View {
 struct PrefixSuffixReducer_Previews: PreviewProvider {
     static var previews: some View {
         PrefixSuffixView(store: .init(initialState: .init(), reducer: PrefixSuffixReducer()))
+    }
+}
+
+// https://stackoverflow.com/a/71531523
+extension View {
+    /// Focuses next field in sequence, from the given `FocusState`.
+    /// Requires a currently active focus state and a next field available in the sequence.
+    ///
+    /// Example usage:
+    /// ```
+    /// .onSubmit { self.focusNextField($focusedField) }
+    /// ```
+    /// Given that `focusField` is an enum that represents the focusable fields. For example:
+    /// ```
+    /// @FocusState private var focusedField: Field?
+    /// enum Field: Int, Hashable {
+    ///    case name
+    ///    case country
+    ///    case city
+    /// }
+    /// ```
+    func focusNextField<F: RawRepresentable>(_ field: FocusState<F?>.Binding) where F.RawValue == Int {
+        guard let currentValue = field.wrappedValue else { return }
+        let nextValue = currentValue.rawValue + 1
+        if let newValue = F.init(rawValue: nextValue) {
+            field.wrappedValue = newValue
+        }
+    }
+
+    /// Focuses previous field in sequence, from the given `FocusState`.
+    /// Requires a currently active focus state and a previous field available in the sequence.
+    ///
+    /// Example usage:
+    /// ```
+    /// .onSubmit { self.focusNextField($focusedField) }
+    /// ```
+    /// Given that `focusField` is an enum that represents the focusable fields. For example:
+    /// ```
+    /// @FocusState private var focusedField: Field?
+    /// enum Field: Int, Hashable {
+    ///    case name
+    ///    case country
+    ///    case city
+    /// }
+    /// ```
+    func focusPreviousField<F: RawRepresentable>(_ field: FocusState<F?>.Binding) where F.RawValue == Int {
+        guard let currentValue = field.wrappedValue else { return }
+        let nextValue = currentValue.rawValue - 1
+        if let newValue = F.init(rawValue: nextValue) {
+            field.wrappedValue = newValue
+        }
     }
 }
