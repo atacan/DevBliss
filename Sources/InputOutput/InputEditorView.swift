@@ -87,7 +87,7 @@ public struct InputEditorView: View {
                 Text(title)
                 Spacer()
             }
-            MyPlainTextEditor(text: viewStore.binding(\.$text))
+            MyPlainTextEditor(text: viewStore.binding(\.$text), isActivitySheetPresented: .constant(false))
         }
         .overlay(
             HStack {
