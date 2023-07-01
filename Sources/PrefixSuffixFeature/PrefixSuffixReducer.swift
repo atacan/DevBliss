@@ -106,12 +106,12 @@ public struct PrefixSuffixView: View {
                     Group {
                         TextField("Replace prefix", text: viewStore.binding(\.$configuration.prefixReplace))
                         .focused($focusedField, equals: .prefixReplace)
-                        .onSubmit { self.focusNextField($focusedField) }
+                        .onSubmit { focusNextField($focusedField) }
                         .help("Replace prefix if available")
 
                         TextField("with", text: viewStore.binding(\.$configuration.prefixReplaceWith))
                         .focused($focusedField, equals: .prefixReplaceWith)
-                        .onSubmit { self.focusNextField($focusedField) }
+                        .onSubmit { focusNextField($focusedField) }
                         .help(
                             "the prefix written previously will be replaced with this"
                         )
@@ -121,9 +121,8 @@ public struct PrefixSuffixView: View {
                             text: viewStore.binding(\.$configuration.prefixAdd)
                         )
                         .focused($focusedField, equals: .prefixAdd)
-                        .onSubmit { self.focusNextField($focusedField) }
+                        .onSubmit { focusNextField($focusedField) }
                         .help("Then add Prefix")
-
                     }  // <-Group
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
@@ -134,12 +133,12 @@ public struct PrefixSuffixView: View {
                     Group {
                         TextField("Replace suffix", text: viewStore.binding(\.$configuration.suffixReplace))
                         .focused($focusedField, equals: .suffixReplace)
-                        .onSubmit { self.focusNextField($focusedField) }
+                        .onSubmit { focusNextField($focusedField) }
                         .help("Replace suffix if available")
 
                         TextField("with", text: viewStore.binding(\.$configuration.suffixReplaceWith))
                         .focused($focusedField, equals: .suffixReplaceWith)
-                        .onSubmit { self.focusNextField($focusedField) }
+                        .onSubmit { focusNextField($focusedField) }
                         .help("the suffix written previously will be replaced with this")
 
                         TextField(
@@ -147,9 +146,8 @@ public struct PrefixSuffixView: View {
                             text: viewStore.binding(\.$configuration.suffixAdd)
                         )
                         .focused($focusedField, equals: .suffixAdd)
-                        .onSubmit { self.focusNextField($focusedField) }
+                        .onSubmit { focusNextField($focusedField) }
                         .help("Then add Suffix")
-
                     }  // <-Group
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
@@ -206,9 +204,11 @@ extension View {
     /// }
     /// ```
     func focusNextField<F: RawRepresentable>(_ field: FocusState<F?>.Binding) where F.RawValue == Int {
-        guard let currentValue = field.wrappedValue else { return }
+        guard let currentValue = field.wrappedValue else {
+            return
+        }
         let nextValue = currentValue.rawValue + 1
-        if let newValue = F.init(rawValue: nextValue) {
+        if let newValue = F(rawValue: nextValue) {
             field.wrappedValue = newValue
         }
     }
@@ -230,9 +230,11 @@ extension View {
     /// }
     /// ```
     func focusPreviousField<F: RawRepresentable>(_ field: FocusState<F?>.Binding) where F.RawValue == Int {
-        guard let currentValue = field.wrappedValue else { return }
+        guard let currentValue = field.wrappedValue else {
+            return
+        }
         let nextValue = currentValue.rawValue - 1
-        if let newValue = F.init(rawValue: nextValue) {
+        if let newValue = F(rawValue: nextValue) {
             field.wrappedValue = newValue
         }
     }
