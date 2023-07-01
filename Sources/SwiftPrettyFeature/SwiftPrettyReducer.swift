@@ -2,9 +2,9 @@ import BlissTheme
 import ComposableArchitecture
 import Dependencies
 import InputOutput
+import SplitView
 import SwiftPrettyClient
 import SwiftUI
-import SplitView
 
 public struct SwiftPrettyReducer: ReducerProtocol {
     public init() {}
@@ -12,18 +12,22 @@ public struct SwiftPrettyReducer: ReducerProtocol {
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var lockwoodConfig: InputEditorReducer.State
+        @BindingState var useLockwood: Bool
 
         public init(
             inputOutput: InputOutputEditorsReducer.State = .init(),
-            lockwoodConfig: InputEditorReducer.State = .init(text: blissConfigLockwood)
+            lockwoodConfig: InputEditorReducer.State = .init(text: blissConfigLockwood),
+            useLockwood: Bool = true
         ) {
             self.inputOutput = inputOutput
             self.lockwoodConfig = lockwoodConfig
+            self.useLockwood = useLockwood
         }
 
         public init(input: String, output: String = "") {
             self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
-            self.lockwoodConfig =  .init(text: blissConfigLockwood)
+            self.lockwoodConfig = .init(text: blissConfigLockwood)
+            useLockwood = true
         }
 
         public var outputText: String {
@@ -92,7 +96,7 @@ public struct SwiftPrettyReducer: ReducerProtocol {
 public struct SwiftPrettyView: View {
     let store: StoreOf<SwiftPrettyReducer>
     @ObservedObject var viewStore: ViewStoreOf<SwiftPrettyReducer>
-    
+
     @State var configIsExpanded = true
 
     public init(store: StoreOf<SwiftPrettyReducer>) {
@@ -102,19 +106,23 @@ public struct SwiftPrettyView: View {
 
     public var body: some View {
         VSplit {
-VStack {
-    //            DisclosureGroup("Configuration", isExpanded: $configIsExpanded) {
-                    lockwoodEditor
+            VStack {
+                //            DisclosureGroup("Configuration", isExpanded: $configIsExpanded) {
+//                Toggle("Use Lockwood", isOn: viewStore.binding(\.$useLockwood))
+//                    .toggleStyle(.automatic)
+//                    .frame(width: .nan)
+                lockwoodEditor
                     .padding()
-                    .shadow(radius: 10)
-    //            }
-                
+                    .shadow(radius: 5)
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                //            }
+
                 Button(action: { viewStore.send(.convertButtonTouched) }) {
                     Text("Format")
                         .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
                 }
                 .keyboardShortcut(.return, modifiers: [.command])
-}
+            }
         } bottom: {
 
             InputOutputEditorsView(
@@ -132,7 +140,7 @@ VStack {
                 state: \.lockwoodConfig,
                 action: SwiftPrettyReducer.Action.lockwoodConfig
             ),
-            title: "Lockwood Config"
+            title: "nicklockwood/SwiftFormat Config"
         )
     }
 }
