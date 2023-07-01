@@ -180,6 +180,7 @@ struct MyPlainTextEditor: View {
             }
             return ac
         }
+
         func updateUIViewController(
             _ uiViewController: UIActivityViewController,
             context: UIViewControllerRepresentableContext<ActivityView>
