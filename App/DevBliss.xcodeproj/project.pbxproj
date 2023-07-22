@@ -32,6 +32,11 @@
 		5AD9B0612A2C0CC600DD8833 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AD9B0602A2C0CC600DD8833 /* Assets.xcassets */; };
 		5AD9B0652A2C0CC600DD8833 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AD9B0642A2C0CC600DD8833 /* Preview Assets.xcassets */; };
 		5AD9B06A2A2C0CD700DD8833 /* HtmlToSwiftFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 5AD9B0692A2C0CD700DD8833 /* HtmlToSwiftFeature */; };
+		797B8BB92A6BDD94005F0CB2 /* PreviewFileContentSearchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797B8BB82A6BDD94005F0CB2 /* PreviewFileContentSearchApp.swift */; };
+		797B8BBB2A6BDD94005F0CB2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797B8BBA2A6BDD94005F0CB2 /* ContentView.swift */; };
+		797B8BBD2A6BDD95005F0CB2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 797B8BBC2A6BDD95005F0CB2 /* Assets.xcassets */; };
+		797B8BC02A6BDD95005F0CB2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 797B8BBF2A6BDD95005F0CB2 /* Preview Assets.xcassets */; };
+		797B8BC62A6BDDA9005F0CB2 /* FileContentSearchFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 797B8BC52A6BDDA9005F0CB2 /* FileContentSearchFeature */; };
 		79BE84812A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BE84802A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift */; };
 		79BE84832A3DD4CC006822F5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BE84822A3DD4CC006822F5 /* ContentView.swift */; };
 		79BE84852A3DD4CD006822F5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79BE84842A3DD4CD006822F5 /* Assets.xcassets */; };
@@ -77,6 +82,12 @@
 		5AD9B0602A2C0CC600DD8833 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5AD9B0622A2C0CC600DD8833 /* HtmlSwiftPreview.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HtmlSwiftPreview.entitlements; sourceTree = "<group>"; };
 		5AD9B0642A2C0CC600DD8833 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		797B8BB62A6BDD94005F0CB2 /* PreviewFileContentSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PreviewFileContentSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		797B8BB82A6BDD94005F0CB2 /* PreviewFileContentSearchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewFileContentSearchApp.swift; sourceTree = "<group>"; };
+		797B8BBA2A6BDD94005F0CB2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		797B8BBC2A6BDD95005F0CB2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		797B8BBF2A6BDD95005F0CB2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		797B8BC12A6BDD95005F0CB2 /* PreviewFileContentSearch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PreviewFileContentSearch.entitlements; sourceTree = "<group>"; };
 		79BE847E2A3DD4CC006822F5 /* PreviewRegexMatches.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PreviewRegexMatches.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		79BE84802A3DD4CC006822F5 /* PreviewRegexMatchesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewRegexMatchesApp.swift; sourceTree = "<group>"; };
 		79BE84822A3DD4CC006822F5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -132,6 +143,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		797B8BB32A6BDD94005F0CB2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				797B8BC62A6BDDA9005F0CB2 /* FileContentSearchFeature in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		79BE847B2A3DD4CC006822F5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -160,6 +179,7 @@
 				5A7437002A2B69C8001DEC2E /* DevBliss */,
 				79BE847F2A3DD4CC006822F5 /* PreviewRegexMatches */,
 				79FED3932A4B870C00160C35 /* PreviewSwiftPretty */,
+				797B8BB72A6BDD94005F0CB2 /* PreviewFileContentSearch */,
 				5A7436FF2A2B69C8001DEC2E /* Products */,
 				5AD9B0502A2BCB4B00DD8833 /* Frameworks */,
 			);
@@ -175,6 +195,7 @@
 				5AA0CFF72A34E96D0013132B /* TextCaseConverterPreview.app */,
 				79BE847E2A3DD4CC006822F5 /* PreviewRegexMatches.app */,
 				79FED3922A4B870B00160C35 /* PreviewSwiftPretty.app */,
+				797B8BB62A6BDD94005F0CB2 /* PreviewFileContentSearch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -294,6 +315,26 @@
 			isa = PBXGroup;
 			children = (
 				5AD9B0642A2C0CC600DD8833 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		797B8BB72A6BDD94005F0CB2 /* PreviewFileContentSearch */ = {
+			isa = PBXGroup;
+			children = (
+				797B8BB82A6BDD94005F0CB2 /* PreviewFileContentSearchApp.swift */,
+				797B8BBA2A6BDD94005F0CB2 /* ContentView.swift */,
+				797B8BBC2A6BDD95005F0CB2 /* Assets.xcassets */,
+				797B8BC12A6BDD95005F0CB2 /* PreviewFileContentSearch.entitlements */,
+				797B8BBE2A6BDD95005F0CB2 /* Preview Content */,
+			);
+			path = PreviewFileContentSearch;
+			sourceTree = "<group>";
+		};
+		797B8BBE2A6BDD95005F0CB2 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				797B8BBF2A6BDD95005F0CB2 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -441,6 +482,26 @@
 			productReference = 5AD9B05A2A2C0CC500DD8833 /* HtmlSwiftPreview.app */;
 			productType = "com.apple.product-type.application";
 		};
+		797B8BB52A6BDD94005F0CB2 /* PreviewFileContentSearch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 797B8BC42A6BDD95005F0CB2 /* Build configuration list for PBXNativeTarget "PreviewFileContentSearch" */;
+			buildPhases = (
+				797B8BB22A6BDD94005F0CB2 /* Sources */,
+				797B8BB32A6BDD94005F0CB2 /* Frameworks */,
+				797B8BB42A6BDD94005F0CB2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PreviewFileContentSearch;
+			packageProductDependencies = (
+				797B8BC52A6BDDA9005F0CB2 /* FileContentSearchFeature */,
+			);
+			productName = PreviewFileContentSearch;
+			productReference = 797B8BB62A6BDD94005F0CB2 /* PreviewFileContentSearch.app */;
+			productType = "com.apple.product-type.application";
+		};
 		79BE847D2A3DD4CC006822F5 /* PreviewRegexMatches */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 79BE848C2A3DD4CD006822F5 /* Build configuration list for PBXNativeTarget "PreviewRegexMatches" */;
@@ -488,7 +549,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1420;
 				TargetAttributes = {
 					5A7436FD2A2B69C8001DEC2E = {
@@ -505,6 +566,9 @@
 					};
 					5AD9B0592A2C0CC500DD8833 = {
 						CreatedOnToolsVersion = 14.2;
+					};
+					797B8BB52A6BDD94005F0CB2 = {
+						CreatedOnToolsVersion = 14.3.1;
 					};
 					79BE847D2A3DD4CC006822F5 = {
 						CreatedOnToolsVersion = 15.0;
@@ -534,6 +598,7 @@
 				5AA0CFF62A34E96D0013132B /* TextCaseConverterPreview */,
 				79BE847D2A3DD4CC006822F5 /* PreviewRegexMatches */,
 				79FED3912A4B870B00160C35 /* PreviewSwiftPretty */,
+				797B8BB52A6BDD94005F0CB2 /* PreviewFileContentSearch */,
 			);
 		};
 /* End PBXProject section */
@@ -581,6 +646,15 @@
 			files = (
 				5AD9B0652A2C0CC600DD8833 /* Preview Assets.xcassets in Resources */,
 				5AD9B0612A2C0CC600DD8833 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		797B8BB42A6BDD94005F0CB2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				797B8BC02A6BDD95005F0CB2 /* Preview Assets.xcassets in Resources */,
+				797B8BBD2A6BDD95005F0CB2 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -647,6 +721,15 @@
 			files = (
 				5AD9B05F2A2C0CC500DD8833 /* ContentView.swift in Sources */,
 				5AD9B05D2A2C0CC500DD8833 /* HtmlSwiftPreviewApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		797B8BB22A6BDD94005F0CB2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				797B8BBB2A6BDD94005F0CB2 /* ContentView.swift in Sources */,
+				797B8BB92A6BDD94005F0CB2 /* PreviewFileContentSearchApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1142,6 +1225,60 @@
 			};
 			name = Release;
 		};
+		797B8BC22A6BDD95005F0CB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PreviewFileContentSearch/PreviewFileContentSearch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PreviewFileContentSearch/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atacan.PreviewFileContentSearch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		797B8BC32A6BDD95005F0CB2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PreviewFileContentSearch/PreviewFileContentSearch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PreviewFileContentSearch/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atacan.PreviewFileContentSearch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		79BE848A2A3DD4CD006822F5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1361,6 +1498,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		797B8BC42A6BDD95005F0CB2 /* Build configuration list for PBXNativeTarget "PreviewFileContentSearch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				797B8BC22A6BDD95005F0CB2 /* Debug */,
+				797B8BC32A6BDD95005F0CB2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		79BE848C2A3DD4CD006822F5 /* Build configuration list for PBXNativeTarget "PreviewRegexMatches" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1401,6 +1547,10 @@
 		5AD9B0692A2C0CD700DD8833 /* HtmlToSwiftFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = HtmlToSwiftFeature;
+		};
+		797B8BC52A6BDDA9005F0CB2 /* FileContentSearchFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FileContentSearchFeature;
 		};
 		79BE848D2A3DD4DA006822F5 /* RegexMatchesFeature */ = {
 			isa = XCSwiftPackageProductDependency;

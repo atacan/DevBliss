@@ -101,6 +101,7 @@ let package = Package(
             name: "FileContentSearchFeature",
             dependencies: [
                 "FileContentSearchClient",
+                "FilePanelsClient",
                 "InputOutput",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
