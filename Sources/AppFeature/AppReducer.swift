@@ -110,6 +110,7 @@ public struct AppReducer: ReducerProtocol {
                     state: &state
                 )
                 return .none
+#if os(macOS)
             case let .fileContentSearch(
                 .presented(.output(.outputControls(.inputOtherToolButtonTouched(otherTool))))
             ):
@@ -119,6 +120,7 @@ public struct AppReducer: ReducerProtocol {
                     state: &state
                 )
                 return .none
+#endif
             case .htmlToSwift:
                 return .none
             case .jsonPretty:
@@ -299,6 +301,8 @@ public struct AppView: View {
                         Text("Swift")
                     }
                 }
+                
+                #if os(macOS)
 
                 Section("File") {
                     NavigationLinkStore(
@@ -313,6 +317,7 @@ public struct AppView: View {
                         Text("File Content Search")
                     }
                 }
+                #endif
 
                 Section("Generators") {
                     NavigationLinkStore(

@@ -1,3 +1,4 @@
+#if os(macOS)
 import ComposableArchitecture
 import FileContentSearchClient
 import FilePanelsClient
@@ -215,3 +216,14 @@ struct SwiftUIView_Previews: PreviewProvider {
         )
     }
 }
+#else
+import ComposableArchitecture
+public struct FileContentSearchReducer: ReducerProtocol {
+    public init() {}
+    public struct State: Equatable {public init() {}}
+    public enum Action: Equatable {}
+    public var body: some ReducerProtocol<State, Action> {
+        EmptyReducer()
+    }
+}
+#endif

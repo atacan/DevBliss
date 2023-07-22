@@ -1,3 +1,4 @@
+#if os(macOS)
 import CommandLineClient
 import Dependencies
 import Foundation
@@ -128,3 +129,4 @@ public struct FoundFile: Equatable, Identifiable {
         self.gitUsername = gitUsername
     }
 }
+#endif
