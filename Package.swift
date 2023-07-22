@@ -15,6 +15,9 @@ let package = Package(
         .library(name: "BlissTheme", targets: ["BlissTheme"]),
         .library(name: "InputOutput", targets: ["InputOutput"]),
         .library(name: "ClipboardClient", targets: ["ClipboardClient"]),
+        .library(name: "CommandLineClient", targets: ["CommandLineClient"]),
+        .library(name: "FileContentSearchClient", targets: ["FileContentSearchClient"]),
+        .library(name: "FileContentSearchFeature", targets: ["FileContentSearchFeature"]),
         .library(name: "FilePanelsClient", targets: ["FilePanelsClient"]),
         .library(name: "HtmlToSwiftClient", targets: ["HtmlToSwiftClient"]),
         .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
@@ -79,6 +82,27 @@ let package = Package(
             name: "ClipboardClient",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies")
+            ]
+        ),
+        .target(
+            name: "CommandLineClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies")
+            ]
+        ),
+        .target(
+            name: "FileContentSearchClient",
+            dependencies: [
+                "CommandLineClient",
+                .product(name: "Dependencies", package: "swift-dependencies")
+            ]
+        ),
+        .target(
+            name: "FileContentSearchFeature",
+            dependencies: [
+                "FileContentSearchClient",
+                "InputOutput",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
         .target(
