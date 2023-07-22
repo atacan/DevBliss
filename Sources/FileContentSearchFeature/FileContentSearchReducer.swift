@@ -53,7 +53,7 @@ public struct FileContentSearchReducer: ReducerProtocol {
                 return .none
             case .directorySelectionButtonTouched:
                 let url = filePanel.openPanel()
-                state.searchOptions.folder = url.path
+                state.searchOptions.folder = url?.path ?? ""
                 return .none
             case .searchButtonTouched:
                 state.isSearching = true
@@ -129,22 +129,28 @@ public struct FileContentSearchView: View {
                 } // <-HStack
 
                 HStack {
-                    Text("Directory")
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        Text(viewStore.searchOptions.folder)
-                            .textSelection(.enabled)
-                            .padding(4)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 5)
-                                    .stroke(.gray, lineWidth: 2)
-                            )
-                    }  // <-ScrollView
-                    
-                    Button {
+                    HStack(alignment: .center) {
+                        Text("Directory")
+                        
+                        Button {
+                            viewStore.send(.directorySelectionButtonTouched)
+                        } label: {
+                            Image(systemName: "folder.fill")
+                        }
+                    } // <-HStack
+                    .onTapGesture {
                         viewStore.send(.directorySelectionButtonTouched)
-                    } label: {
-                        Image(systemName: "folder.fill.badge.questionmark")
                     }
+                    ScrollView(.horizontal, showsIndicators: false) {
+                            Text(viewStore.searchOptions.folder)
+                                .textSelection(.enabled)
+                                .padding(4)
+                        .frame(minWidth: 30)
+                    }  // <-ScrollView
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(Color(nsColor: .systemGray), lineWidth: 1)
+                    )
                 }
                 .textFieldStyle(RoundedBorderTextFieldStyle())
 

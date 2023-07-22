@@ -61,6 +61,7 @@ let package = Package(
                 "PrefixSuffixFeature",
                 "RegexMatchesFeature",
                 "SwiftPrettyFeature",
+                "FileContentSearchFeature",
             ]
         ),
         .target(
