@@ -3,13 +3,13 @@
     import Dependencies
 
     public struct FilePanelsClient {
-        public var openPanel: () -> URL
+        public var openPanel: () -> URL?
         public var savePanel: (SavePanelMetadata) -> URL?
         public var save: @Sendable (String, URL) async throws -> Void
         public var saveWithPanel: (SavePanelMetadata) -> Void
     }
 
-    private func _openPanel() -> URL {
+    private func _openPanel() -> URL? {
         let openPanel = NSOpenPanel()
         //                   openPanel.allowedFileTypes = ["txt"]
         openPanel.allowsMultipleSelection = false
@@ -17,7 +17,7 @@
         openPanel.canChooseFiles = true
         let response = openPanel.runModal()
         guard response == .OK, let loadURL = openPanel.url else {
-            fatalError()
+            return nil
         }
         return loadURL
     }
