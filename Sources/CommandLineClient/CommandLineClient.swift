@@ -1,3 +1,4 @@
+#if os(macOS)
 import Dependencies
 import Foundation
 import XCTestDynamicOverlay
@@ -51,3 +52,4 @@ extension CommandLineClient: TestDependencyKey {
         run: XCTUnimplemented("\(Self.self).run")
     )
 }
+#endif
