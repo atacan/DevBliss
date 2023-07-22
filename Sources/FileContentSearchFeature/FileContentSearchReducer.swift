@@ -154,7 +154,7 @@ public struct FileContentSearchView: View {
                 }
                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
-                Toggle("Hidden Files and Folders", isOn: viewStore.binding(\.$searchOptions.searchHiddenFiles))
+                Toggle("Search also hidden files and folders", isOn: viewStore.binding(\.$searchOptions.searchHiddenFiles))
                     .toggleStyle(.checkbox)
             }
             .frame(maxWidth: 450)
