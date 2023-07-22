@@ -6,6 +6,7 @@ public enum Tool: CaseIterable, Identifiable {
     case prefixSuffix
     case regexMatches
     case swiftPrettyLockwood
+    case fileContentSearch
 
     public var id: Self { self }
 
@@ -25,6 +26,8 @@ public enum Tool: CaseIterable, Identifiable {
             return "Regex Matches"
         case .swiftPrettyLockwood:
             return "Swift Pretty"
+        case .fileContentSearch:
+            return "File Content Search"
         }
     }
 
@@ -44,6 +47,8 @@ public enum Tool: CaseIterable, Identifiable {
             return true
         case .swiftPrettyLockwood:
             return true
+        case .fileContentSearch:
+            return false
         }
     }
 }

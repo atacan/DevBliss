@@ -8,6 +8,7 @@ import SwiftPrettyFeature
 import SwiftUI
 import TextCaseConverterFeature
 import UUIDGeneratorFeature
+import FileContentSearchFeature
 
 public struct AppReducer: ReducerProtocol {
     public init() {}
@@ -19,6 +20,7 @@ public struct AppReducer: ReducerProtocol {
         @PresentationState var prefixSuffix: PrefixSuffixReducer.State?
         @PresentationState var regexMatches: RegexMatchesReducer.State?
         @PresentationState var swiftPrettyLockwood: SwiftPrettyReducer.State?
+        @PresentationState var fileContentSearch: FileContentSearchReducer.State?
 
         public init(
             htmlToSwift: HtmlToSwiftReducer.State? = nil,
@@ -27,7 +29,8 @@ public struct AppReducer: ReducerProtocol {
             uuidGenerator: UUIDGeneratorReducer.State? = nil,
             prefixSuffix: PrefixSuffixReducer.State? = nil,
             regexMatches: RegexMatchesReducer.State? = nil,
-            swiftPrettyLockwood: SwiftPrettyReducer.State? = nil
+            swiftPrettyLockwood: SwiftPrettyReducer.State? = nil,
+            fileContentSearch: FileContentSearchReducer.State? = nil
         ) {
             self.htmlToSwift = htmlToSwift
             self.jsonPretty = jsonPretty
@@ -36,6 +39,7 @@ public struct AppReducer: ReducerProtocol {
             self.prefixSuffix = prefixSuffix
             self.regexMatches = regexMatches
             self.swiftPrettyLockwood = swiftPrettyLockwood
+            self.fileContentSearch = fileContentSearch
         }
     }
 
@@ -47,6 +51,7 @@ public struct AppReducer: ReducerProtocol {
         case prefixSuffix(PresentationAction<PrefixSuffixReducer.Action>)
         case regexMatches(PresentationAction<RegexMatchesReducer.Action>)
         case swiftPrettyLockwood(PresentationAction<SwiftPrettyReducer.Action>)
+        case fileContentSearch(PresentationAction<FileContentSearchReducer.Action>)
         case navigationLinkTouched(Tool)
     }
 
@@ -105,6 +110,15 @@ public struct AppReducer: ReducerProtocol {
                     state: &state
                 )
                 return .none
+            case let .fileContentSearch(
+                .presented(.output(.outputControls(.inputOtherToolButtonTouched(otherTool))))
+            ):
+                handleOtherTool(
+                    thisToolOutput: state.fileContentSearch?.outputText,
+                    otherTool: otherTool,
+                    state: &state
+                )
+                return .none
             case .htmlToSwift:
                 return .none
             case .jsonPretty:
@@ -118,6 +132,8 @@ public struct AppReducer: ReducerProtocol {
             case .regexMatches:
                 return .none
             case .swiftPrettyLockwood:
+                return .none
+            case .fileContentSearch:
                 return .none
 
             case let .navigationLinkTouched(tool):
@@ -143,6 +159,9 @@ public struct AppReducer: ReducerProtocol {
                 case .swiftPrettyLockwood:
                     state.swiftPrettyLockwood = .init()
                     return .none
+                case .fileContentSearch:
+                    state.fileContentSearch = .init()
+                    return .none
                 }
             }
         }
@@ -167,6 +186,9 @@ public struct AppReducer: ReducerProtocol {
         .ifLet(\.$swiftPrettyLockwood, action: /Action.swiftPrettyLockwood) {
             SwiftPrettyReducer()
         }
+        .ifLet(\.$fileContentSearch, action: /Action.fileContentSearch) {
+            FileContentSearchReducer()
+        }
     }
 
     private func handleOtherTool(thisToolOutput: String?, otherTool: Tool, state: inout State) {
@@ -185,6 +207,8 @@ public struct AppReducer: ReducerProtocol {
             break
         case .swiftPrettyLockwood:
             state.swiftPrettyLockwood = SwiftPrettyReducer.State(input: thisToolOutput ?? "")
+        case .fileContentSearch:
+            break
         }
     }
 }
@@ -273,6 +297,20 @@ public struct AppView: View {
                         .padding(.top)
                     } label: {
                         Text("Swift")
+                    }
+                }
+
+                Section("File") {
+                    NavigationLinkStore(
+                        store.scope(state: \.$fileContentSearch, action: { .fileContentSearch($0) })
+                    ) {
+                        viewStore.send(.navigationLinkTouched(.fileContentSearch))
+                    } destination: { store in
+                        FileContentSearchView(store: store)
+                        .navigationTitle("Search inside files")
+                        .padding(.top)
+                    } label: {
+                        Text("File Content Search")
                     }
                 }
 
