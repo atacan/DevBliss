@@ -129,6 +129,7 @@ public struct SwiftPrettyView: View {
                 outputEditorTitle: "Pretty"
             )
         }
+        .styling(visibleThickness: 2)
     }
 
     var lockwoodEditor: some View {
