@@ -1,17 +1,17 @@
-# DevBliss - Your Local Development Powerhouse for macOS and iOS
+# ![Icon]( ) DevBliss - Your Local Development Helper for macOS and iOS
 
-- [DevBliss - Your Local Development Powerhouse for macOS and iOS](#devbliss---your-local-development-powerhouse-for-macos-and-ios)
+- [ DevBliss - Your Local Development Helper for macOS and iOS](#-devbliss---your-local-development-helper-for-macos-and-ios)
   - [Why Choose DevBliss?](#why-choose-devbliss)
   - [Key Features](#key-features)
     - [Converters](#converters)
     - [Formatters](#formatters)
+    - [File Handling](#file-handling)
     - [Generators](#generators)
   - [Getting Started](#getting-started)
   - [Contribute](#contribute)
   - [Conclusion](#conclusion)
   - [License](#license)
   - [Similar projects](#similar-projects)
-  - [Keywords](#keywords)
 
 
 Welcome to DevBliss, a highly versatile and user-friendly software tool developed to boost your productivity as a developer. Built to operate locally on your macOS and iOS devices, DevBliss equips you with a suite of tools that are not just free of intrusive advertisements, but also prioritize your privacy by keeping all operations on your device.
@@ -33,9 +33,9 @@ DevBliss bundles a variety of tools under three main categories: Converters, For
 Simplify your coding tasks with our diverse range of converters:
 
 1. **HTML to Swift:** Transform your HTML code into Swift DSL code with ease.
-2. **Text Case:** Toggle between kebab, snake, camel, and pascal cases to suit your coding style.
-3. **Prefix Suffix Replace and Add:** Customize your code by replacing or adding prefixes or suffixes to each line.
-4. **Regex Match Extract:** Efficiently extract the matches and the capturing groups from input text.
+1. **Text Case:** Toggle between kebab, snake, camel, and pascal cases to suit your coding style.
+1. **Prefix Suffix Replace and Add:** Customize your code by replacing or adding prefixes or suffixes to each line.
+1. **Regex Match Extract:** Efficiently extract the matches and the capturing groups from input text.
 
 ### Formatters
 
@@ -43,9 +43,13 @@ Improve your code readability with our formatter:
 
 1. **JSON Formatter:** Beautify your JSON data with our pretty-print and syntax highlight features.
 
+### File Handling
+
+1. **File Content Search:** Search for a string in a folder and get the line number, and preview the file content.
+
 ### Generators
 
-Boost your efficiency with our generator:
+Boost your efficiency with our generators:
 
 1. **UUID Generator:** Generate multiple UUIDs instantly.
 
@@ -69,18 +73,3 @@ MIT
 
 ## Similar projects
 - [DevToys](https://devtoys.app/) (Windows only)
-
-## Keywords
-- DevBliss
-- Development Tools
-- macOS Apps
-- iOS Apps
-- HTML to Swift Converter
-- Text Case Converter
-- Prefix Suffix Replace and Add
-- Regex Match Extract
-- JSON Formatter
-- UUID Generator
-- Local Development Tools
-- Privacy Focused Tools
-- Ad-free Development Tools
