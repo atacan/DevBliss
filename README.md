@@ -69,31 +69,37 @@ Boost your efficiency with our generators:
 
 ### HTML to Swift Converter
 
-![HTML to Swift Converter](images/html-to-swift-converter-screenshot.jpeg)
+![HTML to Swift Converter](images/macOS/html-to-swift-converter-screenshot.jpeg)
+![HTML to Swift Converter](images/iOS/html-swift-converter-screenshot.jpeg) 
 
 ### Text Case Converter
 
-![Text Case Converter](images/text-case-converter-screenshot-for-bootstrap-classes.jpeg)
+![Text Case Converter](images/macOS/text-case-converter-screenshot-for-bootstrap-classes.jpeg)
+![Text Case Converter](images/iOS/text-case-converter-screenshot.jpeg) 
 
 ### Prefix Suffix Converter
 
-![Prefix Suffix Converter](images/prefix-suffix-converter-screenshot.jpeg)
+![Prefix Suffix Converter](images/macOS/prefix-suffix-converter-screenshot.jpeg)
+![Prefix Suffix Converter](images/iOS/prefix-suffix-converter-screenshot.png)
 
 ### Regex Match Extractor
 
-![Regex Match Extractor](images/regex-matches-converter-screenshot-for-bootstrap-class-extraction.jpeg)
+![Regex Match Extractor](images/macOS/regex-matches-converter-screenshot-for-bootstrap-class-extraction.jpeg)
+![Regex Match Extractor](images/iOS/regex-match-extractor-screenshot.jpeg) 
 
 ### JSON Formatter
 
-![JSON Formatter](images/json-formatter-screenshot-for-anime.jpeg)
+![JSON Formatter](images/macOS/json-formatter-screenshot-for-anime.jpeg)
+![Alt text](images/iOS/json-formatter-screenshot.jpeg) 
 
 ### File Content Search
 
-![File Content Search](images/file-content-search-screenshot.jpeg)
+![File Content Search](images/macOS/file-content-search-screenshot.jpeg)
 
 ### UUID Generator
 
-![UUID Generator](images/uuid-generator-screenshot.jpeg)
+![UUID Generator](images/macOS/uuid-generator-screenshot.jpeg)
+![UUID Generator](images/iOS/uuid-generator-screenshot.jpeg) 
 
 ## Contribute
 
