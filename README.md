@@ -51,6 +51,7 @@ Simplify your coding tasks with our diverse range of converters:
 Improve your code readability with our formatter:
 
 1. **JSON Formatter:** Beautify your JSON data with our pretty-print and syntax highlight features.
+2. **Swift Formatter:** Beautify your Swift code with our pretty-print and syntax highlight features.
 
 ### File Handling
 
