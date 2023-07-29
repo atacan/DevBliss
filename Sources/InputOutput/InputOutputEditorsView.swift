@@ -81,6 +81,7 @@ public struct InputOutputEditorsView: View {
             .fraction(fraction)
             .layout(layout)
             .hide(hide)
+            .styling(visibleThickness: 2)
             .toolbar {
                 InputOutputToolbarSplitItems(layout: layout, hide: hide)
             }

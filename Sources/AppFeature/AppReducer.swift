@@ -236,7 +236,19 @@ public struct AppView: View {
                         .navigationTitle("Convert Html code to a DSL in Swift")
                         .padding(.top)
                     } label: {
-                        Text("Html to Swift")
+                        Label(
+                            title: { Text("Html to Swift") },
+                            icon: {
+                                ZStack(alignment: .leading) {
+                                Image(systemName: "swift")
+                                        .padding(.leading, 4)
+                                    Text("<>")
+                                        .font(.monospaced(Font.system(size: 14))())
+                                        .fontWeight(.thin)
+                                        .padding(.bottom, 8)
+                                } // <-ZStack
+                            }
+                        )
                     }
 
                     NavigationLinkStore(
@@ -248,7 +260,10 @@ public struct AppView: View {
                         .navigationTitle("Convert case of list of words")
                         .padding(.top)
                     } label: {
-                        Text("Text Case")
+                        Label(
+                            title: { Text("Text Case") },
+                            icon: { Text("Aa") }
+                        )
                     }
 
                     NavigationLinkStore(
@@ -260,7 +275,11 @@ public struct AppView: View {
                         .navigationTitle("Replace and add prefix or suffix to each line")
                         .padding(.top)
                     } label: {
-                        Text("Prefix Suffix")
+                        Label(
+                            title: { Text("Prefix Suffix") },
+                            icon: { Image(systemName: "arrow.right.and.line.vertical.and.arrow.left") }
+                        )
+                        
                     }
 
                     NavigationLinkStore(
@@ -272,7 +291,12 @@ public struct AppView: View {
                         .navigationTitle("Regex Matches")
                         .padding(.top)
                     } label: {
-                        Text("Regex Matches")
+                        Label(
+                            title: { Text("Regex Matches") },
+                            icon: { Text("(.*)")
+                                    .font(.monospaced(Font.system(size: 8))())
+                            }
+                        )
                     }
                 }
 
@@ -286,7 +310,12 @@ public struct AppView: View {
                         .navigationTitle("Pretty print and Highlight Json")
                         .padding(.top)
                     } label: {
-                        Text("Json")
+                                                Label(
+                            title: { Text("Json") },
+                            icon: { Text("{.,}")
+                                    .font(.monospaced(Font.system(size: 8))())
+                            }
+                        )
                     }
 
                     NavigationLinkStore(
@@ -298,7 +327,10 @@ public struct AppView: View {
                         .navigationTitle("Pretty print Swift code")
                         .padding(.top)
                     } label: {
-                        Text("Swift")
+                        Label(
+                            title: { Text("Swift") },
+                            icon: { Image(systemName: "swift") }
+                        )
                     }
                 }
                 
@@ -314,7 +346,10 @@ public struct AppView: View {
                         .navigationTitle("Search inside files")
                         .padding(.top)
                     } label: {
-                        Text("File Content Search")
+                                                Label(
+                            title: { Text("File Search") },
+                            icon: { Image(systemName: "doc.text.magnifyingglass") }
+                        )
                     }
                 }
                 #endif
@@ -329,7 +364,10 @@ public struct AppView: View {
                         .navigationTitle("Generate UUIDs")
                         .padding(.top)
                     } label: {
-                        Text("UUID")
+                                                Label(
+                            title: { Text("UUID") },
+                            icon: { Image(systemName: "staroflife.circle") }
+                        )
                     }
                 }
             }

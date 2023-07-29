@@ -179,6 +179,7 @@ public struct FileContentSearchView: View {
             }  // <-Button
             .keyboardShortcut(.return, modifiers: [.command])
             .overlay(viewStore.isSearching ? ProgressView() : nil)
+            .padding(.bottom, 2)
 
             Table(viewStore.foundFiles, selection: viewStore.binding(\.$selectedFiles), sortOrder: $sortOrder) {
                 TableColumn("File Path", value: \.fileURL)
@@ -192,7 +193,8 @@ public struct FileContentSearchView: View {
                 store: store.scope(
                     state: \.output,
                     action: FileContentSearchReducer.Action.output
-                )
+                ),
+                title: "File Content"
             )
 
         }  // <-VStack

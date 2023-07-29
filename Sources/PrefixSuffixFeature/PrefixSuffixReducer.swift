@@ -101,6 +101,7 @@ public struct PrefixSuffixView: View {
         VStack {
             HStack(alignment: .center) {
                 Image(systemName: "arrow.forward")
+                    .help("It first starts applying the prefix changes")
                 VStack {
                     Text("Prefix")
                     Group {
@@ -128,6 +129,7 @@ public struct PrefixSuffixView: View {
                     .textFieldStyle(.roundedBorder)
                 }
                 Image(systemName: "arrow.forward.square.fill")
+                    .help("Then it applies the suffix manipulation")
                 VStack {
                     Text("Suffix")
                     Group {
@@ -153,6 +155,7 @@ public struct PrefixSuffixView: View {
                     .textFieldStyle(.roundedBorder)
                 }
                 Image(systemName: "backward.end")
+                    .help("After applying prefix and suffice manipulations to each line separately, it ends.")
             }  // <-HStack
             .autocorrectionDisabled()
             #if os(iOS)
@@ -165,6 +168,7 @@ public struct PrefixSuffixView: View {
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
+            .padding(.top)
 
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: PrefixSuffixReducer.Action.inputOutput),
