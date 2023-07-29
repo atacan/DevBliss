@@ -75,7 +75,7 @@ Boost your efficiency with our generators:
 <table>
   <tr>
     <td> <img src="images/iOS/html-swift-converter-screenshot.jpeg" alt="HTML to Swift Converter on iOS" style="width: 250px;"/> </td>
-    <td> <img src="images/iPad/html-to-swift-converter-screenshot.jpeg" alt="HTML to Swift Converter on iPad" style="width: 750px;"/> </td>
+    <td> <img src="images/iPad/html-to-swift-converter-screenshot-light-mode.jpeg" alt="HTML to Swift Converter on iPad" style="width: 750px;"/> </td>
   </tr>
 </table>
 
@@ -93,7 +93,7 @@ Boost your efficiency with our generators:
 
 ### Prefix Suffix Converter
 
-![Prefix Suffix Converter](images/macOS/prefix-suffix-converter-screenshot.jpeg)
+![Prefix Suffix Converter](images/macOS/prefix-suffix-converter-screenshot-light-mode.jpeg)
 
 <table>
   <tr>
@@ -144,4 +144,6 @@ DevBliss is more than just a development tool - it's a catalyst for your coding 
 MIT
 
 ## Similar projects
-- [DevToys](https://devtoys.app/) (Windows only)
+- [DevToys for windows](https://devtoys.app/)
+- [DevToys For mac](https://github.com/ObuchiYuki/DevToysMac)
+- [Boop](https://boop.okat.best)
