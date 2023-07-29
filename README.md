@@ -14,6 +14,7 @@
     - [Prefix Suffix Converter](#prefix-suffix-converter)
     - [Regex Match Extractor](#regex-match-extractor)
     - [JSON Formatter](#json-formatter)
+    - [Swift Formatter](#swift-formatter)
     - [File Content Search](#file-content-search)
     - [UUID Generator](#uuid-generator)
   - [Contribute](#contribute)
@@ -70,27 +71,55 @@ Boost your efficiency with our generators:
 ### HTML to Swift Converter
 
 ![HTML to Swift Converter](images/macOS/html-to-swift-converter-screenshot.jpeg)
-![HTML to Swift Converter](images/iOS/html-swift-converter-screenshot.jpeg) 
+
+<table>
+  <tr>
+    <td> <img src="images/iOS/html-swift-converter-screenshot.jpeg" alt="HTML to Swift Converter on iOS" style="width: 250px;"/> </td>
+    <td> <img src="images/iPad/html-to-swift-converter-screenshot.jpeg" alt="HTML to Swift Converter on iPad" style="width: 750px;"/> </td>
+  </tr>
+</table>
+
 
 ### Text Case Converter
 
 ![Text Case Converter](images/macOS/text-case-converter-screenshot-for-bootstrap-classes.jpeg)
-![Text Case Converter](images/iOS/text-case-converter-screenshot.jpeg) 
+
+<table>
+  <tr>
+    <td> <img src="images/iOS/text-case-converter-screenshot.jpeg" alt="Image 1" style="width: 250px;"/> </td>
+    <td> <img src="images/iPad/text-case-converter-screenshot.jpeg" alt="Image 2" style="width: 750px;"/> </td>
+  </tr>
+</table>
 
 ### Prefix Suffix Converter
 
 ![Prefix Suffix Converter](images/macOS/prefix-suffix-converter-screenshot.jpeg)
-![Prefix Suffix Converter](images/iOS/prefix-suffix-converter-screenshot.png)
+
+<table>
+  <tr>
+    <td> <img src="images/iOS/prefix-suffix-converter-screenshot.png" alt="Image 1" style="width: 250px;"/> </td>
+    <td> <img src="images/iPad/prefix-suffix-converter-screenshot.jpeg" alt="Image 2" style="width: 750px;"/> </td>
+  </tr>
+</table>
 
 ### Regex Match Extractor
 
 ![Regex Match Extractor](images/macOS/regex-matches-converter-screenshot-for-bootstrap-class-extraction.jpeg)
-![Regex Match Extractor](images/iOS/regex-match-extractor-screenshot.jpeg) 
+<img src="images/iOS/regex-match-extractor-screenshot.jpeg" alt="Regex Match Extractor on iOS" style="width: 250px;"/>
 
 ### JSON Formatter
 
 ![JSON Formatter](images/macOS/json-formatter-screenshot-for-anime.jpeg)
-![Alt text](images/iOS/json-formatter-screenshot.jpeg) 
+<table>
+  <tr>
+    <td> <img src="images/iOS/json-formatter-screenshot.jpeg" alt="Image 1" style="width: 250px;"/> </td>
+    <td> <img src="images/iPad/json-formatter-screenshot.jpeg" alt="Image 2" style="width: 750px;"/> </td>
+  </tr>
+</table>
+
+### Swift Formatter
+
+![Alt text](images/iPad/swift-formatter-screenshot.jpeg) 
 
 ### File Content Search
 
@@ -99,7 +128,6 @@ Boost your efficiency with our generators:
 ### UUID Generator
 
 ![UUID Generator](images/macOS/uuid-generator-screenshot.jpeg)
-![UUID Generator](images/iOS/uuid-generator-screenshot.jpeg) 
 
 ## Contribute
 
