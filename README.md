@@ -94,7 +94,7 @@ Boost your efficiency with our generators:
 
 ### Prefix Suffix Converter
 
-![Prefix Suffix Converter](images/macOS/prefix-suffix-converter-screenshot-light-mode.jpeg)
+![Prefix Suffix Converter](images/macOS/prefix-suffix-converter-screenshot.jpeg)
 
 <table>
   <tr>
