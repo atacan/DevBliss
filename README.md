@@ -1,4 +1,4 @@
-# ![Icon]( ) DevBliss - Your Local Development Helper for macOS and iOS
+# ![Icon](https://github.com/atacan/DevBliss/assets/765873/17d907d1-f5be-448b-9575-bdb8f1337630) DevBliss - Your Local Development Helper for macOS and iOS
 
 - [ DevBliss - Your Local Development Helper for macOS and iOS](#-devbliss---your-local-development-helper-for-macos-and-ios)
   - [Why Choose DevBliss?](#why-choose-devbliss)
