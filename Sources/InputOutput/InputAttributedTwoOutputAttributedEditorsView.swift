@@ -95,11 +95,13 @@ public struct InputAttributedTwoOutputAttributedEditorsView: View {
                     secondary: { outputSecondEditor }
                 )
                 .layout(layout.value == .horizontal ? LayoutHolder(.vertical) : LayoutHolder(.horizontal))
+                .styling(visibleThickness: 2)
             }
         )
         .fraction(fraction)
         .layout(layout)
         .hide(hide)
+        .styling(visibleThickness: 2)
         .toolbar {
             ToolbarItemGroup {
                 InputOutputToolbarSplitItems(layout: layout, hide: hide)
@@ -135,6 +137,7 @@ public struct InputAttributedTwoOutputAttributedEditorsView: View {
             ),
             title: outputSecondEditorTitle
         )
+        .padding(.top, 3)
     }
 }
 

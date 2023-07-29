@@ -109,6 +109,7 @@ public struct HtmlToSwiftView: View {
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
+            .padding(.bottom, 2)
 
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: HtmlToSwiftReducer.Action.inputOutput),
