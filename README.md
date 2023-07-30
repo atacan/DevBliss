@@ -18,6 +18,7 @@
     - [File Content Search](#file-content-search)
     - [UUID Generator](#uuid-generator)
   - [Contribute](#contribute)
+    - [Thanks](#thanks)
   - [Conclusion](#conclusion)
   - [License](#license)
   - [Similar projects](#similar-projects)
@@ -71,6 +72,8 @@ Boost your efficiency with our generators:
 
 ### HTML to Swift Converter
 
+For the DSLs [BinaryBirds/swift-html](https://github.com/BinaryBirds/swift-html) and [pointfreeco/swift-html](https://github.com/pointfreeco/swift-html)
+
 ![HTML to Swift Converter](images/macOS/html-to-swift-converter-screenshot.jpeg)
 
 <table>
@@ -110,6 +113,8 @@ Boost your efficiency with our generators:
 
 ### JSON Formatter
 
+Using [nkristek/Highlight](https://github.com/nkristek/Highlight.git)
+
 ![JSON Formatter](images/macOS/json-formatter-screenshot-for-anime.jpeg)
 <table>
   <tr>
@@ -118,7 +123,10 @@ Boost your efficiency with our generators:
   </tr>
 </table>
 
+
 ### Swift Formatter
+
+Using [nicklockwood/SwiftFormat](https://github.com/nicklockwood/SwiftFormat)
 
 ![Alt text](images/iPad/swift-formatter-screenshot.jpeg) 
 
@@ -132,9 +140,13 @@ Boost your efficiency with our generators:
 
 ## Contribute
 
-DevBliss is an open-source project, and we welcome contributions from our user community. If you have a feature request, bug report, or want to contribute to the code, please visit our GitHub page.
+DevBliss is an open-source project, and we welcome contributions from our user community. If you have a feature request, bug report, or want to contribute to the code, please visit our GitHub issues or discussions.
 
-Our architectural framework takes inspiration from pointfree.co's [isowords](https://github.com/pointfreeco/isowords) project using The Composable Architecture. In this structure, every feature is encapsulated within its own library in the Swift package, allowing for an uncluttered and streamlined Xcode project environment for the app.
+Our structure takes inspiration from pointfree.co's [isowords](https://github.com/pointfreeco/isowords) project and we use [The Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture). In this structure, every feature and its main dependency is encapsulated within its own library in the Swift package, allowing for an uncluttered and streamlined Xcode project for the app.
+
+### Thanks
+
+- [stevengharris/SplitView](https://github.com/stevengharris/SplitView)
 
 ## Conclusion
 
