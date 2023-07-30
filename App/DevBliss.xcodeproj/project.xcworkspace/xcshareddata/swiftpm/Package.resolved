@@ -165,7 +165,7 @@
     {
       "identity" : "tcaenchancements",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/atacan/TCAEnchancements.git",
+      "location" : "https://github.com/atacan/TCAEnchancements",
       "state" : {
         "branch" : "main",
         "revision" : "30145373a29090681a73442b65041402ea1d48cb"
