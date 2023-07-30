@@ -241,11 +241,11 @@ public struct AppView: View {
                             icon: {
                                 ZStack(alignment: .leading) {
                                 Image(systemName: "swift")
-                                        .padding(.leading, 4)
+                                        .offset(CGSize(width: 5, height: 0))
                                     Text("<>")
                                         .font(.monospaced(Font.system(size: 14))())
                                         .fontWeight(.thin)
-                                        .padding(.bottom, 8)
+                                        .offset(CGSize(width: 0, height: -7))
                                 } // <-ZStack
                             }
                         )
