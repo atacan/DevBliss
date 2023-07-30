@@ -7,7 +7,7 @@ struct ContentView: View {
         InputOutputEditorsView(
             store: Store(
                 initialState: InputOutputEditorsReducer.State(
-                    input: "",
+                    input: .init(),
                     output: .init()
                 ),
                 reducer: InputOutputEditorsReducer()._printChanges()

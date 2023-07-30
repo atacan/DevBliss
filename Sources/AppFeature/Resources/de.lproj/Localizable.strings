@@ -1,0 +1,81 @@
+/* No comment provided by engineer. */
+"(.*)" = "(.*)";
+
+/* No comment provided by engineer. */
+"{.,}" = "{.,}";
+
+/* No comment provided by engineer. */
+"%@  Choose a tool from the Sidebar" = "%@ Wählen Sie ein Werkzeug in der Seitenleiste aus";
+
+/* No comment provided by engineer. */
+"<>" = "<>";
+
+/* No comment provided by engineer. */
+"Aa" = "Aa";
+
+/* No comment provided by engineer. */
+"Convert case of list of words" = "Geben Sie die Groß-/Kleinschreibung der Wörterliste an";
+
+/* No comment provided by engineer. */
+"Convert Html code to a DSL in Swift" = "Konvertieren Sie HTML-Code in eine DSL in Swift.";
+
+/* No comment provided by engineer. */
+"Converters" = "Konverter";
+
+/* No comment provided by engineer. */
+"File" = "Datei";
+
+/* No comment provided by engineer. */
+"File Search" = "Dateisuche";
+
+/* No comment provided by engineer. */
+"Formatters" = "Formate";
+
+/* No comment provided by engineer. */
+"Generate UUIDs" = "Generieren Sie UUIDs";
+
+/* No comment provided by engineer. */
+"Generators" = "Generatoren";
+
+/* No comment provided by engineer. */
+"Html to Swift" = "Html zu Swift";
+
+/* No comment provided by engineer. */
+"Json" = "Json";
+
+/* No comment provided by engineer. */
+"Prefix Suffix" = "Präfix Suffix";
+
+/* No comment provided by engineer. */
+"Pretty print and Highlight Json" = "Schön formatieren und Json hervorheben";
+
+/* No comment provided by engineer. */
+"Pretty print Swift code" = "Swift-Code schön formatieren";
+
+/* No comment provided by engineer. */
+"Regex Matches" = "Reguläre Ausdrücke finden";
+
+/* No comment provided by engineer. */
+"Replace and add prefix or suffix to each line" = "Ersetzen und Präfix oder Suffix zu jeder Zeile hinzufügen";
+
+/* No comment provided by engineer. */
+"Search inside files" = "Suche in Dateien";
+
+/* No comment provided by engineer. */
+"Sidebar with the list of tools" = "Seitenleiste mit der Liste der Werkzeuge";
+
+/* No comment provided by engineer. */
+"Swift" = "Swift";
+
+/* No comment provided by engineer. */
+"Text Case" = "Text Fall";
+
+/* No comment provided by engineer. */
+"Toggle sidebar" = "Seitenleiste umschalten";
+
+/* No comment provided by engineer. */
+"Toggle sidebar (Command+Shift+L)" = "Seitenleiste umschalten (Befehl+Umschalt+L)";
+
+/* No comment provided by engineer. */
+"UUID" = "UUID";
+

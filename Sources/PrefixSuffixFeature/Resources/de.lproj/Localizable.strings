@@ -1,0 +1,45 @@
+/* No comment provided by engineer. */
+"After applying prefix and suffice manipulations to each line separately, it ends." = "Nachdem Vorsilben und Nachsilben manipuliert wurden, endet es bei jeder einzelnen Zeile.";
+
+/* No comment provided by engineer. */
+"Convert" = "Konvertieren";
+
+/* No comment provided by engineer. */
+"It first starts applying the prefix changes" = "Es beginnt zunächst mit der Anwendung der Präfixänderungen";
+
+/* No comment provided by engineer. */
+"Prefix" = "Präfix";
+
+/* No comment provided by engineer. */
+"Replace prefix" = "Präfix ersetzen";
+
+/* No comment provided by engineer. */
+"Replace prefix if available" = "Präfix ersetzen, wenn verfügbar";
+
+/* No comment provided by engineer. */
+"Replace suffix" = "Suffix ersetzen";
+
+/* No comment provided by engineer. */
+"Replace suffix if available" = "Suffix ersetzen, falls verfügbar";
+
+/* No comment provided by engineer. */
+"Suffix" = "Suffix";
+
+/* No comment provided by engineer. */
+"the prefix written previously will be replaced with this" = "das zuvor geschriebene Präfix wird durch dies ersetzt";
+
+/* No comment provided by engineer. */
+"the suffix written previously will be replaced with this" = "Der zuvor geschriebene Suffix wird durch diese ersetzt";
+
+/* No comment provided by engineer. */
+"Then add Prefix" = "Dann fügen Sie das Präfix hinzu";
+
+/* No comment provided by engineer. */
+"Then add Suffix" = "Fügen Sie dann den Suffix hinzu";
+
+/* No comment provided by engineer. */
+"Then it applies the suffix manipulation" = "Dann wendet es die Suffix-Manipulation an";
+
+/* No comment provided by engineer. */
+"with" = "mit";
+
