@@ -18,7 +18,8 @@
     - [File Content Search](#file-content-search)
     - [UUID Generator](#uuid-generator)
   - [Contribute](#contribute)
-    - [Thanks](#thanks)
+    - [Build](#build)
+  - [Thanks](#thanks)
   - [Conclusion](#conclusion)
   - [License](#license)
   - [Similar projects](#similar-projects)
@@ -144,7 +145,17 @@ DevBliss is an open-source project, and we welcome contributions from our user c
 
 Our structure takes inspiration from pointfree.co's [isowords](https://github.com/pointfreeco/isowords) project and we use [The Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture). In this structure, every feature and its main dependency is encapsulated within its own library in the Swift package, allowing for an uncluttered and streamlined Xcode project for the app.
 
-### Thanks
+### Build
+
+To get started, clone the repository and open the Xcode project of the app.
+You will also be able to added the package libraries from there.
+
+```bash
+git clone https://github.com/atacan/DevBliss.git
+open DevBliss/App/DevBliss.xcodeproj
+```
+
+## Thanks
 
 - [stevengharris/SplitView](https://github.com/stevengharris/SplitView)
 
