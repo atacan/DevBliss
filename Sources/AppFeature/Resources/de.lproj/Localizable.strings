@@ -5,7 +5,7 @@
 "{.,}" = "{.,}";
 
 /* No comment provided by engineer. */
-"%@  Choose a tool from the Sidebar" = "%@  Wählen Sie ein Werkzeug aus der Seitenleiste";
+"%@  Choose a tool from the Sidebar" = "%@ Wählen Sie ein Werkzeug aus der Seitenleiste";
 
 /* No comment provided by engineer. */
 "<>" = "<>";
@@ -14,10 +14,10 @@
 "Aa" = "Aa";
 
 /* No comment provided by engineer. */
-"Convert case of list of words" = "Groß- und Kleinschreibung von Wörterlisten umwandeln";
+"Convert case of list of words" = "Um den Fall der Wortliste umzukehren";
 
 /* No comment provided by engineer. */
-"Convert Html code to a DSL in Swift" = "Html-Code in Swift in eine DSL umwandeln";
+"Convert Html code to a DSL in Swift" = "Konvertieren Sie Html-Code zu einer DSL in Swift";
 
 /* No comment provided by engineer. */
 "Converters" = "Konverter";
@@ -29,10 +29,10 @@
 "File Search" = "Dateisuche";
 
 /* No comment provided by engineer. */
-"Formatters" = "Formatoren";
+"Formatters" = "Formatierer";
 
 /* No comment provided by engineer. */
-"Generate UUIDs" = "Generiere UUIDs";
+"Generate UUIDs" = "Generieren Sie UUIDs";
 
 /* No comment provided by engineer. */
 "Generators" = "Generatoren";
@@ -47,13 +47,13 @@
 "Prefix Suffix" = "Präfix Suffix";
 
 /* No comment provided by engineer. */
-"Pretty print and Highlight Json" = "Hübschen Druck und Json hervorheben";
+"Pretty print and Highlight Json" = "Json hübsch formatieren und hervorheben";
 
 /* No comment provided by engineer. */
-"Pretty print Swift code" = "Pretty Print Swift-Code";
+"Pretty print Swift code" = "Schön formatierter Swift-Code";
 
 /* No comment provided by engineer. */
-"Regex Matches" = "Regex Übereinstimmungen";
+"Regex Matches" = "Regex-Treffer";
 
 /* No comment provided by engineer. */
 "Replace and add prefix or suffix to each line" = "Ersetzen und Präfix oder Suffix zu jeder Zeile hinzufügen";
@@ -71,7 +71,7 @@
 "Text Case" = "Textfall";
 
 /* No comment provided by engineer. */
-"Toggle sidebar" = "Seitenleiste umschalten";
+"Toggle sidebar" = "Seitenleiste anzeigen";
 
 /* No comment provided by engineer. */
 "Toggle sidebar (Command+Shift+L)" = "Seitenleiste umschalten (Befehl+Umschalt+L)";
