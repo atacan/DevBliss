@@ -1,9 +1,12 @@
 /* No comment provided by engineer. */
-"Component" = "Komponente";
+"Convert" = "Convert";
 
 /* No comment provided by engineer. */
-"Convert" = "Konvertieren";
+"From" = "From";
 
 /* No comment provided by engineer. */
-"DSL Library" = "DSL Bibliothek";
+"Separator" = "Separator";
+
+/* No comment provided by engineer. */
+"To" = "To";
 

@@ -12,6 +12,7 @@
 		5A7437062A2B69C9001DEC2E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A7437052A2B69C9001DEC2E /* Assets.xcassets */; };
 		5A74370A2A2B69C9001DEC2E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A7437092A2B69C9001DEC2E /* Preview Assets.xcassets */; };
 		5AA0D0092A3508BC0013132B /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 5AA0D0082A3508BC0013132B /* AppFeature */; };
+		79A1B2612A799F1A00186A8C /* DevBliss-InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 79A1B25F2A799F1A00186A8C /* DevBliss-InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		5A7437072A2B69C9001DEC2E /* DevBliss.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DevBliss.entitlements; sourceTree = "<group>"; };
 		5A7437092A2B69C9001DEC2E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5AAF55582A2B6AE600A86142 /* DevBliss */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = DevBliss; path = ..; sourceTree = "<group>"; };
+		79A1B2602A799F1A00186A8C /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = "de.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +41,7 @@
 		5A7436F52A2B69C8001DEC2E = {
 			isa = PBXGroup;
 			children = (
+				79A1B25F2A799F1A00186A8C /* DevBliss-InfoPlist.strings */,
 				5AAF55582A2B6AE600A86142 /* DevBliss */,
 				5A7437002A2B69C8001DEC2E /* DevBliss */,
 				5A7436FF2A2B69C8001DEC2E /* Products */,
@@ -144,6 +147,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5A74370A2A2B69C9001DEC2E /* Preview Assets.xcassets in Resources */,
+				79A1B2612A799F1A00186A8C /* DevBliss-InfoPlist.strings in Resources */,
 				5A7437062A2B69C9001DEC2E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -161,6 +165,18 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		79A1B25F2A799F1A00186A8C /* DevBliss-InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				79A1B2602A799F1A00186A8C /* de */,
+			);
+			name = "DevBliss-InfoPlist.strings";
+			path = DevBliss;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		5A74370B2A2B69C9001DEC2E /* Debug */ = {

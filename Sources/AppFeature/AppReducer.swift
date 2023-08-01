@@ -307,7 +307,7 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.jsonPretty))
                     } destination: { store in
                         JsonPrettyView(store: store)
-                        .navigationTitle("Pretty print and Highlight Json")
+                            .navigationTitle(NSLocalizedString("Pretty print and Highlight Json", comment: ""))
                         .padding(.top)
                     } label: {
                                                 Label(
