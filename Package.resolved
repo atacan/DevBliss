@@ -163,6 +163,15 @@
       }
     },
     {
+      "identity" : "tcaenchancements",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/TCAEnchancements",
+      "state" : {
+        "branch" : "main",
+        "revision" : "30145373a29090681a73442b65041402ea1d48cb"
+      }
+    },
+    {
       "identity" : "xctest-dynamic-overlay",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
