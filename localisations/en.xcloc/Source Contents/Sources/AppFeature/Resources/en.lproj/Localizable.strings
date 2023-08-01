@@ -1,0 +1,81 @@
+/* No comment provided by engineer. */
+"(.*)" = "(.*)";
+
+/* No comment provided by engineer. */
+"{.,}" = "{.,}";
+
+/* No comment provided by engineer. */
+"%@  Choose a tool from the Sidebar" = "%@  Choose a tool from the Sidebar";
+
+/* No comment provided by engineer. */
+"<>" = "<>";
+
+/* No comment provided by engineer. */
+"Aa" = "Aa";
+
+/* No comment provided by engineer. */
+"Convert case of list of words" = "Convert case of list of words";
+
+/* No comment provided by engineer. */
+"Convert Html code to a DSL in Swift" = "Convert Html code to a DSL in Swift";
+
+/* No comment provided by engineer. */
+"Converters" = "Converters";
+
+/* No comment provided by engineer. */
+"File" = "File";
+
+/* No comment provided by engineer. */
+"File Search" = "File Search";
+
+/* No comment provided by engineer. */
+"Formatters" = "Formatters";
+
+/* No comment provided by engineer. */
+"Generate UUIDs" = "Generate UUIDs";
+
+/* No comment provided by engineer. */
+"Generators" = "Generators";
+
+/* No comment provided by engineer. */
+"Html to Swift" = "Html to Swift";
+
+/* No comment provided by engineer. */
+"Json" = "Json";
+
+/* No comment provided by engineer. */
+"Prefix Suffix" = "Prefix Suffix";
+
+/* No comment provided by engineer. */
+"Pretty print and Highlight Json" = "Pretty print and Highlight Json";
+
+/* No comment provided by engineer. */
+"Pretty print Swift code" = "Pretty print Swift code";
+
+/* No comment provided by engineer. */
+"Regex Matches" = "Regex Matches";
+
+/* No comment provided by engineer. */
+"Replace and add prefix or suffix to each line" = "Replace and add prefix or suffix to each line";
+
+/* No comment provided by engineer. */
+"Search inside files" = "Search inside files";
+
+/* No comment provided by engineer. */
+"Sidebar with the list of tools" = "Sidebar with the list of tools";
+
+/* No comment provided by engineer. */
+"Swift" = "Swift";
+
+/* No comment provided by engineer. */
+"Text Case" = "Text Case";
+
+/* No comment provided by engineer. */
+"Toggle sidebar" = "Toggle sidebar";
+
+/* No comment provided by engineer. */
+"Toggle sidebar (Command+Shift+L)" = "Toggle sidebar (Command+Shift+L)";
+
+/* No comment provided by engineer. */
+"UUID" = "UUID";
+
