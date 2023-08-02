@@ -147,6 +147,11 @@
           <target>Formater et surligner Json</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
+        <trans-unit id="Choose a tool from the Sidebar" xml:space="preserve">
+          <source>Choose a tool from the Sidebar</source>
+          <target>Choisissez un outil dans la barre latérale</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
         </body>
     </file>
     <file original="Sources/FileContentSearchFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="fr" datatype="plaintext">
