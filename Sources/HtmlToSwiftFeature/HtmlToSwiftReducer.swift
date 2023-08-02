@@ -88,13 +88,13 @@ public struct HtmlToSwiftView: View {
         VStack {
             HStack(alignment: .center) {
                 Spacer()
-                Picker("DSL Library", selection: viewStore.binding(\.$dsl)) {
+                Picker(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$dsl)) {
                     ForEach(SwiftDSL.allCases) { dsl in
                         Text(dsl.rawValue)
                             .tag(dsl)
                     }
                 }
-                Picker("Component", selection: viewStore.binding(\.$component)) {
+                Picker(NSLocalizedString("Component", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$component)) {
                     ForEach(HtmlOutputComponent.allCases) { component in
                         Text(component.rawValue)
                             .tag(component)
@@ -105,7 +105,7 @@ public struct HtmlToSwiftView: View {
             .frame(maxWidth: 450)
 
             Button(action: { viewStore.send(.convertButtonTouched) }) {
-                Text("Convert")
+                Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])

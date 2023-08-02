@@ -102,19 +102,19 @@ public struct TextCaseConverterView: View {
         VStack {
             HStack(alignment: .center) {
                 Spacer()
-                Picker("From", selection: viewStore.binding(\.$sourceCase)) {
+                Picker(NSLocalizedString("From", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$sourceCase)) {
                     ForEach(WordGroupCase.allCases) { sourceCase in
                         Text(sourceCase.rawValue)
                             .tag(sourceCase)
                     }
                 }
-                Picker("To", selection: viewStore.binding(\.$targetCase)) {
+                Picker(NSLocalizedString("To", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$targetCase)) {
                     ForEach(WordGroupCase.allCases) { targetCase in
                         Text(targetCase.rawValue)
                             .tag(targetCase)
                     }
                 }
-                Picker("Separator", selection: viewStore.binding(\.$textSeperator)) {
+                Picker(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$textSeperator)) {
                     ForEach(WordGroupSeperator.allCases) { textSeperator in
                         Text(textSeperator.name)
                             .tag(textSeperator)
@@ -125,15 +125,15 @@ public struct TextCaseConverterView: View {
             .frame(maxWidth: 550)
 
             Button(action: { viewStore.send(.convertButtonTouched) }) {
-                Text("Convert")
+                Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
 
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: TextCaseConverterReducer.Action.inputOutput),
-                inputEditorTitle: "Input",
-                outputEditorTitle: "Output"
+                inputEditorTitle: NSLocalizedString("Input", bundle: Bundle.module, comment: ""),
+                outputEditorTitle: NSLocalizedString("Output", bundle: Bundle.module, comment: "")
             )
         }
     }

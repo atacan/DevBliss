@@ -125,13 +125,13 @@ public struct FileContentSearchView: View {
         VStack(alignment: .center) {
             VStack(alignment: .leading) {
                 HStack(alignment: .center) {
-                    Text("Search Term")
-                TextField("term to search inside the file...", text: viewStore.binding(\.$searchOptions.term))
+                    Text(NSLocalizedString("Search Term", bundle: Bundle.module, comment: ""))
+                TextField(NSLocalizedString("term to search inside the file...", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$searchOptions.term))
                 } // <-HStack
 
                 HStack {
                     HStack(alignment: .center) {
-                        Text("Directory")
+                        Text(NSLocalizedString("Directory", bundle: Bundle.module, comment: ""))
                         
                         Button {
                             viewStore.send(.directorySelectionButtonTouched)
@@ -155,7 +155,7 @@ public struct FileContentSearchView: View {
                 }
                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
-                Toggle("Search also hidden files and folders", isOn: viewStore.binding(\.$searchOptions.searchHiddenFiles))
+                Toggle(NSLocalizedString("Search also hidden files and folders", bundle: Bundle.module, comment: ""), isOn: viewStore.binding(\.$searchOptions.searchHiddenFiles))
                     .toggleStyle(.checkbox)
             }
             .frame(maxWidth: 450)
@@ -175,18 +175,18 @@ public struct FileContentSearchView: View {
             Button {
                 viewStore.send(.searchButtonTouched)
             } label: {
-                Text("Search")
+                Text(NSLocalizedString("Search", bundle: Bundle.module, comment: ""))
             }  // <-Button
             .keyboardShortcut(.return, modifiers: [.command])
             .overlay(viewStore.isSearching ? ProgressView() : nil)
             .padding(.bottom, 2)
 
             Table(viewStore.foundFiles, selection: viewStore.binding(\.$selectedFiles), sortOrder: $sortOrder) {
-                TableColumn("File Path", value: \.fileURL)
+                TableColumn(NSLocalizedString("File Path", bundle: Bundle.module, comment: ""), value: \.fileURL)
                     .width(min: nil, ideal: 450, max: nil)
-                TableColumn("Lines", value: \.lines)
-                TableColumn("Modified", value: \.modifiedTimeString)
-                TableColumn("Git User", value: \.gitUsernameCleaned)
+                TableColumn(NSLocalizedString("Lines", bundle: Bundle.module, comment: ""), value: \.lines)
+                TableColumn(NSLocalizedString("Modified", bundle: Bundle.module, comment: ""), value: \.modifiedTimeString)
+                TableColumn(NSLocalizedString("Git User", bundle: Bundle.module, comment: ""), value: \.gitUsernameCleaned)
             }
 
             OutputEditorView(
@@ -194,7 +194,7 @@ public struct FileContentSearchView: View {
                     state: \.output,
                     action: FileContentSearchReducer.Action.output
                 ),
-                title: "File Content"
+                title: NSLocalizedString("File Content", bundle: Bundle.module, comment: "")
             )
 
         }  // <-VStack

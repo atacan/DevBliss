@@ -5,13 +5,13 @@
 "File Path" = "Dateipfad";
 
 /* No comment provided by engineer. */
-"Git User" = "Git Benutzer";
+"Git User" = "Git-Benutzer";
 
 /* No comment provided by engineer. */
 "Lines" = "Linien";
 
 /* No comment provided by engineer. */
-"Modified" = "Modifiziert";
+"Modified" = "Geändert";
 
 /* No comment provided by engineer. */
 "Search" = "Suche";
@@ -23,5 +23,5 @@
 "Search Term" = "Suchbegriff";
 
 /* No comment provided by engineer. */
-"term to search inside the file..." = "Suchbegriff in der Datei suchen...";
+"term to search inside the file..." = "Suchbegriff in Datei suchen...";
 

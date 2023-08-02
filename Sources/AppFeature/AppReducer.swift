@@ -226,18 +226,18 @@ public struct AppView: View {
     public var body: some View {
         NavigationView {
             List {
-                Section("Converters") {
+                Section(NSLocalizedString("Converters", bundle: Bundle.module, comment: "sidebar section name for a group of tools")) {
                     NavigationLinkStore(
                         store.scope(state: \.$htmlToSwift, action: { .htmlToSwift($0) })
                     ) {
                         viewStore.send(.navigationLinkTouched(.htmlToSwift))
                     } destination: { store in
                         HtmlToSwiftView(store: store)
-                        .navigationTitle("Convert Html code to a DSL in Swift")
+                        .navigationTitle(NSLocalizedString("Convert Html code to a DSL in Swift", bundle: Bundle.module, comment: "a navigationTitle"))
                         .padding(.top)
                     } label: {
                         Label(
-                            title: { Text("Html to Swift") },
+                            title: { Text(NSLocalizedString("Html to Swift", bundle: Bundle.module, comment: "tool name on the sidebar")) },
                             icon: {
                                 ZStack(alignment: .leading) {
                                 Image(systemName: "swift")
@@ -257,11 +257,11 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.textCaseConverter))
                     } destination: { store in
                         TextCaseConverterView(store: store)
-                        .navigationTitle("Convert case of list of words")
+                        .navigationTitle(NSLocalizedString("Convert case of list of words", bundle: Bundle.module, comment: "navigation title on top of the window"))
                         .padding(.top)
                     } label: {
                         Label(
-                            title: { Text("Text Case") },
+                            title: { Text(NSLocalizedString("Text Case", bundle: Bundle.module, comment: "tool name on the sidebar")) },
                             icon: { Text("Aa") }
                         )
                     }
@@ -272,11 +272,11 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.prefixSuffix))
                     } destination: { store in
                         PrefixSuffixView(store: store)
-                        .navigationTitle("Replace and add prefix or suffix to each line")
+                        .navigationTitle(NSLocalizedString("Replace and add prefix or suffix to each line", bundle: Bundle.module, comment: "navigation title on top of the window"))
                         .padding(.top)
                     } label: {
                         Label(
-                            title: { Text("Prefix Suffix") },
+                            title: { Text(NSLocalizedString("Prefix Suffix", bundle: Bundle.module, comment: "tool name on the sidebar")) },
                             icon: { Image(systemName: "arrow.right.and.line.vertical.and.arrow.left") }
                         )
                         
@@ -288,11 +288,11 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.regexMatches))
                     } destination: { store in
                         RegexMatchesView(store: store)
-                        .navigationTitle("Regex Matches")
+                        .navigationTitle(NSLocalizedString("Regex Matches", bundle: Bundle.module, comment: "navigation title on top of the window"))
                         .padding(.top)
                     } label: {
                         Label(
-                            title: { Text("Regex Matches") },
+                            title: { Text(NSLocalizedString("Regex Matches", bundle: Bundle.module, comment: "tool name on the sidebar")) },
                             icon: { Text("(.*)")
                                     .font(.monospaced(Font.system(size: 8))())
                             }
@@ -300,14 +300,14 @@ public struct AppView: View {
                     }
                 }
 
-                Section("Formatters") {
+                Section(NSLocalizedString("Formatters", bundle: Bundle.module, comment: "sidebar section name for a group of tools")) {
                     NavigationLinkStore(
                         store.scope(state: \.$jsonPretty, action: { .jsonPretty($0) })
                     ) {
                         viewStore.send(.navigationLinkTouched(.jsonPretty))
                     } destination: { store in
                         JsonPrettyView(store: store)
-                            .navigationTitle(NSLocalizedString("Pretty print and Highlight Json", comment: ""))
+                            .navigationTitle(NSLocalizedString("Format and Highlight Json", bundle: Bundle.module, comment: ""))
                         .padding(.top)
                     } label: {
                                                 Label(
@@ -324,7 +324,7 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.swiftPrettyLockwood))
                     } destination: { store in
                         SwiftPrettyView(store: store)
-                        .navigationTitle("Pretty print Swift code")
+                        .navigationTitle(NSLocalizedString("Format Swift code", bundle: Bundle.module, comment: "navigation title on top of the window"))
                         .padding(.top)
                     } label: {
                         Label(
@@ -336,32 +336,32 @@ public struct AppView: View {
                 
                 #if os(macOS)
 
-                Section("File") {
+                Section(NSLocalizedString("File", bundle: Bundle.module, comment: "sidebar section name for a group of tools")) {
                     NavigationLinkStore(
                         store.scope(state: \.$fileContentSearch, action: { .fileContentSearch($0) })
                     ) {
                         viewStore.send(.navigationLinkTouched(.fileContentSearch))
                     } destination: { store in
                         FileContentSearchView(store: store)
-                        .navigationTitle("Search inside files")
+                        .navigationTitle(NSLocalizedString("Search inside files", bundle: Bundle.module, comment: "navigation title on top of the window"))
                         .padding(.top)
                     } label: {
                                                 Label(
-                            title: { Text("File Search") },
+                            title: { Text(NSLocalizedString("File Search", bundle: Bundle.module, comment: "tool name on the sidebar")) },
                             icon: { Image(systemName: "doc.text.magnifyingglass") }
                         )
                     }
                 }
                 #endif
 
-                Section("Generators") {
+                Section(NSLocalizedString("Generators", bundle: Bundle.module, comment: "sidebar section name for a group of tools")) {
                     NavigationLinkStore(
                         store.scope(state: \.$uuidGenerator, action: { .uuidGenerator($0) })
                     ) {
                         viewStore.send(.navigationLinkTouched(.uuidGenerator))
                     } destination: { store in
                         UUIDGeneratorView(store: store)
-                        .navigationTitle("Generate UUIDs")
+                        .navigationTitle(NSLocalizedString("Generate UUIDs", bundle: Bundle.module, comment: "navigation title on top of the window"))
                         .padding(.top)
                     } label: {
                                                 Label(
@@ -389,7 +389,7 @@ public struct AppView: View {
                             Label("Toggle sidebar", systemImage: "sidebar.left")
                         }
                         .keyboardShortcut("l", modifiers: [.command, .shift])
-                        .help("Toggle sidebar (Command+Shift+L)")
+                        .help(NSLocalizedString("Toggle sidebar (Command+Shift+L)", bundle: Bundle.module, comment: ""))
                     }
                 }
             #endif

@@ -107,7 +107,7 @@ public struct RegexMatchesView: View {
 
     public var body: some View {
         VStack {
-            TextField("Regex pattern", text: viewStore.binding(\.$regexPattern))
+            TextField(NSLocalizedString("Regex pattern", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$regexPattern))
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .font(.monospaced(.body)())
             .autocorrectionDisabled()
@@ -116,16 +116,16 @@ public struct RegexMatchesView: View {
             #endif
             .padding()
             Button(action: { viewStore.send(.convertButtonTouched) }) {
-                Text("Extract")
+                Text(NSLocalizedString("Extract", bundle: Bundle.module, comment: ""))
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
 
             InputAttributedTwoOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: RegexMatchesReducer.Action.inputOutput),
-                inputEditorTitle: "Input",
-                outputEditorTitle: "Matches",
-                outputSecondEditorTitle: "Capturing Groups"
+                inputEditorTitle: NSLocalizedString("Input", bundle: Bundle.module, comment: ""),
+                outputEditorTitle: NSLocalizedString("Matches", bundle: Bundle.module, comment: ""),
+                outputSecondEditorTitle: NSLocalizedString("Capturing Groups", bundle: Bundle.module, comment: "")
             )
         }
     }

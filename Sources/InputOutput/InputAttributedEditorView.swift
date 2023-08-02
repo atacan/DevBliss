@@ -142,7 +142,7 @@ public struct InputAttributedEditorView: View {
                 )
                 .font(.footnote)
                 .keyboardShortcut("p", modifiers: [.command, .shift])
-                .help("Paste from clipboard (Command+Shift+P)")
+                .help(NSLocalizedString("Paste from clipboard (Command+Shift+P)", bundle: Bundle.module, comment: ""))
             }
             .padding(),
 

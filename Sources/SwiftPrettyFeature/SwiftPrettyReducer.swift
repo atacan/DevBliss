@@ -117,7 +117,7 @@ public struct SwiftPrettyView: View {
                 //            }
 
                 Button(action: { viewStore.send(.convertButtonTouched) }) {
-                    Text("Format")
+                    Text(NSLocalizedString("Format", bundle: Bundle.module, comment: ""))
                         .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
                 }
                 .keyboardShortcut(.return, modifiers: [.command])
@@ -125,8 +125,8 @@ public struct SwiftPrettyView: View {
         } bottom: {
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: SwiftPrettyReducer.Action.inputOutput),
-                inputEditorTitle: "Raw",
-                outputEditorTitle: "Pretty"
+                inputEditorTitle: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
+                outputEditorTitle: NSLocalizedString("Pretty", bundle: Bundle.module, comment: "")
             )
         }
         .styling(visibleThickness: 2)
@@ -138,7 +138,7 @@ public struct SwiftPrettyView: View {
                 state: \.lockwoodConfig,
                 action: SwiftPrettyReducer.Action.lockwoodConfig
             ),
-            title: "nicklockwood/SwiftFormat Config"
+            title: NSLocalizedString("nicklockwood/SwiftFormat Config", bundle: Bundle.module, comment: "")
         )
     }
 }

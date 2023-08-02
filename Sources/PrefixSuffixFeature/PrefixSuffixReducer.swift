@@ -101,61 +101,61 @@ public struct PrefixSuffixView: View {
         VStack {
             HStack(alignment: .center) {
                 Image(systemName: "arrow.forward")
-                    .help("It first starts applying the prefix changes")
+                    .help(NSLocalizedString("It first starts applying the prefix changes", bundle: Bundle.module, comment: ""))
                 VStack {
-                    Text("Prefix")
+                    Text(NSLocalizedString("Prefix", bundle: Bundle.module, comment: ""))
                     Group {
-                        TextField("Replace prefix", text: viewStore.binding(\.$configuration.prefixReplace))
+                        TextField(NSLocalizedString("Replace prefix", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$configuration.prefixReplace))
                         .focused($focusedField, equals: .prefixReplace)
                         .onSubmit { focusNextField($focusedField) }
-                        .help("Replace prefix if available")
+                        .help(NSLocalizedString("Replace prefix if available", bundle: Bundle.module, comment: ""))
 
-                        TextField("with", text: viewStore.binding(\.$configuration.prefixReplaceWith))
+                        TextField(NSLocalizedString("with", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$configuration.prefixReplaceWith))
                         .focused($focusedField, equals: .prefixReplaceWith)
                         .onSubmit { focusNextField($focusedField) }
                         .help(
-                            "the prefix written previously will be replaced with this"
+                            NSLocalizedString("the prefix written previously will be replaced with this", bundle: Bundle.module, comment: "")
                         )
 
                         TextField(
-                            "Then add Prefix",
+                            NSLocalizedString("Then add Prefix", bundle: Bundle.module, comment: ""),
                             text: viewStore.binding(\.$configuration.prefixAdd)
                         )
                         .focused($focusedField, equals: .prefixAdd)
                         .onSubmit { focusNextField($focusedField) }
-                        .help("Then add Prefix")
+                        .help(NSLocalizedString("Then add Prefix", bundle: Bundle.module, comment: ""))
                     }  // <-Group
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
                 }
                 Image(systemName: "arrow.forward.square.fill")
-                    .help("Then it applies the suffix manipulation")
+                    .help(NSLocalizedString("Then it applies the suffix manipulation", bundle: Bundle.module, comment: ""))
                 VStack {
                     Text("Suffix")
                     Group {
-                        TextField("Replace suffix", text: viewStore.binding(\.$configuration.suffixReplace))
+                        TextField(NSLocalizedString("Replace suffix", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$configuration.suffixReplace))
                         .focused($focusedField, equals: .suffixReplace)
                         .onSubmit { focusNextField($focusedField) }
-                        .help("Replace suffix if available")
+                        .help(NSLocalizedString("Replace suffix if available", bundle: Bundle.module, comment: ""))
 
-                        TextField("with", text: viewStore.binding(\.$configuration.suffixReplaceWith))
+                        TextField(NSLocalizedString("with", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$configuration.suffixReplaceWith))
                         .focused($focusedField, equals: .suffixReplaceWith)
                         .onSubmit { focusNextField($focusedField) }
-                        .help("the suffix written previously will be replaced with this")
+                        .help(NSLocalizedString("the suffix written previously will be replaced with this", bundle: Bundle.module, comment: ""))
 
                         TextField(
-                            "Then add Suffix",
+                            NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""),
                             text: viewStore.binding(\.$configuration.suffixAdd)
                         )
                         .focused($focusedField, equals: .suffixAdd)
                         .onSubmit { focusNextField($focusedField) }
-                        .help("Then add Suffix")
+                        .help(NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""))
                     }  // <-Group
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
                 }
                 Image(systemName: "backward.end")
-                    .help("After applying prefix and suffice manipulations to each line separately, it ends.")
+                    .help(NSLocalizedString("After applying prefix and suffice manipulations to each line separately, it ends.", bundle: Bundle.module, comment: ""))
             }  // <-HStack
             .autocorrectionDisabled()
             #if os(iOS)
@@ -164,7 +164,7 @@ public struct PrefixSuffixView: View {
             .frame(maxWidth: 850)
 
             Button(action: { viewStore.send(.convertButtonTouched) }) {
-                Text("Convert")
+                Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
@@ -172,8 +172,8 @@ public struct PrefixSuffixView: View {
 
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: PrefixSuffixReducer.Action.inputOutput),
-                inputEditorTitle: "Input",
-                outputEditorTitle: "Output"
+                inputEditorTitle: NSLocalizedString("Input", bundle: Bundle.module, comment: ""),
+                outputEditorTitle: NSLocalizedString("Output", bundle: Bundle.module, comment: "")
             )
         }
         .onAppear {

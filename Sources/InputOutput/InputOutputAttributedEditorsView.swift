@@ -142,8 +142,8 @@ struct InputOutputToolbarSplitItems: View {
             .accessibilityHint(
                 layout
                     .isHorizontal
-                    ? "the input and output editor will be located next to each other"
-                    : "the input and output editor will be located underneath each other"
+                    ? NSLocalizedString("the input and output editor will be located next to each other", bundle: Bundle.module, comment: "")
+                    : NSLocalizedString("the input and output editor will be located underneath each other", bundle: Bundle.module, comment: "")
             )
 
             Button(

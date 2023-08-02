@@ -86,15 +86,15 @@ public struct JsonPrettyView: View {
     public var body: some View {
         VStack {
             Button(action: { viewStore.send(.convertButtonTouched) }) {
-                Text("Format")
+                Text(NSLocalizedString("Format", bundle: Bundle.module, comment: ""))
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
 
             InputOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: JsonPrettyReducer.Action.inputOutput),
-                inputEditorTitle: "Raw",
-                outputEditorTitle: "Pretty"
+                inputEditorTitle: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
+                outputEditorTitle: NSLocalizedString("Pretty", bundle: Bundle.module, comment: "")
             )
         }
     }
