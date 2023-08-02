@@ -5,7 +5,13 @@
 "Convert" = "Konvertieren";
 
 /* No comment provided by engineer. */
+"Input" = "Eingabe";
+
+/* No comment provided by engineer. */
 "It first starts applying the prefix changes" = "Zuerst werden die Änderungen am Präfix angewendet";
+
+/* No comment provided by engineer. */
+"Output" = "Ausgabe";
 
 /* No comment provided by engineer. */
 "Prefix" = "Präfix";

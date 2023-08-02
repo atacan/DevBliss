@@ -1,0 +1,51 @@
+/* No comment provided by engineer. */
+"After applying prefix and suffice manipulations to each line separately, it ends." = "それぞれの行にプレフィックスとサフィックスの操作を適用した後、終了します。";
+
+/* No comment provided by engineer. */
+"Convert" = "変換する";
+
+/* No comment provided by engineer. */
+"Input" = "入力";
+
+/* No comment provided by engineer. */
+"It first starts applying the prefix changes" = "最初にプレフィックスの変更を適用します";
+
+/* No comment provided by engineer. */
+"Output" = "出力";
+
+/* No comment provided by engineer. */
+"Prefix" = "プレフィックス";
+
+/* No comment provided by engineer. */
+"Replace prefix" = "接頭辞を置き換える";
+
+/* No comment provided by engineer. */
+"Replace prefix if available" = "利用可能な場合はプレフィックスを置き換える";
+
+/* No comment provided by engineer. */
+"Replace suffix" = "サフィックスを置き換える";
+
+/* No comment provided by engineer. */
+"Replace suffix if available" = "利用可能な場合は接尾辞を置き換えます";
+
+/* No comment provided by engineer. */
+"Suffix" = "接尾辞";
+
+/* No comment provided by engineer. */
+"the prefix written previously will be replaced with this" = "以前に書かれた接頭辞はこれで置き換えられます";
+
+/* No comment provided by engineer. */
+"the suffix written previously will be replaced with this" = "以前に書かれた接尾辞はこれで置き換えられます。";
+
+/* No comment provided by engineer. */
+"Then add Prefix" = "プレフィックスを追加してください";
+
+/* No comment provided by engineer. */
+"Then add Suffix" = "その後、接尾辞を追加してください";
+
+/* No comment provided by engineer. */
+"Then it applies the suffix manipulation" = "それから、接尾辞の操作を適用します";
+
+/* No comment provided by engineer. */
+"with" = "と一緒に";
+

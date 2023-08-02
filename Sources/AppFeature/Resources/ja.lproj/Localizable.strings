@@ -1,0 +1,88 @@
+/* No comment provided by engineer. */
+"(.*)" = "(.*)";
+
+/* No comment provided by engineer. */
+"{.,}" = "{.,}";
+
+/* No comment provided by engineer. */
+"%@  Choose a tool from the Sidebar" = "%@ サイドバーからツールを選択してください";
+
+/* No comment provided by engineer. */
+"<>" = "<<>>";
+
+/* No comment provided by engineer. */
+"Aa" = "Aa";
+
+/* navigation title on top of the window */
+"Convert case of list of words" = "単語リストのケースを変換する";
+
+/* a navigationTitle */
+"Convert Html code to a DSL in Swift" = "SwiftでHtmlコードをDSLに変換する";
+
+/* sidebar section name for a group of tools */
+"Converters" = "変換ツール";
+
+/* sidebar section name for a group of tools */
+"File" = "ファイル";
+
+/* tool name on the sidebar */
+"File Search" = "ファイル検索";
+
+/* No comment provided by engineer. */
+"Format and Highlight Json" = "フォーマットとハイライトJson";
+
+/* navigation title on top of the window */
+"Format Swift code" = "フォーマットSwiftコード";
+
+/* sidebar section name for a group of tools */
+"Formatters" = "フォーマッター";
+
+/* navigation title on top of the window */
+"Generate UUIDs" = "UUIDの生成";
+
+/* sidebar section name for a group of tools */
+"Generators" = "ジェネレーター";
+
+/* tool name on the sidebar */
+"Html to Swift" = "サイドバーのツール名";
+
+/* No comment provided by engineer. */
+"Json" = "Json";
+
+/* tool name on the sidebar */
+"Prefix Suffix" = "接頭語 接尾語";
+
+/* No comment provided by engineer. */
+"Pretty print and Highlight Json" = "Jsonを整形して強調表示する";
+
+/* No comment provided by engineer. */
+"Pretty print Swift code" = "Swiftコードをきれいに印刷する";
+
+/* navigation title on top of the window
+   tool name on the sidebar */
+"Regex Matches" = "正規表現の一致";
+
+/* navigation title on top of the window */
+"Replace and add prefix or suffix to each line" = "それぞれの行に置換し、プレフィックスまたはサフィックスを追加";
+
+/* navigation title on top of the window */
+"Search inside files" = "ファイル内の検索";
+
+/* No comment provided by engineer. */
+"Sidebar with the list of tools" = "ツールのリストを表示するサイドバー";
+
+/* No comment provided by engineer. */
+"Swift" = "スウィフト";
+
+/* tool name on the sidebar */
+"Text Case" = "サイドバー上のツール名";
+
+/* No comment provided by engineer. */
+"Toggle sidebar" = "サイドバーを切り替える";
+
+/* No comment provided by engineer. */
+"Toggle sidebar (Command+Shift+L)" = "サイドバーを切り替える（コマンド+シフト+L）";
+
+/* No comment provided by engineer. */
+"UUID" = "UUID";
+

@@ -24,48 +24,48 @@
         </trans-unit>
         <trans-unit id="Convert Html code to a DSL in Swift" xml:space="preserve">
           <source>Convert Html code to a DSL in Swift</source>
-          <target>Html-Code in Swift in eine DSL umwandeln</target>
-          <note>No comment provided by engineer.</note>
+          <target>Konvertieren Sie Html-Code in eine DSL in Swift</target>
+          <note>a navigationTitle</note>
         </trans-unit>
         <trans-unit id="Convert case of list of words" xml:space="preserve">
           <source>Convert case of list of words</source>
-          <target>Groß- und Kleinschreibung von Wörterlisten umwandeln</target>
-          <note>No comment provided by engineer.</note>
+          <target>Ändern Sie die Groß-/Kleinschreibung der Wortliste</target>
+          <note>navigation title on top of the window</note>
         </trans-unit>
         <trans-unit id="Converters" xml:space="preserve">
           <source>Converters</source>
           <target>Konverter</target>
-          <note>No comment provided by engineer.</note>
+          <note>sidebar section name for a group of tools</note>
         </trans-unit>
         <trans-unit id="File" xml:space="preserve">
           <source>File</source>
           <target>Datei</target>
-          <note>No comment provided by engineer.</note>
+          <note>sidebar section name for a group of tools</note>
         </trans-unit>
         <trans-unit id="File Search" xml:space="preserve">
           <source>File Search</source>
           <target>Dateisuche</target>
-          <note>No comment provided by engineer.</note>
+          <note>tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Formatters" xml:space="preserve">
           <source>Formatters</source>
           <target>Formatoren</target>
-          <note>No comment provided by engineer.</note>
+          <note>sidebar section name for a group of tools</note>
         </trans-unit>
         <trans-unit id="Generate UUIDs" xml:space="preserve">
           <source>Generate UUIDs</source>
           <target>Generiere UUIDs</target>
-          <note>No comment provided by engineer.</note>
+          <note>navigation title on top of the window</note>
         </trans-unit>
         <trans-unit id="Generators" xml:space="preserve">
           <source>Generators</source>
           <target>Generatoren</target>
-          <note>No comment provided by engineer.</note>
+          <note>sidebar section name for a group of tools</note>
         </trans-unit>
         <trans-unit id="Html to Swift" xml:space="preserve">
           <source>Html to Swift</source>
-          <target>Html to Swift</target>
-          <note>No comment provided by engineer.</note>
+          <target>Html zu Swift</target>
+          <note>tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Json" xml:space="preserve">
           <source>Json</source>
@@ -75,7 +75,7 @@
         <trans-unit id="Prefix Suffix" xml:space="preserve">
           <source>Prefix Suffix</source>
           <target>Präfix Suffix</target>
-          <note>No comment provided by engineer.</note>
+          <note>tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Pretty print Swift code" xml:space="preserve">
           <source>Pretty print Swift code</source>
@@ -89,18 +89,18 @@
         </trans-unit>
         <trans-unit id="Regex Matches" xml:space="preserve">
           <source>Regex Matches</source>
-          <target>Regex Übereinstimmungen</target>
-          <note>No comment provided by engineer.</note>
+          <target>Reguläre Ausdrücke finden</target>
+          <note>navigation title on top of the window&#10;   tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Replace and add prefix or suffix to each line" xml:space="preserve">
           <source>Replace and add prefix or suffix to each line</source>
-          <target>Ersetzen und Präfix oder Suffix zu jeder Zeile hinzufügen</target>
-          <note>No comment provided by engineer.</note>
+          <target>Ersetzen und Vor- oder Nachfix zu jeder Zeile hinzufügen</target>
+          <note>navigation title on top of the window</note>
         </trans-unit>
         <trans-unit id="Search inside files" xml:space="preserve">
           <source>Search inside files</source>
           <target>In Dateien suchen</target>
-          <note>No comment provided by engineer.</note>
+          <note>navigation title on top of the window</note>
         </trans-unit>
         <trans-unit id="Sidebar with the list of tools" xml:space="preserve">
           <source>Sidebar with the list of tools</source>
@@ -114,8 +114,8 @@
         </trans-unit>
         <trans-unit id="Text Case" xml:space="preserve">
           <source>Text Case</source>
-          <target>Textfall</target>
-          <note>No comment provided by engineer.</note>
+          <target>Text Case</target>
+          <note>tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Toggle sidebar" xml:space="preserve">
           <source>Toggle sidebar</source>
@@ -135,6 +135,16 @@
         <trans-unit id="{.,}" xml:space="preserve">
           <source>{.,}</source>
           <target>{.,}</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Format Swift code" xml:space="preserve">
+          <source>Format Swift code</source>
+          <target>Formatieren Sie den Swift-Code</target>
+          <note>navigation title on top of the window</note>
+        </trans-unit>
+        <trans-unit id="Format and Highlight Json" xml:space="preserve">
+          <source>Format and Highlight Json</source>
+          <target>Json formatieren und hervorheben</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>
@@ -184,6 +194,11 @@
         <trans-unit id="term to search inside the file..." xml:space="preserve">
           <source>term to search inside the file...</source>
           <target>Suchbegriff in Datei suchen...</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="File Content" xml:space="preserve">
+          <source>File Content</source>
+          <target>Dateiinhalt</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>
@@ -261,6 +276,16 @@
       <trans-unit id="Format" xml:space="preserve">
           <source>Format</source>
           <target>Format</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Pretty" xml:space="preserve">
+          <source>Pretty</source>
+          <target>Schön</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Raw" xml:space="preserve">
+          <source>Raw</source>
+          <target>Roh</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>
@@ -342,6 +367,16 @@
           <target>mit</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
+        <trans-unit id="Input" xml:space="preserve">
+          <source>Input</source>
+          <target>Eingabe</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Output" xml:space="preserve">
+          <source>Output</source>
+          <target>Ausgabe</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
         </body>
     </file>
     <file original="Sources/RegexMatchesFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
@@ -356,6 +391,21 @@
           <target>Regex Muster</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
+        <trans-unit id="Capturing Groups" xml:space="preserve">
+          <source>Capturing Groups</source>
+          <target>Erfassen von Gruppen</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Input" xml:space="preserve">
+          <source>Input</source>
+          <target>Eingabe</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Matches" xml:space="preserve">
+          <source>Matches</source>
+          <target>Spiele</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
         </body>
     </file>
     <file original="Sources/SwiftPrettyFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
@@ -363,6 +413,21 @@
       <trans-unit id="Format" xml:space="preserve">
           <source>Format</source>
           <target>Format</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Pretty" xml:space="preserve">
+          <source>Pretty</source>
+          <target>Hübsch</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Raw" xml:space="preserve">
+          <source>Raw</source>
+          <target>Roh</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="nicklockwood/SwiftFormat Config" xml:space="preserve">
+          <source>nicklockwood/SwiftFormat Config</source>
+          <target>nicklockwood/SwiftFormat Konfiguration</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>
@@ -389,6 +454,16 @@
           <target>Zu</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
+        <trans-unit id="Input" xml:space="preserve">
+          <source>Input</source>
+          <target>Eingabe</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Output" xml:space="preserve">
+          <source>Output</source>
+          <target>Ausgabe</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
         </body>
     </file>
     <file original="Sources/UUIDGeneratorFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
@@ -406,6 +481,20 @@
         <trans-unit id="lowercase" xml:space="preserve">
           <source>lowercase</source>
           <target>kleinschreibung</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        </body>
+    </file>
+    <file original="Sources/TextCaseConverterClient/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
+      <body>
+      <trans-unit id="New Line" xml:space="preserve">
+          <source>New Line</source>
+          <target>Neue Zeile</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Space" xml:space="preserve">
+          <source>Space</source>
+          <target>Raum</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>
