@@ -5,7 +5,7 @@
 "{.,}" = "{.,}";
 
 /* No comment provided by engineer. */
-"%@  Choose a tool from the Sidebar" = "%@ Wählen Sie ein Werkzeug aus der Seitenleiste";
+"%@  Choose a tool from the Sidebar" = "%@  Wählen Sie ein Werkzeug aus der Seitenleiste";
 
 /* No comment provided by engineer. */
 "<>" = "<>";
@@ -13,52 +13,53 @@
 /* No comment provided by engineer. */
 "Aa" = "Aa";
 
-/* No comment provided by engineer. */
-"Convert case of list of words" = "Um den Fall der Wortliste umzukehren";
+/* navigation title on top of the window */
+"Convert case of list of words" = "Groß- und Kleinschreibung von Wörterlisten umwandeln";
 
-/* No comment provided by engineer. */
-"Convert Html code to a DSL in Swift" = "Konvertieren Sie Html-Code zu einer DSL in Swift";
+/* a navigationTitle */
+"Convert Html code to a DSL in Swift" = "Html-Code in Swift in eine DSL umwandeln";
 
-/* No comment provided by engineer. */
+/* sidebar section name for a group of tools */
 "Converters" = "Konverter";
 
-/* No comment provided by engineer. */
+/* sidebar section name for a group of tools */
 "File" = "Datei";
 
-/* No comment provided by engineer. */
+/* tool name on the sidebar */
 "File Search" = "Dateisuche";
 
-/* No comment provided by engineer. */
-"Formatters" = "Formatierer";
+/* sidebar section name for a group of tools */
+"Formatters" = "Formatoren";
 
-/* No comment provided by engineer. */
-"Generate UUIDs" = "Generieren Sie UUIDs";
+/* navigation title on top of the window */
+"Generate UUIDs" = "Generiere UUIDs";
 
-/* No comment provided by engineer. */
+/* sidebar section name for a group of tools */
 "Generators" = "Generatoren";
 
-/* No comment provided by engineer. */
+/* tool name on the sidebar */
 "Html to Swift" = "Html to Swift";
 
 /* No comment provided by engineer. */
 "Json" = "Json";
 
-/* No comment provided by engineer. */
+/* tool name on the sidebar */
 "Prefix Suffix" = "Präfix Suffix";
 
 /* No comment provided by engineer. */
-"Pretty print and Highlight Json" = "Json hübsch formatieren und hervorheben";
+"Pretty print and Highlight Json" = "Hübschen Druck und Json hervorheben";
 
 /* No comment provided by engineer. */
-"Pretty print Swift code" = "Schön formatierter Swift-Code";
+"Pretty print Swift code" = "Pretty Print Swift-Code";
 
-/* No comment provided by engineer. */
-"Regex Matches" = "Regex-Treffer";
+/* navigation title on top of the window
+   tool name on the sidebar */
+"Regex Matches" = "Regex Übereinstimmungen";
 
-/* No comment provided by engineer. */
+/* navigation title on top of the window */
 "Replace and add prefix or suffix to each line" = "Ersetzen und Präfix oder Suffix zu jeder Zeile hinzufügen";
 
-/* No comment provided by engineer. */
+/* navigation title on top of the window */
 "Search inside files" = "In Dateien suchen";
 
 /* No comment provided by engineer. */
@@ -67,11 +68,11 @@
 /* No comment provided by engineer. */
 "Swift" = "Swift";
 
-/* No comment provided by engineer. */
+/* tool name on the sidebar */
 "Text Case" = "Textfall";
 
 /* No comment provided by engineer. */
-"Toggle sidebar" = "Seitenleiste anzeigen";
+"Toggle sidebar" = "Seitenleiste umschalten";
 
 /* No comment provided by engineer. */
 "Toggle sidebar (Command+Shift+L)" = "Seitenleiste umschalten (Befehl+Umschalt+L)";

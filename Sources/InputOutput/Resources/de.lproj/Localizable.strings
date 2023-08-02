@@ -2,26 +2,26 @@
 "Copy to clipboard (Command+Shift+C)" = "In die Zwischenablage kopieren (Befehl+Umschalt+C)";
 
 /* No comment provided by engineer. */
-"horizontal split" = "horizontal aufteilen";
+"horizontal split" = "horizontale Aufteilung";
 
 /* No comment provided by engineer. */
 "Input it to the other tools (Command+Shift+U)" = "Geben Sie es in die anderen Werkzeuge ein (Befehl+Umschalt+U)";
 
 /* No comment provided by engineer. */
-"Move the output to one of the tools as input" = "Bewegen Sie die Ausgabe in eines der Tools als Eingabe";
+"Move the output to one of the tools as input" = "Verschieben Sie die Ausgabe in eines der Tools als Eingabe";
 
 /* No comment provided by engineer. */
-"Paste from clipboard (Command+Shift+P)" = "In die Zwischenablage einfügen (Befehl + Umschalt + P)";
+"Paste from clipboard (Command+Shift+P)" = "Aus Zwischenablage einfügen (Befehl+Umschalt+P)";
 
 /* No comment provided by engineer. */
-"Save to disk (Command+Shift+S)" = "Speichern auf Festplatte (Befehl + Umschalt + S)";
+"Save to disk (Command+Shift+S)" = "Auf Festplatte speichern (Befehl+Umschalt+S)";
 
 /* No comment provided by engineer. */
-"the input and output editor will be located next to each other" = "Der Eingabeverlauf und der Ausgabeverlauf werden nebeneinander platziert.";
+"the input and output editor will be located next to each other" = "Der Eingabe- und Ausgabe-Editor werden nebeneinander angeordnet sein";
 
 /* No comment provided by engineer. */
-"the input and output editor will be located underneath each other" = "Der Eingabe- und Ausgabeeditor wird untereinander platziert sein";
+"the input and output editor will be located underneath each other" = "Der Eingabe- und Ausgabeeditor befindet sich untereinander";
 
 /* No comment provided by engineer. */
-"vertical split" = "vertikaler Split";
+"vertical split" = "vertikale Aufteilung";
 

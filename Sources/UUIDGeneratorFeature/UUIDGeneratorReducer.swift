@@ -102,15 +102,15 @@ public struct UUIDGeneratorView: View {
             HStack {
                 IntegerTextField(value: viewStore.binding(\.$count), range: 1 ... 1_000_000)
                 Picker("", selection: viewStore.binding(\.$textCase)) {
-                    Text("lowercase").tag(TextCase.lower)
-                    Text("UPPERCASE").tag(TextCase.upper)
+                    Text(NSLocalizedString("lowercase", bundle: Bundle.module, comment: "")).tag(TextCase.lower)
+                    Text(NSLocalizedString("UPPERCASE", bundle: Bundle.module, comment: "")).tag(TextCase.upper)
                 }
             }
             .frame(maxWidth: 250)
             Button {
                 viewStore.send(.generateButtonTouched)
             } label: {
-                Text("Generate")
+                Text(NSLocalizedString("Generate", bundle: Bundle.module, comment: ""))
             }  // <-Button
 
             OutputEditorView(

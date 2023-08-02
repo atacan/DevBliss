@@ -74,7 +74,7 @@ struct OutputControlsView: View {
             )
             .font(.footnote)
             .keyboardShortcut("c", modifiers: [.command, .shift])
-            .help("Copy to clipboard (Command+Shift+C)")
+            .help(NSLocalizedString("Copy to clipboard (Command+Shift+C)", bundle: Bundle.module, comment: ""))
 
             Button {
                 viewStore.send(.saveAsButtonTouched)
@@ -84,7 +84,7 @@ struct OutputControlsView: View {
 
             .font(.footnote)
             .keyboardShortcut("s", modifiers: [.command, .shift])
-            .help("Save to disk (Command+Shift+S)")
+            .help(NSLocalizedString("Save to disk (Command+Shift+S)", bundle: Bundle.module, comment: ""))
 
             Button {
                 isOtherToolsPopoverVisible = true
@@ -93,7 +93,7 @@ struct OutputControlsView: View {
             }  // <-Button
             .font(.footnote)
             .keyboardShortcut("u", modifiers: [.command, .shift])
-            .help("Input it to the other tools (Command+Shift+U)")
+            .help(NSLocalizedString("Input it to the other tools (Command+Shift+U)", bundle: Bundle.module, comment: ""))
             .popover(isPresented: $isOtherToolsPopoverVisible) {
                 VStack(alignment: .leading) {
                     #if os(macOS)
@@ -125,7 +125,7 @@ struct OutputControlsView: View {
         Group {
             HStack(alignment: .lastTextBaseline) {
                 Image(systemName: "square.and.pencil")
-                Text("Move the output to one of the tools as input")
+                Text(NSLocalizedString("Move the output to one of the tools as input", bundle: Bundle.module, comment: ""))
                     .lineLimit(nil)
                     .font(.headline)
             }
