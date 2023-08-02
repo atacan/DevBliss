@@ -25,3 +25,13 @@ format:
 	# commit
 	git add .
 	git commit -m "Format code"
+
+en-xcloc:
+	xcodebuild -exportLocalizations -localizationPath ./localisations/ -exportLanguage en -sdk iphoneos16.4
+
+import-xcloc:
+	if [ -d "./localisations/de.xcloc/" ]; then \
+		xcodebuild -importLocalizations -localizationPath ./localisations/de.xcloc/ -sdk iphoneos16.4 ; \
+	else \
+		echo "Directory ./localisations/de.xcloc/ does not exist." ; \
+	fi
