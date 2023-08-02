@@ -1,0 +1,51 @@
+/* No comment provided by engineer. */
+"After applying prefix and suffice manipulations to each line separately, it ends." = "Après avoir appliqué des manipulations de préfixe et de suffixe à chaque ligne séparément, cela se termine.";
+
+/* No comment provided by engineer. */
+"Convert" = "Convert";
+
+/* No comment provided by engineer. */
+"Input" = "Entrée";
+
+/* No comment provided by engineer. */
+"It first starts applying the prefix changes" = "Il commence d'abord à appliquer les changements de préfixe";
+
+/* No comment provided by engineer. */
+"Output" = "Sortie";
+
+/* No comment provided by engineer. */
+"Prefix" = "Préfixe";
+
+/* No comment provided by engineer. */
+"Replace prefix" = "Remplacer le préfixe";
+
+/* No comment provided by engineer. */
+"Replace prefix if available" = "Remplacer le préfixe s'il est disponible";
+
+/* No comment provided by engineer. */
+"Replace suffix" = "Remplacer le suffixe";
+
+/* No comment provided by engineer. */
+"Replace suffix if available" = "Remplacer le suffixe s'il est disponible";
+
+/* No comment provided by engineer. */
+"Suffix" = "Suffixe";
+
+/* No comment provided by engineer. */
+"the prefix written previously will be replaced with this" = "le préfixe écrit précédemment sera remplacé par ceci";
+
+/* No comment provided by engineer. */
+"the suffix written previously will be replaced with this" = "le suffixe précédemment écrit sera remplacé par ceci";
+
+/* No comment provided by engineer. */
+"Then add Prefix" = "Ensuite, ajoutez un préfixe";
+
+/* No comment provided by engineer. */
+"Then add Suffix" = "Puis ajoutez le suffixe";
+
+/* No comment provided by engineer. */
+"Then it applies the suffix manipulation" = "Ensuite, il applique la manipulation de suffixe";
+
+/* No comment provided by engineer. */
+"with" = "avec";
+
