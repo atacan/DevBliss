@@ -1,0 +1,88 @@
+/* No comment provided by engineer. */
+"(.*)" = "(.*)";
+
+/* No comment provided by engineer. */
+"{.,}" = "{.,}";
+
+/* No comment provided by engineer. */
+"%@  Choose a tool from the Sidebar" = "%@ Choisissez un outil dans la barre latérale";
+
+/* No comment provided by engineer. */
+"<>" = "<>";
+
+/* No comment provided by engineer. */
+"Aa" = "Aa";
+
+/* navigation title on top of the window */
+"Convert case of list of words" = "Convertir le cas de la liste des mots";
+
+/* a navigationTitle */
+"Convert Html code to a DSL in Swift" = "Convertir le code Html en DSL en Swift";
+
+/* sidebar section name for a group of tools */
+"Converters" = "Convertisseurs";
+
+/* sidebar section name for a group of tools */
+"File" = "Fichier";
+
+/* tool name on the sidebar */
+"File Search" = "Recherche de fichiers";
+
+/* No comment provided by engineer. */
+"Format and Highlight Json" = "Formater et surligner Json";
+
+/* navigation title on top of the window */
+"Format Swift code" = "Code Swift format";
+
+/* sidebar section name for a group of tools */
+"Formatters" = "Formateurs";
+
+/* navigation title on top of the window */
+"Generate UUIDs" = "Générer des UUID";
+
+/* sidebar section name for a group of tools */
+"Generators" = "Générateurs";
+
+/* tool name on the sidebar */
+"Html to Swift" = "Html en Swift";
+
+/* No comment provided by engineer. */
+"Json" = "Json";
+
+/* tool name on the sidebar */
+"Prefix Suffix" = "Préfixe Suffixe";
+
+/* No comment provided by engineer. */
+"Pretty print and Highlight Json" = "Pretty print et mettre en évidence JSON";
+
+/* No comment provided by engineer. */
+"Pretty print Swift code" = "Imprimer joli le code Swift";
+
+/* navigation title on top of the window
+   tool name on the sidebar */
+"Regex Matches" = "Correspondances d'expressions régulières";
+
+/* navigation title on top of the window */
+"Replace and add prefix or suffix to each line" = "Remplacer et ajouter un préfixe ou un suffixe à chaque ligne";
+
+/* navigation title on top of the window */
+"Search inside files" = "Rechercher dans les fichiers";
+
+/* No comment provided by engineer. */
+"Sidebar with the list of tools" = "Barre latérale avec la liste des outils";
+
+/* No comment provided by engineer. */
+"Swift" = "Swift";
+
+/* tool name on the sidebar */
+"Text Case" = "Cas de texte";
+
+/* No comment provided by engineer. */
+"Toggle sidebar" = "Afficher/masquer la barre latérale";
+
+/* No comment provided by engineer. */
+"Toggle sidebar (Command+Shift+L)" = "Basculer la barre latérale (Commande+Majuscule+L)";
+
+/* No comment provided by engineer. */
+"UUID" = "UUID";
+

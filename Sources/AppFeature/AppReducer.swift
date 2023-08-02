@@ -394,9 +394,14 @@ public struct AppView: View {
                 }
             #endif
 
+            HStack(alignment: .center) {
+Image(systemName: "rectangle.leadinghalf.inset.filled.arrow.leading")
             Text(
-                "\(Image(systemName: "rectangle.leadinghalf.inset.filled.arrow.leading"))  Choose a tool from the Sidebar"
+                NSLocalizedString("Choose a tool from the Sidebar", bundle: Bundle.module, comment: "")
             )
+
+} // <-HStack
+
             .font(.title)
         }
     }
