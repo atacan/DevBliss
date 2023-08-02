@@ -272,7 +272,7 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.prefixSuffix))
                     } destination: { store in
                         PrefixSuffixView(store: store)
-                        .navigationTitle(NSLocalizedString("Replace and add prefix or suffix to each line", bundle: Bundle.module, comment: "navigation title on top of the window"))
+                        .navigationTitle(NSLocalizedString("Change prefix or suffix of each line", bundle: Bundle.module, comment: "navigation title on top of the window"))
                         .padding(.top)
                     } label: {
                         Label(

@@ -94,8 +94,8 @@
         </trans-unit>
         <trans-unit id="Replace and add prefix or suffix to each line" xml:space="preserve">
           <source>Replace and add prefix or suffix to each line</source>
-          <target>Remplacer et ajouter un préfixe ou un suffixe à chaque ligne</target>
-          <note>navigation title on top of the window</note>
+          <target>Remplacez et ajoutez un préfixe ou un suffixe à chaque ligne</target>
+          <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Search inside files" xml:space="preserve">
           <source>Search inside files</source>
@@ -151,6 +151,11 @@
           <source>Choose a tool from the Sidebar</source>
           <target>Choisissez un outil dans la barre latérale</target>
           <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Change prefix or suffix of each line" xml:space="preserve">
+          <source>Change prefix or suffix of each line</source>
+          <target>Changer le préfixe ou le suffixe de chaque ligne</target>
+          <note>navigation title on top of the window</note>
         </trans-unit>
         </body>
     </file>

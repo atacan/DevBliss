@@ -14,6 +14,12 @@
 "Aa" = "Aa";
 
 /* navigation title on top of the window */
+"Change prefix or suffix of each line" = "Changer le préfixe ou le suffixe de chaque ligne";
+
+/* No comment provided by engineer. */
+"Choose a tool from the Sidebar" = "Choisissez un outil dans la barre latérale";
+
+/* navigation title on top of the window */
 "Convert case of list of words" = "Convertir le cas de la liste des mots";
 
 /* a navigationTitle */
@@ -62,8 +68,8 @@
    tool name on the sidebar */
 "Regex Matches" = "Correspondances d'expressions régulières";
 
-/* navigation title on top of the window */
-"Replace and add prefix or suffix to each line" = "Remplacer et ajouter un préfixe ou un suffixe à chaque ligne";
+/* No comment provided by engineer. */
+"Replace and add prefix or suffix to each line" = "Remplacez et ajoutez un préfixe ou un suffixe à chaque ligne";
 
 /* navigation title on top of the window */
 "Search inside files" = "Rechercher dans les fichiers";
