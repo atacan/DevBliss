@@ -14,10 +14,10 @@
 "Aa" = "Aa";
 
 /* navigation title on top of the window */
-"Convert case of list of words" = "Groß- und Kleinschreibung von Wörterlisten umwandeln";
+"Convert case of list of words" = "Ändern Sie die Groß-/Kleinschreibung der Wortliste";
 
 /* a navigationTitle */
-"Convert Html code to a DSL in Swift" = "Html-Code in Swift in eine DSL umwandeln";
+"Convert Html code to a DSL in Swift" = "Konvertieren Sie Html-Code in eine DSL in Swift";
 
 /* sidebar section name for a group of tools */
 "Converters" = "Konverter";
@@ -27,6 +27,12 @@
 
 /* tool name on the sidebar */
 "File Search" = "Dateisuche";
+
+/* No comment provided by engineer. */
+"Format and Highlight Json" = "Json formatieren und hervorheben";
+
+/* navigation title on top of the window */
+"Format Swift code" = "Formatieren Sie den Swift-Code";
 
 /* sidebar section name for a group of tools */
 "Formatters" = "Formatoren";
@@ -38,7 +44,7 @@
 "Generators" = "Generatoren";
 
 /* tool name on the sidebar */
-"Html to Swift" = "Html to Swift";
+"Html to Swift" = "Html zu Swift";
 
 /* No comment provided by engineer. */
 "Json" = "Json";
@@ -54,10 +60,10 @@
 
 /* navigation title on top of the window
    tool name on the sidebar */
-"Regex Matches" = "Regex Übereinstimmungen";
+"Regex Matches" = "Reguläre Ausdrücke finden";
 
 /* navigation title on top of the window */
-"Replace and add prefix or suffix to each line" = "Ersetzen und Präfix oder Suffix zu jeder Zeile hinzufügen";
+"Replace and add prefix or suffix to each line" = "Ersetzen und Vor- oder Nachfix zu jeder Zeile hinzufügen";
 
 /* navigation title on top of the window */
 "Search inside files" = "In Dateien suchen";
@@ -69,7 +75,7 @@
 "Swift" = "Swift";
 
 /* tool name on the sidebar */
-"Text Case" = "Textfall";
+"Text Case" = "Text Case";
 
 /* No comment provided by engineer. */
 "Toggle sidebar" = "Seitenleiste umschalten";

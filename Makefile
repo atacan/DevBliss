@@ -30,8 +30,10 @@ en-xcloc:
 	xcodebuild -exportLocalizations -localizationPath ./localisations/ -exportLanguage en -sdk iphoneos16.4
 
 import-xcloc:
-	if [ -d "./localisations/de.xcloc/" ]; then \
-		xcodebuild -importLocalizations -localizationPath ./localisations/de.xcloc/ -sdk iphoneos16.4 ; \
-	else \
-		echo "Directory ./localisations/de.xcloc/ does not exist." ; \
-	fi
+	for lang in de nl fr it ja pl pt es tr sq zh ko ru; do \
+		if [ -d "./localisations/$$lang.xcloc/" ]; then \
+			xcodebuild -importLocalizations -localizationPath ./localisations/$$lang.xcloc/ -sdk iphoneos16.4 ; \
+		else \
+			echo "Directory ./localisations/$$lang.xcloc/ does not exist." ; \
+		fi ; \
+	done
