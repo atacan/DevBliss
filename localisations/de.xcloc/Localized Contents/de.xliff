@@ -89,13 +89,13 @@
         </trans-unit>
         <trans-unit id="Regex Matches" xml:space="preserve">
           <source>Regex Matches</source>
-          <target>Reguläre Ausdrücke finden</target>
+          <target>Regex-Matches</target>
           <note>navigation title on top of the window&#10;   tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Replace and add prefix or suffix to each line" xml:space="preserve">
           <source>Replace and add prefix or suffix to each line</source>
-          <target>Ersetzen und Vor- oder Nachfix zu jeder Zeile hinzufügen</target>
-          <note>navigation title on top of the window</note>
+          <target>Ersetzen und Präfix oder Suffix zu jeder Zeile hinzufügen</target>
+          <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Search inside files" xml:space="preserve">
           <source>Search inside files</source>
@@ -151,6 +151,11 @@
           <source>Choose a tool from the Sidebar</source>
           <target>Wählen Sie ein Tool aus der Seitennavigationsleiste</target>
           <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Change prefix or suffix of each line" xml:space="preserve">
+          <source>Change prefix or suffix of each line</source>
+          <target>Ändern Sie das Präfix oder Suffix jeder Zeile</target>
+          <note>navigation title on top of the window</note>
         </trans-unit>
         </body>
     </file>

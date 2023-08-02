@@ -23,6 +23,8 @@
 		5A7437072A2B69C9001DEC2E /* DevBliss.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DevBliss.entitlements; sourceTree = "<group>"; };
 		5A7437092A2B69C9001DEC2E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5AAF55582A2B6AE600A86142 /* DevBliss */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = DevBliss; path = ..; sourceTree = "<group>"; };
+		7957E0892A7AF88700F5E001 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = "ja.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
+		7957E08A2A7B002400F5E001 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
 		79A1B2602A799F1A00186A8C /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = "de.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -173,6 +175,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				79A1B2602A799F1A00186A8C /* de */,
+				7957E0892A7AF88700F5E001 /* ja */,
+				7957E08A2A7B002400F5E001 /* fr */,
 			);
 			name = "DevBliss-InfoPlist.strings";
 			path = DevBliss;

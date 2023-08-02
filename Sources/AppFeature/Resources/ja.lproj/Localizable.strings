@@ -14,6 +14,12 @@
 "Aa" = "Aa";
 
 /* navigation title on top of the window */
+"Change prefix or suffix of each line" = "各行の接頭辞または接尾辞を変更する";
+
+/* No comment provided by engineer. */
+"Choose a tool from the Sidebar" = "サイドバーからツールを選択してください";
+
+/* navigation title on top of the window */
 "Convert case of list of words" = "単語リストのケースを変換する";
 
 /* a navigationTitle */
@@ -62,8 +68,8 @@
    tool name on the sidebar */
 "Regex Matches" = "正規表現の一致";
 
-/* navigation title on top of the window */
-"Replace and add prefix or suffix to each line" = "それぞれの行に置換し、プレフィックスまたはサフィックスを追加";
+/* No comment provided by engineer. */
+"Replace and add prefix or suffix to each line" = "各行に置換してプレフィックスまたはサフィックスを追加する";
 
 /* navigation title on top of the window */
 "Search inside files" = "ファイル内の検索";
