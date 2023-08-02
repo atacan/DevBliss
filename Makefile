@@ -29,6 +29,11 @@ format:
 en-xcloc:
 	xcodebuild -exportLocalizations -localizationPath ./localisations/ -exportLanguage en -sdk iphoneos16.4
 
+move-xcloc:
+	unzip -o ~/Downloads/export.zip -d ./localisations/
+	# remove the zip file so that the new download will have the same name
+	rm ~/Downloads/export.zip
+
 import-xcloc:
 	for lang in de nl fr it ja pl pt es tr sq zh ko ru; do \
 		if [ -d "./localisations/$$lang.xcloc/" ]; then \
