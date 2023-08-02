@@ -147,6 +147,11 @@
           <target>Json formatieren und hervorheben</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
+        <trans-unit id="Choose a tool from the Sidebar" xml:space="preserve">
+          <source>Choose a tool from the Sidebar</source>
+          <target>Wählen Sie ein Tool aus der Seitennavigationsleiste</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
         </body>
     </file>
     <file original="Sources/FileContentSearchFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">

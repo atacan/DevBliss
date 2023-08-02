@@ -25,6 +25,11 @@
         <target>Aa</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Choose a tool from the Sidebar" xml:space="preserve">
+        <source>Choose a tool from the Sidebar</source>
+        <target>Choose a tool from the Sidebar</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Convert Html code to a DSL in Swift" xml:space="preserve">
         <source>Convert Html code to a DSL in Swift</source>
         <target>Convert Html code to a DSL in Swift</target>
