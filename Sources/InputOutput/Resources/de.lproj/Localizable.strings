@@ -1,8 +1,17 @@
 /* No comment provided by engineer. */
+"Close pop over" = "Schließe das Popover";
+
+/* No comment provided by engineer. */
+"Copy to clipboard" = "In Zwischenablage kopieren";
+
+/* No comment provided by engineer. */
 "Copy to clipboard (Command+Shift+C)" = "In die Zwischenablage kopieren (Befehl+Umschalt+C)";
 
 /* No comment provided by engineer. */
 "horizontal split" = "horizontale Aufteilung";
+
+/* No comment provided by engineer. */
+"Input it to the other tools" = "Geben Sie es in die anderen Tools ein";
 
 /* No comment provided by engineer. */
 "Input it to the other tools (Command+Shift+U)" = "Geben Sie es in die anderen Werkzeuge ein (Befehl+Umschalt+U)";
@@ -11,7 +20,13 @@
 "Move the output to one of the tools as input" = "Verschieben Sie die Ausgabe in eines der Tools als Eingabe";
 
 /* No comment provided by engineer. */
+"Paste from clipboard" = "Aus Zwischenablage einfügen";
+
+/* No comment provided by engineer. */
 "Paste from clipboard (Command+Shift+P)" = "Aus Zwischenablage einfügen (Befehl+Umschalt+P)";
+
+/* No comment provided by engineer. */
+"Save to disk" = "Auf Festplatte speichern";
 
 /* No comment provided by engineer. */
 "Save to disk (Command+Shift+S)" = "Auf Festplatte speichern (Befehl+Umschalt+S)";

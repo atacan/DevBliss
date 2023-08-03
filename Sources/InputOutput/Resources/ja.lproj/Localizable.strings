@@ -1,8 +1,17 @@
 /* No comment provided by engineer. */
+"Close pop over" = "ポップオーバーを閉じる";
+
+/* No comment provided by engineer. */
+"Copy to clipboard" = "クリップボードにコピー";
+
+/* No comment provided by engineer. */
 "Copy to clipboard (Command+Shift+C)" = "クリップボードにコピーする（Command+Shift+C）";
 
 /* No comment provided by engineer. */
 "horizontal split" = "水平分割";
+
+/* No comment provided by engineer. */
+"Input it to the other tools" = "他のツールに入力する";
 
 /* No comment provided by engineer. */
 "Input it to the other tools (Command+Shift+U)" = "他のツールに入力してください（Command+Shift+U）";
@@ -11,7 +20,13 @@
 "Move the output to one of the tools as input" = "出力をツールの1つに移動して入力として使用します";
 
 /* No comment provided by engineer. */
+"Paste from clipboard" = "クリップボードから貼り付ける";
+
+/* No comment provided by engineer. */
 "Paste from clipboard (Command+Shift+P)" = "クリップボードに貼り付ける（Command+Shift+P）";
+
+/* No comment provided by engineer. */
+"Save to disk" = "ディスクに保存する";
 
 /* No comment provided by engineer. */
 "Save to disk (Command+Shift+S)" = "ディスクに保存する（Command+Shift+S）";
