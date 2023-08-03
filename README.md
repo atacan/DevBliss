@@ -1,28 +1,27 @@
 # ![Icon](https://github.com/atacan/DevBliss/assets/765873/17d907d1-f5be-448b-9575-bdb8f1337630) DevBliss - Your Local Development Helper for macOS and iOS
 
-- [ DevBliss - Your Local Development Helper for macOS and iOS](#-devbliss---your-local-development-helper-for-macos-and-ios)
-  - [Why Choose DevBliss?](#why-choose-devbliss)
-  - [Key Features](#key-features)
-    - [Converters](#converters)
-    - [Formatters](#formatters)
-    - [File Handling](#file-handling)
-    - [Generators](#generators)
-  - [Getting Started](#getting-started)
-  - [Screenshots](#screenshots)
-    - [HTML to Swift Converter](#html-to-swift-converter)
-    - [Text Case Converter](#text-case-converter)
-    - [Prefix Suffix Converter](#prefix-suffix-converter)
-    - [Regex Match Extractor](#regex-match-extractor)
-    - [JSON Formatter](#json-formatter)
-    - [Swift Formatter](#swift-formatter)
-    - [File Content Search](#file-content-search)
-    - [UUID Generator](#uuid-generator)
-  - [Contribute](#contribute)
-    - [Build](#build)
-  - [Thanks](#thanks)
-  - [Conclusion](#conclusion)
-  - [License](#license)
-  - [Similar projects](#similar-projects)
+- [Why Choose DevBliss?](#why-choose-devbliss)
+- [Key Features](#key-features)
+  - [Converters](#converters)
+  - [Formatters](#formatters)
+  - [File Handling](#file-handling)
+  - [Generators](#generators)
+- [Getting Started](#getting-started)
+- [Screenshots](#screenshots)
+  - [HTML to Swift Converter](#html-to-swift-converter)
+  - [Text Case Converter](#text-case-converter)
+  - [Prefix Suffix Converter](#prefix-suffix-converter)
+  - [Regex Match Extractor](#regex-match-extractor)
+  - [JSON Formatter](#json-formatter)
+  - [Swift Formatter](#swift-formatter)
+  - [File Content Search](#file-content-search)
+  - [UUID Generator](#uuid-generator)
+- [Contribute](#contribute)
+  - [Build](#build)
+- [Thanks](#thanks)
+- [Conclusion](#conclusion)
+- [License](#license)
+- [Similar projects](#similar-projects)
 
 
 Welcome to DevBliss, a highly versatile and user-friendly software tool developed to boost your productivity as a developer. Built to operate locally on your macOS and iOS devices, DevBliss equips you with a suite of tools that are not just free of intrusive advertisements, but also prioritize your privacy by keeping all operations on your device.
@@ -158,6 +157,7 @@ open DevBliss/App/DevBliss.xcodeproj
 ## Thanks
 
 - [stevengharris/SplitView](https://github.com/stevengharris/SplitView)
+- [strings.dev](https://www.strings.dev) for the localization
 
 ## Conclusion
 

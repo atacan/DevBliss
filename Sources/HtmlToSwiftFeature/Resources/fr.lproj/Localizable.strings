@@ -7,3 +7,12 @@
 /* No comment provided by engineer. */
 "DSL Library" = "Bibliothèque DSL";
 
+/* picker description for which html component to output */
+"Full <html>" = "Complet <html>";
+
+/* picker description for which html component to output */
+"Only <body>" = "Seulement <body>";
+
+/* picker description for which html component to output */
+"Only <head>" = "Seulement <head>";
+

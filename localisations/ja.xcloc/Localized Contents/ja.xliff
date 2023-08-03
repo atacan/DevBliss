@@ -2,64 +2,14 @@
     <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
     <file original="Sources/AppFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="ja" datatype="plaintext">
       <body>
-      <trans-unit id="%@  Choose a tool from the Sidebar" xml:space="preserve">
-          <source>%@  Choose a tool from the Sidebar</source>
-          <target>%@ サイドバーからツールを選択してください</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="(.*)" xml:space="preserve">
+      <trans-unit id="(.*)" xml:space="preserve">
           <source>(.*)</source>
           <target>(.*)</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="&lt;&gt;" xml:space="preserve">
-          <source>&lt;&gt;</source>
-          <target>&lt;&lt;&gt;&gt;</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Aa" xml:space="preserve">
-          <source>Aa</source>
-          <target>Aa</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Convert Html code to a DSL in Swift" xml:space="preserve">
-          <source>Convert Html code to a DSL in Swift</source>
-          <target>SwiftでHtmlコードをDSLに変換する</target>
-          <note>a navigationTitle</note>
-        </trans-unit>
-        <trans-unit id="Convert case of list of words" xml:space="preserve">
-          <source>Convert case of list of words</source>
-          <target>単語リストのケースを変換する</target>
-          <note>navigation title on top of the window</note>
-        </trans-unit>
-        <trans-unit id="Converters" xml:space="preserve">
-          <source>Converters</source>
-          <target>変換ツール</target>
-          <note>sidebar section name for a group of tools</note>
-        </trans-unit>
-        <trans-unit id="File" xml:space="preserve">
-          <source>File</source>
-          <target>ファイル</target>
-          <note>sidebar section name for a group of tools</note>
-        </trans-unit>
-        <trans-unit id="File Search" xml:space="preserve">
-          <source>File Search</source>
-          <target>ファイル検索</target>
-          <note>tool name on the sidebar</note>
-        </trans-unit>
         <trans-unit id="Formatters" xml:space="preserve">
           <source>Formatters</source>
           <target>フォーマッター</target>
-          <note>sidebar section name for a group of tools</note>
-        </trans-unit>
-        <trans-unit id="Generate UUIDs" xml:space="preserve">
-          <source>Generate UUIDs</source>
-          <target>UUIDの生成</target>
-          <note>navigation title on top of the window</note>
-        </trans-unit>
-        <trans-unit id="Generators" xml:space="preserve">
-          <source>Generators</source>
-          <target>ジェネレーター</target>
           <note>sidebar section name for a group of tools</note>
         </trans-unit>
         <trans-unit id="Html to Swift" xml:space="preserve">
@@ -67,14 +17,39 @@
           <target>サイドバーのツール名</target>
           <note>tool name on the sidebar</note>
         </trans-unit>
-        <trans-unit id="Json" xml:space="preserve">
-          <source>Json</source>
-          <target>Json</target>
+        <trans-unit id="Regex Matches" xml:space="preserve">
+          <source>Regex Matches</source>
+          <target>正規表現の一致</target>
+          <note>navigation title on top of the window&#10;   tool name on the sidebar</note>
+        </trans-unit>
+        <trans-unit id="Text Case" xml:space="preserve">
+          <source>Text Case</source>
+          <target>サイドバー上のツール名</target>
+          <note>tool name on the sidebar</note>
+        </trans-unit>
+        <trans-unit id="{.,}" xml:space="preserve">
+          <source>{.,}</source>
+          <target>{.,}</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Prefix Suffix" xml:space="preserve">
-          <source>Prefix Suffix</source>
-          <target>接頭語 接尾語</target>
+        <trans-unit id="%@  Choose a tool from the Sidebar" xml:space="preserve">
+          <source>%@  Choose a tool from the Sidebar</source>
+          <target>%@ サイドバーからツールを選択してください</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Aa" xml:space="preserve">
+          <source>Aa</source>
+          <target>Aa</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Converters" xml:space="preserve">
+          <source>Converters</source>
+          <target>変換ツール</target>
+          <note>sidebar section name for a group of tools</note>
+        </trans-unit>
+        <trans-unit id="File Search" xml:space="preserve">
+          <source>File Search</source>
+          <target>ファイル検索</target>
           <note>tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Pretty print Swift code" xml:space="preserve">
@@ -82,15 +57,25 @@
           <target>Swiftコードをきれいに印刷する</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
+        <trans-unit id="Convert case of list of words" xml:space="preserve">
+          <source>Convert case of list of words</source>
+          <target>単語リストのケースを変換する</target>
+          <note>navigation title on top of the window</note>
+        </trans-unit>
+        <trans-unit id="Generate UUIDs" xml:space="preserve">
+          <source>Generate UUIDs</source>
+          <target>UUIDの生成</target>
+          <note>navigation title on top of the window</note>
+        </trans-unit>
+        <trans-unit id="Json" xml:space="preserve">
+          <source>Json</source>
+          <target>Json</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
         <trans-unit id="Pretty print and Highlight Json" xml:space="preserve">
           <source>Pretty print and Highlight Json</source>
           <target>Jsonを整形して強調表示する</target>
           <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Regex Matches" xml:space="preserve">
-          <source>Regex Matches</source>
-          <target>正規表現の一致</target>
-          <note>navigation title on top of the window&#10;   tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Replace and add prefix or suffix to each line" xml:space="preserve">
           <source>Replace and add prefix or suffix to each line</source>
@@ -102,20 +87,10 @@
           <target>ファイル内の検索</target>
           <note>navigation title on top of the window</note>
         </trans-unit>
-        <trans-unit id="Sidebar with the list of tools" xml:space="preserve">
-          <source>Sidebar with the list of tools</source>
-          <target>ツールのリストを表示するサイドバー</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
         <trans-unit id="Swift" xml:space="preserve">
           <source>Swift</source>
           <target>スウィフト</target>
           <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Text Case" xml:space="preserve">
-          <source>Text Case</source>
-          <target>サイドバー上のツール名</target>
-          <note>tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Toggle sidebar" xml:space="preserve">
           <source>Toggle sidebar</source>
@@ -127,25 +102,50 @@
           <target>サイドバーを切り替える（コマンド+シフト+L）</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
+        <trans-unit id="&lt;&gt;" xml:space="preserve">
+          <source>&lt;&gt;</source>
+          <target>&lt;&lt;&gt;&gt;</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Convert Html code to a DSL in Swift" xml:space="preserve">
+          <source>Convert Html code to a DSL in Swift</source>
+          <target>SwiftでHtmlコードをDSLに変換する</target>
+          <note>a navigationTitle</note>
+        </trans-unit>
+        <trans-unit id="File" xml:space="preserve">
+          <source>File</source>
+          <target>ファイル</target>
+          <note>sidebar section name for a group of tools</note>
+        </trans-unit>
+        <trans-unit id="Generators" xml:space="preserve">
+          <source>Generators</source>
+          <target>ジェネレーター</target>
+          <note>sidebar section name for a group of tools</note>
+        </trans-unit>
+        <trans-unit id="Prefix Suffix" xml:space="preserve">
+          <source>Prefix Suffix</source>
+          <target>接頭語 接尾語</target>
+          <note>tool name on the sidebar</note>
+        </trans-unit>
+        <trans-unit id="Sidebar with the list of tools" xml:space="preserve">
+          <source>Sidebar with the list of tools</source>
+          <target>ツールのリストを表示するサイドバー</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
         <trans-unit id="UUID" xml:space="preserve">
           <source>UUID</source>
           <target>UUID</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="{.,}" xml:space="preserve">
-          <source>{.,}</source>
-          <target>{.,}</target>
+        <trans-unit id="Format and Highlight Json" xml:space="preserve">
+          <source>Format and Highlight Json</source>
+          <target>フォーマットとハイライトJson</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Format Swift code" xml:space="preserve">
           <source>Format Swift code</source>
           <target>フォーマットSwiftコード</target>
           <note>navigation title on top of the window</note>
-        </trans-unit>
-        <trans-unit id="Format and Highlight Json" xml:space="preserve">
-          <source>Format and Highlight Json</source>
-          <target>フォーマットとハイライトJson</target>
-          <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Choose a tool from the Sidebar" xml:space="preserve">
           <source>Choose a tool from the Sidebar</source>
@@ -161,9 +161,9 @@
     </file>
     <file original="Sources/FileContentSearchFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="ja" datatype="plaintext">
       <body>
-      <trans-unit id="Directory" xml:space="preserve">
-          <source>Directory</source>
-          <target>ディレクトリ</target>
+      <trans-unit id="Git User" xml:space="preserve">
+          <source>Git User</source>
+          <target>Gitユーザー</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="File Path" xml:space="preserve">
@@ -171,9 +171,24 @@
           <target>ファイルパス</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Git User" xml:space="preserve">
-          <source>Git User</source>
-          <target>Gitユーザー</target>
+        <trans-unit id="Search" xml:space="preserve">
+          <source>Search</source>
+          <target>検索</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Search also hidden files and folders" xml:space="preserve">
+          <source>Search also hidden files and folders</source>
+          <target>も隠れたファイルやフォルダを検索します</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="term to search inside the file..." xml:space="preserve">
+          <source>term to search inside the file...</source>
+          <target>ファイルの中を検索するための用語...</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Directory" xml:space="preserve">
+          <source>Directory</source>
+          <target>ディレクトリ</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Lines" xml:space="preserve">
@@ -186,24 +201,9 @@
           <target>変更された</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Search" xml:space="preserve">
-          <source>Search</source>
-          <target>検索</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
         <trans-unit id="Search Term" xml:space="preserve">
           <source>Search Term</source>
           <target>検索語句</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Search also hidden files and folders" xml:space="preserve">
-          <source>Search also hidden files and folders</source>
-          <target>も隠れたファイルやフォルダを検索します</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="term to search inside the file..." xml:space="preserve">
-          <source>term to search inside the file...</source>
-          <target>ファイルの中を検索するための用語...</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="File Content" xml:space="preserve">
@@ -230,23 +230,53 @@
           <target>DSL ライブラリ</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
+        <trans-unit id="Full &lt;html&gt;" xml:space="preserve">
+          <source>Full &lt;html&gt;</source>
+          <target>フル &lt;html&gt;</target>
+          <note>picker description for which html component to output</note>
+        </trans-unit>
+        <trans-unit id="Only &lt;body&gt;" xml:space="preserve">
+          <source>Only &lt;body&gt;</source>
+          <target>Only &lt;body&gt;</target>
+          <note>picker description for which html component to output</note>
+        </trans-unit>
+        <trans-unit id="Only &lt;head&gt;" xml:space="preserve">
+          <source>Only &lt;head&gt;</source>
+          <target>Only &lt;head&gt;</target>
+          <note>picker description for which html component to output</note>
+        </trans-unit>
         </body>
     </file>
     <file original="Sources/InputOutput/Resources/en.lproj/Localizable.strings" source-language="en" target-language="ja" datatype="plaintext">
       <body>
-      <trans-unit id="Copy to clipboard (Command+Shift+C)" xml:space="preserve">
+      <trans-unit id="Move the output to one of the tools as input" xml:space="preserve">
+          <source>Move the output to one of the tools as input</source>
+          <target>出力をツールの1つに移動して入力として使用します</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="the input and output editor will be located next to each other" xml:space="preserve">
+          <source>the input and output editor will be located next to each other</source>
+          <target>入力と出力のエディタは隣り合って配置されます。</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Copy to clipboard (Command+Shift+C)" xml:space="preserve">
           <source>Copy to clipboard (Command+Shift+C)</source>
           <target>クリップボードにコピーする（Command+Shift+C）</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="horizontal split" xml:space="preserve">
+          <source>horizontal split</source>
+          <target>水平分割</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="vertical split" xml:space="preserve">
+          <source>vertical split</source>
+          <target>垂直分割</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Input it to the other tools (Command+Shift+U)" xml:space="preserve">
           <source>Input it to the other tools (Command+Shift+U)</source>
           <target>他のツールに入力してください（Command+Shift+U）</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Move the output to one of the tools as input" xml:space="preserve">
-          <source>Move the output to one of the tools as input</source>
-          <target>出力をツールの1つに移動して入力として使用します</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Paste from clipboard (Command+Shift+P)" xml:space="preserve">
@@ -259,24 +289,9 @@
           <target>ディスクに保存する（Command+Shift+S）</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="horizontal split" xml:space="preserve">
-          <source>horizontal split</source>
-          <target>水平分割</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="the input and output editor will be located next to each other" xml:space="preserve">
-          <source>the input and output editor will be located next to each other</source>
-          <target>入力と出力のエディタは隣り合って配置されます。</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
         <trans-unit id="the input and output editor will be located underneath each other" xml:space="preserve">
           <source>the input and output editor will be located underneath each other</source>
           <target>入力と出力のエディタは、互いの下に配置されます。</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="vertical split" xml:space="preserve">
-          <source>vertical split</source>
-          <target>垂直分割</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>
@@ -302,12 +317,7 @@
     </file>
     <file original="Sources/PrefixSuffixFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="ja" datatype="plaintext">
       <body>
-      <trans-unit id="After applying prefix and suffice manipulations to each line separately, it ends." xml:space="preserve">
-          <source>After applying prefix and suffice manipulations to each line separately, it ends.</source>
-          <target>それぞれの行にプレフィックスとサフィックスの操作を適用した後、終了します。</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Convert" xml:space="preserve">
+      <trans-unit id="Convert" xml:space="preserve">
           <source>Convert</source>
           <target>変換する</target>
           <note>No comment provided by engineer.</note>
@@ -315,16 +325,6 @@
         <trans-unit id="It first starts applying the prefix changes" xml:space="preserve">
           <source>It first starts applying the prefix changes</source>
           <target>最初にプレフィックスの変更を適用します</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Prefix" xml:space="preserve">
-          <source>Prefix</source>
-          <target>プレフィックス</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Replace prefix" xml:space="preserve">
-          <source>Replace prefix</source>
-          <target>接頭辞を置き換える</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Replace prefix if available" xml:space="preserve">
@@ -337,9 +337,9 @@
           <target>サフィックスを置き換える</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Replace suffix if available" xml:space="preserve">
-          <source>Replace suffix if available</source>
-          <target>利用可能な場合は接尾辞を置き換えます</target>
+        <trans-unit id="Then add Prefix" xml:space="preserve">
+          <source>Then add Prefix</source>
+          <target>プレフィックスを追加してください</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Suffix" xml:space="preserve">
@@ -347,29 +347,9 @@
           <target>接尾辞</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Then add Prefix" xml:space="preserve">
-          <source>Then add Prefix</source>
-          <target>プレフィックスを追加してください</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Then add Suffix" xml:space="preserve">
-          <source>Then add Suffix</source>
-          <target>その後、接尾辞を追加してください</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Then it applies the suffix manipulation" xml:space="preserve">
-          <source>Then it applies the suffix manipulation</source>
-          <target>それから、接尾辞の操作を適用します</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
         <trans-unit id="the prefix written previously will be replaced with this" xml:space="preserve">
           <source>the prefix written previously will be replaced with this</source>
           <target>以前に書かれた接頭辞はこれで置き換えられます</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="the suffix written previously will be replaced with this" xml:space="preserve">
-          <source>the suffix written previously will be replaced with this</source>
-          <target>以前に書かれた接尾辞はこれで置き換えられます。</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="with" xml:space="preserve">
@@ -377,14 +357,49 @@
           <target>と一緒に</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Input" xml:space="preserve">
-          <source>Input</source>
-          <target>入力</target>
+        <trans-unit id="After applying prefix and suffice manipulations to each line separately, it ends." xml:space="preserve">
+          <source>After applying prefix and suffice manipulations to each line separately, it ends.</source>
+          <target>それぞれの行にプレフィックスとサフィックスの操作を適用した後、終了します。</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Prefix" xml:space="preserve">
+          <source>Prefix</source>
+          <target>プレフィックス</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Replace prefix" xml:space="preserve">
+          <source>Replace prefix</source>
+          <target>接頭辞を置き換える</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Then it applies the suffix manipulation" xml:space="preserve">
+          <source>Then it applies the suffix manipulation</source>
+          <target>それから、接尾辞の操作を適用します</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="the suffix written previously will be replaced with this" xml:space="preserve">
+          <source>the suffix written previously will be replaced with this</source>
+          <target>以前に書かれた接尾辞はこれで置き換えられます。</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Replace suffix if available" xml:space="preserve">
+          <source>Replace suffix if available</source>
+          <target>利用可能な場合は接尾辞を置き換えます</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Then add Suffix" xml:space="preserve">
+          <source>Then add Suffix</source>
+          <target>その後、接尾辞を追加してください</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Output" xml:space="preserve">
           <source>Output</source>
           <target>出力</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Input" xml:space="preserve">
+          <source>Input</source>
+          <target>入力</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>
@@ -425,9 +440,9 @@
           <target>フォーマット</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Pretty" xml:space="preserve">
-          <source>Pretty</source>
-          <target>プリティ</target>
+        <trans-unit id="nicklockwood/SwiftFormat Config" xml:space="preserve">
+          <source>nicklockwood/SwiftFormat Config</source>
+          <target>nicklockwood/SwiftFormatの設定</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Raw" xml:space="preserve">
@@ -435,21 +450,16 @@
           <target>生データ</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="nicklockwood/SwiftFormat Config" xml:space="preserve">
-          <source>nicklockwood/SwiftFormat Config</source>
-          <target>nicklockwood/SwiftFormatの設定</target>
+        <trans-unit id="Pretty" xml:space="preserve">
+          <source>Pretty</source>
+          <target>プリティ</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>
     </file>
     <file original="Sources/TextCaseConverterFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="ja" datatype="plaintext">
       <body>
-      <trans-unit id="Convert" xml:space="preserve">
-          <source>Convert</source>
-          <target>変換する</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="From" xml:space="preserve">
+      <trans-unit id="From" xml:space="preserve">
           <source>From</source>
           <target>から</target>
           <note>No comment provided by engineer.</note>
@@ -457,6 +467,11 @@
         <trans-unit id="Separator" xml:space="preserve">
           <source>Separator</source>
           <target>セパレーター</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Convert" xml:space="preserve">
+          <source>Convert</source>
+          <target>変換する</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="To" xml:space="preserve">
@@ -474,37 +489,33 @@
           <target>出力</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        </body>
-    </file>
-    <file original="Sources/UUIDGeneratorFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="ja" datatype="plaintext">
-      <body>
-      <trans-unit id="Generate" xml:space="preserve">
-          <source>Generate</source>
-          <target>生成する</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="UPPERCASE" xml:space="preserve">
-          <source>UPPERCASE</source>
-          <target>大文字</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="lowercase" xml:space="preserve">
-          <source>lowercase</source>
-          <target>小文字</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        </body>
-    </file>
-    <file original="Sources/TextCaseConverterClient/Resources/en.lproj/Localizable.strings" source-language="en" target-language="ja" datatype="plaintext">
-      <body>
-      <trans-unit id="New Line" xml:space="preserve">
+        <trans-unit id="New Line" xml:space="preserve">
           <source>New Line</source>
-          <target>改行</target>
+          <target>新しいライン</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Space" xml:space="preserve">
           <source>Space</source>
           <target>スペース</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        </body>
+    </file>
+    <file original="Sources/UUIDGeneratorFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="ja" datatype="plaintext">
+      <body>
+      <trans-unit id="UPPERCASE" xml:space="preserve">
+          <source>UPPERCASE</source>
+          <target>大文字</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Generate" xml:space="preserve">
+          <source>Generate</source>
+          <target>生成する</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="lowercase" xml:space="preserve">
+          <source>lowercase</source>
+          <target>小文字</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>

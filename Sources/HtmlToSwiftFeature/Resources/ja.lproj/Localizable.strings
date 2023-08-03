@@ -7,3 +7,12 @@
 /* No comment provided by engineer. */
 "DSL Library" = "DSL ライブラリ";
 
+/* picker description for which html component to output */
+"Full <html>" = "フル <html>";
+
+/* picker description for which html component to output */
+"Only <body>" = "Only <body>";
+
+/* picker description for which html component to output */
+"Only <head>" = "Only <head>";
+

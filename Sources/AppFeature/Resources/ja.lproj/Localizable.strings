@@ -52,7 +52,7 @@
 /* tool name on the sidebar */
 "Html to Swift" = "サイドバーのツール名";
 
-/* No comment provided by engineer. */
+/* sidebar name for the tool */
 "Json" = "Json";
 
 /* tool name on the sidebar */
@@ -77,7 +77,7 @@
 /* No comment provided by engineer. */
 "Sidebar with the list of tools" = "ツールのリストを表示するサイドバー";
 
-/* No comment provided by engineer. */
+/* sidebar name for the tool */
 "Swift" = "スウィフト";
 
 /* tool name on the sidebar */
