@@ -1,3 +1,6 @@
+strings_dev-download-translations.sh
+strings_dev-upload-strings.sh
+
 .DS_Store
 **/.DS_Store
 /.build
