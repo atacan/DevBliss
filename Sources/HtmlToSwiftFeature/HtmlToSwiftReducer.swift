@@ -96,7 +96,7 @@ public struct HtmlToSwiftView: View {
                 }
                 Picker(NSLocalizedString("Component", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$component)) {
                     ForEach(HtmlOutputComponent.allCases) { component in
-                        Text(component.rawValue)
+                        Text(outputComponentPickerName(for: component))
                             .tag(component)
                     }
                 }
@@ -116,6 +116,17 @@ public struct HtmlToSwiftView: View {
                 inputEditorTitle: "Html",
                 outputEditorTitle: "Swift"
             )
+        }
+    }
+    
+    private func outputComponentPickerName(for component: HtmlOutputComponent) -> String{
+        switch component {
+        case .fullHtml:
+            return NSLocalizedString("Full <html>", bundle: Bundle.module, comment: "picker description for which html component to output")
+        case .onlyBody:
+            return NSLocalizedString("Only <body>", bundle: Bundle.module, comment: "picker description for which html component to output")
+        case .onlyHead:
+            return NSLocalizedString("Only <head>", bundle: Bundle.module, comment: "picker description for which html component to output")
         }
     }
 }

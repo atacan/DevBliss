@@ -2,64 +2,14 @@
     <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
     <file original="Sources/AppFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
       <body>
-      <trans-unit id="%@  Choose a tool from the Sidebar" xml:space="preserve">
-          <source>%@  Choose a tool from the Sidebar</source>
-          <target>%@  Wählen Sie ein Werkzeug aus der Seitenleiste</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="(.*)" xml:space="preserve">
+      <trans-unit id="(.*)" xml:space="preserve">
           <source>(.*)</source>
           <target>(.*)</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="&lt;&gt;" xml:space="preserve">
-          <source>&lt;&gt;</source>
-          <target>&lt;&gt;</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Aa" xml:space="preserve">
-          <source>Aa</source>
-          <target>Aa</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Convert Html code to a DSL in Swift" xml:space="preserve">
-          <source>Convert Html code to a DSL in Swift</source>
-          <target>Konvertieren Sie Html-Code in eine DSL in Swift</target>
-          <note>a navigationTitle</note>
-        </trans-unit>
-        <trans-unit id="Convert case of list of words" xml:space="preserve">
-          <source>Convert case of list of words</source>
-          <target>Ändern Sie die Groß-/Kleinschreibung der Wortliste</target>
-          <note>navigation title on top of the window</note>
-        </trans-unit>
-        <trans-unit id="Converters" xml:space="preserve">
-          <source>Converters</source>
-          <target>Konverter</target>
-          <note>sidebar section name for a group of tools</note>
-        </trans-unit>
-        <trans-unit id="File" xml:space="preserve">
-          <source>File</source>
-          <target>Datei</target>
-          <note>sidebar section name for a group of tools</note>
-        </trans-unit>
-        <trans-unit id="File Search" xml:space="preserve">
-          <source>File Search</source>
-          <target>Dateisuche</target>
-          <note>tool name on the sidebar</note>
-        </trans-unit>
         <trans-unit id="Formatters" xml:space="preserve">
           <source>Formatters</source>
           <target>Formatoren</target>
-          <note>sidebar section name for a group of tools</note>
-        </trans-unit>
-        <trans-unit id="Generate UUIDs" xml:space="preserve">
-          <source>Generate UUIDs</source>
-          <target>Generiere UUIDs</target>
-          <note>navigation title on top of the window</note>
-        </trans-unit>
-        <trans-unit id="Generators" xml:space="preserve">
-          <source>Generators</source>
-          <target>Generatoren</target>
           <note>sidebar section name for a group of tools</note>
         </trans-unit>
         <trans-unit id="Html to Swift" xml:space="preserve">
@@ -67,14 +17,39 @@
           <target>Html zu Swift</target>
           <note>tool name on the sidebar</note>
         </trans-unit>
-        <trans-unit id="Json" xml:space="preserve">
-          <source>Json</source>
-          <target>Json</target>
+        <trans-unit id="Regex Matches" xml:space="preserve">
+          <source>Regex Matches</source>
+          <target>Regex-Matches</target>
+          <note>navigation title on top of the window&#10;   tool name on the sidebar</note>
+        </trans-unit>
+        <trans-unit id="Text Case" xml:space="preserve">
+          <source>Text Case</source>
+          <target>Text Case</target>
+          <note>tool name on the sidebar</note>
+        </trans-unit>
+        <trans-unit id="{.,}" xml:space="preserve">
+          <source>{.,}</source>
+          <target>{.,}</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Prefix Suffix" xml:space="preserve">
-          <source>Prefix Suffix</source>
-          <target>Präfix Suffix</target>
+        <trans-unit id="%@  Choose a tool from the Sidebar" xml:space="preserve">
+          <source>%@  Choose a tool from the Sidebar</source>
+          <target>%@  Wählen Sie ein Werkzeug aus der Seitenleiste</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Aa" xml:space="preserve">
+          <source>Aa</source>
+          <target>Aa</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Converters" xml:space="preserve">
+          <source>Converters</source>
+          <target>Konverter</target>
+          <note>sidebar section name for a group of tools</note>
+        </trans-unit>
+        <trans-unit id="File Search" xml:space="preserve">
+          <source>File Search</source>
+          <target>Dateisuche</target>
           <note>tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Pretty print Swift code" xml:space="preserve">
@@ -82,15 +57,25 @@
           <target>Pretty Print Swift-Code</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
+        <trans-unit id="Convert case of list of words" xml:space="preserve">
+          <source>Convert case of list of words</source>
+          <target>Ändern Sie die Groß-/Kleinschreibung der Wortliste</target>
+          <note>navigation title on top of the window</note>
+        </trans-unit>
+        <trans-unit id="Generate UUIDs" xml:space="preserve">
+          <source>Generate UUIDs</source>
+          <target>Generiere UUIDs</target>
+          <note>navigation title on top of the window</note>
+        </trans-unit>
+        <trans-unit id="Json" xml:space="preserve">
+          <source>Json</source>
+          <target>Json</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
         <trans-unit id="Pretty print and Highlight Json" xml:space="preserve">
           <source>Pretty print and Highlight Json</source>
           <target>Hübschen Druck und Json hervorheben</target>
           <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Regex Matches" xml:space="preserve">
-          <source>Regex Matches</source>
-          <target>Regex-Matches</target>
-          <note>navigation title on top of the window&#10;   tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Replace and add prefix or suffix to each line" xml:space="preserve">
           <source>Replace and add prefix or suffix to each line</source>
@@ -102,20 +87,10 @@
           <target>In Dateien suchen</target>
           <note>navigation title on top of the window</note>
         </trans-unit>
-        <trans-unit id="Sidebar with the list of tools" xml:space="preserve">
-          <source>Sidebar with the list of tools</source>
-          <target>Seitenleiste mit der Liste der Werkzeuge</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
         <trans-unit id="Swift" xml:space="preserve">
           <source>Swift</source>
           <target>Swift</target>
           <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Text Case" xml:space="preserve">
-          <source>Text Case</source>
-          <target>Text Case</target>
-          <note>tool name on the sidebar</note>
         </trans-unit>
         <trans-unit id="Toggle sidebar" xml:space="preserve">
           <source>Toggle sidebar</source>
@@ -127,25 +102,50 @@
           <target>Seitenleiste umschalten (Befehl+Umschalt+L)</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
+        <trans-unit id="&lt;&gt;" xml:space="preserve">
+          <source>&lt;&gt;</source>
+          <target>&lt;&gt;</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Convert Html code to a DSL in Swift" xml:space="preserve">
+          <source>Convert Html code to a DSL in Swift</source>
+          <target>Konvertieren Sie Html-Code in eine DSL in Swift</target>
+          <note>a navigationTitle</note>
+        </trans-unit>
+        <trans-unit id="File" xml:space="preserve">
+          <source>File</source>
+          <target>Datei</target>
+          <note>sidebar section name for a group of tools</note>
+        </trans-unit>
+        <trans-unit id="Generators" xml:space="preserve">
+          <source>Generators</source>
+          <target>Generatoren</target>
+          <note>sidebar section name for a group of tools</note>
+        </trans-unit>
+        <trans-unit id="Prefix Suffix" xml:space="preserve">
+          <source>Prefix Suffix</source>
+          <target>Präfix Suffix</target>
+          <note>tool name on the sidebar</note>
+        </trans-unit>
+        <trans-unit id="Sidebar with the list of tools" xml:space="preserve">
+          <source>Sidebar with the list of tools</source>
+          <target>Seitenleiste mit der Liste der Werkzeuge</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
         <trans-unit id="UUID" xml:space="preserve">
           <source>UUID</source>
           <target>UUID</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="{.,}" xml:space="preserve">
-          <source>{.,}</source>
-          <target>{.,}</target>
+        <trans-unit id="Format and Highlight Json" xml:space="preserve">
+          <source>Format and Highlight Json</source>
+          <target>Json formatieren und hervorheben</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Format Swift code" xml:space="preserve">
           <source>Format Swift code</source>
           <target>Formatieren Sie den Swift-Code</target>
           <note>navigation title on top of the window</note>
-        </trans-unit>
-        <trans-unit id="Format and Highlight Json" xml:space="preserve">
-          <source>Format and Highlight Json</source>
-          <target>Json formatieren und hervorheben</target>
-          <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Choose a tool from the Sidebar" xml:space="preserve">
           <source>Choose a tool from the Sidebar</source>
@@ -161,9 +161,9 @@
     </file>
     <file original="Sources/FileContentSearchFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
       <body>
-      <trans-unit id="Directory" xml:space="preserve">
-          <source>Directory</source>
-          <target>Verzeichnis</target>
+      <trans-unit id="Git User" xml:space="preserve">
+          <source>Git User</source>
+          <target>Git-Benutzer</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="File Path" xml:space="preserve">
@@ -171,9 +171,24 @@
           <target>Dateipfad</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Git User" xml:space="preserve">
-          <source>Git User</source>
-          <target>Git-Benutzer</target>
+        <trans-unit id="Search" xml:space="preserve">
+          <source>Search</source>
+          <target>Suche</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Search also hidden files and folders" xml:space="preserve">
+          <source>Search also hidden files and folders</source>
+          <target>Suchen Sie auch nach versteckten Dateien und Ordnern</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="term to search inside the file..." xml:space="preserve">
+          <source>term to search inside the file...</source>
+          <target>Suchbegriff in Datei suchen...</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Directory" xml:space="preserve">
+          <source>Directory</source>
+          <target>Verzeichnis</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Lines" xml:space="preserve">
@@ -186,24 +201,9 @@
           <target>Geändert</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Search" xml:space="preserve">
-          <source>Search</source>
-          <target>Suche</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
         <trans-unit id="Search Term" xml:space="preserve">
           <source>Search Term</source>
           <target>Suchbegriff</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Search also hidden files and folders" xml:space="preserve">
-          <source>Search also hidden files and folders</source>
-          <target>Suchen Sie auch nach versteckten Dateien und Ordnern</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="term to search inside the file..." xml:space="preserve">
-          <source>term to search inside the file...</source>
-          <target>Suchbegriff in Datei suchen...</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="File Content" xml:space="preserve">
@@ -230,23 +230,53 @@
           <target>DSL-Bibliothek</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
+        <trans-unit id="Full &lt;html&gt;" xml:space="preserve">
+          <source>Full &lt;html&gt;</source>
+          <target>Volle &lt;html&gt;</target>
+          <note>picker description for which html component to output</note>
+        </trans-unit>
+        <trans-unit id="Only &lt;body&gt;" xml:space="preserve">
+          <source>Only &lt;body&gt;</source>
+          <target>Nur &lt;body&gt;</target>
+          <note>picker description for which html component to output</note>
+        </trans-unit>
+        <trans-unit id="Only &lt;head&gt;" xml:space="preserve">
+          <source>Only &lt;head&gt;</source>
+          <target>Nur &lt;head&gt;</target>
+          <note>picker description for which html component to output</note>
+        </trans-unit>
         </body>
     </file>
     <file original="Sources/InputOutput/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
       <body>
-      <trans-unit id="Copy to clipboard (Command+Shift+C)" xml:space="preserve">
+      <trans-unit id="Move the output to one of the tools as input" xml:space="preserve">
+          <source>Move the output to one of the tools as input</source>
+          <target>Verschieben Sie die Ausgabe in eines der Tools als Eingabe</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="the input and output editor will be located next to each other" xml:space="preserve">
+          <source>the input and output editor will be located next to each other</source>
+          <target>Der Eingabe- und Ausgabe-Editor werden nebeneinander angeordnet sein</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Copy to clipboard (Command+Shift+C)" xml:space="preserve">
           <source>Copy to clipboard (Command+Shift+C)</source>
           <target>In die Zwischenablage kopieren (Befehl+Umschalt+C)</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="horizontal split" xml:space="preserve">
+          <source>horizontal split</source>
+          <target>horizontale Aufteilung</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="vertical split" xml:space="preserve">
+          <source>vertical split</source>
+          <target>vertikale Aufteilung</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Input it to the other tools (Command+Shift+U)" xml:space="preserve">
           <source>Input it to the other tools (Command+Shift+U)</source>
           <target>Geben Sie es in die anderen Werkzeuge ein (Befehl+Umschalt+U)</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Move the output to one of the tools as input" xml:space="preserve">
-          <source>Move the output to one of the tools as input</source>
-          <target>Verschieben Sie die Ausgabe in eines der Tools als Eingabe</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Paste from clipboard (Command+Shift+P)" xml:space="preserve">
@@ -259,24 +289,9 @@
           <target>Auf Festplatte speichern (Befehl+Umschalt+S)</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="horizontal split" xml:space="preserve">
-          <source>horizontal split</source>
-          <target>horizontale Aufteilung</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="the input and output editor will be located next to each other" xml:space="preserve">
-          <source>the input and output editor will be located next to each other</source>
-          <target>Der Eingabe- und Ausgabe-Editor werden nebeneinander angeordnet sein</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
         <trans-unit id="the input and output editor will be located underneath each other" xml:space="preserve">
           <source>the input and output editor will be located underneath each other</source>
           <target>Der Eingabe- und Ausgabeeditor befindet sich untereinander</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="vertical split" xml:space="preserve">
-          <source>vertical split</source>
-          <target>vertikale Aufteilung</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>
@@ -302,12 +317,7 @@
     </file>
     <file original="Sources/PrefixSuffixFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
       <body>
-      <trans-unit id="After applying prefix and suffice manipulations to each line separately, it ends." xml:space="preserve">
-          <source>After applying prefix and suffice manipulations to each line separately, it ends.</source>
-          <target>Nach Anwendung von Präfix- und Suffix-Manipulationen auf jede Zeile einzeln endet es.</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Convert" xml:space="preserve">
+      <trans-unit id="Convert" xml:space="preserve">
           <source>Convert</source>
           <target>Konvertieren</target>
           <note>No comment provided by engineer.</note>
@@ -315,16 +325,6 @@
         <trans-unit id="It first starts applying the prefix changes" xml:space="preserve">
           <source>It first starts applying the prefix changes</source>
           <target>Zuerst werden die Änderungen am Präfix angewendet</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Prefix" xml:space="preserve">
-          <source>Prefix</source>
-          <target>Präfix</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Replace prefix" xml:space="preserve">
-          <source>Replace prefix</source>
-          <target>Präfix ersetzen</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Replace prefix if available" xml:space="preserve">
@@ -337,9 +337,9 @@
           <target>Suffix ersetzen</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Replace suffix if available" xml:space="preserve">
-          <source>Replace suffix if available</source>
-          <target>Suffix austauschen, falls verfügbar</target>
+        <trans-unit id="Then add Prefix" xml:space="preserve">
+          <source>Then add Prefix</source>
+          <target>Dann füge einen Präfix hinzu</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Suffix" xml:space="preserve">
@@ -347,29 +347,9 @@
           <target>Suffix</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Then add Prefix" xml:space="preserve">
-          <source>Then add Prefix</source>
-          <target>Dann füge einen Präfix hinzu</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Then add Suffix" xml:space="preserve">
-          <source>Then add Suffix</source>
-          <target>Dann Suffix hinzufügen</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="Then it applies the suffix manipulation" xml:space="preserve">
-          <source>Then it applies the suffix manipulation</source>
-          <target>Dann wendet es die Suffixmanipulation an.</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
         <trans-unit id="the prefix written previously will be replaced with this" xml:space="preserve">
           <source>the prefix written previously will be replaced with this</source>
           <target>das zuvor geschriebene Präfix wird durch dies ersetzt werden</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="the suffix written previously will be replaced with this" xml:space="preserve">
-          <source>the suffix written previously will be replaced with this</source>
-          <target>Der zuvor geschriebene Suffix wird durch diesen ersetzt.</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="with" xml:space="preserve">
@@ -377,14 +357,49 @@
           <target>mit</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Input" xml:space="preserve">
-          <source>Input</source>
-          <target>Eingabe</target>
+        <trans-unit id="After applying prefix and suffice manipulations to each line separately, it ends." xml:space="preserve">
+          <source>After applying prefix and suffice manipulations to each line separately, it ends.</source>
+          <target>Nach Anwendung von Präfix- und Suffix-Manipulationen auf jede Zeile einzeln endet es.</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Prefix" xml:space="preserve">
+          <source>Prefix</source>
+          <target>Präfix</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Replace prefix" xml:space="preserve">
+          <source>Replace prefix</source>
+          <target>Präfix ersetzen</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Then it applies the suffix manipulation" xml:space="preserve">
+          <source>Then it applies the suffix manipulation</source>
+          <target>Dann wendet es die Suffixmanipulation an.</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="the suffix written previously will be replaced with this" xml:space="preserve">
+          <source>the suffix written previously will be replaced with this</source>
+          <target>Der zuvor geschriebene Suffix wird durch diesen ersetzt.</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Replace suffix if available" xml:space="preserve">
+          <source>Replace suffix if available</source>
+          <target>Suffix austauschen, falls verfügbar</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Then add Suffix" xml:space="preserve">
+          <source>Then add Suffix</source>
+          <target>Dann Suffix hinzufügen</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Output" xml:space="preserve">
           <source>Output</source>
           <target>Ausgabe</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Input" xml:space="preserve">
+          <source>Input</source>
+          <target>Eingabe</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>
@@ -425,9 +440,9 @@
           <target>Format</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="Pretty" xml:space="preserve">
-          <source>Pretty</source>
-          <target>Hübsch</target>
+        <trans-unit id="nicklockwood/SwiftFormat Config" xml:space="preserve">
+          <source>nicklockwood/SwiftFormat Config</source>
+          <target>nicklockwood/SwiftFormat Konfiguration</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Raw" xml:space="preserve">
@@ -435,21 +450,16 @@
           <target>Roh</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        <trans-unit id="nicklockwood/SwiftFormat Config" xml:space="preserve">
-          <source>nicklockwood/SwiftFormat Config</source>
-          <target>nicklockwood/SwiftFormat Konfiguration</target>
+        <trans-unit id="Pretty" xml:space="preserve">
+          <source>Pretty</source>
+          <target>Hübsch</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>
     </file>
     <file original="Sources/TextCaseConverterFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
       <body>
-      <trans-unit id="Convert" xml:space="preserve">
-          <source>Convert</source>
-          <target>Konvertieren</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="From" xml:space="preserve">
+      <trans-unit id="From" xml:space="preserve">
           <source>From</source>
           <target>Von</target>
           <note>No comment provided by engineer.</note>
@@ -457,6 +467,11 @@
         <trans-unit id="Separator" xml:space="preserve">
           <source>Separator</source>
           <target>Trennzeichen</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Convert" xml:space="preserve">
+          <source>Convert</source>
+          <target>Konvertieren</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="To" xml:space="preserve">
@@ -474,37 +489,33 @@
           <target>Ausgabe</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
-        </body>
-    </file>
-    <file original="Sources/UUIDGeneratorFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
-      <body>
-      <trans-unit id="Generate" xml:space="preserve">
-          <source>Generate</source>
-          <target>Generieren</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="UPPERCASE" xml:space="preserve">
-          <source>UPPERCASE</source>
-          <target>GROSSBUCHSTABEN</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        <trans-unit id="lowercase" xml:space="preserve">
-          <source>lowercase</source>
-          <target>kleinschreibung</target>
-          <note>No comment provided by engineer.</note>
-        </trans-unit>
-        </body>
-    </file>
-    <file original="Sources/TextCaseConverterClient/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
-      <body>
-      <trans-unit id="New Line" xml:space="preserve">
+        <trans-unit id="New Line" xml:space="preserve">
           <source>New Line</source>
           <target>Neue Zeile</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         <trans-unit id="Space" xml:space="preserve">
           <source>Space</source>
-          <target>Raum</target>
+          <target>Leerzeichen</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        </body>
+    </file>
+    <file original="Sources/UUIDGeneratorFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="de" datatype="plaintext">
+      <body>
+      <trans-unit id="UPPERCASE" xml:space="preserve">
+          <source>UPPERCASE</source>
+          <target>GROSSBUCHSTABEN</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="Generate" xml:space="preserve">
+          <source>Generate</source>
+          <target>Generieren</target>
+          <note>No comment provided by engineer.</note>
+        </trans-unit>
+        <trans-unit id="lowercase" xml:space="preserve">
+          <source>lowercase</source>
+          <target>kleinschreibung</target>
           <note>No comment provided by engineer.</note>
         </trans-unit>
         </body>

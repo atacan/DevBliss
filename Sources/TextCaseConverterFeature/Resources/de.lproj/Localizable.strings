@@ -8,10 +8,16 @@
 "Input" = "Eingabe";
 
 /* No comment provided by engineer. */
+"New Line" = "Neue Zeile";
+
+/* No comment provided by engineer. */
 "Output" = "Ausgabe";
 
 /* No comment provided by engineer. */
 "Separator" = "Trennzeichen";
+
+/* No comment provided by engineer. */
+"Space" = "Leerzeichen";
 
 /* No comment provided by engineer. */
 "To" = "Zu";

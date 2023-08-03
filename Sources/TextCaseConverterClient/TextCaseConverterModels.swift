@@ -61,9 +61,9 @@ public enum WordGroupSeperator: Character, CaseIterable, Identifiable {
     public var name: String {
         switch self {
         case .newLine:
-            return NSLocalizedString("New Line", bundle: Bundle.main, comment: "")
+            return "New Line"
         case .space:
-            return NSLocalizedString("Space", bundle: Bundle.main, comment: "")
+            return "Space"
         }
     }
 }

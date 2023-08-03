@@ -131,7 +131,7 @@ public struct PrefixSuffixView: View {
                 Image(systemName: "arrow.forward.square.fill")
                     .help(NSLocalizedString("Then it applies the suffix manipulation", bundle: Bundle.module, comment: ""))
                 VStack {
-                    Text("Suffix")
+                    Text(NSLocalizedString("Suffix", bundle: Bundle.module, comment: "title of the suffix manipulation input fields"))
                     Group {
                         TextField(NSLocalizedString("Replace suffix", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$configuration.suffixReplace))
                         .focused($focusedField, equals: .suffixReplace)

@@ -311,7 +311,7 @@ public struct AppView: View {
                         .padding(.top)
                     } label: {
                                                 Label(
-                            title: { Text("Json") },
+                            title: { Text(NSLocalizedString("Json", bundle: Bundle.module, comment: "sidebar name for the tool")) },
                             icon: { Text("{.,}")
                                     .font(.monospaced(Font.system(size: 8))())
                             }
@@ -328,7 +328,7 @@ public struct AppView: View {
                         .padding(.top)
                     } label: {
                         Label(
-                            title: { Text("Swift") },
+                            title: { Text(NSLocalizedString("Swift", bundle: Bundle.module, comment: "sidebar name for the tool")) },
                             icon: { Image(systemName: "swift") }
                         )
                     }

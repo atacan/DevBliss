@@ -8,10 +8,16 @@
 "Input" = "Entrée";
 
 /* No comment provided by engineer. */
+"New Line" = "Nouvelle ligne";
+
+/* No comment provided by engineer. */
 "Output" = "Sortie";
 
 /* No comment provided by engineer. */
 "Separator" = "Séparateur";
+
+/* No comment provided by engineer. */
+"Space" = "Espace";
 
 /* No comment provided by engineer. */
 "To" = "Pour";

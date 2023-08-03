@@ -8,10 +8,16 @@
 "Input" = "入力";
 
 /* No comment provided by engineer. */
+"New Line" = "新しいライン";
+
+/* No comment provided by engineer. */
 "Output" = "出力";
 
 /* No comment provided by engineer. */
 "Separator" = "セパレーター";
+
+/* No comment provided by engineer. */
+"Space" = "スペース";
 
 /* No comment provided by engineer. */
 "To" = "まで";

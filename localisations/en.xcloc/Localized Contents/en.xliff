@@ -93,7 +93,7 @@
       <trans-unit id="Json" xml:space="preserve">
         <source>Json</source>
         <target>Json</target>
-        <note>No comment provided by engineer.</note>
+        <note>sidebar name for the tool</note>
       </trans-unit>
       <trans-unit id="Prefix Suffix" xml:space="preserve">
         <source>Prefix Suffix</source>
@@ -134,7 +134,7 @@
       <trans-unit id="Swift" xml:space="preserve">
         <source>Swift</source>
         <target>Swift</target>
-        <note>No comment provided by engineer.</note>
+        <note>sidebar name for the tool</note>
       </trans-unit>
       <trans-unit id="Text Case" xml:space="preserve">
         <source>Text Case</source>
@@ -239,6 +239,21 @@
         <source>DSL Library</source>
         <target>DSL Library</target>
         <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Full &lt;html&gt;" xml:space="preserve">
+        <source>Full &lt;html&gt;</source>
+        <target>Full &lt;html&gt;</target>
+        <note>picker description for which html component to output</note>
+      </trans-unit>
+      <trans-unit id="Only &lt;body&gt;" xml:space="preserve">
+        <source>Only &lt;body&gt;</source>
+        <target>Only &lt;body&gt;</target>
+        <note>picker description for which html component to output</note>
+      </trans-unit>
+      <trans-unit id="Only &lt;head&gt;" xml:space="preserve">
+        <source>Only &lt;head&gt;</source>
+        <target>Only &lt;head&gt;</target>
+        <note>picker description for which html component to output</note>
       </trans-unit>
     </body>
   </file>
@@ -374,7 +389,7 @@
       <trans-unit id="Suffix" xml:space="preserve">
         <source>Suffix</source>
         <target>Suffix</target>
-        <note>No comment provided by engineer.</note>
+        <note>title of the suffix manipulation input fields</note>
       </trans-unit>
       <trans-unit id="Then add Prefix" xml:space="preserve">
         <source>Then add Prefix</source>
@@ -467,23 +482,6 @@
       </trans-unit>
     </body>
   </file>
-  <file original="Sources/TextCaseConverterClient/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
-    <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
-    </header>
-    <body>
-      <trans-unit id="New Line" xml:space="preserve">
-        <source>New Line</source>
-        <target>New Line</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Space" xml:space="preserve">
-        <source>Space</source>
-        <target>Space</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-    </body>
-  </file>
   <file original="Sources/TextCaseConverterFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
       <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
@@ -504,6 +502,11 @@
         <target>Input</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="New Line" xml:space="preserve">
+        <source>New Line</source>
+        <target>New Line</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Output" xml:space="preserve">
         <source>Output</source>
         <target>Output</target>
@@ -512,6 +515,11 @@
       <trans-unit id="Separator" xml:space="preserve">
         <source>Separator</source>
         <target>Separator</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Space" xml:space="preserve">
+        <source>Space</source>
+        <target>Space</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="To" xml:space="preserve">

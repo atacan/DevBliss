@@ -116,7 +116,7 @@ public struct TextCaseConverterView: View {
                 }
                 Picker(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$textSeperator)) {
                     ForEach(WordGroupSeperator.allCases) { textSeperator in
-                        Text(textSeperator.name)
+                        Text(textSeparatorPickerName(for: textSeperator))
                             .tag(textSeperator)
                     }
                 }
@@ -137,6 +137,16 @@ public struct TextCaseConverterView: View {
             )
         }
     }
+    
+    private func textSeparatorPickerName(for sep: WordGroupSeperator) -> String {
+        switch sep {
+        case .newLine:
+            return NSLocalizedString("New Line", bundle: Bundle.module, comment: "")
+        case .space:
+            return NSLocalizedString("Space", bundle: Bundle.module, comment: "")
+        }
+    }
+
 }
 
 // preview
