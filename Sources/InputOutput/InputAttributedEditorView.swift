@@ -100,6 +100,7 @@ public struct InputAttributedEditorView: View {
             }
             #if os(macOS)
                 MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
+                .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
             #elseif os(iOS)
                 //                ScrollView {
                 //                    Text(AttributedString(viewStore.text))
@@ -125,6 +126,7 @@ public struct InputAttributedEditorView: View {
                         )
                     )
                 )
+                .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
             //                }
             #endif
         }
@@ -143,6 +145,7 @@ public struct InputAttributedEditorView: View {
                 .font(.footnote)
                 .keyboardShortcut("p", modifiers: [.command, .shift])
                 .help(NSLocalizedString("Paste from clipboard (Command+Shift+P)", bundle: Bundle.module, comment: ""))
+                .accessibilityLabel(NSLocalizedString("Paste from clipboard", bundle: Bundle.module, comment: ""))
             }
             .padding(),
 

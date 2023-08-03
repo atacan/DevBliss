@@ -117,11 +117,13 @@ public struct OutputAttributedEditorView: View {
             }
             #if os(macOS)
                 MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
+                .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
             #elseif os(iOS)
                 ScrollView {
                     Text(AttributedString(viewStore.text))
                         .font(.monospaced(.body)())
                         .textSelection(.enabled)
+                        .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
                         .sheet(isPresented: $isActivitySheetPresented) {
                             ActivityView(
                                 isSheetPresented: $isActivitySheetPresented,

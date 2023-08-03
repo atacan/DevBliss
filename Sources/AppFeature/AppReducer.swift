@@ -373,7 +373,7 @@ public struct AppView: View {
             }
             .listStyle(.sidebar)
             .frame(minWidth: 150)  // to keep the toggle-sidebar button above the sidebar
-            .accessibilityLabel("Sidebar with the list of tools")
+            .accessibilityLabel(NSLocalizedString("Sidebar with the list of tools", bundle: Bundle.module, comment: ""))
             #if os(macOS)
                 // it falls behind window toolbar and becomes unclickable
                 // .padding(.top)
@@ -395,12 +395,10 @@ public struct AppView: View {
             #endif
 
             HStack(alignment: .center) {
-Image(systemName: "rectangle.leadinghalf.inset.filled.arrow.leading")
-            Text(
-                NSLocalizedString("Choose a tool from the Sidebar", bundle: Bundle.module, comment: "")
-            )
+                Image(systemName: "rectangle.leadinghalf.inset.filled.arrow.leading")
+                Text(NSLocalizedString("Choose a tool from the Sidebar", bundle: Bundle.module, comment: ""))
 
-} // <-HStack
+            } // <-HStack
 
             .font(.title)
         }

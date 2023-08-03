@@ -104,6 +104,7 @@ public struct InputEditorView: View {
                 .font(.footnote)
                 .keyboardShortcut("p", modifiers: [.command, .shift])
                 .help(NSLocalizedString("Paste from clipboard (Command+Shift+P)", bundle: Bundle.module, comment: ""))
+                .accessibilityLabel(NSLocalizedString("Paste from clipboard", bundle: Bundle.module, comment: ""))
             }
             .padding(),
 

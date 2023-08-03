@@ -75,6 +75,7 @@ struct OutputControlsView: View {
             .font(.footnote)
             .keyboardShortcut("c", modifiers: [.command, .shift])
             .help(NSLocalizedString("Copy to clipboard (Command+Shift+C)", bundle: Bundle.module, comment: ""))
+            .accessibilityLabel(NSLocalizedString("Copy to clipboard", bundle: Bundle.module, comment: ""))
 
             Button {
                 viewStore.send(.saveAsButtonTouched)
@@ -85,6 +86,7 @@ struct OutputControlsView: View {
             .font(.footnote)
             .keyboardShortcut("s", modifiers: [.command, .shift])
             .help(NSLocalizedString("Save to disk (Command+Shift+S)", bundle: Bundle.module, comment: ""))
+            .accessibilityLabel(NSLocalizedString("Save to disk", bundle: Bundle.module, comment: ""))
 
             Button {
                 isOtherToolsPopoverVisible = true
@@ -94,6 +96,7 @@ struct OutputControlsView: View {
             .font(.footnote)
             .keyboardShortcut("u", modifiers: [.command, .shift])
             .help(NSLocalizedString("Input it to the other tools (Command+Shift+U)", bundle: Bundle.module, comment: ""))
+            .accessibilityLabel(NSLocalizedString("Input it to the other tools", bundle: Bundle.module, comment: ""))
             .popover(isPresented: $isOtherToolsPopoverVisible) {
                 VStack(alignment: .leading) {
                     #if os(macOS)
@@ -106,6 +109,7 @@ struct OutputControlsView: View {
                             }) {
                                 Image(systemName: "xmark.circle")
                                     .opacity(0.8)
+                                    .accessibilityLabel(NSLocalizedString("Close pop over", bundle: Bundle.module, comment: ""))
                             }
                             .padding()
                             .buttonStyle(.plain)
