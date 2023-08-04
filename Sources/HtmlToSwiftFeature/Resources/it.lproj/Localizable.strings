@@ -1,0 +1,18 @@
+/* No comment provided by engineer. */
+"Component" = "Component";
+
+/* No comment provided by engineer. */
+"Convert" = "Converti";
+
+/* No comment provided by engineer. */
+"DSL Library" = "Libreria DSL";
+
+/* picker description for which html component to output */
+"Full <html>" = "Completo <html>";
+
+/* picker description for which html component to output */
+"Only <body>" = "Solo <body>";
+
+/* picker description for which html component to output */
+"Only <head>" = "Solo <head>";
+

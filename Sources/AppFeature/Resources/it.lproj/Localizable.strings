@@ -1,0 +1,94 @@
+/* No comment provided by engineer. */
+"(.*)" = "(.*)";
+
+/* No comment provided by engineer. */
+"{.,}" = "{.,}";
+
+/* No comment provided by engineer. */
+"%@  Choose a tool from the Sidebar" = "%@ Scegli un strumento dalla barra laterale";
+
+/* No comment provided by engineer. */
+"<>" = "<>";
+
+/* No comment provided by engineer. */
+"Aa" = "Aa";
+
+/* navigation title on top of the window */
+"Change prefix or suffix of each line" = "Cambia prefisso o suffisso di ogni riga";
+
+/* No comment provided by engineer. */
+"Choose a tool from the Sidebar" = "Scegli un'opzione dalla barra laterale";
+
+/* navigation title on top of the window */
+"Convert case of list of words" = "Convertire il caso di una lista di parole";
+
+/* a navigationTitle */
+"Convert Html code to a DSL in Swift" = "Convertire il codice Html in un DSL in Swift";
+
+/* sidebar section name for a group of tools */
+"Converters" = "Convertitori";
+
+/* sidebar section name for a group of tools */
+"File" = "File";
+
+/* tool name on the sidebar */
+"File Search" = "Ricerca file";
+
+/* No comment provided by engineer. */
+"Format and Highlight Json" = "Formattare ed Evidenziare Json";
+
+/* navigation title on top of the window */
+"Format Swift code" = "Codice Swift";
+
+/* sidebar section name for a group of tools */
+"Formatters" = "Formattatori";
+
+/* navigation title on top of the window */
+"Generate UUIDs" = "Generare UUID";
+
+/* sidebar section name for a group of tools */
+"Generators" = "Generator";
+
+/* tool name on the sidebar */
+"Html to Swift" = "Html a Swift";
+
+/* sidebar name for the tool */
+"Json" = "Json";
+
+/* tool name on the sidebar */
+"Prefix Suffix" = "Prefisso Suffisso";
+
+/* No comment provided by engineer. */
+"Pretty print and Highlight Json" = "Pretty print e Evidenzia Json";
+
+/* No comment provided by engineer. */
+"Pretty print Swift code" = "Stampa formattata del codice Swift";
+
+/* navigation title on top of the window
+   tool name on the sidebar */
+"Regex Matches" = "Corrispondenze Regex";
+
+/* No comment provided by engineer. */
+"Replace and add prefix or suffix to each line" = "Sostituisci e aggiungi prefisso o suffisso ad ogni riga";
+
+/* navigation title on top of the window */
+"Search inside files" = "Ricerca all'interno dei file";
+
+/* No comment provided by engineer. */
+"Sidebar with the list of tools" = "Barra laterale con l'elenco degli strumenti";
+
+/* sidebar name for the tool */
+"Swift" = "Swift";
+
+/* tool name on the sidebar */
+"Text Case" = "Caso di test";
+
+/* No comment provided by engineer. */
+"Toggle sidebar" = "Barra laterale";
+
+/* No comment provided by engineer. */
+"Toggle sidebar (Command+Shift+L)" = "Attiva/disattiva la barra laterale (Command+Shift+L)";
+
+/* No comment provided by engineer. */
+"UUID" = "UUID";
+

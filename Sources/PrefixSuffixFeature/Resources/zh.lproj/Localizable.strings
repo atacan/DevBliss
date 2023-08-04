@@ -1,0 +1,51 @@
+/* No comment provided by engineer. */
+"After applying prefix and suffice manipulations to each line separately, it ends." = "对每行分别应用前缀和后缀操作后，结束。";
+
+/* No comment provided by engineer. */
+"Convert" = "转换";
+
+/* No comment provided by engineer. */
+"Input" = "输入";
+
+/* No comment provided by engineer. */
+"It first starts applying the prefix changes" = "它首先开始应用前缀更改";
+
+/* No comment provided by engineer. */
+"Output" = "输出";
+
+/* No comment provided by engineer. */
+"Prefix" = "前缀";
+
+/* No comment provided by engineer. */
+"Replace prefix" = "替换前缀";
+
+/* No comment provided by engineer. */
+"Replace prefix if available" = "如有前缀，请替换之";
+
+/* No comment provided by engineer. */
+"Replace suffix" = "替换后缀";
+
+/* No comment provided by engineer. */
+"Replace suffix if available" = "替换后缀（如有）";
+
+/* title of the suffix manipulation input fields */
+"Suffix" = "后缀";
+
+/* No comment provided by engineer. */
+"the prefix written previously will be replaced with this" = "之前写的前缀将被替换为这个";
+
+/* No comment provided by engineer. */
+"the suffix written previously will be replaced with this" = "之前写的后缀将被替换为这个";
+
+/* No comment provided by engineer. */
+"Then add Prefix" = "然后添加前缀";
+
+/* No comment provided by engineer. */
+"Then add Suffix" = "然后添加后缀";
+
+/* No comment provided by engineer. */
+"Then it applies the suffix manipulation" = "然后它应用后缀操作";
+
+/* No comment provided by engineer. */
+"with" = "与";
+

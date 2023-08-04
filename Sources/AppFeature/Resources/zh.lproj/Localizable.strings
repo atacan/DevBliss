@@ -1,0 +1,94 @@
+/* No comment provided by engineer. */
+"(.*)" = "(.*)";
+
+/* No comment provided by engineer. */
+"{.,}" = "{.,}";
+
+/* No comment provided by engineer. */
+"%@  Choose a tool from the Sidebar" = "%@ 请选择一个工具从侧边栏";
+
+/* No comment provided by engineer. */
+"<>" = "<>";
+
+/* No comment provided by engineer. */
+"Aa" = "Aa";
+
+/* navigation title on top of the window */
+"Change prefix or suffix of each line" = "更改每行的前缀或后缀";
+
+/* No comment provided by engineer. */
+"Choose a tool from the Sidebar" = "从侧栏选择一个工具";
+
+/* navigation title on top of the window */
+"Convert case of list of words" = "转换单词列表的大小写";
+
+/* a navigationTitle */
+"Convert Html code to a DSL in Swift" = "将Html代码转换为Swift中的DSL";
+
+/* sidebar section name for a group of tools */
+"Converters" = "转换器";
+
+/* sidebar section name for a group of tools */
+"File" = "文件";
+
+/* tool name on the sidebar */
+"File Search" = "文件搜索";
+
+/* No comment provided by engineer. */
+"Format and Highlight Json" = "格式化和突出显示Json";
+
+/* navigation title on top of the window */
+"Format Swift code" = "格式化 Swift 代码";
+
+/* sidebar section name for a group of tools */
+"Formatters" = "格式化工具";
+
+/* navigation title on top of the window */
+"Generate UUIDs" = "生成 UUID";
+
+/* sidebar section name for a group of tools */
+"Generators" = "生成器";
+
+/* tool name on the sidebar */
+"Html to Swift" = "Html转为Swift";
+
+/* sidebar name for the tool */
+"Json" = "Json";
+
+/* tool name on the sidebar */
+"Prefix Suffix" = "前缀后缀";
+
+/* No comment provided by engineer. */
+"Pretty print and Highlight Json" = "漂亮地打印和突出显示Json";
+
+/* No comment provided by engineer. */
+"Pretty print Swift code" = "漂亮地打印 Swift 代码";
+
+/* navigation title on top of the window
+   tool name on the sidebar */
+"Regex Matches" = "正则表达式匹配";
+
+/* No comment provided by engineer. */
+"Replace and add prefix or suffix to each line" = "替换并为每一行添加前缀或后缀";
+
+/* navigation title on top of the window */
+"Search inside files" = "在文件内搜索";
+
+/* No comment provided by engineer. */
+"Sidebar with the list of tools" = "工具列表的侧边栏";
+
+/* sidebar name for the tool */
+"Swift" = "Swift";
+
+/* tool name on the sidebar */
+"Text Case" = "文本案例";
+
+/* No comment provided by engineer. */
+"Toggle sidebar" = "切换侧边栏";
+
+/* No comment provided by engineer. */
+"Toggle sidebar (Command+Shift+L)" = "切换侧边栏（Command+Shift+L）";
+
+/* No comment provided by engineer. */
+"UUID" = "UUID";
+

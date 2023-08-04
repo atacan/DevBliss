@@ -1,0 +1,18 @@
+/* No comment provided by engineer. */
+"Component" = "组件";
+
+/* No comment provided by engineer. */
+"Convert" = "转换";
+
+/* No comment provided by engineer. */
+"DSL Library" = "DSL图书馆";
+
+/* picker description for which html component to output */
+"Full <html>" = "完整的<html>";
+
+/* picker description for which html component to output */
+"Only <body>" = "只有 <body>";
+
+/* picker description for which html component to output */
+"Only <head>" = "只有 <head>";
+

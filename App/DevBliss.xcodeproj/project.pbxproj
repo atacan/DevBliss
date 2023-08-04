@@ -23,6 +23,8 @@
 		5A7437072A2B69C9001DEC2E /* DevBliss.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DevBliss.entitlements; sourceTree = "<group>"; };
 		5A7437092A2B69C9001DEC2E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5AAF55582A2B6AE600A86142 /* DevBliss */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = DevBliss; path = ..; sourceTree = "<group>"; };
+		794A19402A7D7D12002A324B /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = "it.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
+		794A19412A7D7D13002A324B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
 		7957E0892A7AF88700F5E001 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = "ja.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
 		7957E08A2A7B002400F5E001 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
 		79A1B2602A799F1A00186A8C /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = "de.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
@@ -134,6 +136,8 @@
 				de,
 				ja,
 				fr,
+				"zh-Hans",
+				it,
 			);
 			mainGroup = 5A7436F52A2B69C8001DEC2E;
 			productRefGroup = 5A7436FF2A2B69C8001DEC2E /* Products */;
@@ -177,6 +181,8 @@
 				79A1B2602A799F1A00186A8C /* de */,
 				7957E0892A7AF88700F5E001 /* ja */,
 				7957E08A2A7B002400F5E001 /* fr */,
+				794A19402A7D7D12002A324B /* it */,
+				794A19412A7D7D13002A324B /* zh-Hans */,
 			);
 			name = "DevBliss-InfoPlist.strings";
 			path = DevBliss;

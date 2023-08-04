@@ -1,0 +1,51 @@
+/* No comment provided by engineer. */
+"After applying prefix and suffice manipulations to each line separately, it ends." = "Dopo aver applicato manipolazioni di prefisso e suffisso a ciascuna riga separatamente, finisce.";
+
+/* No comment provided by engineer. */
+"Convert" = "Converti";
+
+/* No comment provided by engineer. */
+"Input" = "Input";
+
+/* No comment provided by engineer. */
+"It first starts applying the prefix changes" = "Inizia prima applicando le modifiche del prefisso";
+
+/* No comment provided by engineer. */
+"Output" = "Output";
+
+/* No comment provided by engineer. */
+"Prefix" = "Prefisso";
+
+/* No comment provided by engineer. */
+"Replace prefix" = "Sostituisci prefisso";
+
+/* No comment provided by engineer. */
+"Replace prefix if available" = "Sostituisci il prefisso se disponibile";
+
+/* No comment provided by engineer. */
+"Replace suffix" = "Sostituisci suffisso";
+
+/* No comment provided by engineer. */
+"Replace suffix if available" = "Sostituisci il suffisso se disponibile";
+
+/* title of the suffix manipulation input fields */
+"Suffix" = "Suffisso";
+
+/* No comment provided by engineer. */
+"the prefix written previously will be replaced with this" = "il prefisso precedentemente scritto sarà sostituito con questo";
+
+/* No comment provided by engineer. */
+"the suffix written previously will be replaced with this" = "il suffisso precedentemente scritto verrà sostituito con questo";
+
+/* No comment provided by engineer. */
+"Then add Prefix" = "Aggiungi quindi il prefisso";
+
+/* No comment provided by engineer. */
+"Then add Suffix" = "Aggiungere quindi il suffisso";
+
+/* No comment provided by engineer. */
+"Then it applies the suffix manipulation" = "Poi applica la manipolazione del suffisso";
+
+/* No comment provided by engineer. */
+"with" = "con";
+

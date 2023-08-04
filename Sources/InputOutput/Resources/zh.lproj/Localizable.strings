@@ -1,0 +1,42 @@
+/* No comment provided by engineer. */
+"Close pop over" = "关闭弹出框";
+
+/* No comment provided by engineer. */
+"Copy to clipboard" = "复制到剪贴板";
+
+/* No comment provided by engineer. */
+"Copy to clipboard (Command+Shift+C)" = "复制到剪贴板（Command+Shift+C）";
+
+/* No comment provided by engineer. */
+"horizontal split" = "水平分割";
+
+/* No comment provided by engineer. */
+"Input it to the other tools" = "输入到其他工具中";
+
+/* No comment provided by engineer. */
+"Input it to the other tools (Command+Shift+U)" = "输入它到其他工具（Command+Shift+U）";
+
+/* No comment provided by engineer. */
+"Move the output to one of the tools as input" = "将输出移动到其中一个工具作为输入";
+
+/* No comment provided by engineer. */
+"Paste from clipboard" = "从剪贴板粘贴";
+
+/* No comment provided by engineer. */
+"Paste from clipboard (Command+Shift+P)" = "从剪贴板粘贴（Command+Shift+P）";
+
+/* No comment provided by engineer. */
+"Save to disk" = "保存到硬盘";
+
+/* No comment provided by engineer. */
+"Save to disk (Command+Shift+S)" = "将其保存到磁盘（命令+Shift+S）";
+
+/* No comment provided by engineer. */
+"the input and output editor will be located next to each other" = "输入和输出编辑器将位于彼此旁边";
+
+/* No comment provided by engineer. */
+"the input and output editor will be located underneath each other" = "输入和输出编辑器将位于彼此下方";
+
+/* No comment provided by engineer. */
+"vertical split" = "垂直分割";
+
