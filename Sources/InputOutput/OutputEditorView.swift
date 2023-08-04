@@ -44,7 +44,7 @@ public struct OutputEditorReducer: ReducerProtocol {
             case .outputControls(.copyButtonTouched):
                 clipboard.copyString(state.text)
                 return .task {
-                    try await mainQueue.sleep(for: .milliseconds(200))
+                    try await mainQueue.sleep(for: .milliseconds(400))
                     return .outputControls(.copyEnded)
                 }
             case .outputControls(.saveAsButtonTouched):

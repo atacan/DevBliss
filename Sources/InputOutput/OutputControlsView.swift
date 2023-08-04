@@ -66,12 +66,12 @@ struct OutputControlsView: View {
                 viewStore.send(.copyButtonTouched)
             } label: {
                 Image(systemName: "doc.on.clipboard")
+                    .foregroundColor(
+                        viewStore.copyButtonAnimating
+                        ? ThemeColor.Text.success
+                        : ThemeColor.Text.controlText
+                    )
             }  // <-Button
-            .foregroundColor(
-                viewStore.copyButtonAnimating
-                    ? ThemeColor.Text.success
-                    : ThemeColor.Text.controlText
-            )
             .font(.footnote)
             .keyboardShortcut("c", modifiers: [.command, .shift])
             .help(NSLocalizedString("Copy to clipboard (Command+Shift+C)", bundle: Bundle.module, comment: ""))
