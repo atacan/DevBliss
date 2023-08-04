@@ -98,7 +98,7 @@ public struct HtmlToSwiftView: View {
                     Text(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
                 Picker(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$dsl)) {
                                     ForEach(SwiftDSL.allCases) { dsl in
-                                        Text(dsl.rawValue)
+                                        Text(dslLibraryName(for: dsl))
                                             .tag(dsl)
                                     }
                                 }
@@ -129,6 +129,15 @@ public struct HtmlToSwiftView: View {
                 inputEditorTitle: "Html",
                 outputEditorTitle: "Swift"
             )
+        }
+    }
+
+    private func dslLibraryName(for dsl: SwiftDSL) -> String {
+        switch dsl {
+        case .binaryBirds:
+            return NSLocalizedString("Binary Birds", bundle: Bundle.module, comment: "picker description for which dsl library to use. don't translate.")
+        case .pointFree:
+            return NSLocalizedString("Point﹒Free", bundle: Bundle.module, comment: "picker description for which dsl library to use. don't translate.")
         }
     }
     
