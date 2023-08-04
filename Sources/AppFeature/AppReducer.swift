@@ -242,7 +242,7 @@ public struct AppView: View {
                                 ZStack(alignment: .leading) {
                                 Image(systemName: "swift")
                                         .offset(CGSize(width: 5, height: 0))
-                                    Text("<>")
+                                    Text(NSLocalizedString("<>", bundle: Bundle.module, comment: "icon next to the tool name on the sidebar"))
                                         .font(.monospaced(Font.system(size: 14))())
                                         .fontWeight(.thin)
                                         .offset(CGSize(width: 0, height: -7))
@@ -262,7 +262,7 @@ public struct AppView: View {
                     } label: {
                         Label(
                             title: { Text(NSLocalizedString("Text Case", bundle: Bundle.module, comment: "tool name on the sidebar")) },
-                            icon: { Text("Aa") }
+                            icon: { Text(NSLocalizedString("Aa", bundle: Bundle.module, comment: "icon next to the tool name on the sidebar")) }
                         )
                     }
 
@@ -293,7 +293,7 @@ public struct AppView: View {
                     } label: {
                         Label(
                             title: { Text(NSLocalizedString("Regex Matches", bundle: Bundle.module, comment: "tool name on the sidebar")) },
-                            icon: { Text("(.*)")
+                            icon: { Text(NSLocalizedString("(.*)", bundle: Bundle.module, comment: "icon next to the tool name on the sidebar"))
                                     .font(.monospaced(Font.system(size: 8))())
                             }
                         )
@@ -312,7 +312,7 @@ public struct AppView: View {
                     } label: {
                                                 Label(
                             title: { Text(NSLocalizedString("Json", bundle: Bundle.module, comment: "sidebar name for the tool")) },
-                            icon: { Text("{.,}")
+                            icon: { Text(NSLocalizedString("{.,}", bundle: Bundle.module, comment: "icon next to the tool name on the sidebar"))
                                     .font(.monospaced(Font.system(size: 8))())
                             }
                         )
@@ -365,7 +365,7 @@ public struct AppView: View {
                         .padding(.top)
                     } label: {
                                                 Label(
-                            title: { Text("UUID") },
+                            title: { Text(NSLocalizedString("UUID", bundle: Bundle.module, comment: "icon next to the tool name on the sidebar")) },
                             icon: { Image(systemName: "staroflife.circle") }
                         )
                     }
