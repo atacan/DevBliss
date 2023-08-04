@@ -5,7 +5,7 @@
 "{.,}" = "{.,}";
 
 /* No comment provided by engineer. */
-"%@  Choose a tool from the Sidebar" = "%@ 请选择一个工具从侧边栏";
+"%@  Choose a tool from the Sidebar" = "%@ Wybierz narzędzie z paska bocznego";
 
 /* icon next to the tool name on the sidebar */
 "<>" = "<>";
@@ -14,80 +14,80 @@
 "Aa" = "Aa";
 
 /* navigation title on top of the window */
-"Change prefix or suffix of each line" = "更改每行的前缀或后缀";
+"Change prefix or suffix of each line" = "Zmień prefiks lub sufiks każdej linii";
 
 /* No comment provided by engineer. */
-"Choose a tool from the Sidebar" = "从侧栏选择一个工具";
+"Choose a tool from the Sidebar" = "Wybierz narzędzie z panelu bocznego";
 
 /* navigation title on top of the window */
-"Convert case of list of words" = "转换单词列表的大小写";
+"Convert case of list of words" = "Przekształć wielkość liter listy słów";
 
 /* a navigationTitle */
-"Convert Html code to a DSL in Swift" = "将Html代码转换为Swift中的DSL";
+"Convert Html code to a DSL in Swift" = "Przekonwertuj kod HTML na DSL w języku Swift";
 
 /* sidebar section name for a group of tools */
-"Converters" = "转换器";
+"Converters" = "Konwertery";
 
 /* sidebar section name for a group of tools */
-"File" = "文件";
+"File" = "Plik";
 
 /* tool name on the sidebar */
-"File Search" = "文件搜索";
+"File Search" = "Wyszukiwanie plików";
 
 /* No comment provided by engineer. */
-"Format and Highlight Json" = "格式化和突出显示Json";
+"Format and Highlight Json" = "Formatuj i podświetl JSON";
 
 /* navigation title on top of the window */
-"Format Swift code" = "格式化 Swift 代码";
+"Format Swift code" = "Kod Swift format";
 
 /* sidebar section name for a group of tools */
-"Formatters" = "格式化工具";
+"Formatters" = "Formatery";
 
 /* navigation title on top of the window */
-"Generate UUIDs" = "生成 UUID";
+"Generate UUIDs" = "Generuj UUID-y";
 
 /* sidebar section name for a group of tools */
-"Generators" = "生成器";
+"Generators" = "Generatory";
 
 /* tool name on the sidebar */
-"Html to Swift" = "Html转为Swift";
+"Html to Swift" = "Html do Swift";
 
 /* sidebar name for the tool */
 "Json" = "Json";
 
 /* tool name on the sidebar */
-"Prefix Suffix" = "前缀后缀";
+"Prefix Suffix" = "Prefiks Sufiks";
 
 /* No comment provided by engineer. */
-"Pretty print and Highlight Json" = "漂亮地打印和突出显示Json";
+"Pretty print and Highlight Json" = "Pretty print i podświetlaj Json";
 
 /* No comment provided by engineer. */
-"Pretty print Swift code" = "漂亮地打印 Swift 代码";
+"Pretty print Swift code" = "Piękne drukowanie kodu Swift";
 
 /* navigation title on top of the window
    tool name on the sidebar */
-"Regex Matches" = "正则表达式匹配";
+"Regex Matches" = "Wzorce wyrażeń regularnych";
 
 /* No comment provided by engineer. */
-"Replace and add prefix or suffix to each line" = "替换并为每一行添加前缀或后缀";
+"Replace and add prefix or suffix to each line" = "Zastąp i dodaj prefiks lub sufiks do każdej linii";
 
 /* navigation title on top of the window */
-"Search inside files" = "在文件内搜索";
+"Search inside files" = "Przeszukaj wewnątrz plików";
 
 /* No comment provided by engineer. */
-"Sidebar with the list of tools" = "工具列表的侧边栏";
+"Sidebar with the list of tools" = "Pasek boczny z listą narzędzi";
 
 /* sidebar name for the tool */
 "Swift" = "Swift";
 
 /* tool name on the sidebar */
-"Text Case" = "文本案例";
+"Text Case" = "Text Case";
 
 /* No comment provided by engineer. */
-"Toggle sidebar" = "切换侧边栏";
+"Toggle sidebar" = "Przełącz panel boczny";
 
 /* No comment provided by engineer. */
-"Toggle sidebar (Command+Shift+L)" = "切换侧边栏（Command+Shift+L）";
+"Toggle sidebar (Command+Shift+L)" = "Włącz/Wyłącz pasek boczny (Command+Shift+L)";
 
 /* icon next to the tool name on the sidebar */
 "UUID" = "UUID";

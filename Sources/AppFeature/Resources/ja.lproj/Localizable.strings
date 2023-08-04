@@ -1,16 +1,16 @@
-/* No comment provided by engineer. */
+/* icon next to the tool name on the sidebar */
 "(.*)" = "(.*)";
 
-/* No comment provided by engineer. */
+/* icon next to the tool name on the sidebar */
 "{.,}" = "{.,}";
 
 /* No comment provided by engineer. */
 "%@  Choose a tool from the Sidebar" = "%@ サイドバーからツールを選択してください";
 
-/* No comment provided by engineer. */
-"<>" = "<<>>";
+/* icon next to the tool name on the sidebar */
+"<>" = "<>";
 
-/* No comment provided by engineer. */
+/* icon next to the tool name on the sidebar */
 "Aa" = "Aa";
 
 /* navigation title on top of the window */
@@ -89,6 +89,6 @@
 /* No comment provided by engineer. */
 "Toggle sidebar (Command+Shift+L)" = "サイドバーを切り替える（コマンド+シフト+L）";
 
-/* No comment provided by engineer. */
+/* icon next to the tool name on the sidebar */
 "UUID" = "UUID";
 

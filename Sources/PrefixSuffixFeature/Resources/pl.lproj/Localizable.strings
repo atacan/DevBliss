@@ -1,0 +1,51 @@
+/* No comment provided by engineer. */
+"After applying prefix and suffice manipulations to each line separately, it ends." = "Po zastosowaniu manipulacji przedrostkiem i przyrostkiem do każdej linii osobno, kończy się.";
+
+/* No comment provided by engineer. */
+"Convert" = "Konwertować";
+
+/* No comment provided by engineer. */
+"Input" = "Wejście";
+
+/* No comment provided by engineer. */
+"It first starts applying the prefix changes" = "Najpierw zaczyna stosować zmiany prefiksu";
+
+/* No comment provided by engineer. */
+"Output" = "Wyjście";
+
+/* No comment provided by engineer. */
+"Prefix" = "Prefix";
+
+/* No comment provided by engineer. */
+"Replace prefix" = "Zastąp prefiks";
+
+/* No comment provided by engineer. */
+"Replace prefix if available" = "Zastąp prefiks, jeśli jest dostępny";
+
+/* No comment provided by engineer. */
+"Replace suffix" = "Zastąp końcówkę";
+
+/* No comment provided by engineer. */
+"Replace suffix if available" = "Zastąp końcówkę, jeśli jest dostępna";
+
+/* title of the suffix manipulation input fields */
+"Suffix" = "Przyrostek";
+
+/* No comment provided by engineer. */
+"the prefix written previously will be replaced with this" = "poprzednio wpisany przedrostek zostanie zastąpiony tym";
+
+/* No comment provided by engineer. */
+"the suffix written previously will be replaced with this" = "poprzednio zapisany przyrostek zostanie zastąpiony tym";
+
+/* No comment provided by engineer. */
+"Then add Prefix" = "Następnie dodaj prefiks";
+
+/* No comment provided by engineer. */
+"Then add Suffix" = "Następnie dodaj przyrostek";
+
+/* No comment provided by engineer. */
+"Then it applies the suffix manipulation" = "Następnie stosuje manipulację końcówką";
+
+/* No comment provided by engineer. */
+"with" = "z";
+

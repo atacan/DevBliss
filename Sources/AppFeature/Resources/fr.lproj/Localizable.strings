@@ -1,16 +1,16 @@
-/* No comment provided by engineer. */
+/* icon next to the tool name on the sidebar */
 "(.*)" = "(.*)";
 
-/* No comment provided by engineer. */
+/* icon next to the tool name on the sidebar */
 "{.,}" = "{.,}";
 
 /* No comment provided by engineer. */
 "%@  Choose a tool from the Sidebar" = "%@ Choisissez un outil dans la barre latérale";
 
-/* No comment provided by engineer. */
+/* icon next to the tool name on the sidebar */
 "<>" = "<>";
 
-/* No comment provided by engineer. */
+/* icon next to the tool name on the sidebar */
 "Aa" = "Aa";
 
 /* navigation title on top of the window */
@@ -89,6 +89,6 @@
 /* No comment provided by engineer. */
 "Toggle sidebar (Command+Shift+L)" = "Basculer la barre latérale (Commande+Majuscule+L)";
 
-/* No comment provided by engineer. */
+/* icon next to the tool name on the sidebar */
 "UUID" = "UUID";
 
