@@ -26,9 +26,13 @@ class PrefixSuffixClientTests: XCTestCase {
                 @State var childrenKeyPath: String = .init()
               @State var name: String let fluentDataType: FluentDataType let isOptional: Bool let optionalSuffix: String = .init()
             """
-        let result = try await PrefixSuffixClient.liveValue.convert(input, config)
-        //        let result = try await prefixSuffixClient.convert(input, config)
-        XCTAssertEqual(result, output)
+        
+        try await withDependencies {
+          $0.prefixSuffix = .liveValue
+        } operation: {
+            let result = try await self.prefixSuffixClient.convert(input, config)
+            XCTAssertEqual(result, output)
+        }
     }
 
     func testConversionWithWhiteSpaceLiveValue() async throws {
@@ -51,7 +55,12 @@ class PrefixSuffixClientTests: XCTestCase {
             @State var childrenKeyPath: String = .init()
             @State var name: String let fluentDataType: FluentDataType let isOptional: Bool let optionalSuffix: String = .init()
             """
-        let result = try await PrefixSuffixClient.liveValue.convert(input, config)
-        XCTAssertEqual(result, output)
+
+        try await withDependencies {
+          $0.prefixSuffix = .liveValue
+        } operation: {
+            let result = try await self.prefixSuffixClient.convert(input, config)
+            XCTAssertEqual(result, output)
+        }
     }
 }
