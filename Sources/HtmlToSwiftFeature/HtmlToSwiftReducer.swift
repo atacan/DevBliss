@@ -84,25 +84,38 @@ public struct HtmlToSwiftView: View {
         self.viewStore = ViewStore(store)
     }
 
+    #if os(iOS)
+    private let pickerTitleSpace: CGFloat = 0
+    #elseif os(macOS)
+    private let pickerTitleSpace: CGFloat = 4
+    #endif
+
     public var body: some View {
         VStack {
             HStack(alignment: .center) {
                 Spacer()
+                VStack(alignment: .center, spacing: pickerTitleSpace) {
+                    Text(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
                 Picker(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$dsl)) {
-                    ForEach(SwiftDSL.allCases) { dsl in
-                        Text(dsl.rawValue)
-                            .tag(dsl)
-                    }
-                }
+                                    ForEach(SwiftDSL.allCases) { dsl in
+                                        Text(dsl.rawValue)
+                                            .tag(dsl)
+                                    }
+                                }
+                } // <-VStack
+                VStack(alignment: .center, spacing: pickerTitleSpace) {
+                    Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
                 Picker(NSLocalizedString("Component", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$component)) {
                     ForEach(HtmlOutputComponent.allCases) { component in
                         Text(outputComponentPickerName(for: component))
                             .tag(component)
                     }
                 }
+                }
                 Spacer()
             }  // <-HStack
             .frame(maxWidth: 450)
+            .labelsHidden()
 
             Button(action: { viewStore.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))

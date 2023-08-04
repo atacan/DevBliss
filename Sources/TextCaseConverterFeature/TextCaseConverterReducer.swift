@@ -92,6 +92,12 @@ public struct TextCaseConverterReducer: ReducerProtocol {
 public struct TextCaseConverterView: View {
     let store: StoreOf<TextCaseConverterReducer>
     @ObservedObject var viewStore: ViewStoreOf<TextCaseConverterReducer>
+    
+    #if os(iOS)
+    private let pickerTitleSpace: CGFloat = 0
+    #elseif os(macOS)
+    private let pickerTitleSpace: CGFloat = 4
+    #endif
 
     public init(store: StoreOf<TextCaseConverterReducer>) {
         self.store = store
@@ -102,27 +108,46 @@ public struct TextCaseConverterView: View {
         VStack {
             HStack(alignment: .center) {
                 Spacer()
-                Picker(NSLocalizedString("From", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$sourceCase)) {
-                    ForEach(WordGroupCase.allCases) { sourceCase in
-                        Text(sourceCase.rawValue)
-                            .tag(sourceCase)
+                VStack(alignment: .center, spacing: pickerTitleSpace) {
+                    Text(NSLocalizedString("From", bundle: Bundle.module, comment: ""))
+                    Picker(
+                        NSLocalizedString("From", bundle: Bundle.module, comment: ""),
+                        selection: viewStore.binding(\.$sourceCase)
+                    ) {
+                        ForEach(WordGroupCase.allCases) { sourceCase in
+                            Text(sourceCase.rawValue)
+                                .tag(sourceCase)
+                        }
                     }
                 }
-                Picker(NSLocalizedString("To", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$targetCase)) {
-                    ForEach(WordGroupCase.allCases) { targetCase in
-                        Text(targetCase.rawValue)
-                            .tag(targetCase)
+                VStack(alignment: .center, spacing: pickerTitleSpace) {
+                    Text(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
+                    Picker(
+                        NSLocalizedString("To", bundle: Bundle.module, comment: ""),
+                        selection: viewStore.binding(\.$targetCase)
+                    ) {
+                        ForEach(WordGroupCase.allCases) { targetCase in
+                            Text(targetCase.rawValue)
+                                .tag(targetCase)
+                        }
                     }
                 }
-                Picker(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$textSeperator)) {
-                    ForEach(WordGroupSeperator.allCases) { textSeperator in
-                        Text(textSeparatorPickerName(for: textSeperator))
-                            .tag(textSeperator)
+                VStack(alignment: .center, spacing: pickerTitleSpace) {
+                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
+                    Picker(
+                        NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
+                        selection: viewStore.binding(\.$textSeperator)
+                    ) {
+                        ForEach(WordGroupSeperator.allCases) { textSeperator in
+                            Text(textSeparatorPickerName(for: textSeperator))
+                                .tag(textSeperator)
+                        }
                     }
                 }
                 Spacer()
             }  // <-HStack
             .frame(maxWidth: 550)
+            .labelsHidden()
 
             Button(action: { viewStore.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
@@ -137,7 +162,7 @@ public struct TextCaseConverterView: View {
             )
         }
     }
-    
+
     private func textSeparatorPickerName(for sep: WordGroupSeperator) -> String {
         switch sep {
         case .newLine:
