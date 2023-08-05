@@ -1,3 +1,6 @@
+/* picker description for which dsl library to use. don't translate. */
+"Binary Birds" = "Binäre Vögel";
+
 /* No comment provided by engineer. */
 "Component" = "Komponente";
 
@@ -15,4 +18,7 @@
 
 /* picker description for which html component to output */
 "Only <head>" = "Nur <head>";
+
+/* picker description for which dsl library to use. don't translate. */
+"Point﹒Free" = "Point﹒Free";
 
