@@ -27,11 +27,14 @@ public enum ThemeColor {
 }
 
 public enum ThemeFont {
-        #if os(macOS)
-            public static let monospaceSytem = NSFont.monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
-        #endif
+    #if os(macOS)
+        public static let monospaceSytem = NSFont.monospacedSystemFont(
+            ofSize: NSFont.systemFontSize,
+            weight: .regular
+        )
+    #endif
 
-        #if os(iOS)
+    #if os(iOS)
         public static let monospaceSytem = UIFont.monospacedSystemFont(ofSize: UIFont.systemFontSize, weight: .regular)
-        #endif
+    #endif
 }

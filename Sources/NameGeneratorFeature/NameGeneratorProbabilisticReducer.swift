@@ -230,12 +230,14 @@ public struct NameGeneratorProbabilisticView: View {
                         )
                     )
                     .accessibilityValue(
-                        String(format:
-                            NSLocalizedString(
-                                "%d percent",
-                                bundle: Bundle.module,
-                                comment: "value of a numeric input value for voice-over"
-                            ), Int(viewStore.alternationProbability * 100)
+                        String(
+                            format:
+                                NSLocalizedString(
+                                    "%d percent",
+                                    bundle: Bundle.module,
+                                    comment: "value of a numeric input value for voice-over"
+                                ),
+                            Int(viewStore.alternationProbability * 100)
                         )
                     )
 
@@ -247,7 +249,14 @@ public struct NameGeneratorProbabilisticView: View {
                     .accessibilityLabel(NSLocalizedString("names to be generated", bundle: Bundle.module, comment: ""))
                     .accessibilityValue(
                         NSLocalizedString(
-                            String(format: NSLocalizedString("%d", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"), viewStore.numberOfNames),
+                            String(
+                                format: NSLocalizedString(
+                                    "%d",
+                                    bundle: Bundle.module,
+                                    comment: "value of a numeric input value for voice-over"
+                                ),
+                                viewStore.numberOfNames
+                            ),
                             bundle: Bundle.module,
                             comment: "value of a numeric input value for voice-over"
                         )

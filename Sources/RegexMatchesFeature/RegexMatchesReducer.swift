@@ -21,8 +21,13 @@ public struct RegexMatchesReducer: ReducerProtocol {
         }
 
         public init(input: String, output: String = "") {
-            let attributedInput = NSMutableAttributedString(string: input, attributes: [.foregroundColor: ThemeColor.Text.systemText,
-                                                                                        .font: ThemeFont.monospaceSytem])
+            let attributedInput = NSMutableAttributedString(
+                string: input,
+                attributes: [
+                    .foregroundColor: ThemeColor.Text.systemText,
+                    .font: ThemeFont.monospaceSytem,
+                ]
+            )
             self.inputOutput = .init(
                 input: .init(text: attributedInput),
                 output: .init(text: .init(string: output))
