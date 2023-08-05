@@ -159,6 +159,9 @@ open DevBliss/App/DevBliss.xcodeproj
 1. Create one library for the Client and one for the view
 1. Add the new tool to the Tool.swift enum
 1. Update AppReducer.swift
+ 
+Troubleshotting: 
+- if you get a `The compiler is unable to type-check this expression in reasonable time`, comment out the other tools in the reducer and let the compiler show the issue with the new tool edition.
 
 ## Thanks
 
