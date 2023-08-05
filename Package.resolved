@@ -46,6 +46,15 @@
       }
     },
     {
+      "identity" : "pillpickerview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/PillPickerView",
+      "state" : {
+        "branch" : "develop",
+        "revision" : "0e6edee63995deb1b6570ade041f4284c4fb4687"
+      }
+    },
+    {
       "identity" : "pointfreeco-swift-html",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/atacan/pointfreeco-swift-html",

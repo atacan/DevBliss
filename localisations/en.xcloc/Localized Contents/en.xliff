@@ -13,17 +13,17 @@
       <trans-unit id="(.*)" xml:space="preserve">
         <source>(.*)</source>
         <target>(.*)</target>
-        <note>No comment provided by engineer.</note>
+        <note>icon next to the tool name on the sidebar</note>
       </trans-unit>
       <trans-unit id="&lt;&gt;" xml:space="preserve">
         <source>&lt;&gt;</source>
         <target>&lt;&gt;</target>
-        <note>No comment provided by engineer.</note>
+        <note>icon next to the tool name on the sidebar</note>
       </trans-unit>
       <trans-unit id="Aa" xml:space="preserve">
         <source>Aa</source>
         <target>Aa</target>
-        <note>No comment provided by engineer.</note>
+        <note>icon next to the tool name on the sidebar</note>
       </trans-unit>
       <trans-unit id="Change prefix or suffix of each line" xml:space="preserve">
         <source>Change prefix or suffix of each line</source>
@@ -154,12 +154,12 @@
       <trans-unit id="UUID" xml:space="preserve">
         <source>UUID</source>
         <target>UUID</target>
-        <note>No comment provided by engineer.</note>
+        <note>icon next to the tool name on the sidebar</note>
       </trans-unit>
       <trans-unit id="{.,}" xml:space="preserve">
         <source>{.,}</source>
         <target>{.,}</target>
-        <note>No comment provided by engineer.</note>
+        <note>icon next to the tool name on the sidebar</note>
       </trans-unit>
     </body>
   </file>
@@ -213,6 +213,11 @@
         <target>Search also hidden files and folders</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Start searching (Cmd+Return)" xml:space="preserve">
+        <source>Start searching (Cmd+Return)</source>
+        <target>Start searching (Cmd+Return)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="term to search inside the file..." xml:space="preserve">
         <source>term to search inside the file...</source>
         <target>term to search inside the file...</target>
@@ -225,6 +230,11 @@
       <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
     </header>
     <body>
+      <trans-unit id="Binary Birds" xml:space="preserve">
+        <source>Binary Birds</source>
+        <target>Binary Birds</target>
+        <note>picker description for which dsl library to use. don't translate.</note>
+      </trans-unit>
       <trans-unit id="Component" xml:space="preserve">
         <source>Component</source>
         <target>Component</target>
@@ -233,6 +243,11 @@
       <trans-unit id="Convert" xml:space="preserve">
         <source>Convert</source>
         <target>Convert</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Convert code (Cmd+Return)" xml:space="preserve">
+        <source>Convert code (Cmd+Return)</source>
+        <target>Convert code (Cmd+Return)</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="DSL Library" xml:space="preserve">
@@ -255,6 +270,11 @@
         <target>Only &lt;head&gt;</target>
         <note>picker description for which html component to output</note>
       </trans-unit>
+      <trans-unit id="Point﹒Free" xml:space="preserve">
+        <source>Point﹒Free</source>
+        <target>Point﹒Free</target>
+        <note>picker description for which dsl library to use. don't translate.</note>
+      </trans-unit>
     </body>
   </file>
   <file original="Sources/InputOutput/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
@@ -262,9 +282,24 @@
       <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
     </header>
     <body>
+      <trans-unit id="Close pop over" xml:space="preserve">
+        <source>Close pop over</source>
+        <target>Close pop over</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Copy to clipboard" xml:space="preserve">
+        <source>Copy to clipboard</source>
+        <target>Copy to clipboard</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Copy to clipboard (Command+Shift+C)" xml:space="preserve">
         <source>Copy to clipboard (Command+Shift+C)</source>
         <target>Copy to clipboard (Command+Shift+C)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Input it to the other tools" xml:space="preserve">
+        <source>Input it to the other tools</source>
+        <target>Input it to the other tools</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="Input it to the other tools (Command+Shift+U)" xml:space="preserve">
@@ -277,9 +312,19 @@
         <target>Move the output to one of the tools as input</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Paste from clipboard" xml:space="preserve">
+        <source>Paste from clipboard</source>
+        <target>Paste from clipboard</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Paste from clipboard (Command+Shift+P)" xml:space="preserve">
         <source>Paste from clipboard (Command+Shift+P)</source>
         <target>Paste from clipboard (Command+Shift+P)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Save to disk" xml:space="preserve">
+        <source>Save to disk</source>
+        <target>Save to disk</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="Save to disk (Command+Shift+S)" xml:space="preserve">
@@ -319,6 +364,11 @@
         <target>Format</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Format code (Cmd+Return)" xml:space="preserve">
+        <source>Format code (Cmd+Return)</source>
+        <target>Format code (Cmd+Return)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Pretty" xml:space="preserve">
         <source>Pretty</source>
         <target>Pretty</target>
@@ -327,6 +377,23 @@
       <trans-unit id="Raw" xml:space="preserve">
         <source>Raw</source>
         <target>Raw</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="Sources/NameGeneratorFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
+    <header>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+    </header>
+    <body>
+      <trans-unit id="Generate" xml:space="preserve">
+        <source>Generate</source>
+        <target>Generate</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Generate names (Cmd+Return)" xml:space="preserve">
+        <source>Generate names (Cmd+Return)</source>
+        <target>Generate names (Cmd+Return)</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
     </body>
@@ -344,6 +411,11 @@
       <trans-unit id="Convert" xml:space="preserve">
         <source>Convert</source>
         <target>Convert</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Convert (Cmd+Return)" xml:space="preserve">
+        <source>Convert (Cmd+Return)</source>
+        <target>Convert (Cmd+Return)</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="Input" xml:space="preserve">
@@ -438,6 +510,11 @@
         <target>Extract</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Extract matches (Cmd+Return)" xml:space="preserve">
+        <source>Extract matches (Cmd+Return)</source>
+        <target>Extract matches (Cmd+Return)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Input" xml:space="preserve">
         <source>Input</source>
         <target>Input</target>
@@ -465,6 +542,11 @@
         <target>Format</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Format code (Cmd+Return)" xml:space="preserve">
+        <source>Format code (Cmd+Return)</source>
+        <target>Format code (Cmd+Return)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Pretty" xml:space="preserve">
         <source>Pretty</source>
         <target>Pretty</target>
@@ -490,6 +572,11 @@
       <trans-unit id="Convert" xml:space="preserve">
         <source>Convert</source>
         <target>Convert</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Convert cases (Cmd+Return)" xml:space="preserve">
+        <source>Convert cases (Cmd+Return)</source>
+        <target>Convert cases (Cmd+Return)</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="From" xml:space="preserve">

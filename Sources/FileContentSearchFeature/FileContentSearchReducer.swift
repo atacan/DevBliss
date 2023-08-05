@@ -178,6 +178,7 @@ public struct FileContentSearchView: View {
                 Text(NSLocalizedString("Search", bundle: Bundle.module, comment: ""))
             }  // <-Button
             .keyboardShortcut(.return, modifiers: [.command])
+            .help(NSLocalizedString("Start searching (Cmd+Return)", bundle: Bundle.module, comment: ""))
             .overlay(viewStore.isSearching ? ProgressView() : nil)
             .padding(.bottom, 2)
 

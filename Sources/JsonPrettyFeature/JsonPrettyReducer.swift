@@ -90,6 +90,7 @@ public struct JsonPrettyView: View {
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
+            .help(NSLocalizedString("Format code (Cmd+Return)", bundle: Bundle.module, comment: ""))
 
             InputOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: JsonPrettyReducer.Action.inputOutput),

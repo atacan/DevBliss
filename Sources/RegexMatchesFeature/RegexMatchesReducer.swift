@@ -120,6 +120,7 @@ public struct RegexMatchesView: View {
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
+            .help(NSLocalizedString("Extract matches (Cmd+Return)", bundle: Bundle.module, comment: ""))
 
             InputAttributedTwoOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: RegexMatchesReducer.Action.inputOutput),

@@ -24,6 +24,8 @@ let package = Package(
         .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
         .library(name: "JsonPrettyClient", targets: ["JsonPrettyClient"]),
         .library(name: "JsonPrettyFeature", targets: ["JsonPrettyFeature"]),
+        .library(name: "NameGeneratorClient", targets: ["NameGeneratorClient"]),
+        .library(name: "NameGeneratorFeature", targets: ["NameGeneratorFeature"]),
         .library(name: "PrefixSuffixClient", targets: ["PrefixSuffixClient"]),
         .library(name: "PrefixSuffixFeature", targets: ["PrefixSuffixFeature"]),
         .library(name: "RegexMatchesClient", targets: ["RegexMatchesClient"]),
@@ -46,6 +48,7 @@ let package = Package(
         .package(url: "https://github.com/atacan/MacSwiftUI", branch: "main"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.51.0"),
         .package(url: "https://github.com/atacan/TCAEnchancements", branch: "main"),
+        .package(url: "https://github.com/atacan/PillPickerView", branch: "develop"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -63,6 +66,7 @@ let package = Package(
                 "RegexMatchesFeature",
                 "SwiftPrettyFeature",
                 "FileContentSearchFeature",
+                "NameGeneratorFeature",
             ]
         ),
         .target(
@@ -143,6 +147,20 @@ let package = Package(
             dependencies: [
                 "JsonPrettyClient",
                 "InputOutput",
+            ]
+        ),
+        .target(
+            name: "NameGeneratorClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies")
+            ]
+        ),
+        .target(
+            name: "NameGeneratorFeature",
+            dependencies: [
+                "NameGeneratorClient",
+                "InputOutput",
+                "PillPickerView",
             ]
         ),
         .target(

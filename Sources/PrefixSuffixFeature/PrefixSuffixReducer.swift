@@ -168,6 +168,7 @@ public struct PrefixSuffixView: View {
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
+            .help(NSLocalizedString("Convert (Cmd+Return)", bundle: Bundle.module, comment: ""))
             .padding(.top)
 
             InputOutputEditorsView(
@@ -243,3 +244,11 @@ extension View {
         }
     }
 }
+
+
+
+
+
+
+
+

@@ -18,6 +18,7 @@
   - [UUID Generator](#uuid-generator)
 - [Contribute](#contribute)
   - [Build](#build)
+  - [Adding a new tool](#adding-a-new-tool)
 - [Thanks](#thanks)
 - [Conclusion](#conclusion)
 - [License](#license)
@@ -153,6 +154,11 @@ You will also be able to added the package libraries from there.
 git clone https://github.com/atacan/DevBliss.git
 open DevBliss/App/DevBliss.xcodeproj
 ```
+
+### Adding a new tool
+1. Create one library for the Client and one for the view
+1. Add the new tool to the Tool.swift enum
+1. Update AppReducer.swift
 
 ## Thanks
 

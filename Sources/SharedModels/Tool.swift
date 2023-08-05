@@ -7,6 +7,7 @@ public enum Tool: CaseIterable, Identifiable {
     case regexMatches
     case swiftPrettyLockwood
     case fileContentSearch
+    case nameGenerator
 
     public var id: Self { self }
 
@@ -28,6 +29,8 @@ public enum Tool: CaseIterable, Identifiable {
             return "Swift Pretty"
         case .fileContentSearch:
             return "File Content Search"
+        case .nameGenerator:
+            return "Name Generator"
         }
     }
 
@@ -48,6 +51,8 @@ public enum Tool: CaseIterable, Identifiable {
         case .swiftPrettyLockwood:
             return true
         case .fileContentSearch:
+            return false
+        case .nameGenerator:
             return false
         }
     }

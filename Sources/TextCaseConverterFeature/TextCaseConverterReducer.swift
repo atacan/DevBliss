@@ -154,6 +154,7 @@ public struct TextCaseConverterView: View {
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
+            .help(NSLocalizedString("Convert cases (Cmd+Return)", bundle: Bundle.module, comment: ""))
 
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: TextCaseConverterReducer.Action.inputOutput),

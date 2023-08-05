@@ -18,6 +18,9 @@ start: install-formatters precommit
 
 # Run the formatters manually
 format:
+	# check if there are any uncommitted changes, if so, abort
+	git diff-index --quiet HEAD --
+	# run the formatters
 	# nicklockwood/SwiftFormat
 	swiftformat --config .swiftformat --swiftversion 5.7 .
 	# apple/swift-format
