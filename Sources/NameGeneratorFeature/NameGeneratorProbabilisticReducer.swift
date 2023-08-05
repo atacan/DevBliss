@@ -143,74 +143,77 @@ public struct NameGeneratorProbabilisticView: View {
     }
 
     public var body: some View {
-        VStack {
-            LetterWeightsInputView(
-                vowelsInput: viewStore.binding(\.$vowelsInput),
-                title: NSLocalizedString("Vowels", bundle: Bundle.module, comment: ""),
-                plustButtonAction: {
-                    viewStore.send(.addVowelButtontouched)
-                },
-                deleteButtonAction: { id in
-                    viewStore.send(.deleteVowelButtontouched(id))
-                }
-            )
-            LetterWeightsInputView(
-                vowelsInput: viewStore.binding(\.$consonantsInput),
-                title: NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""),
-                plustButtonAction: {
-                    viewStore.send(.addVowelButtontouched)
-                },
-                deleteButtonAction: { id in
-                    viewStore.send(.deleteVowelButtontouched(id))
-                }
-            )
-            HStack {
-                VStack {
-                    Text(NSLocalizedString("Min. length", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: viewStore.binding(\.$minLength), range: 1 ... 15)
-                        .frame(maxWidth: 100)
-                }
-                .accessibilityLabel(NSLocalizedString("minimum length for the names", bundle: Bundle.module, comment: ""))
-                .accessibilityValue(NSLocalizedString("\(viewStore.minLength)", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
-                
-                VStack {
-                    Text(NSLocalizedString("Max. length", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: viewStore.binding(\.$maxLength), range: 1 ... 15)
-                        .frame(maxWidth: 100)
-                }
-                .accessibilityLabel(NSLocalizedString("Maximum length of the names", bundle: Bundle.module, comment: ""))                
-                .accessibilityValue(NSLocalizedString("\(viewStore.maxLength)", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
+        ScrollView{
+            VStack {
+                LetterWeightsInputView(
+                    vowelsInput: viewStore.binding(\.$vowelsInput),
+                    title: NSLocalizedString("Vowels", bundle: Bundle.module, comment: ""),
+                    plustButtonAction: {
+                        viewStore.send(.addVowelButtontouched)
+                    },
+                    deleteButtonAction: { id in
+                        viewStore.send(.deleteVowelButtontouched(id))
+                    }
+                )
+                LetterWeightsInputView(
+                    vowelsInput: viewStore.binding(\.$consonantsInput),
+                    title: NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""),
+                    plustButtonAction: {
+                        viewStore.send(.addVowelButtontouched)
+                    },
+                    deleteButtonAction: { id in
+                        viewStore.send(.deleteVowelButtontouched(id))
+                    }
+                )
+                HStack {
+                    VStack {
+                        Text(NSLocalizedString("Min. length", bundle: Bundle.module, comment: ""))
+                        IntegerTextField(value: viewStore.binding(\.$minLength), range: 1 ... 15)
+                            .frame(maxWidth: 150)
+                    }
+                    .accessibilityLabel(NSLocalizedString("minimum length for the names", bundle: Bundle.module, comment: ""))
+                    .accessibilityValue(NSLocalizedString("\(viewStore.minLength)", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
+                    
+                    VStack {
+                        Text(NSLocalizedString("Max. length", bundle: Bundle.module, comment: ""))
+                        IntegerTextField(value: viewStore.binding(\.$maxLength), range: 1 ... 15)
+                            .frame(maxWidth: 150)
+                    }
+                    .accessibilityLabel(NSLocalizedString("Maximum length of the names", bundle: Bundle.module, comment: ""))
+                    .accessibilityValue(NSLocalizedString("\(viewStore.maxLength)", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
 
-                VStack {
-                    Text(NSLocalizedString("Alternation\nProbability", bundle: Bundle.module, comment: ""))
-                        .help(
-                            NSLocalizedString("the probability of alternating between vowel and consonant when generating the next letter", bundle: Bundle.module, comment: "")
-                        )
-                    Slider(value: viewStore.binding(\.$alternationProbability), in: 0 ... 1)
-                        .frame(maxWidth: 100)
-                }
-                .accessibilityLabel(NSLocalizedString("Probability of switching vowel or consonant", bundle: Bundle.module, comment: ""))                
-                .accessibilityValue(NSLocalizedString("\(Int(viewStore.alternationProbability * 100))%", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
+                    VStack {
+                        Text(NSLocalizedString("Alternation Probability", bundle: Bundle.module, comment: ""))
+                            .minimumScaleFactor(0.5)
+                            .help(
+                                NSLocalizedString("the probability of alternating between vowel and consonant when generating the next letter", bundle: Bundle.module, comment: "")
+                            )
+                        Slider(value: viewStore.binding(\.$alternationProbability), in: 0 ... 1)
+                            .frame(maxWidth: 150)
+                    }
+                    .accessibilityLabel(NSLocalizedString("Probability of switching vowel or consonant", bundle: Bundle.module, comment: ""))
+                    .accessibilityValue(NSLocalizedString("\(Int(viewStore.alternationProbability * 100))%", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
 
-                VStack {
-                    Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: viewStore.binding(\.$numberOfNames), range: 1 ... 200)
-                        .frame(maxWidth: 150)
+                    VStack {
+                        Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
+                        IntegerTextField(value: viewStore.binding(\.$numberOfNames), range: 1 ... 200)
+                            .frame(maxWidth: 150)
+                    }
+                    .accessibilityLabel(NSLocalizedString("Number of names", bundle: Bundle.module, comment: ""))
+                    .accessibilityValue(NSLocalizedString("\(viewStore.numberOfNames)", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
                 }
-                .accessibilityLabel(NSLocalizedString("Number of names", bundle: Bundle.module, comment: ""))                
-                .accessibilityValue(NSLocalizedString("\(viewStore.numberOfNames)", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
+
+                Button(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
+                    viewStore.send(.generateButtonTouched)
+                }
+                .keyboardShortcut(.return, modifiers: [.command])
+                .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
+                .overlay(
+                    viewStore.isGenerating
+                        ? ProgressView()
+                        : nil
+                )
             }
-
-            Button(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
-                viewStore.send(.generateButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
-            .overlay(
-                viewStore.isGenerating
-                    ? ProgressView()
-                    : nil
-            )
         }
     }
 }
@@ -244,17 +247,19 @@ struct LetterWeightsInputView: View {
             Text(title)
             ScrollView(.horizontal, showsIndicators: true) {
                 HStack(alignment: .center) {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 8) {
                         Text(NSLocalizedString("Letter", bundle: Bundle.module, comment: ""))
                         Text(NSLocalizedString("Weight", bundle: Bundle.module, comment: ""))
+                            .offset(y: 1)
+                        Text(NSLocalizedString(" ", bundle: Bundle.module, comment: ""))
                     }
                     ForEach($vowelsInput) { $letterWeight in
 
                         VStack(alignment: .center) {
                             TextField("", text: $letterWeight.letter)
+                                .textFieldStyle(.roundedBorder)
                             IntegerTextField(value: $letterWeight.frequency, range: 0 ... 20)
-
-                                .frame(maxWidth: 70)
+                                .frame(maxWidth: 150)
                             Button {
                                 deleteButtonAction(letterWeight.id)
                             } label: {

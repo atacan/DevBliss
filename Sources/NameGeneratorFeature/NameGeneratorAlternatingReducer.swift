@@ -109,11 +109,13 @@ public struct NameGeneratorAlternatingView: View {
                     Text(NSLocalizedString("Vowels", bundle: Bundle.module, comment: ""))
                     TextField(NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$vowelsInput))
                         .font(.monospaced(.title3)())
+                        .textFieldStyle(.roundedBorder)
                 }  // <-VStack
                 VStack(alignment: .leading) {
                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
                     TextField(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$inputSeparator))
                         .font(.monospaced(.title3)())
+                        .textFieldStyle(.roundedBorder)
                         .frame(maxWidth: 60)
                 }
             }
@@ -122,11 +124,13 @@ public struct NameGeneratorAlternatingView: View {
                     Text(NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""))
                     TextField(NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$consonantsInput))
                         .font(.monospaced(.title3)())
+                        .textFieldStyle(.roundedBorder)
                 }
                 VStack(alignment: .leading) {
                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
                     TextField(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$inputSeparator))
                         .font(.monospaced(.title3)())
+                        .textFieldStyle(.roundedBorder)
                         .frame(maxWidth: 60)
                 }
             }
@@ -135,7 +139,7 @@ public struct NameGeneratorAlternatingView: View {
                 VStack {
                     Text(NSLocalizedString("Min. length", bundle: Bundle.module, comment: ""))
                     IntegerTextField(value: viewStore.binding(\.$minLength), range: 1 ... 15)
-                        .frame(maxWidth: 100)
+                        .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(NSLocalizedString("Minimum length of the names", bundle: Bundle.module, comment: ""))
                 .accessibilityValue(NSLocalizedString("\(viewStore.minLength)", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
@@ -143,7 +147,7 @@ public struct NameGeneratorAlternatingView: View {
                 VStack {
                     Text(NSLocalizedString("Max. length", bundle: Bundle.module, comment: ""))
                     IntegerTextField(value: viewStore.binding(\.$maxLength), range: 1 ... 15)
-                        .frame(maxWidth: 100)
+                        .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(NSLocalizedString("Maximum length of the names", bundle: Bundle.module, comment: ""))                
                 .accessibilityValue(NSLocalizedString("\(viewStore.maxLength)", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))

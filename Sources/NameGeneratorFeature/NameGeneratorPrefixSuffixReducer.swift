@@ -19,12 +19,7 @@ public struct NameGeneratorPrefixSuffixReducer: ReducerProtocol {
                 "An", "Jes", "Zach", "Deb", "Rob", "Steph", "Bri", "Pat", "Sam", "Kat", "Vic", "Nico", "Alex", "El",
                 "Gab",
             ].joined(separator: ";"),
-            suffixesInput: String = [
-                "Jo", "Bel", "Har", "San", "Le", "Gra", "Mel", "Ed", "Ari", "Theo", "Lau", "Phil", "Mat", "Rach",
-                "Mich", "Chris",
-                "An", "Jes", "Zach", "Deb", "Rob", "Steph", "Bri", "Pat", "Sam", "Kat", "Vic", "Nico", "Alex", "El",
-                "Gab",
-            ].joined(separator: ";c"),
+            suffixesInput: String = ["na", "la", "ron", "ton", "ine", "bell", "dor", "ber", "lie", "der", "ney", "dy", "son", "lan", "th", "ce", "cie", "cy", "sy", "ca", "ty", "ny", "ris", "is", "sey", "nie", "len", "ken", "ben", "den", "men", "jen"].joined(separator: ";"),
             inputSeparator: String = ";",
             numberOfNames: Int = 10
         ) {
@@ -104,11 +99,13 @@ public struct NameGeneratorPrefixSuffixView: View {
                 VStack(alignment: .leading) {
                     Text(NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""))
                     TextField(NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$prefixesInput))
+                        .textFieldStyle(.roundedBorder)
                         .font(.monospaced(.title3)())
                 }  // <-VStack
                 VStack(alignment: .leading) {
                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
                     TextField(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$inputSeparator))
+                        .textFieldStyle(.roundedBorder)
                         .font(.monospaced(.title3)())
                         .frame(maxWidth: 60)
                 }
@@ -119,27 +116,32 @@ public struct NameGeneratorPrefixSuffixView: View {
                     Text(NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""))
                     TextField(NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$suffixesInput))
                         .font(.monospaced(.title3)())
+                        .textFieldStyle(.roundedBorder)
                 }
                 VStack(alignment: .leading) {
                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
                     TextField(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$inputSeparator))
                         .font(.monospaced(.title3)())
+                        .textFieldStyle(.roundedBorder)
                         .frame(maxWidth: 60)
                         .help(NSLocalizedString("string to be used to split input into a list", bundle: Bundle.module, comment: ""))
                 }
+            }
+            
+            HStack(alignment: .bottom) {
                 VStack {
-                    Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: viewStore.binding(\.$numberOfNames), range: 1 ... 200)
-                        .frame(maxWidth: 150)
-                }
-                .accessibilityLabel(NSLocalizedString("Number of names", bundle: Bundle.module, comment: ""))                
-                .accessibilityValue(NSLocalizedString("\(viewStore.numberOfNames)", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
-            }
+                                    Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
+                                    IntegerTextField(value: viewStore.binding(\.$numberOfNames), range: 1 ... 200)
+                                        .frame(maxWidth: 150)
+                                }
+                                .accessibilityLabel(NSLocalizedString("Number of names", bundle: Bundle.module, comment: ""))
+                                .accessibilityValue(NSLocalizedString("\(viewStore.numberOfNames)", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
             Button(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
-                viewStore.send(.generateButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
+                            viewStore.send(.generateButtonTouched)
+                        }
+                        .keyboardShortcut(.return, modifiers: [.command])
+                        .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
+            } // <-HStack
             // OutputEditorView(store: store.scope(state: \.output, action: /NameGeneratorPrefixSuffixReducer.Action.output))
         }
     }

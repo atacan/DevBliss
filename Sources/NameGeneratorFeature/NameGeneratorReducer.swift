@@ -6,6 +6,7 @@ import ComposableArchitecture
 import InputOutput
 import NameGeneratorClient
 import SwiftUI
+import SplitView
 
 public enum GenerationType {
     case prefixSuffix
@@ -101,8 +102,7 @@ public struct NameGeneratorView: View {
     }
     
     public var body: some View {
-        VStack {
-        Group {
+        VStack{
             Picker(
                 "Generation Type",
                 selection: viewStore.binding(
@@ -115,43 +115,46 @@ public struct NameGeneratorView: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             .labelsHidden()
-            .padding()
             
-            switch viewStore.generationType {
-            case .prefixSuffix:
-                NameGeneratorPrefixSuffixView(
+            VSplit {
+                Group {
+                    
+                    switch viewStore.generationType {
+                    case .prefixSuffix:
+                        NameGeneratorPrefixSuffixView(
+                            store: store.scope(
+                                state: \.prefixSuffix,
+                                action: NameGeneratorReducer.Action.prefixSuffix
+                            )
+                        )
+                    case .alternatingVowelsConsonants:
+                        NameGeneratorAlternatingView(
+                            store: store.scope(
+                                state: \.alternatingVowelsConsonants,
+                                action: NameGeneratorReducer.Action.alternatingVowelsConsonants
+                            )
+                        )
+                    case .probabilistic:
+                        
+                        
+                        NameGeneratorProbabilisticView(
+                            store: store.scope(
+                                state: \.probabilistic,
+                                action: NameGeneratorReducer.Action.probabilistic
+                            )
+                        )
+                    }
+                }
+                .padding()
+                
+            } bottom: {
+                OutputEditorView(
                     store: store.scope(
-                        state: \.prefixSuffix,
-                        action: NameGeneratorReducer.Action.prefixSuffix
+                        state: \.output,
+                        action: NameGeneratorReducer.Action.output
                     )
                 )
-            case .alternatingVowelsConsonants:
-                NameGeneratorAlternatingView(
-                    store: store.scope(
-                        state: \.alternatingVowelsConsonants,
-                        action: NameGeneratorReducer.Action.alternatingVowelsConsonants
-                    )
-                )
-            case .probabilistic:
-                
-                
-                                NameGeneratorProbabilisticView(
-                                    store: store.scope(
-                                        state: \.probabilistic,
-                                        action: NameGeneratorReducer.Action.probabilistic
-                                    )
-                                )
             }
-        }
-        .padding()
-        
-        
-            OutputEditorView(
-                store: store.scope(
-                    state: \.output,
-                    action: NameGeneratorReducer.Action.output
-                )
-            )
         }
     }
 }
