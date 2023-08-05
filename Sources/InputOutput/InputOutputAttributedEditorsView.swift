@@ -135,6 +135,7 @@ struct InputOutputToolbarSplitItems: View {
                 }
             )
             .disabled(hide.side != nil)
+            .help(layout.isHorizontal ? "Vertical split" : "Horizontal split")
             .accessibilityLabel(
                 layout
                     .isHorizontal ? "vertical split" : "horizontal split"
@@ -142,8 +143,8 @@ struct InputOutputToolbarSplitItems: View {
             .accessibilityHint(
                 layout
                     .isHorizontal
-                    ? NSLocalizedString("the input and output editor will be located next to each other", bundle: Bundle.module, comment: "")
-                    : NSLocalizedString("the input and output editor will be located underneath each other", bundle: Bundle.module, comment: "")
+                    ? NSLocalizedString("the input and output editor will be positioned next to each other", bundle: Bundle.module, comment: "")
+                    : NSLocalizedString("the input and output editor will be positioned underneath each other", bundle: Bundle.module, comment: "")
             )
 
             Button(
@@ -157,6 +158,7 @@ struct InputOutputToolbarSplitItems: View {
                             hide.toggle()
                         }
                     }
+                    
                 },
                 label: {
                     if hide.side == nil {
@@ -173,6 +175,8 @@ struct InputOutputToolbarSplitItems: View {
                     }
                 }
             )
+            .help(hide.side == nil ? "Hide input editor" : "Show input editor")
+            .accessibilityLabel(hide.side == nil ? "Hide input editor" : "Show input editor")
         }
     }
 }
