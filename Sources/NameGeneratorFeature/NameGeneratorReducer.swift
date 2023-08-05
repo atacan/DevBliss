@@ -14,6 +14,7 @@ public enum GenerationType {
 }
 
 public struct NameGeneratorReducer: ReducerProtocol {
+    public init (){}
     public struct State: Equatable {
         @BindingState var generationType: GenerationType
         var prefixSuffix: NameGeneratorPrefixSuffixReducer.State
@@ -84,6 +85,9 @@ public struct NameGeneratorReducer: ReducerProtocol {
         Scope(state: \.probabilistic, action: /Action.probabilistic) {
             NameGeneratorProbabilisticReducer()
         }
+        Scope(state: \.output, action: /Action.output) {
+            OutputEditorReducer()
+        }
     }
 }
 
@@ -105,9 +109,9 @@ public struct NameGeneratorView: View {
                     \.$generationType
                 )
             ) {
-                Text("Prefix Suffix").tag(GenerationType.prefixSuffix)
-                Text("Alternating Vowels Consonants").tag(GenerationType.alternatingVowelsConsonants)
-                Text("Probabilistic").tag(GenerationType.probabilistic)
+                Text(NSLocalizedString("Prefix Suffix", bundle: Bundle.module, comment: "")).tag(GenerationType.prefixSuffix)
+                Text(NSLocalizedString("Alternating Vowels Consonants", bundle: Bundle.module, comment: "")).tag(GenerationType.alternatingVowelsConsonants)
+                Text(NSLocalizedString("Probabilistic", bundle: Bundle.module, comment: "")).tag(GenerationType.probabilistic)
             }
             .pickerStyle(SegmentedPickerStyle())
             .labelsHidden()
