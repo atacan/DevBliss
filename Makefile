@@ -18,9 +18,9 @@ start: install-formatters precommit
 
 check_uncommitted:
 	@if git diff-index --quiet HEAD --; then \
-		echo "No uncommitted changes found."; \
+		echo '\033[32mNo uncommitted changes found.\033[0m'; \
 	else \
-		echo "Uncommitted changes detected. Aborting."; \
+		echo '\033[31mUncommitted changes detected. Aborting.\033[0m'; \
 		exit 1; \
 	fi
 
