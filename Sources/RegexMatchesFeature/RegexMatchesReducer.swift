@@ -107,7 +107,10 @@ public struct RegexMatchesView: View {
 
     public var body: some View {
         VStack {
-            TextField(NSLocalizedString("Regex pattern", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$regexPattern))
+            TextField(
+                NSLocalizedString("Regex pattern", bundle: Bundle.module, comment: ""),
+                text: viewStore.binding(\.$regexPattern)
+            )
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .font(.monospaced(.body)())
             .autocorrectionDisabled()

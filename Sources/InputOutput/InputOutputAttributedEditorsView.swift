@@ -143,8 +143,16 @@ struct InputOutputToolbarSplitItems: View {
             .accessibilityHint(
                 layout
                     .isHorizontal
-                    ? NSLocalizedString("the input and output editor will be positioned next to each other", bundle: Bundle.module, comment: "")
-                    : NSLocalizedString("the input and output editor will be positioned underneath each other", bundle: Bundle.module, comment: "")
+                    ? NSLocalizedString(
+                        "the input and output editor will be positioned next to each other",
+                        bundle: Bundle.module,
+                        comment: ""
+                    )
+                    : NSLocalizedString(
+                        "the input and output editor will be positioned underneath each other",
+                        bundle: Bundle.module,
+                        comment: ""
+                    )
             )
 
             Button(
@@ -158,7 +166,7 @@ struct InputOutputToolbarSplitItems: View {
                             hide.toggle()
                         }
                     }
-                    
+
                 },
                 label: {
                     if hide.side == nil {

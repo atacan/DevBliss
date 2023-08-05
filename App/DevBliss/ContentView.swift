@@ -8,7 +8,7 @@ struct ContentView: View {
             store: Store(
                 initialState: .init(),
                 reducer: AppReducer()
-//                    ._printChanges()
+                    //                    ._printChanges()
             )
         )
     }

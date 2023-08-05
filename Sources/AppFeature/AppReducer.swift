@@ -61,7 +61,7 @@ public struct AppReducer: ReducerProtocol {
     }
 
     public var body: some ReducerProtocol<State, Action> {
-        Reduce<State, Action> { state, action in 
+        Reduce<State, Action> { state, action in
             switch action {
             case let .htmlToSwift(
                 .presented(.inputOutput(.output(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
@@ -184,7 +184,6 @@ public struct AppReducer: ReducerProtocol {
         .ifLet(\.$nameGenerator, action: /Action.nameGenerator) {
             NameGeneratorReducer()
         }
-        
     }
 
     private func handleOtherTool(thisToolOutput: String?, otherTool: Tool, state: inout State) {
@@ -360,7 +359,6 @@ public struct AppView: View {
                             },
                             icon: { Image(systemName: "arrow.right.and.line.vertical.and.arrow.left") }
                         )
-
                     }
 
                     NavigationLinkStore(
@@ -520,14 +518,14 @@ public struct AppView: View {
                         comment: "sidebar section name for a group of tools"
                     )
                 ) {
-
                     // NavigationLinkStore(
                     //     store.scope(state: \.$uuidGenerator, action: { .uuidGenerator($0) })
                     // ) {
                     //     viewStore.send(.navigationLinkTouched(.uuidGenerator))
                     // } destination: { store in
                     //     UUIDGeneratorView(store: store)
-                    //     .navigationTitle(NSLocalizedString("Generate UUIDs", bundle: Bundle.module, comment: "navigation title on top of the window"))
+                    //     .navigationTitle(NSLocalizedString("Generate UUIDs", bundle: Bundle.module, comment:
+                    //     "navigation title on top of the window"))
                     //     .padding(.top)
                     // } label: {
                     //                             Label(
@@ -556,7 +554,6 @@ public struct AppView: View {
                             icon: { Image(systemName: "person") }
                         )
                     }
-
                 }
             }
             .listStyle(.sidebar)
@@ -585,7 +582,6 @@ public struct AppView: View {
             HStack(alignment: .center) {
                 Image(systemName: "rectangle.leadinghalf.inset.filled.arrow.leading")
                 Text(NSLocalizedString("Choose a tool from the Sidebar", bundle: Bundle.module, comment: ""))
-
             }  // <-HStack
 
             .font(.title)

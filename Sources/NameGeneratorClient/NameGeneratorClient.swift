@@ -1,7 +1,3 @@
-//
-// https://github.com/atacan
-// 05.08.23
-
 import Dependencies
 import Foundation
 
@@ -14,7 +10,12 @@ public struct NameGeneratorClient {
         await generateUsingPrefixSuffix(namePrefixes, nameSuffixes)
     }
 
-    public func generateAlternating(vowels: String, consonants: String, minLength: Int, maxLength: Int) async -> String {
+    public func generateAlternating(
+        vowels: String,
+        consonants: String,
+        minLength: Int,
+        maxLength: Int
+    ) async -> String {
         await generateAlternatingVowelsConsonants(vowels, consonants, minLength, maxLength)
     }
 
@@ -22,9 +23,9 @@ public struct NameGeneratorClient {
         await generateProbabilistic(nameGenerator)
     }
 
-        public func generateUsing(namePrefixes: [String], nameSuffixes: [String], times: Int) async -> [String] {
+    public func generateUsing(namePrefixes: [String], nameSuffixes: [String], times: Int) async -> [String] {
         await withTaskGroup(of: String.self) { group in
-            for _ in 0..<times {
+            for _ in 0 ..< times {
                 group.addTask {
                     await generateUsingPrefixSuffix(namePrefixes, nameSuffixes)
                 }
@@ -35,9 +36,15 @@ public struct NameGeneratorClient {
         }
     }
 
-    public func generateAlternating(vowels: String, consonants: String, minLength: Int, maxLength: Int, times: Int) async -> [String] {
+    public func generateAlternating(
+        vowels: String,
+        consonants: String,
+        minLength: Int,
+        maxLength: Int,
+        times: Int
+    ) async -> [String] {
         await withTaskGroup(of: String.self) { group in
-            for _ in 0..<times {
+            for _ in 0 ..< times {
                 group.addTask {
                     await generateAlternatingVowelsConsonants(vowels, consonants, minLength, maxLength)
                 }
@@ -50,7 +57,7 @@ public struct NameGeneratorClient {
 
     public func generate(probabilisticWith nameGenerator: NameGenerator, times: Int) async -> [String] {
         await withTaskGroup(of: String.self) { group in
-            for _ in 0..<times {
+            for _ in 0 ..< times {
                 group.addTask {
                     await generateProbabilistic(nameGenerator)
                 }
@@ -60,7 +67,6 @@ public struct NameGeneratorClient {
             }
         }
     }
-
 }
 
 extension NameGeneratorClient: DependencyKey {
@@ -102,14 +108,13 @@ public struct LetterWeight: Equatable, Identifiable {
     public var letter: String
     public var frequency: Int
 
-    public init (
+    public init(
         letter: String,
         frequency: Int
     ) {
         self.letter = letter
         self.frequency = frequency
     }
-    
 }
 
 public struct NameGenerator {
@@ -119,7 +124,13 @@ public struct NameGenerator {
     let maxLength: Int
     let alternationProbability: Double
 
-    public init(vowels: [LetterWeight], consonants: [LetterWeight], minLength: Int, maxLength: Int, alternationProbability: Double) {
+    public init(
+        vowels: [LetterWeight],
+        consonants: [LetterWeight],
+        minLength: Int,
+        maxLength: Int,
+        alternationProbability: Double
+    ) {
         self.vowels = vowels.flatMap { Array(repeating: $0.letter, count: $0.frequency) }
         self.consonants = consonants.flatMap { Array(repeating: $0.letter, count: $0.frequency) }
         self.minLength = minLength
@@ -140,7 +151,7 @@ func generateRandomName(using nameGenerator: NameGenerator) -> String {
         randomName += letterArray[index]
 
         // Decide whether to switch the type of letter for the next iteration
-         let shouldSwitch = Double.random(in: 0...1) < nameGenerator.alternationProbability
+        let shouldSwitch = Double.random(in: 0 ... 1) < nameGenerator.alternationProbability
         if shouldSwitch {
             isNextLetterVowel.toggle()
         }

@@ -85,9 +85,9 @@ public struct HtmlToSwiftView: View {
     }
 
     #if os(iOS)
-    private let pickerTitleSpace: CGFloat = 0
+        private let pickerTitleSpace: CGFloat = 0
     #elseif os(macOS)
-    private let pickerTitleSpace: CGFloat = 4
+        private let pickerTitleSpace: CGFloat = 4
     #endif
 
     public var body: some View {
@@ -96,21 +96,27 @@ public struct HtmlToSwiftView: View {
                 Spacer()
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
                     Text(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
-                Picker(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$dsl)) {
-                                    ForEach(SwiftDSL.allCases) { dsl in
-                                        Text(dslLibraryName(for: dsl))
-                                            .tag(dsl)
-                                    }
-                                }
-                } // <-VStack
+                    Picker(
+                        NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
+                        selection: viewStore.binding(\.$dsl)
+                    ) {
+                        ForEach(SwiftDSL.allCases) { dsl in
+                            Text(dslLibraryName(for: dsl))
+                                .tag(dsl)
+                        }
+                    }
+                }  // <-VStack
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
                     Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
-                Picker(NSLocalizedString("Component", bundle: Bundle.module, comment: ""), selection: viewStore.binding(\.$component)) {
-                    ForEach(HtmlOutputComponent.allCases) { component in
-                        Text(outputComponentPickerName(for: component))
-                            .tag(component)
+                    Picker(
+                        NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
+                        selection: viewStore.binding(\.$component)
+                    ) {
+                        ForEach(HtmlOutputComponent.allCases) { component in
+                            Text(outputComponentPickerName(for: component))
+                                .tag(component)
+                        }
                     }
-                }
                 }
                 Spacer()
             }  // <-HStack
@@ -136,20 +142,40 @@ public struct HtmlToSwiftView: View {
     private func dslLibraryName(for dsl: SwiftDSL) -> String {
         switch dsl {
         case .binaryBirds:
-            return NSLocalizedString("Binary Birds", bundle: Bundle.module, comment: "picker description for which dsl library to use. don't translate.")
+            return NSLocalizedString(
+                "Binary Birds",
+                bundle: Bundle.module,
+                comment: "picker description for which dsl library to use. don't translate."
+            )
         case .pointFree:
-            return NSLocalizedString("Point﹒Free", bundle: Bundle.module, comment: "picker description for which dsl library to use. don't translate.")
+            return NSLocalizedString(
+                "Point﹒Free",
+                bundle: Bundle.module,
+                comment: "picker description for which dsl library to use. don't translate."
+            )
         }
     }
-    
-    private func outputComponentPickerName(for component: HtmlOutputComponent) -> String{
+
+    private func outputComponentPickerName(for component: HtmlOutputComponent) -> String {
         switch component {
         case .fullHtml:
-            return NSLocalizedString("Full <html>", bundle: Bundle.module, comment: "picker description for which html component to output")
+            return NSLocalizedString(
+                "Full <html>",
+                bundle: Bundle.module,
+                comment: "picker description for which html component to output"
+            )
         case .onlyBody:
-            return NSLocalizedString("Only <body>", bundle: Bundle.module, comment: "picker description for which html component to output")
+            return NSLocalizedString(
+                "Only <body>",
+                bundle: Bundle.module,
+                comment: "picker description for which html component to output"
+            )
         case .onlyHead:
-            return NSLocalizedString("Only <head>", bundle: Bundle.module, comment: "picker description for which html component to output")
+            return NSLocalizedString(
+                "Only <head>",
+                bundle: Bundle.module,
+                comment: "picker description for which html component to output"
+            )
         }
     }
 }

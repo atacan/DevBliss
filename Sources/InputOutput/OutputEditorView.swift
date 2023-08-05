@@ -140,7 +140,7 @@ struct MyPlainTextEditor: View {
     var body: some View {
         #if os(macOS)
             PlainMacEditorView(text: $text)
-            .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
+                .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
         #elseif os(iOS)
             TextEditor(text: $text)
                 .font(.monospaced(.body)())

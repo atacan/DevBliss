@@ -101,20 +101,36 @@ public struct PrefixSuffixView: View {
         VStack {
             HStack(alignment: .center) {
                 Image(systemName: "arrow.forward")
-                    .help(NSLocalizedString("It first starts applying the prefix changes", bundle: Bundle.module, comment: ""))
+                .help(
+                    NSLocalizedString(
+                        "It first starts applying the prefix changes",
+                        bundle: Bundle.module,
+                        comment: ""
+                    )
+                )
                 VStack {
                     Text(NSLocalizedString("Prefix", bundle: Bundle.module, comment: ""))
                     Group {
-                        TextField(NSLocalizedString("Replace prefix", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$configuration.prefixReplace))
+                        TextField(
+                            NSLocalizedString("Replace prefix", bundle: Bundle.module, comment: ""),
+                            text: viewStore.binding(\.$configuration.prefixReplace)
+                        )
                         .focused($focusedField, equals: .prefixReplace)
                         .onSubmit { focusNextField($focusedField) }
                         .help(NSLocalizedString("Replace prefix if available", bundle: Bundle.module, comment: ""))
 
-                        TextField(NSLocalizedString("with", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$configuration.prefixReplaceWith))
+                        TextField(
+                            NSLocalizedString("with", bundle: Bundle.module, comment: ""),
+                            text: viewStore.binding(\.$configuration.prefixReplaceWith)
+                        )
                         .focused($focusedField, equals: .prefixReplaceWith)
                         .onSubmit { focusNextField($focusedField) }
                         .help(
-                            NSLocalizedString("the prefix written previously will be replaced with this", bundle: Bundle.module, comment: "")
+                            NSLocalizedString(
+                                "the prefix written previously will be replaced with this",
+                                bundle: Bundle.module,
+                                comment: ""
+                            )
                         )
 
                         TextField(
@@ -129,19 +145,43 @@ public struct PrefixSuffixView: View {
                     .textFieldStyle(.roundedBorder)
                 }
                 Image(systemName: "arrow.forward.square.fill")
-                    .help(NSLocalizedString("Then it applies the suffix manipulation", bundle: Bundle.module, comment: ""))
+                .help(
+                    NSLocalizedString(
+                        "Then it applies the suffix manipulation",
+                        bundle: Bundle.module,
+                        comment: ""
+                    )
+                )
                 VStack {
-                    Text(NSLocalizedString("Suffix", bundle: Bundle.module, comment: "title of the suffix manipulation input fields"))
+                    Text(
+                        NSLocalizedString(
+                            "Suffix",
+                            bundle: Bundle.module,
+                            comment: "title of the suffix manipulation input fields"
+                        )
+                    )
                     Group {
-                        TextField(NSLocalizedString("Replace suffix", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$configuration.suffixReplace))
+                        TextField(
+                            NSLocalizedString("Replace suffix", bundle: Bundle.module, comment: ""),
+                            text: viewStore.binding(\.$configuration.suffixReplace)
+                        )
                         .focused($focusedField, equals: .suffixReplace)
                         .onSubmit { focusNextField($focusedField) }
                         .help(NSLocalizedString("Replace suffix if available", bundle: Bundle.module, comment: ""))
 
-                        TextField(NSLocalizedString("with", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$configuration.suffixReplaceWith))
+                        TextField(
+                            NSLocalizedString("with", bundle: Bundle.module, comment: ""),
+                            text: viewStore.binding(\.$configuration.suffixReplaceWith)
+                        )
                         .focused($focusedField, equals: .suffixReplaceWith)
                         .onSubmit { focusNextField($focusedField) }
-                        .help(NSLocalizedString("the suffix written previously will be replaced with this", bundle: Bundle.module, comment: ""))
+                        .help(
+                            NSLocalizedString(
+                                "the suffix written previously will be replaced with this",
+                                bundle: Bundle.module,
+                                comment: ""
+                            )
+                        )
 
                         TextField(
                             NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""),
@@ -155,7 +195,13 @@ public struct PrefixSuffixView: View {
                     .textFieldStyle(.roundedBorder)
                 }
                 Image(systemName: "backward.end")
-                    .help(NSLocalizedString("After applying prefix and suffice manipulations to each line separately, it ends.", bundle: Bundle.module, comment: ""))
+                .help(
+                    NSLocalizedString(
+                        "After applying prefix and suffice manipulations to each line separately, it ends.",
+                        bundle: Bundle.module,
+                        comment: ""
+                    )
+                )
             }  // <-HStack
             .autocorrectionDisabled()
             #if os(iOS)
@@ -244,11 +290,3 @@ extension View {
         }
     }
 }
-
-
-
-
-
-
-
-

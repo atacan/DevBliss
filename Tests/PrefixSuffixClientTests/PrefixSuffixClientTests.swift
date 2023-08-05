@@ -26,9 +26,9 @@ class PrefixSuffixClientTests: XCTestCase {
                 @State var childrenKeyPath: String = .init()
               @State var name: String let fluentDataType: FluentDataType let isOptional: Bool let optionalSuffix: String = .init()
             """
-        
+
         try await withDependencies {
-          $0.prefixSuffix = .liveValue
+            $0.prefixSuffix = .liveValue
         } operation: {
             let result = try await self.prefixSuffixClient.convert(input, config)
             XCTAssertEqual(result, output)
@@ -57,7 +57,7 @@ class PrefixSuffixClientTests: XCTestCase {
             """
 
         try await withDependencies {
-          $0.prefixSuffix = .liveValue
+            $0.prefixSuffix = .liveValue
         } operation: {
             let result = try await self.prefixSuffixClient.convert(input, config)
             XCTAssertEqual(result, output)

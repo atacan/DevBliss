@@ -92,11 +92,11 @@ public struct TextCaseConverterReducer: ReducerProtocol {
 public struct TextCaseConverterView: View {
     let store: StoreOf<TextCaseConverterReducer>
     @ObservedObject var viewStore: ViewStoreOf<TextCaseConverterReducer>
-    
+
     #if os(iOS)
-    private let pickerTitleSpace: CGFloat = 0
+        private let pickerTitleSpace: CGFloat = 0
     #elseif os(macOS)
-    private let pickerTitleSpace: CGFloat = 4
+        private let pickerTitleSpace: CGFloat = 4
     #endif
 
     public init(store: StoreOf<TextCaseConverterReducer>) {
@@ -172,7 +172,6 @@ public struct TextCaseConverterView: View {
             return NSLocalizedString("Space", bundle: Bundle.module, comment: "")
         }
     }
-
 }
 
 // preview

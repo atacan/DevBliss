@@ -100,7 +100,7 @@ public struct InputAttributedEditorView: View {
             }
             #if os(macOS)
                 MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
-                .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
+                    .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
             #elseif os(iOS)
                 //                ScrollView {
                 //                    Text(AttributedString(viewStore.text))

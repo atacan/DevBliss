@@ -68,8 +68,8 @@ struct OutputControlsView: View {
                 Image(systemName: "doc.on.clipboard")
                     .foregroundColor(
                         viewStore.copyButtonAnimating
-                        ? ThemeColor.Text.success
-                        : ThemeColor.Text.controlText
+                            ? ThemeColor.Text.success
+                            : ThemeColor.Text.controlText
                     )
             }  // <-Button
             .font(.footnote)
@@ -95,7 +95,13 @@ struct OutputControlsView: View {
             }  // <-Button
             .font(.footnote)
             .keyboardShortcut("u", modifiers: [.command, .shift])
-            .help(NSLocalizedString("Input it to the other tools (Command+Shift+U)", bundle: Bundle.module, comment: ""))
+            .help(
+                NSLocalizedString(
+                    "Input it to the other tools (Command+Shift+U)",
+                    bundle: Bundle.module,
+                    comment: ""
+                )
+            )
             .accessibilityLabel(NSLocalizedString("Input it to the other tools", bundle: Bundle.module, comment: ""))
             .popover(isPresented: $isOtherToolsPopoverVisible) {
                 VStack(alignment: .leading) {
@@ -109,7 +115,13 @@ struct OutputControlsView: View {
                             }) {
                                 Image(systemName: "xmark.circle")
                                     .opacity(0.8)
-                                    .accessibilityLabel(NSLocalizedString("Close pop over", bundle: Bundle.module, comment: ""))
+                                    .accessibilityLabel(
+                                        NSLocalizedString(
+                                            "Close pop over",
+                                            bundle: Bundle.module,
+                                            comment: ""
+                                        )
+                                    )
                             }
                             .padding()
                             .buttonStyle(.plain)
@@ -129,9 +141,15 @@ struct OutputControlsView: View {
         Group {
             HStack(alignment: .lastTextBaseline) {
                 Image(systemName: "square.and.pencil")
-                Text(NSLocalizedString("Move the output to one of the tools as input", bundle: Bundle.module, comment: ""))
-                    .lineLimit(nil)
-                    .font(.headline)
+                Text(
+                    NSLocalizedString(
+                        "Move the output to one of the tools as input",
+                        bundle: Bundle.module,
+                        comment: ""
+                    )
+                )
+                .lineLimit(nil)
+                .font(.headline)
             }
             .padding(.bottom)
             ForEach(Tool.allCases.filter(\.isInputtable)) { tool in
