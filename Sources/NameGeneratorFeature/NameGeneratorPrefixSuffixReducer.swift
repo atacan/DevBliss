@@ -102,38 +102,44 @@ public struct NameGeneratorPrefixSuffixView: View {
         VStack {
             HStack {
                 VStack(alignment: .leading) {
-                    Text("Prefixes")
-                    TextField("Prefixes", text: viewStore.binding(\.$prefixesInput))
+                    Text(NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""))
+                    TextField(NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$prefixesInput))
                         .font(.monospaced(.title3)())
                 }  // <-VStack
                 VStack(alignment: .leading) {
-                    Text("Separator")
-                    TextField("Separator", text: viewStore.binding(\.$inputSeparator))
+                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
+                    TextField(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$inputSeparator))
                         .font(.monospaced(.title3)())
                         .frame(maxWidth: 60)
                 }
+                .help(NSLocalizedString("string to be used to split input into a list", bundle: Bundle.module, comment: ""))
             }
             HStack {
                 VStack(alignment: .leading) {
-                    Text("Suffixes")
-                    TextField("Suffixes", text: viewStore.binding(\.$suffixesInput))
+                    Text(NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""))
+                    TextField(NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$suffixesInput))
                         .font(.monospaced(.title3)())
                 }
                 VStack(alignment: .leading) {
-                    Text("Separator").foregroundColor(.clear)
-                    TextField("Separator", text: viewStore.binding(\.$inputSeparator))
+                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
+                    TextField(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""), text: viewStore.binding(\.$inputSeparator))
                         .font(.monospaced(.title3)())
                         .frame(maxWidth: 60)
+                        .help(NSLocalizedString("string to be used to split input into a list", bundle: Bundle.module, comment: ""))
                 }
                 VStack {
-                    Text("Count")
+                    Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
                     IntegerTextField(value: viewStore.binding(\.$numberOfNames), range: 1 ... 200)
                         .frame(maxWidth: 150)
                 }
+                .accessibilityLabel(NSLocalizedString("Number of names", bundle: Bundle.module, comment: ""))                
+                .accessibilityValue(NSLocalizedString("\(viewStore.numberOfNames)", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"))
             }
-            Button("Generate") {
+            Button(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
                 viewStore.send(.generateButtonTouched)
             }
+            .keyboardShortcut(.return, modifiers: [.command])
+            .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
             // OutputEditorView(store: store.scope(state: \.output, action: /NameGeneratorPrefixSuffixReducer.Action.output))
         }
     }
