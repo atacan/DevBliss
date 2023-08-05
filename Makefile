@@ -16,8 +16,16 @@ precommit:
 # Setup the environment
 start: install-formatters precommit
 
+check_uncommitted:
+	@if git diff-index --quiet HEAD --; then \
+		echo "No uncommitted changes found."; \
+	else \
+		echo "Uncommitted changes detected. Aborting."; \
+		exit 1; \
+	fi
+
 # Run the formatters manually
-format:
+format: check_uncommitted
 	# check if there are any uncommitted changes, if so, abort
 	git diff-index --quiet HEAD --
 	# run the formatters
