@@ -38,5 +38,11 @@
 "the input and output editor will be located underneath each other" = "l'éditeur d'entrée et de sortie sera situé l'un en dessous de l'autre";
 
 /* No comment provided by engineer. */
+"the input and output editor will be positioned next to each other" = "l'éditeur d'entrée et de sortie sera positionné côte à côte";
+
+/* No comment provided by engineer. */
+"the input and output editor will be positioned underneath each other" = "l'éditeur d'entrée et de sortie sera positionné l'un en-dessous de l'autre";
+
+/* No comment provided by engineer. */
 "vertical split" = "découpage vertical";
 

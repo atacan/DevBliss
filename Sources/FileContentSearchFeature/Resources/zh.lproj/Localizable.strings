@@ -26,5 +26,8 @@
 "Search Term" = "搜索词";
 
 /* No comment provided by engineer. */
+"Start searching (Cmd+Return)" = "开始搜索（Cmd+Return）";
+
+/* No comment provided by engineer. */
 "term to search inside the file..." = "在文件中搜索的术语...";
 

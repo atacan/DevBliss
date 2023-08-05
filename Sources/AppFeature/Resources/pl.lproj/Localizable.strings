@@ -44,6 +44,9 @@
 "Formatters" = "Formatery";
 
 /* navigation title on top of the window */
+"Generate names or words" = "Generuj nazwy lub słowa";
+
+/* navigation title on top of the window */
 "Generate UUIDs" = "Generuj UUID-y";
 
 /* sidebar section name for a group of tools */
@@ -54,6 +57,9 @@
 
 /* sidebar name for the tool */
 "Json" = "Json";
+
+/* No comment provided by engineer. */
+"Name" = "Imię";
 
 /* tool name on the sidebar */
 "Prefix Suffix" = "Prefiks Sufiks";

@@ -80,6 +80,11 @@
         <target>Generate UUIDs</target>
         <note>navigation title on top of the window</note>
       </trans-unit>
+      <trans-unit id="Generate names or words" xml:space="preserve">
+        <source>Generate names or words</source>
+        <target>Generate names or words</target>
+        <note>navigation title on top of the window</note>
+      </trans-unit>
       <trans-unit id="Generators" xml:space="preserve">
         <source>Generators</source>
         <target>Generators</target>
@@ -94,6 +99,11 @@
         <source>Json</source>
         <target>Json</target>
         <note>sidebar name for the tool</note>
+      </trans-unit>
+      <trans-unit id="Name" xml:space="preserve">
+        <source>Name</source>
+        <target>Name</target>
+        <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="Prefix Suffix" xml:space="preserve">
         <source>Prefix Suffix</source>
@@ -347,6 +357,16 @@
         <target>the input and output editor will be located underneath each other</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="the input and output editor will be positioned next to each other" xml:space="preserve">
+        <source>the input and output editor will be positioned next to each other</source>
+        <target>the input and output editor will be positioned next to each other</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="the input and output editor will be positioned underneath each other" xml:space="preserve">
+        <source>the input and output editor will be positioned underneath each other</source>
+        <target>the input and output editor will be positioned underneath each other</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="vertical split" xml:space="preserve">
         <source>vertical split</source>
         <target>vertical split</target>
@@ -386,6 +406,66 @@
       <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
     </header>
     <body>
+      <trans-unit id=" " xml:space="preserve">
+        <source> </source>
+        <target> </target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="%d" xml:space="preserve">
+        <source>%d</source>
+        <target>%d</target>
+        <note>value of a numeric input value for voice-over</note>
+      </trans-unit>
+      <trans-unit id="%d %" xml:space="preserve">
+        <source>%1$d %2$</source>
+        <target>%1$d %2$</target>
+        <note>value of a numeric input value for voice-over</note>
+      </trans-unit>
+      <trans-unit id="(viewStore.maxLength)" xml:space="preserve">
+        <source>(viewStore.maxLength)</source>
+        <target>(viewStore.maxLength)</target>
+        <note>value of a numeric input value for voice-over</note>
+      </trans-unit>
+      <trans-unit id="(viewStore.minLength)" xml:space="preserve">
+        <source>(viewStore.minLength)</source>
+        <target>(viewStore.minLength)</target>
+        <note>value of a numeric input value for voice-over</note>
+      </trans-unit>
+      <trans-unit id="(viewStore.numberOfNames)" xml:space="preserve">
+        <source>(viewStore.numberOfNames)</source>
+        <target>(viewStore.numberOfNames)</target>
+        <note>value of a numeric input value for voice-over</note>
+      </trans-unit>
+      <trans-unit id="Add to (title)" xml:space="preserve">
+        <source>Add to (title)</source>
+        <target>Add to (title)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Alternating Vowels Consonants" xml:space="preserve">
+        <source>Alternating Vowels Consonants</source>
+        <target>Alternating Vowels Consonants</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Alternation Probability" xml:space="preserve">
+        <source>Alternation Probability</source>
+        <target>Alternation Probability</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Consonants" xml:space="preserve">
+        <source>Consonants</source>
+        <target>Consonants</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Count" xml:space="preserve">
+        <source>Count</source>
+        <target>Count</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Delete from (title)" xml:space="preserve">
+        <source>Delete from (title)</source>
+        <target>Delete from (title)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Generate" xml:space="preserve">
         <source>Generate</source>
         <target>Generate</target>
@@ -394,6 +474,91 @@
       <trans-unit id="Generate names (Cmd+Return)" xml:space="preserve">
         <source>Generate names (Cmd+Return)</source>
         <target>Generate names (Cmd+Return)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Letter" xml:space="preserve">
+        <source>Letter</source>
+        <target>Letter</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Max. length" xml:space="preserve">
+        <source>Max. length</source>
+        <target>Max. length</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Maximum length of the names" xml:space="preserve">
+        <source>Maximum length of the names</source>
+        <target>Maximum length of the names</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Min. length" xml:space="preserve">
+        <source>Min. length</source>
+        <target>Min. length</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Minimum length of the names" xml:space="preserve">
+        <source>Minimum length of the names</source>
+        <target>Minimum length of the names</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Number of names" xml:space="preserve">
+        <source>Number of names</source>
+        <target>Number of names</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Prefix Suffix" xml:space="preserve">
+        <source>Prefix Suffix</source>
+        <target>Prefix Suffix</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Prefixes" xml:space="preserve">
+        <source>Prefixes</source>
+        <target>Prefixes</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Probabilistic" xml:space="preserve">
+        <source>Probabilistic</source>
+        <target>Probabilistic</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Probability of switching vowel or consonant" xml:space="preserve">
+        <source>Probability of switching vowel or consonant</source>
+        <target>Probability of switching vowel or consonant</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Separator" xml:space="preserve">
+        <source>Separator</source>
+        <target>Separator</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Suffixes" xml:space="preserve">
+        <source>Suffixes</source>
+        <target>Suffixes</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Vowels" xml:space="preserve">
+        <source>Vowels</source>
+        <target>Vowels</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Weight" xml:space="preserve">
+        <source>Weight</source>
+        <target>Weight</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="minimum length for the names" xml:space="preserve">
+        <source>minimum length for the names</source>
+        <target>minimum length for the names</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="string to be used to split input into a list" xml:space="preserve">
+        <source>string to be used to split input into a list</source>
+        <target>string to be used to split input into a list</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="the probability of alternating between vowel and consonant when generating the next letter" xml:space="preserve">
+        <source>the probability of alternating between vowel and consonant when generating the next letter</source>
+        <target>the probability of alternating between vowel and consonant when generating the next letter</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
     </body>

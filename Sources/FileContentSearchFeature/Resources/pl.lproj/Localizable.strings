@@ -26,5 +26,8 @@
 "Search Term" = "Termin wyszukiwania";
 
 /* No comment provided by engineer. */
+"Start searching (Cmd+Return)" = "Rozpocznij wyszukiwanie (Cmd+Return)";
+
+/* No comment provided by engineer. */
 "term to search inside the file..." = "termin do wyszukiwania w pliku...";
 

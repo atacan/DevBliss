@@ -1,11 +1,14 @@
 /* picker description for which dsl library to use. don't translate. */
-"Binary Birds" = "Binäre Vögel";
+"Binary Birds" = "Binary Birds";
 
 /* No comment provided by engineer. */
 "Component" = "Komponente";
 
 /* No comment provided by engineer. */
 "Convert" = "Konvertieren";
+
+/* No comment provided by engineer. */
+"Convert code (Cmd+Return)" = "Code konvertieren (Cmd+Return)";
 
 /* No comment provided by engineer. */
 "DSL Library" = "DSL-Bibliothek";

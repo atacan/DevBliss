@@ -179,8 +179,10 @@ public struct NameGeneratorProbabilisticView: View {
                     )
                     .accessibilityValue(
                         NSLocalizedString(
-                            "\(viewStore.minLength)",
+                            "%d",
+                            tableName: nil,
                             bundle: Bundle.module,
+                            value: "\(viewStore.minLength)",
                             comment: "value of a numeric input value for voice-over"
                         )
                     )
@@ -199,8 +201,10 @@ public struct NameGeneratorProbabilisticView: View {
                     )
                     .accessibilityValue(
                         NSLocalizedString(
-                            "\(viewStore.maxLength)",
+                            "%d",
+                            tableName: nil,
                             bundle: Bundle.module,
+                            value: "\(viewStore.maxLength)",
                             comment: "value of a numeric input value for voice-over"
                         )
                     )
@@ -226,10 +230,12 @@ public struct NameGeneratorProbabilisticView: View {
                         )
                     )
                     .accessibilityValue(
-                        NSLocalizedString(
-                            "\(Int(viewStore.alternationProbability * 100))%",
-                            bundle: Bundle.module,
-                            comment: "value of a numeric input value for voice-over"
+                        String(format:
+                            NSLocalizedString(
+                                "%d percent",
+                                bundle: Bundle.module,
+                                comment: "value of a numeric input value for voice-over"
+                            ), Int(viewStore.alternationProbability * 100)
                         )
                     )
 
@@ -238,10 +244,10 @@ public struct NameGeneratorProbabilisticView: View {
                         IntegerTextField(value: viewStore.binding(\.$numberOfNames), range: 1 ... 200)
                             .frame(maxWidth: 150)
                     }
-                    .accessibilityLabel(NSLocalizedString("Number of names", bundle: Bundle.module, comment: ""))
+                    .accessibilityLabel(NSLocalizedString("names to be generated", bundle: Bundle.module, comment: ""))
                     .accessibilityValue(
                         NSLocalizedString(
-                            "\(viewStore.numberOfNames)",
+                            String(format: NSLocalizedString("%d", bundle: Bundle.module, comment: "value of a numeric input value for voice-over"), viewStore.numberOfNames),
                             bundle: Bundle.module,
                             comment: "value of a numeric input value for voice-over"
                         )

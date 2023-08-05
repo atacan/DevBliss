@@ -38,5 +38,11 @@
 "the input and output editor will be located underneath each other" = "Der Eingabe- und Ausgabeeditor befindet sich untereinander";
 
 /* No comment provided by engineer. */
+"the input and output editor will be positioned next to each other" = "der Eingabe- und Ausgabeditor werden nebeneinander positioniert";
+
+/* No comment provided by engineer. */
+"the input and output editor will be positioned underneath each other" = "Der Eingabe- und Ausgabeeditor wird untereinander positioniert.";
+
+/* No comment provided by engineer. */
 "vertical split" = "vertikale Aufteilung";
 

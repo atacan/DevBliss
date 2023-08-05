@@ -5,7 +5,7 @@
 "(Int(viewStore.alternationProbability * 100))%" = "(Int(viewStore.alternationProbability * 100))%";
 
 /* value of a numeric input value for voice-over */
-"(viewStore.maxLength)" = "(AnsichtSpeichern.maxLength)";
+"(viewStore.maxLength)" = "(viewStore.maxLength)";
 
 /* value of a numeric input value for voice-over */
 "(viewStore.minLength)" = "(viewStore.minLength)";
@@ -14,77 +14,77 @@
 "(viewStore.numberOfNames)" = "(viewStore.numberOfNames)";
 
 /* No comment provided by engineer. */
-"Add to (title)" = "Hinzufügen zu (Titel)";
+"Add to (title)" = "Dodaj do";
 
 /* No comment provided by engineer. */
-"Alternating Vowels Consonants" = "Wechselnde Vokale Konsonanten";
+"Alternating Vowels Consonants" = "Zmienna samogłoski spółgłoski";
 
 /* No comment provided by engineer. */
-"Alternation Probability" = "Wahrscheinlichkeit der Abwechslung";
+"Alternation Probability" = "Prawdopodobieństwo alternatywy";
 
 /* No comment provided by engineer. */
-"Consonants" = "Konsonanten";
+"Consonants" = "Spółgłoski";
 
 /* No comment provided by engineer. */
-"Count" = "Zählen";
+"Count" = "Licznik";
 
 /* No comment provided by engineer. */
-"Delete from (title)" = "Löschen von (title)";
+"Delete from (title)" = "Usuń z (tytuł)";
 
 /* No comment provided by engineer. */
-"Generate" = "Generieren";
+"Generate" = "Generuj";
 
 /* No comment provided by engineer. */
-"Generate names (Cmd+Return)" = "Namen generieren (Cmd+Return)";
+"Generate names (Cmd+Return)" = "Generuj nazwy (Cmd+Return)";
 
 /* No comment provided by engineer. */
-"Letter" = "Brief";
+"Letter" = "List";
 
 /* No comment provided by engineer. */
-"Max. length" = "Max. Länge";
+"Max. length" = "Maksymalna długość";
 
 /* No comment provided by engineer. */
-"Maximum length of the names" = "Maximale Länge der Namen";
+"Maximum length of the names" = "Maksymalna długość nazw";
 
 /* No comment provided by engineer. */
-"Min. length" = "Min. Länge";
+"Min. length" = "Min. długość";
 
 /* No comment provided by engineer. */
-"minimum length for the names" = "minimale Länge für die Namen";
+"minimum length for the names" = "minimalna długość dla nazw";
 
 /* No comment provided by engineer. */
-"Minimum length of the names" = "Mindestlänge der Namen";
+"Minimum length of the names" = "Minimalna długość nazw";
 
 /* No comment provided by engineer. */
-"Number of names" = "Anzahl von Namen";
+"Number of names" = "Liczba nazw";
 
 /* No comment provided by engineer. */
-"Prefix Suffix" = "Präfix Suffix";
+"Prefix Suffix" = "Prefix Suffix";
 
 /* No comment provided by engineer. */
-"Prefixes" = "Präfixe";
+"Prefixes" = "Przedrostki";
 
 /* No comment provided by engineer. */
-"Probabilistic" = "Probabilistisch";
+"Probabilistic" = "Prawdopodobieństwo";
 
 /* No comment provided by engineer. */
-"Probability of switching vowel or consonant" = "Wahrscheinlichkeit des Wechsels von Vokal oder Konsonant";
+"Probability of switching vowel or consonant" = "Prawdopodobieństwo zmiany samogłoski lub spółgłoski";
 
 /* No comment provided by engineer. */
-"Separator" = "Trennzeichen";
+"Separator" = "Separator";
 
 /* No comment provided by engineer. */
-"string to be used to split input into a list" = "Zeichenfolge, die zum Aufteilen der Eingabe in eine Liste verwendet wird";
+"string to be used to split input into a list" = "ciąg do podziału wejścia na listę";
 
 /* No comment provided by engineer. */
-"Suffixes" = "Suffixe";
+"Suffixes" = "Przyrostki";
 
 /* No comment provided by engineer. */
-"the probability of alternating between vowel and consonant when generating the next letter" = "die Wahrscheinlichkeit, beim Generieren des nächsten Buchstabens zwischen Vokalen und Konsonanten zu wechseln";
+"the probability of alternating between vowel and consonant when generating the next letter" = "prawdopodobieństwo alteracji między samogłoską a spółgłoską podczas generowania następnego znaku";
 
 /* No comment provided by engineer. */
-"Vowels" = "Vokale";
+"Vowels" = "Samogłoski";
 
 /* No comment provided by engineer. */
-"Weight" = "Gewicht";
+"Weight" = "Waga";
 

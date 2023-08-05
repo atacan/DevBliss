@@ -5,7 +5,7 @@
 "(Int(viewStore.alternationProbability * 100))%" = "(Int(viewStore.alternationProbability * 100))%";
 
 /* value of a numeric input value for voice-over */
-"(viewStore.maxLength)" = "(AnsichtSpeichern.maxLength)";
+"(viewStore.maxLength)" = "(viewStore.maxLength)";
 
 /* value of a numeric input value for voice-over */
 "(viewStore.minLength)" = "(viewStore.minLength)";
@@ -14,77 +14,77 @@
 "(viewStore.numberOfNames)" = "(viewStore.numberOfNames)";
 
 /* No comment provided by engineer. */
-"Add to (title)" = "Hinzufügen zu (Titel)";
+"Add to (title)" = "添加到（标题）";
 
 /* No comment provided by engineer. */
-"Alternating Vowels Consonants" = "Wechselnde Vokale Konsonanten";
+"Alternating Vowels Consonants" = "交替元音辅音";
 
 /* No comment provided by engineer. */
-"Alternation Probability" = "Wahrscheinlichkeit der Abwechslung";
+"Alternation Probability" = "替代概率";
 
 /* No comment provided by engineer. */
-"Consonants" = "Konsonanten";
+"Consonants" = "子音";
 
 /* No comment provided by engineer. */
-"Count" = "Zählen";
+"Count" = "数量";
 
 /* No comment provided by engineer. */
-"Delete from (title)" = "Löschen von (title)";
+"Delete from (title)" = "从（标题）中删除";
 
 /* No comment provided by engineer. */
-"Generate" = "Generieren";
+"Generate" = "生成";
 
 /* No comment provided by engineer. */
-"Generate names (Cmd+Return)" = "Namen generieren (Cmd+Return)";
+"Generate names (Cmd+Return)" = "生成名称（Cmd+Return）";
 
 /* No comment provided by engineer. */
-"Letter" = "Brief";
+"Letter" = "信件";
 
 /* No comment provided by engineer. */
-"Max. length" = "Max. Länge";
+"Max. length" = "最大长度";
 
 /* No comment provided by engineer. */
-"Maximum length of the names" = "Maximale Länge der Namen";
+"Maximum length of the names" = "名字的最大长度";
 
 /* No comment provided by engineer. */
-"Min. length" = "Min. Länge";
+"Min. length" = "最小长度";
 
 /* No comment provided by engineer. */
-"minimum length for the names" = "minimale Länge für die Namen";
+"minimum length for the names" = "名称的最小长度";
 
 /* No comment provided by engineer. */
-"Minimum length of the names" = "Mindestlänge der Namen";
+"Minimum length of the names" = "名称的最小长度";
 
 /* No comment provided by engineer. */
-"Number of names" = "Anzahl von Namen";
+"Number of names" = "姓名数量";
 
 /* No comment provided by engineer. */
-"Prefix Suffix" = "Präfix Suffix";
+"Prefix Suffix" = "前缀后缀";
 
 /* No comment provided by engineer. */
-"Prefixes" = "Präfixe";
+"Prefixes" = "前缀";
 
 /* No comment provided by engineer. */
-"Probabilistic" = "Probabilistisch";
+"Probabilistic" = "概率";
 
 /* No comment provided by engineer. */
-"Probability of switching vowel or consonant" = "Wahrscheinlichkeit des Wechsels von Vokal oder Konsonant";
+"Probability of switching vowel or consonant" = "元音或辅音的切换概率";
 
 /* No comment provided by engineer. */
-"Separator" = "Trennzeichen";
+"Separator" = "分隔符";
 
 /* No comment provided by engineer. */
-"string to be used to split input into a list" = "Zeichenfolge, die zum Aufteilen der Eingabe in eine Liste verwendet wird";
+"string to be used to split input into a list" = "用于将输入字符串分割成列表的字符串";
 
 /* No comment provided by engineer. */
-"Suffixes" = "Suffixe";
+"Suffixes" = "后缀";
 
 /* No comment provided by engineer. */
-"the probability of alternating between vowel and consonant when generating the next letter" = "die Wahrscheinlichkeit, beim Generieren des nächsten Buchstabens zwischen Vokalen und Konsonanten zu wechseln";
+"the probability of alternating between vowel and consonant when generating the next letter" = "生成下一个字母时，在元音和辅音之间交替的概率";
 
 /* No comment provided by engineer. */
-"Vowels" = "Vokale";
+"Vowels" = "元音字母";
 
 /* No comment provided by engineer. */
-"Weight" = "Gewicht";
+"Weight" = "重量";
 

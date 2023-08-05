@@ -26,5 +26,8 @@
 "Search Term" = "検索語句";
 
 /* No comment provided by engineer. */
+"Start searching (Cmd+Return)" = "検索を開始します（Cmd + Return）";
+
+/* No comment provided by engineer. */
 "term to search inside the file..." = "ファイルの中を検索するための用語...";
 

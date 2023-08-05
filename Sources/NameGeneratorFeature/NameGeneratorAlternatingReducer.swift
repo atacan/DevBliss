@@ -200,10 +200,13 @@ public struct NameGeneratorAlternatingView: View {
                     )
                 )
                 .accessibilityValue(
-                    NSLocalizedString(
-                        "\(viewStore.numberOfNames)",
-                        bundle: Bundle.module,
-                        comment: "value of a numeric input value for voice-over"
+                    String(
+                        format: NSLocalizedString(
+                            "%d",
+                            bundle: Bundle.module,
+                            comment: "value of a numeric input value for voice-over"
+                        ),
+                        viewStore.numberOfNames
                     )
                 )
             }

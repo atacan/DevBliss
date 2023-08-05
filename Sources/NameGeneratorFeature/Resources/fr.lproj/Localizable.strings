@@ -1,0 +1,90 @@
+/* No comment provided by engineer. */
+" " = " ";
+
+/* value of a numeric input value for voice-over */
+"(Int(viewStore.alternationProbability * 100))%" = "(Int(viewStore.probabilitéD'alternance * 100))%";
+
+/* value of a numeric input value for voice-over */
+"(viewStore.maxLength)" = "(viewStore.maxLength)";
+
+/* value of a numeric input value for voice-over */
+"(viewStore.minLength)" = "(viewStore.minLength)";
+
+/* value of a numeric input value for voice-over */
+"(viewStore.numberOfNames)" = "(viewStore.numberOfNames)";
+
+/* No comment provided by engineer. */
+"Add to (title)" = "Ajouter à (titre)";
+
+/* No comment provided by engineer. */
+"Alternating Vowels Consonants" = "Voyelles consonnes alternées";
+
+/* No comment provided by engineer. */
+"Alternation Probability" = "Probabilité d'alternance";
+
+/* No comment provided by engineer. */
+"Consonants" = "Consonnes";
+
+/* No comment provided by engineer. */
+"Count" = "Compte";
+
+/* No comment provided by engineer. */
+"Delete from (title)" = "Supprimer from (titre)";
+
+/* No comment provided by engineer. */
+"Generate" = "Générer";
+
+/* No comment provided by engineer. */
+"Generate names (Cmd+Return)" = "Générer des noms (Cmd+Retour)";
+
+/* No comment provided by engineer. */
+"Letter" = "Lettre";
+
+/* No comment provided by engineer. */
+"Max. length" = "Longueur max.";
+
+/* No comment provided by engineer. */
+"Maximum length of the names" = "Longueur maximale des noms";
+
+/* No comment provided by engineer. */
+"Min. length" = "Longueur minimale";
+
+/* No comment provided by engineer. */
+"minimum length for the names" = "longueur minimale des noms";
+
+/* No comment provided by engineer. */
+"Minimum length of the names" = "Longueur minimale des noms";
+
+/* No comment provided by engineer. */
+"Number of names" = "Nombre de noms";
+
+/* No comment provided by engineer. */
+"Prefix Suffix" = "Prefixe Suffixe";
+
+/* No comment provided by engineer. */
+"Prefixes" = "Préfixes";
+
+/* No comment provided by engineer. */
+"Probabilistic" = "Probabiliste";
+
+/* No comment provided by engineer. */
+"Probability of switching vowel or consonant" = "Probabilité de passage d'une voyelle ou d'une consonne";
+
+/* No comment provided by engineer. */
+"Separator" = "Séparateur";
+
+/* No comment provided by engineer. */
+"string to be used to split input into a list" = "chaîne à utiliser pour diviser l'entrée en une liste";
+
+/* No comment provided by engineer. */
+"Suffixes" = "Suffixes";
+
+/* No comment provided by engineer. */
+"the probability of alternating between vowel and consonant when generating the next letter" = "la probabilité d'alterner entre une voyelle et une consonne lors de la génération de la prochaine lettre";
+
+/* No comment provided by engineer. */
+"Vowels" = "Voyelles";
+
+/* No comment provided by engineer. */
+"Weight" = "Poids";
+

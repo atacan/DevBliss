@@ -2,6 +2,9 @@
 "Format" = "Format";
 
 /* No comment provided by engineer. */
+"Format code (Cmd+Return)" = "Formatuj kod (Cmd+Return)";
+
+/* No comment provided by engineer. */
 "nicklockwood/SwiftFormat Config" = "nicklockwood/SwiftFormat Konfiguracja";
 
 /* No comment provided by engineer. */

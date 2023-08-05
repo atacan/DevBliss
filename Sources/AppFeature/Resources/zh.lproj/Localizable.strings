@@ -44,6 +44,9 @@
 "Formatters" = "格式化工具";
 
 /* navigation title on top of the window */
+"Generate names or words" = "生成名称或单词";
+
+/* navigation title on top of the window */
 "Generate UUIDs" = "生成 UUID";
 
 /* sidebar section name for a group of tools */
@@ -54,6 +57,9 @@
 
 /* sidebar name for the tool */
 "Json" = "Json";
+
+/* No comment provided by engineer. */
+"Name" = "姓名";
 
 /* tool name on the sidebar */
 "Prefix Suffix" = "前缀后缀";

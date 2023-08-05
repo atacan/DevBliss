@@ -44,6 +44,9 @@
 "Formatters" = "フォーマッター";
 
 /* navigation title on top of the window */
+"Generate names or words" = "名前または単語を生成する";
+
+/* navigation title on top of the window */
 "Generate UUIDs" = "UUIDの生成";
 
 /* sidebar section name for a group of tools */
@@ -54,6 +57,9 @@
 
 /* sidebar name for the tool */
 "Json" = "Json";
+
+/* No comment provided by engineer. */
+"Name" = "名前";
 
 /* tool name on the sidebar */
 "Prefix Suffix" = "接頭語 接尾語";

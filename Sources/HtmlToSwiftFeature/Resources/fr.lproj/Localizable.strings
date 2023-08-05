@@ -8,6 +8,9 @@
 "Convert" = "Convertir";
 
 /* No comment provided by engineer. */
+"Convert code (Cmd+Return)" = "Convertir le code (Cmd+Return)";
+
+/* No comment provided by engineer. */
 "DSL Library" = "Bibliothèque DSL";
 
 /* picker description for which html component to output */
@@ -20,5 +23,5 @@
 "Only <head>" = "Seulement <head>";
 
 /* picker description for which dsl library to use. don't translate. */
-"Point﹒Free" = "Point﹒Libre";
+"Point﹒Free" = "Point﹒Free";
 

@@ -2,6 +2,9 @@
 "Format" = "格式";
 
 /* No comment provided by engineer. */
+"Format code (Cmd+Return)" = "格式代码（Cmd+Return）";
+
+/* No comment provided by engineer. */
 "nicklockwood/SwiftFormat Config" = "nicklockwood/SwiftFormat配置";
 
 /* No comment provided by engineer. */

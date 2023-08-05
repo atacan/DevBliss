@@ -1,0 +1,90 @@
+/* No comment provided by engineer. */
+" " = " ";
+
+/* value of a numeric input value for voice-over */
+"(Int(viewStore.alternationProbability * 100))%" = "(Int(viewStore.alternationProbability * 100))%";
+
+/* value of a numeric input value for voice-over */
+"(viewStore.maxLength)" = "(viewStore.maxLength)";
+
+/* value of a numeric input value for voice-over */
+"(viewStore.minLength)" = "(viewStore.minLength ）";
+
+/* value of a numeric input value for voice-over */
+"(viewStore.numberOfNames)" = "（viewStore.numberOfNames）";
+
+/* No comment provided by engineer. */
+"Add to (title)" = "（タイトル）に追加";
+
+/* No comment provided by engineer. */
+"Alternating Vowels Consonants" = "母音と子音の交互";
+
+/* No comment provided by engineer. */
+"Alternation Probability" = "交互確率";
+
+/* No comment provided by engineer. */
+"Consonants" = "子音";
+
+/* No comment provided by engineer. */
+"Count" = "カウント";
+
+/* No comment provided by engineer. */
+"Delete from (title)" = "（タイトル）から削除";
+
+/* No comment provided by engineer. */
+"Generate" = "生成する";
+
+/* No comment provided by engineer. */
+"Generate names (Cmd+Return)" = "名前を生成する（Cmd+Return）";
+
+/* No comment provided by engineer. */
+"Letter" = "レター";
+
+/* No comment provided by engineer. */
+"Max. length" = "最大長";
+
+/* No comment provided by engineer. */
+"Maximum length of the names" = "名前の最大長";
+
+/* No comment provided by engineer. */
+"Min. length" = "最小の長さ";
+
+/* No comment provided by engineer. */
+"minimum length for the names" = "名前の最小長";
+
+/* No comment provided by engineer. */
+"Minimum length of the names" = "名前の最小文字数";
+
+/* No comment provided by engineer. */
+"Number of names" = "名前の数";
+
+/* No comment provided by engineer. */
+"Prefix Suffix" = "プリフィックスサフィックス";
+
+/* No comment provided by engineer. */
+"Prefixes" = "接頭辞";
+
+/* No comment provided by engineer. */
+"Probabilistic" = "確率的";
+
+/* No comment provided by engineer. */
+"Probability of switching vowel or consonant" = "母音または子音の切り替えの確率";
+
+/* No comment provided by engineer. */
+"Separator" = "セパレーター";
+
+/* No comment provided by engineer. */
+"string to be used to split input into a list" = "入力をリストに分割するために使用される文字列";
+
+/* No comment provided by engineer. */
+"Suffixes" = "サフィックス";
+
+/* No comment provided by engineer. */
+"the probability of alternating between vowel and consonant when generating the next letter" = "次の文字を生成する際に母音と子音を交互に切り替える確率";
+
+/* No comment provided by engineer. */
+"Vowels" = "母音";
+
+/* No comment provided by engineer. */
+"Weight" = "重量";
+

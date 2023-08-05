@@ -1,11 +1,14 @@
 /* picker description for which dsl library to use. don't translate. */
-"Binary Birds" = "二进制鸟";
+"Binary Birds" = "Binary Birds";
 
 /* No comment provided by engineer. */
 "Component" = "组件";
 
 /* No comment provided by engineer. */
 "Convert" = "转换";
+
+/* No comment provided by engineer. */
+"Convert code (Cmd+Return)" = "转换代码 (Cmd+Return)";
 
 /* No comment provided by engineer. */
 "DSL Library" = "DSL图书馆";
