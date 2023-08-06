@@ -7,20 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5A7437022A2B69C8001DEC2E /* DevBlissApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7437012A2B69C8001DEC2E /* DevBlissApp.swift */; };
 		5A7437062A2B69C9001DEC2E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A7437052A2B69C9001DEC2E /* Assets.xcassets */; };
 		5A74370A2A2B69C9001DEC2E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A7437092A2B69C9001DEC2E /* Preview Assets.xcassets */; };
 		5AA0D0092A3508BC0013132B /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 5AA0D0082A3508BC0013132B /* AppFeature */; };
+		7920EBE62A8008FB00C27666 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7920EBE52A8008FB00C27666 /* main.swift */; };
 		79A1B2612A799F1A00186A8C /* DevBliss-InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 79A1B25F2A799F1A00186A8C /* DevBliss-InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		5A7436FE2A2B69C8001DEC2E /* DevBliss.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DevBliss.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		5A7437012A2B69C8001DEC2E /* DevBlissApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevBlissApp.swift; sourceTree = "<group>"; };
 		5A7437052A2B69C9001DEC2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5A7437072A2B69C9001DEC2E /* DevBliss.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DevBliss.entitlements; sourceTree = "<group>"; };
 		5A7437092A2B69C9001DEC2E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5AAF55582A2B6AE600A86142 /* DevBliss */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = DevBliss; path = ..; sourceTree = "<group>"; };
+		7920EBE52A8008FB00C27666 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		794A19402A7D7D12002A324B /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = "it.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
 		794A19412A7D7D13002A324B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
 		7957E0892A7AF88700F5E001 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = "ja.lproj/DevBliss-InfoPlist.strings"; sourceTree = "<group>"; };
@@ -62,7 +62,7 @@
 		5A7437002A2B69C8001DEC2E /* DevBliss */ = {
 			isa = PBXGroup;
 			children = (
-				5A7437012A2B69C8001DEC2E /* DevBlissApp.swift */,
+				7920EBE52A8008FB00C27666 /* main.swift */,
 				5A7437052A2B69C9001DEC2E /* Assets.xcassets */,
 				5A7437072A2B69C9001DEC2E /* DevBliss.entitlements */,
 				5A7437082A2B69C9001DEC2E /* Preview Content */,
@@ -164,7 +164,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5A7437022A2B69C8001DEC2E /* DevBlissApp.swift in Sources */,
+				7920EBE62A8008FB00C27666 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

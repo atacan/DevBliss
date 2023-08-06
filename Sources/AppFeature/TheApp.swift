@@ -1,4 +1,3 @@
-
 import ComposableArchitecture
 import SwiftUI
 
@@ -13,14 +12,15 @@ struct AppContentView: View {
     }
 }
 
-public struct TheApp {
+public struct TheApp: App {
     public init() {}
-    public var windowGroup: some Scene = WindowGroup {
+    public var body: some Scene {
+        WindowGroup {
             AppContentView()
         }
         #if os(macOS)
             .windowStyle(.titleBar)
             .windowToolbarStyle(.unified(showsTitle: true))
         #endif
-    
+    }
 }
