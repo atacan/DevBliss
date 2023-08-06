@@ -20,7 +20,7 @@ public struct NameGeneratorReducer: ReducerProtocol {
         var output: OutputEditorReducer.State
 
         public init(
-            generationType: GenerationType = .probabilistic,
+            generationType: GenerationType = .alternatingVowelsConsonants,
             prefixSuffix: NameGeneratorPrefixSuffixReducer.State = .init(),
             alternatingVowelsConsonants: NameGeneratorAlternatingReducer.State = .init(),
             probabilistic: NameGeneratorProbabilisticReducer.State = .init(),
