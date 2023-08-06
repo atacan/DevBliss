@@ -70,7 +70,7 @@ Improve your code readability with our formatter:
 
 (not yet) Getting started with DevBliss is as simple as downloading the app from the macOS or iOS store. Join our growing community of developers who are leveraging the power of DevBliss to enhance their productivity and code quality.
 
-## Details
+## Details  
 
 ### HTML to Swift Converter
 
