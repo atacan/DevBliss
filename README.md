@@ -7,7 +7,7 @@
   - [File Handling](#file-handling)
   - [Formatters](#formatters)
 - [Getting Started](#getting-started)
-- [Screenshots](#screenshots)
+- [Details](#details)
   - [HTML to Swift Converter](#html-to-swift-converter)
   - [Text Case Converter](#text-case-converter)
   - [Prefix Suffix Converter](#prefix-suffix-converter)
@@ -70,7 +70,7 @@ Improve your code readability with our formatter:
 
 (not yet) Getting started with DevBliss is as simple as downloading the app from the macOS or iOS store. Join our growing community of developers who are leveraging the power of DevBliss to enhance their productivity and code quality.
 
-## Screenshots
+## Details
 
 ### HTML to Swift Converter
 
