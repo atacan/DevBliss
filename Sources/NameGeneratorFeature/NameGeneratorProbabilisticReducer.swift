@@ -158,10 +158,10 @@ public struct NameGeneratorProbabilisticView: View {
                     vowelsInput: viewStore.binding(\.$consonantsInput),
                     title: NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""),
                     plustButtonAction: {
-                        viewStore.send(.addVowelButtontouched)
+                        viewStore.send(.addConsonantButtontouched)
                     },
                     deleteButtonAction: { id in
-                        viewStore.send(.deleteVowelButtontouched(id))
+                        viewStore.send(.deleteConsonantButtontouched(id))
                     }
                 )
                 HStack {
