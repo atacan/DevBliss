@@ -3,9 +3,9 @@
 - [Why Choose DevBliss?](#why-choose-devbliss)
 - [Key Features](#key-features)
   - [Converters](#converters)
-  - [Formatters](#formatters)
-  - [File Handling](#file-handling)
   - [Generators](#generators)
+  - [File Handling](#file-handling)
+  - [Formatters](#formatters)
 - [Getting Started](#getting-started)
 - [Screenshots](#screenshots)
   - [HTML to Swift Converter](#html-to-swift-converter)
@@ -15,7 +15,7 @@
   - [JSON Formatter](#json-formatter)
   - [Swift Formatter](#swift-formatter)
   - [File Content Search](#file-content-search)
-  - [UUID Generator](#uuid-generator)
+  - [Name Generator](#name-generator)
 - [Contribute](#contribute)
   - [Build](#build)
   - [Adding a new tool](#adding-a-new-tool)
@@ -37,7 +37,7 @@ In an era where developers are seeking effective ways to maximize their producti
 
 ## Key Features
 
-DevBliss bundles a variety of tools under three main categories: Converters, Formatters, and Generators.
+There are already a few macOS apps with the basic converters and formatters. We try to add what's not available in other tools, with a few exceptions.
 
 ### Converters
 
@@ -48,22 +48,23 @@ Simplify your coding tasks with our diverse range of converters:
 1. **Prefix Suffix Replace and Add:** Customize your code by replacing or adding prefixes or suffixes to each line.
 1. **Regex Match Extract:** Efficiently extract the matches and the capturing groups from input text.
 
-### Formatters
+### Generators
 
-Improve your code readability with our formatter:
+Boost your efficiency with our generators:
 
-1. **JSON Formatter:** Beautify your JSON data with our pretty-print and syntax highlight features.
-2. **Swift Formatter:** Beautify your Swift code with our pretty-print and syntax highlight features.
+1. **Name Generator:** Generate multiple none existing but readable names or words
 
 ### File Handling
 
 1. **File Content Search:** Search for a string in a folder and get the line number, and preview the file content.
 
-### Generators
+### Formatters
 
-Boost your efficiency with our generators:
+Improve your code readability with our formatter:
 
-1. **UUID Generator:** Generate multiple UUIDs instantly.
+1. **Swift Formatter:** Beautify your Swift code with our pretty-print and syntax highlight features.
+2. **JSON Formatter:** Beautify your JSON data with our pretty-print and syntax highlight features.
+
 
 ## Getting Started
 
@@ -91,8 +92,8 @@ For the DSLs [BinaryBirds/swift-html](https://github.com/BinaryBirds/swift-html)
 
 <table>
   <tr>
-    <td> <img src="images/iOS/text-case-converter-screenshot.jpeg" alt="Image 1" style="width: 250px;"/> </td>
-    <td> <img src="images/iPad/text-case-converter-screenshot.jpeg" alt="Image 2" style="width: 750px;"/> </td>
+    <td> <img src="images/iOS/text-case-converter-screenshot.jpeg" alt="DevBliss Text Case Converter on iOS" style="width: 250px;"/> </td>
+    <td> <img src="images/iPad/text-case-converter-screenshot.jpeg" alt="DevBliss Text Case Converter on iPad" style="width: 750px;"/> </td>
   </tr>
 </table>
 
@@ -102,8 +103,8 @@ For the DSLs [BinaryBirds/swift-html](https://github.com/BinaryBirds/swift-html)
 
 <table>
   <tr>
-    <td> <img src="images/iOS/prefix-suffix-converter-screenshot.png" alt="Image 1" style="width: 250px;"/> </td>
-    <td> <img src="images/iPad/prefix-suffix-converter-screenshot.jpeg" alt="Image 2" style="width: 750px;"/> </td>
+    <td> <img src="images/iOS/prefix-suffix-converter-screenshot.png" alt="DevBliss Prefix Suffix Converter on iOS" style="width: 250px;"/> </td>
+    <td> <img src="images/iPad/prefix-suffix-converter-screenshot.jpeg" alt="DevBliss Prefix Suffix Converter on iPad" style="width: 750px;"/> </td>
   </tr>
 </table>
 
@@ -119,8 +120,8 @@ Using [nkristek/Highlight](https://github.com/nkristek/Highlight.git)
 ![JSON Formatter](images/macOS/json-formatter-screenshot-for-anime.jpeg)
 <table>
   <tr>
-    <td> <img src="images/iOS/json-formatter-screenshot.jpeg" alt="Image 1" style="width: 250px;"/> </td>
-    <td> <img src="images/iPad/json-formatter-screenshot.jpeg" alt="Image 2" style="width: 750px;"/> </td>
+    <td> <img src="images/iOS/json-formatter-screenshot.jpeg" alt="DevBliss Json Formatter for iOS" style="width: 250px;"/> </td>
+    <td> <img src="images/iPad/json-formatter-screenshot.jpeg" alt="DevBliss Json Formatter for iPad" style="width: 750px;"/> </td>
   </tr>
 </table>
 
@@ -135,9 +136,19 @@ Using [nicklockwood/SwiftFormat](https://github.com/nicklockwood/SwiftFormat)
 
 ![File Content Search](images/macOS/file-content-search-screenshot.jpeg)
 
-### UUID Generator
+### Name Generator
 
-![UUID Generator](images/macOS/uuid-generator-screenshot.jpeg)
+Generate names with three methods:
+- randomly combining prefix sand suffix common names.
+- alternating between vowels and consonants.
+- assigning different weights to each letter and set the probability to alternate between vowel and consonant.
+
+<table>
+  <tr>
+    <td> <img src="images/macOS/name-generator-prefix-suffix.jpeg" alt="DevBliss Name Generator" style="width: 750px;"/> </td>
+    <td> <img src="images/macOS/name-generator-probabilistic.jpeg" alt="DevBliss Name Generator" style="width: 750px;"/> </td>
+  </tr>
+</table>
 
 ## Contribute
 
