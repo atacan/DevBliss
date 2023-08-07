@@ -13,6 +13,17 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
         @BindingState var dsl: SwiftDSL = .binaryBirds
         @BindingState var component: HtmlOutputComponent = .fullHtml
 
+        public init(
+            inputOutput: InputOutputEditorsReducer.State = .init(),
+            dsl: SwiftDSL = .binaryBirds,
+            component: HtmlOutputComponent = .fullHtml
+        ) {
+            self.inputOutput = inputOutput
+            self.dsl = dsl
+            self.component = component    
+        }
+        
+
         public init(inputOutput: InputOutputEditorsReducer.State = .init()) {
             self.inputOutput = inputOutput
         }
@@ -61,9 +72,10 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
                 // https://github.com/pointfreeco/swift-composable-architecture/discussions/1952#discussioncomment-5167956
                 return state.inputOutput.output.updateText(swiftCode)
                     .map { Action.inputOutput(.output($0)) }
-            case .conversionResponse(.failure):
+            case .conversionResponse(.failure(let error)):
                 state.isConversionRequestInFlight = false
-                return .none
+                return state.inputOutput.output.updateText(error.localizedDescription)
+                    .map { Action.inputOutput(.output($0)) }
             case .inputOutput:
                 return .none
             }
