@@ -80,7 +80,7 @@ public struct NameGeneratorAlternatingReducer: ReducerProtocol {
                         )
                     }
                     .cancellable(id: CancelID.generationRequest, cancelInFlight: true)
-            case let .generationResponse(.success(name)):
+            case .generationResponse(.success(_)):
                 state.isGenerating = false
                 return .none
             case .generationResponse(.failure):
