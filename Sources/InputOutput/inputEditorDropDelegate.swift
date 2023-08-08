@@ -71,6 +71,9 @@ public struct InputEditorDropReducer: ReducerProtocol {
             case .dropEntered:
                 return .none
             case .dropExited:
+                guard !state.droppedUrls.isEmpty else {
+                    return .none
+                }
                 return .run { [droppedUrls = state.droppedUrls] send in
                     let text = try droppedUrls.map {
                         try String(contentsOf: $0)
@@ -118,7 +121,7 @@ struct InputEditorDropView: View {
                 phase = 20
             }
             .onDrop(
-                of: [UTType.fileURL],
+                of: [UTType.plainText],
                 delegate: URLDropDelegate(
                     urls: viewStore.binding(\.$droppedUrls),
                     isDropInProgress: viewStore.binding(\.$isDropInProgress),

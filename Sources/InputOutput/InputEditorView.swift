@@ -152,7 +152,7 @@ struct InputView_Previews: PreviewProvider {
                 InputEditorView(
                     store: Store(
                         initialState: .init(
-                            inputEditorDrop: .init(isDropInProgress: true)
+                            inputEditorDrop: .init(isDropInProgress: false)
                         ),
                         reducer: InputEditorReducer()
                             ._printChanges()
