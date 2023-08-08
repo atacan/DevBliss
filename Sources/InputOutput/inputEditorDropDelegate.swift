@@ -107,6 +107,7 @@ struct InputEditorDropView: View {
                 dash: [10],
                 dashPhase: phase
             ))
+            .padding(4)
             .foregroundStyle(viewStore.isDropInProgress ? Color.accentColor : Color.clear)
             .animation(
                 Animation.linear(duration: 2)
