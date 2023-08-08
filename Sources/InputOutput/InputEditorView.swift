@@ -48,6 +48,9 @@ public struct InputEditorReducer: ReducerProtocol {
             case .pasteButtonAnimationEnded:
                 state.pasteButtonAnimating = false
                 return .none
+            case .inputEditorDrop(.droppedFileContent(let content)):
+                state.text = content
+                return .none
             case .inputEditorDrop:
                 return .none
             }

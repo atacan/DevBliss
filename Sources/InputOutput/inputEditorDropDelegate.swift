@@ -59,6 +59,7 @@ public struct InputEditorDropReducer: ReducerProtocol {
         case binding(BindingAction<State>)
         case dropEntered
         case dropExited
+        case droppedFileContent(String)
     }
 
     public var body: some ReducerProtocol<State, Action> {
@@ -70,6 +71,14 @@ public struct InputEditorDropReducer: ReducerProtocol {
             case .dropEntered:
                 return .none
             case .dropExited:
+                return .run {[droppedUrls = state.droppedUrls] send in
+                    let text = try droppedUrls.map {
+                        try String(contentsOf: $0)
+                    }
+                    .joined(separator: "\n")
+                    await send(.droppedFileContent(text))
+                }
+            case .droppedFileContent:
                 return .none
             }
         }
