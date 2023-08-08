@@ -19,8 +19,8 @@ public struct TheApp: App {
             AppContentView()
         }
         #if os(macOS)
-            .windowStyle(.titleBar)
-            .windowToolbarStyle(.unified(showsTitle: true))
+        .windowStyle(.titleBar)
+        .windowToolbarStyle(.unified(showsTitle: true))
         #endif
     }
 }

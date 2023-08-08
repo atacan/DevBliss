@@ -20,9 +20,8 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
         ) {
             self.inputOutput = inputOutput
             self.dsl = dsl
-            self.component = component    
+            self.component = component
         }
-        
 
         public init(inputOutput: InputOutputEditorsReducer.State = .init()) {
             self.inputOutput = inputOutput
@@ -72,7 +71,7 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
                 // https://github.com/pointfreeco/swift-composable-architecture/discussions/1952#discussioncomment-5167956
                 return state.inputOutput.output.updateText(swiftCode)
                     .map { Action.inputOutput(.output($0)) }
-            case .conversionResponse(.failure(let error)):
+            case let .conversionResponse(.failure(error)):
                 state.isConversionRequestInFlight = false
                 return state.inputOutput.output.updateText(error.localizedDescription)
                     .map { Action.inputOutput(.output($0)) }
@@ -117,7 +116,7 @@ public struct HtmlToSwiftView: View {
                                 .tag(dsl)
                         }
                     }
-                }  // <-VStack
+                } // <-VStack
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
                     Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
                     Picker(
@@ -131,7 +130,7 @@ public struct HtmlToSwiftView: View {
                     }
                 }
                 Spacer()
-            }  // <-HStack
+            } // <-HStack
             .frame(maxWidth: 450)
             .labelsHidden()
 

@@ -88,13 +88,13 @@ let package = Package(
         .target(
             name: "ClipboardClient",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "CommandLineClient",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
@@ -117,7 +117,7 @@ let package = Package(
         .target(
             name: "FilePanelsClient",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
@@ -158,7 +158,7 @@ let package = Package(
         .target(
             name: "NameGeneratorClient",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
@@ -172,13 +172,13 @@ let package = Package(
         .target(
             name: "PrefixSuffixClient",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .testTarget(
             name: "PrefixSuffixClientTests",
             dependencies: [
-                "PrefixSuffixClient"
+                "PrefixSuffixClient",
             ]
         ),
         .target(
@@ -191,13 +191,13 @@ let package = Package(
         .target(
             name: "RegexMatchesClient",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .testTarget(
             name: "RegexMatchesClientTests",
             dependencies: [
-                "RegexMatchesClient"
+                "RegexMatchesClient",
             ]
         ),
         .target(
@@ -224,7 +224,7 @@ let package = Package(
         .target(
             name: "TextCaseConverterClient",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
@@ -237,7 +237,7 @@ let package = Package(
         .target(
             name: "UUIDGeneratorClient",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(

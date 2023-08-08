@@ -75,10 +75,11 @@ public struct InputEditorDropReducer: ReducerProtocol {
                     return .none
                 }
                 return .run { [droppedUrls = state.droppedUrls] send in
-                    let text = try droppedUrls.map {
-                        try String(contentsOf: $0)
-                    }
-                    .joined(separator: "\n")
+                    let text =
+                        try droppedUrls.map {
+                            try String(contentsOf: $0)
+                        }
+                        .joined(separator: "\n")
                     await send(.droppedFileContent(text))
                 }
             case .droppedFileContent:
@@ -102,14 +103,16 @@ struct InputEditorDropView: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: 8, style: .continuous)
-            .stroke(style: .init(
-                lineWidth: 4,
-                lineCap: .round,
-                lineJoin: .round,
-                miterLimit: 1,
-                dash: [10],
-                dashPhase: phase
-            ))
+            .stroke(
+                style: .init(
+                    lineWidth: 4,
+                    lineCap: .round,
+                    lineJoin: .round,
+                    miterLimit: 1,
+                    dash: [10],
+                    dashPhase: phase
+                )
+            )
             .padding(4)
             .foregroundStyle(viewStore.isDropInProgress ? Color.accentColor : Color.clear)
             .animation(
