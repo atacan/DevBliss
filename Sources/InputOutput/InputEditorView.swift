@@ -8,9 +8,11 @@ public struct InputEditorReducer: ReducerProtocol {
     public struct State: Equatable {
         @BindingState public var text: String
         var pasteButtonAnimating: Bool = false
+        var inputEditorDrop: InputEditorDropReducer.State
 
-        public init(text: String = "") {
+        public init(text: String = "", inputEditorDrop: InputEditorDropReducer.State = .init()) {
             self.text = text
+            self.inputEditorDrop = inputEditorDrop
         }
     }
 
@@ -19,6 +21,7 @@ public struct InputEditorReducer: ReducerProtocol {
         case pasteButtonTouched
         // case saveAsButtonTouched
         case pasteButtonAnimationEnded
+        case inputEditorDrop(InputEditorDropReducer.Action)
     }
 
     // @Dependency(\.continuousClock) var clock
@@ -45,7 +48,12 @@ public struct InputEditorReducer: ReducerProtocol {
             case .pasteButtonAnimationEnded:
                 state.pasteButtonAnimating = false
                 return .none
+            case .inputEditorDrop:
+                return .none
             }
+        }
+        Scope(state: \.inputEditorDrop, action: /Action.inputEditorDrop) {
+            InputEditorDropReducer()
         }
     }
 }
@@ -88,6 +96,9 @@ public struct InputEditorView: View {
                 Spacer()
             }
             MyPlainTextEditor(text: viewStore.binding(\.$text), isActivitySheetPresented: .constant(false))
+                .overlay(content: {
+                    InputEditorDropView(store: store.scope(state: \.inputEditorDrop, action: InputEditorReducer.Action.inputEditorDrop))
+                })
         }
         .overlay(
             HStack {
@@ -122,5 +133,6 @@ struct InputView_Previews: PreviewProvider {
                 reducer: InputEditorReducer()
             )
         )
+        .padding()
     }
 }
