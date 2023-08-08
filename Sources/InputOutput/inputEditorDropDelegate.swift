@@ -26,7 +26,9 @@ struct URLDropDelegate: DropDelegate {
                 if let data = item as? Data,
                     let url = URL(dataRepresentation: data, relativeTo: nil)
                 {
-                    self.urls.append(url)
+                    DispatchQueue.main.async {
+                        self.urls.append(url)
+                    }
                 }
                 else {
                     noProblem = false
@@ -79,6 +81,7 @@ public struct InputEditorDropReducer: ReducerProtocol {
                     await send(.droppedFileContent(text))
                 }
             case .droppedFileContent:
+                state.droppedUrls = []
                 return .none
             }
         }

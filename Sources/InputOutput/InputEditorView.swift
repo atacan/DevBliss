@@ -100,7 +100,9 @@ public struct InputEditorView: View {
             }
             MyPlainTextEditor(text: viewStore.binding(\.$text), isActivitySheetPresented: .constant(false))
                 .overlay(content: {
-                    InputEditorDropView(store: store.scope(state: \.inputEditorDrop, action: InputEditorReducer.Action.inputEditorDrop))
+                    InputEditorDropView(
+                        store: store.scope(state: \.inputEditorDrop, action: InputEditorReducer.Action.inputEditorDrop)
+                    )
                 })
         }
         .overlay(
@@ -139,3 +141,25 @@ struct InputView_Previews: PreviewProvider {
         .padding()
     }
 }
+
+#if DEBUG
+    public struct InputEditorApp: App {
+        public init() {}
+        public var body: some Scene {
+            WindowGroup {
+                InputEditorView(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: InputEditorReducer()
+                            ._printChanges()
+                    )
+                )
+
+            }
+            #if os(macOS)
+                .windowStyle(.titleBar)
+                .windowToolbarStyle(.unified(showsTitle: true))
+            #endif
+        }
+    }
+#endif

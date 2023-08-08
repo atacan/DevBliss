@@ -1,3 +1,6 @@
-import AppFeature
+//import AppFeature
+//TheApp.main()
 
-TheApp.main()
+import InputOutput
+InputEditorApp.main()
+
