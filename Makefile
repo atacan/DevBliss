@@ -40,12 +40,12 @@ format: check_uncommitted
 en-xcloc:
 	xcodebuild -exportLocalizations -localizationPath ./localisations/ -exportLanguage en -sdk iphoneos16.4
 
-move-xcloc:
+move-xcloc: check_uncommitted
 	unzip -o ~/Downloads/export.zip -d ./localisations/
 	# remove the zip file so that the new download will have the same name
 	rm ~/Downloads/export.zip
 
-import-xcloc:
+import-xcloc: check_uncommitted
 	for lang in de nl fr it ja pl pt es tr sq zh ko ru; do \
 		if [ -d "./localisations/$$lang.xcloc/" ]; then \
 			xcodebuild -importLocalizations -localizationPath ./localisations/$$lang.xcloc/ -sdk iphoneos16.4 ; \
