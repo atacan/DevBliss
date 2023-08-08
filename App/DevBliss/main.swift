@@ -1,6 +1,5 @@
-//import AppFeature
-//TheApp.main()
+#if DEBUG
+    import InputOutput
 
-import InputOutput
-InputEditorApp.main()
-
+    InputEditorApp.main()
+#endif
