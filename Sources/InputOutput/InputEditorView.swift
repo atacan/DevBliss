@@ -48,7 +48,7 @@ public struct InputEditorReducer: ReducerProtocol {
             case .pasteButtonAnimationEnded:
                 state.pasteButtonAnimating = false
                 return .none
-            case .inputEditorDrop(.droppedFileContent(let content)):
+            case let .inputEditorDrop(.droppedFileContent(content)):
                 state.text = content
                 return .none
             case .inputEditorDrop:
@@ -111,7 +111,7 @@ public struct InputEditorView: View {
                     viewStore.send(.pasteButtonTouched)
                 } label: {
                     Image(systemName: "doc.on.clipboard.fill")
-                }  // <-Button
+                } // <-Button
                 .foregroundColor(
                     viewStore.pasteButtonAnimating
                         ? ThemeColor.Text.success
@@ -134,7 +134,9 @@ struct InputView_Previews: PreviewProvider {
     static var previews: some View {
         InputEditorView(
             store: Store(
-                initialState: InputEditorReducer.State(),
+                initialState: InputEditorReducer.State(
+                    inputEditorDrop: .init(isDropInProgress: true)
+                ),
                 reducer: InputEditorReducer()
             )
         )
@@ -149,16 +151,17 @@ struct InputView_Previews: PreviewProvider {
             WindowGroup {
                 InputEditorView(
                     store: Store(
-                        initialState: .init(),
+                        initialState: .init(
+                            inputEditorDrop: .init(isDropInProgress: true)
+                        ),
                         reducer: InputEditorReducer()
                             ._printChanges()
                     )
                 )
-
             }
             #if os(macOS)
-                .windowStyle(.titleBar)
-                .windowToolbarStyle(.unified(showsTitle: true))
+            .windowStyle(.titleBar)
+            .windowToolbarStyle(.unified(showsTitle: true))
             #endif
         }
     }

@@ -11,7 +11,7 @@ struct URLDropDelegate: DropDelegate {
     let acceptedType = UTType.fileURL
 
     func validateDrop(info: DropInfo) -> Bool {
-        return info.hasItemsConforming(to: [acceptedType])
+        info.hasItemsConforming(to: [acceptedType])
     }
 
     func dropEntered(info: DropInfo) {
@@ -20,17 +20,15 @@ struct URLDropDelegate: DropDelegate {
     }
 
     func performDrop(info: DropInfo) -> Bool {
-        var noProblem: Bool = true
+        var noProblem = true
         for itemProvider in info.itemProviders(for: [acceptedType]) {
-            itemProvider.loadItem(forTypeIdentifier: acceptedType.identifier, options: nil) { (item, error) in
+            itemProvider.loadItem(forTypeIdentifier: acceptedType.identifier, options: nil) { item, error in
                 if let data = item as? Data,
-                    let url = URL(dataRepresentation: data, relativeTo: nil)
-                {
+                   let url = URL(dataRepresentation: data, relativeTo: nil) {
                     DispatchQueue.main.async {
-                        self.urls.append(url)
+                        urls.append(url)
                     }
-                }
-                else {
+                } else {
                     noProblem = false
                 }
             }
@@ -73,7 +71,7 @@ public struct InputEditorDropReducer: ReducerProtocol {
             case .dropEntered:
                 return .none
             case .dropExited:
-                return .run {[droppedUrls = state.droppedUrls] send in
+                return .run { [droppedUrls = state.droppedUrls] send in
                     let text = try droppedUrls.map {
                         try String(contentsOf: $0)
                     }
@@ -92,6 +90,8 @@ struct InputEditorDropView: View {
     let store: StoreOf<InputEditorDropReducer>
     @ObservedObject var viewStore: ViewStoreOf<InputEditorDropReducer>
 
+    @State var phase: CGFloat = 0
+
     init(store: StoreOf<InputEditorDropReducer>) {
         self.store = store
         self.viewStore = ViewStore(store)
@@ -99,8 +99,23 @@ struct InputEditorDropView: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: 8, style: .continuous)
-            .stroke(style: .init(lineWidth: 3, lineCap: .round, lineJoin: .round, miterLimit: 1, dash: [15], dashPhase: 0))
+            .stroke(style: .init(
+                lineWidth: 4,
+                lineCap: .round,
+                lineJoin: .round,
+                miterLimit: 1,
+                dash: [10],
+                dashPhase: phase
+            ))
             .foregroundStyle(viewStore.isDropInProgress ? Color.accentColor : Color.clear)
+            .animation(
+                Animation.linear(duration: 2)
+                    .repeatForever(autoreverses: false),
+                value: phase
+            )
+            .onAppear {
+                phase = 20
+            }
             .onDrop(
                 of: [UTType.fileURL],
                 delegate: URLDropDelegate(
