@@ -9,9 +9,9 @@ public struct HtmlToSwiftClient {
     public func convert(_ html: String, for dsl: SwiftDSL, output: HtmlOutputComponent) async throws -> String {
         switch dsl {
         case .binaryBirds:
-            try await self.binaryBirds(html, output)
+            return try await binaryBirds(html, output)
         case .pointFree:
-            try await self.pointfreeco(html, output)
+            return try await pointfreeco(html, output)
         }
     }
 }
