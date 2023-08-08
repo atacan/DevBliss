@@ -1,9 +1,8 @@
 #if DEBUG
-//    import InputOutput
-//
-//    InputEditorApp.main()
+    import InputOutput
+
+    InputEditorApp.main()
 #endif
 
-import AppFeature
-
-TheApp.main()
+// import AppFeature
+// TheApp.main()
