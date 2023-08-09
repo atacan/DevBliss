@@ -12,9 +12,14 @@ public struct InputAttributedEditorReducer: ReducerProtocol {
     public struct State: Equatable {
         @BindingState public var text: NSMutableAttributedString
         var pasteButtonAnimating: Bool = false
+        var inputEditorDrop: InputEditorDropReducer.State
 
-        public init(text: NSMutableAttributedString = .init()) {
+        public init(
+            text: NSMutableAttributedString = .init(),
+            inputEditorDrop: InputEditorDropReducer.State = .init()
+        ) {
             self.text = text
+            self.inputEditorDrop = inputEditorDrop
         }
     }
 
@@ -22,6 +27,7 @@ public struct InputAttributedEditorReducer: ReducerProtocol {
         case binding(BindingAction<State>)
         case pasteButtonTouched
         case pasteButtonAnimationEnded
+        case inputEditorDrop(InputEditorDropReducer.Action)
     }
 
     @Dependency(\.mainQueue) var mainQueue
@@ -46,7 +52,14 @@ public struct InputAttributedEditorReducer: ReducerProtocol {
             case .pasteButtonAnimationEnded:
                 state.pasteButtonAnimating = false
                 return .none
+            case let .inputEditorDrop(.droppedFileContent(content)):
+                return state.updateText(content)
+            case .inputEditorDrop:
+                return .none
             }
+        }
+        Scope(state: \.inputEditorDrop, action: /Action.inputEditorDrop) {
+            InputEditorDropReducer()
         }
     }
 }
@@ -60,8 +73,7 @@ extension InputAttributedEditorReducer.State {
     public mutating func updateText(
         _ newText: NSMutableAttributedString
     )
-        -> EffectTask<InputAttributedEditorReducer.Action>
-    {
+        -> EffectTask<InputAttributedEditorReducer.Action> {
         text = newText
         return .none
     }
@@ -101,6 +113,14 @@ public struct InputAttributedEditorView: View {
             #if os(macOS)
                 MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
                     .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
+                    .overlay(content: {
+                        InputEditorDropView(
+                            store: store.scope(
+                                state: \.inputEditorDrop,
+                                action: InputAttributedEditorReducer.Action.inputEditorDrop
+                            )
+                        )
+                    })
             #elseif os(iOS)
                 //                ScrollView {
                 //                    Text(AttributedString(viewStore.text))
@@ -127,7 +147,15 @@ public struct InputAttributedEditorView: View {
                     )
                 )
                 .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
-            //                }
+                .overlay(content: {
+                    InputEditorDropView(
+                        store: store.scope(
+                            state: \.inputEditorDrop,
+                            action: InputAttributedEditorReducer.Action.inputEditorDrop
+                        )
+                    )
+                })
+                //                }
             #endif
         }
         .overlay(
@@ -136,7 +164,7 @@ public struct InputAttributedEditorView: View {
                     viewStore.send(.pasteButtonTouched)
                 } label: {
                     Image(systemName: "doc.on.clipboard.fill")
-                }  // <-Button
+                } // <-Button
                 .foregroundColor(
                     viewStore.pasteButtonAnimating
                         ? ThemeColor.Text.success
