@@ -15,8 +15,7 @@ public struct InputAttributedEditorReducer: ReducerProtocol {
         var inputEditorDrop: InputEditorDropReducer.State
 
         public init(
-            text: NSMutableAttributedString = .init(),
-            inputEditorDrop: InputEditorDropReducer.State = .init()
+            text: NSMutableAttributedString = .init(), b inputEditorDrop: InputEditorDropReducer.State = .init()
         ) {
             self.text = text
             self.inputEditorDrop = inputEditorDrop
