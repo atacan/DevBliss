@@ -3,6 +3,7 @@
     import FileContentSearchClient
     import FilePanelsClient
     import InputOutput
+    import SplitView
     import SwiftUI
     import TCAEnchance
 
@@ -34,6 +35,7 @@
             case directorySelectionButtonTouched
             case searchResponse(TaskResult<[FoundFile]>)
             case output(OutputEditorReducer.Action)
+            case tableSortOrderChanged([KeyPathComparator<FoundFile>])
         }
 
         @Dependency(\.fileContentSearch) var fileContentSearch
@@ -79,6 +81,9 @@
                     state.isSearching = false
                     print(error)
                     return .none
+                case let .tableSortOrderChanged(comparator):
+                    state.foundFiles.sort(using: comparator)
+                    return .none
                 case .output:
                     return .none
                 }
@@ -118,9 +123,47 @@
             self.viewStore = ViewStore(store)
         }
 
-        @State private var sortOrder = [KeyPathComparator(\FoundFile.fileURL.absoluteString)]
+        @State private var sortOrder = [
+            KeyPathComparator(\FoundFile.fileURL.absoluteString),
+            KeyPathComparator(\FoundFile.lines),
+        ]
 
         public var body: some View {
+            VSplitView {
+                VStack(alignment: .center) {
+                    inputView
+
+                    Table(viewStore.foundFiles, selection: viewStore.binding(\.$selectedFiles), sortOrder: $sortOrder) {
+                        TableColumn(
+                            NSLocalizedString("File Path", bundle: Bundle.module, comment: ""),
+                            value: \.fileURL.absoluteString
+                        )
+                        .width(min: nil, ideal: 450, max: nil)
+                        TableColumn(NSLocalizedString("Lines", bundle: Bundle.module, comment: ""), value: \.lines)
+                        TableColumn(
+                            NSLocalizedString("Modified", bundle: Bundle.module, comment: ""),
+                            value: \.modifiedTimeString
+                        )
+                        TableColumn(
+                            NSLocalizedString("Git User", bundle: Bundle.module, comment: ""),
+                            value: \.gitUsernameCleaned
+                        )
+                    }
+                    .onChange(of: sortOrder) { newValue in
+                        viewStore.send(.tableSortOrderChanged(newValue))
+                    }
+                } // <-VStack
+                OutputEditorView(
+                    store: store.scope(
+                        state: \.output,
+                        action: FileContentSearchReducer.Action.output
+                    ),
+                    title: NSLocalizedString("File Content", bundle: Bundle.module, comment: "")
+                )
+            }
+        }
+
+        var inputView: some View {
             VStack(alignment: .center) {
                 VStack(alignment: .leading) {
                     HStack(alignment: .center) {
@@ -186,32 +229,7 @@
                 .help(NSLocalizedString("Start searching (Cmd+Return)", bundle: Bundle.module, comment: ""))
                 .overlay(viewStore.isSearching ? ProgressView() : nil)
                 .padding(.bottom, 2)
-
-                Table(viewStore.foundFiles, selection: viewStore.binding(\.$selectedFiles), sortOrder: $sortOrder) {
-                    TableColumn(
-                        NSLocalizedString("File Path", bundle: Bundle.module, comment: ""),
-                        value: \.fileURL.absoluteString
-                    )
-                    .width(min: nil, ideal: 450, max: nil)
-                    TableColumn(NSLocalizedString("Lines", bundle: Bundle.module, comment: ""), value: \.lines)
-                    TableColumn(
-                        NSLocalizedString("Modified", bundle: Bundle.module, comment: ""),
-                        value: \.modifiedTimeString
-                    )
-                    TableColumn(
-                        NSLocalizedString("Git User", bundle: Bundle.module, comment: ""),
-                        value: \.gitUsernameCleaned
-                    )
-                }
-
-                OutputEditorView(
-                    store: store.scope(
-                        state: \.output,
-                        action: FileContentSearchReducer.Action.output
-                    ),
-                    title: NSLocalizedString("File Content", bundle: Bundle.module, comment: "")
-                )
-            } // <-VStack
+            }
         }
     }
 
