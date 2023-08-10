@@ -2,6 +2,7 @@
     import CommandLineClient
     import Dependencies
     import Foundation
+    import UniformTypeIdentifiers
     import XCTestDynamicOverlay
 
     public struct FileContentSearchClient {
@@ -9,7 +10,11 @@
     }
 
     extension FileContentSearchClient: DependencyKey {
-        public static let liveValue = {
+        public static var liveValue = Self(
+            run: { try await grepFolder(options: $0) }
+        )
+
+        public static let cli = {
             @Dependency(\.commandLine) var commandLine
 
             return Self(
@@ -59,12 +64,79 @@
                     let output = try await commandLine.run(command)
                     return
                         output
-                        .text
-                        .components(separatedBy: "\n")
-                        .compactMap { FoundFile($0) }
+                            .text
+                            .components(separatedBy: "\n")
+                            .compactMap { FoundFile(input: $0) }
                 }
             )
         }()
+    }
+
+    // refactor this by using url.lines instead of grep
+    @Sendable
+    func grepFolder(options: SearchOptions) async throws -> [FoundFile] {
+        let folderUrl = URL(fileURLWithPath: options.folder)
+        // list the files in the folder
+//        let files: [URL] = try FileManager.default.contentsOfDirectory(at: folderUrl, includingPropertiesForKeys: nil)
+//            .filter { url in
+//                guard let typeIdentifier = try? url.resourceValues(forKeys: [.typeIdentifierKey]).contentType else {
+//                    return false
+//                }
+        ////                return UTTypeConformsTo(typeIdentifier as CFString, kUTTypeText)
+//                return UTType.conforms(typeIdentifier)(to: UTType.text)
+//            }
+
+//        let files = try FileManager.default.contentsOfDirectory(at: folderUrl, includingPropertiesForKeys: nil)
+        let fmOptions: FileManager.DirectoryEnumerationOptions = [.skipsHiddenFiles, .skipsPackageDescendants]
+        let files = walkDirectory(at: folderUrl, options: fmOptions)
+            .filter { url in
+                guard let typeIdentifier = try? url.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier else {
+                    return false
+                }
+                return UTTypeConformsTo(typeIdentifier as CFString, kUTTypeText)
+            }
+
+        // concurrently run grepFile for each file
+        let foundFiles = try await withThrowingTaskGroup(of: FoundFile?.self, returning: [FoundFile].self) { group in
+            for await file in files {
+                group.addTask {
+                    try await grepFile(options: options, fileUrl: file)
+                }
+            }
+
+            return try await group.reduce(into: []) { result, file in
+                if let file {
+                    result.append(file)
+                }
+            }
+        }
+
+        return foundFiles
+    }
+
+    @Sendable
+    func grepFile(options: SearchOptions, fileUrl: URL) async throws -> FoundFile? {
+        let lines = fileUrl.lines
+        var lineNumbers: [Int] = []
+        var lineNumber = 1
+
+        for try await line in lines {
+            if line.contains(options.term) {
+                lineNumbers.append(lineNumber)
+            }
+            lineNumber += 1
+        }
+
+        guard !lineNumbers.isEmpty else {
+            return nil
+        }
+
+        return FoundFile(
+            fileURL: fileUrl,
+            lineNumbers: lineNumbers,
+            modifiedTime: Date(), // TODO: get from another func
+            gitUsername: nil // TODO: get from another func
+        )
     }
 
     extension DependencyValues {
@@ -91,11 +163,23 @@
     }
 
     public struct FoundFile: Equatable, Identifiable {
-        public let fileURL: String
+        public let fileURL: URL
         public let lineNumbers: [Int]
         public let modifiedTime: Date
         public let gitUsername: String?
         public let id: UUID = .init()
+
+        public init(
+            fileURL: URL,
+            lineNumbers: [Int],
+            modifiedTime: Date,
+            gitUsername: String?
+        ) {
+            self.fileURL = fileURL
+            self.lineNumbers = lineNumbers
+            self.modifiedTime = modifiedTime
+            self.gitUsername = gitUsername
+        }
 
         public var lines: String {
             lineNumbers.map(String.init).joined(separator: ", ")
@@ -112,12 +196,12 @@
         }
 
         /// input: /Users/atacan/Downloads/blabla.txt|1,2,4|2023-06-19 23:10:34|atacan
-        init?(_ input: String) {
+        init?(input: String) {
             let components = input.components(separatedBy: "|")
             guard components.count >= 3 else {
                 return nil
             }
-            let fileURL = components[0]
+            let fileURL = URL(string: components[0])!
             let lineNumbers = components[1].components(separatedBy: ",").compactMap(Int.init)
             let modifiedTimeString = components[2]
             let modifiedTimeFormatter = DateFormatter()
@@ -134,3 +218,25 @@
         }
     }
 #endif
+
+import Foundation
+
+// Recursive iteration
+func walkDirectory(at url: URL, options: FileManager.DirectoryEnumerationOptions) -> AsyncStream<URL> {
+    AsyncStream { continuation in
+        Task {
+            let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: nil, options: options)
+
+            while let fileURL = enumerator?.nextObject() as? URL {
+                if fileURL.hasDirectoryPath {
+                    for await item in walkDirectory(at: fileURL, options: options) {
+                        continuation.yield(item)
+                    }
+                } else {
+                    continuation.yield(fileURL)
+                }
+            }
+            continuation.finish()
+        }
+    }
+}

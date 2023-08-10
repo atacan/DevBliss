@@ -75,8 +75,9 @@
                     state.foundFiles = .init(uniqueElements: foundFiles)
                     state.selectedFiles = []
                     return .none
-                case .searchResponse(.failure):
+                case let .searchResponse(.failure(error)):
                     state.isSearching = false
+                    print(error)
                     return .none
                 case .output:
                     return .none
@@ -94,16 +95,15 @@
 
         private func selectedFilesChanged(_ state: inout State) {
             guard state.selectedFiles.count == 1,
-                let file = state.foundFiles[id: state.selectedFiles.first!]
+                  let file = state.foundFiles[id: state.selectedFiles.first!]
             else {
                 return
             }
             do {
                 // TODO: read the file asynchronously with a client. the content will be a response action handled by the reducer
-                let content = try String(contentsOfFile: file.fileURL)
+                let content = try String(contentsOf: file.fileURL)
                 _ = state.output.updateText(content)
-            }
-            catch {
+            } catch {
                 _ = state.output.updateText("\(error)")
             }
         }
@@ -118,7 +118,7 @@
             self.viewStore = ViewStore(store)
         }
 
-        @State private var sortOrder = [KeyPathComparator(\FoundFile.fileURL)]
+        @State private var sortOrder = [KeyPathComparator(\FoundFile.fileURL.absoluteString)]
 
         public var body: some View {
             VStack(alignment: .center) {
@@ -129,7 +129,7 @@
                             NSLocalizedString("term to search inside the file...", bundle: Bundle.module, comment: ""),
                             text: viewStore.binding(\.$searchOptions.term)
                         )
-                    }  // <-HStack
+                    } // <-HStack
 
                     HStack {
                         HStack(alignment: .center) {
@@ -140,7 +140,7 @@
                             } label: {
                                 Image(systemName: "folder.fill")
                             }
-                        }  // <-HStack
+                        } // <-HStack
                         .onTapGesture {
                             viewStore.send(.directorySelectionButtonTouched)
                         }
@@ -149,7 +149,7 @@
                                 .textSelection(.enabled)
                                 .padding(4)
                                 .frame(minWidth: 30)
-                        }  // <-ScrollView
+                        } // <-ScrollView
                         .overlay(
                             RoundedRectangle(cornerRadius: 5)
                                 .stroke(Color(nsColor: .systemGray), lineWidth: 1)
@@ -181,15 +181,18 @@
                     viewStore.send(.searchButtonTouched)
                 } label: {
                     Text(NSLocalizedString("Search", bundle: Bundle.module, comment: ""))
-                }  // <-Button
+                } // <-Button
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help(NSLocalizedString("Start searching (Cmd+Return)", bundle: Bundle.module, comment: ""))
                 .overlay(viewStore.isSearching ? ProgressView() : nil)
                 .padding(.bottom, 2)
 
                 Table(viewStore.foundFiles, selection: viewStore.binding(\.$selectedFiles), sortOrder: $sortOrder) {
-                    TableColumn(NSLocalizedString("File Path", bundle: Bundle.module, comment: ""), value: \.fileURL)
-                        .width(min: nil, ideal: 450, max: nil)
+                    TableColumn(
+                        NSLocalizedString("File Path", bundle: Bundle.module, comment: ""),
+                        value: \.fileURL.absoluteString
+                    )
+                    .width(min: nil, ideal: 450, max: nil)
                     TableColumn(NSLocalizedString("Lines", bundle: Bundle.module, comment: ""), value: \.lines)
                     TableColumn(
                         NSLocalizedString("Modified", bundle: Bundle.module, comment: ""),
@@ -208,7 +211,7 @@
                     ),
                     title: NSLocalizedString("File Content", bundle: Bundle.module, comment: "")
                 )
-            }  // <-VStack
+            } // <-VStack
         }
     }
 
@@ -240,4 +243,26 @@
             EmptyReducer()
         }
     }
+#endif
+
+#if DEBUG
+    public struct FileContentSearchApp: App {
+        public init() {}
+
+        public var body: some Scene {
+            WindowGroup {
+                FileContentSearchView(
+                    store: Store(
+                        initialState: .init(searchOptions: SearchOptions(searchTerm: "import")),
+                        reducer: FileContentSearchReducer()
+                    )
+                )
+            }
+            #if os(macOS)
+            .windowStyle(.titleBar)
+            .windowToolbarStyle(.unified(showsTitle: true))
+            #endif
+        }
+    }
+
 #endif

@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5A7436FD2A2B69C8001DEC2E"
-               BuildableName = "DevBliss.app"
-               BlueprintName = "DevBliss"
-               ReferencedContainer = "container:DevBliss.xcodeproj">
+               BlueprintIdentifier = "FileContentSearchClient"
+               BuildableName = "FileContentSearchClient"
+               BlueprintName = "FileContentSearchClient"
+               ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,20 +35,10 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      ignoresPersistentStateOnLaunch = "YES"
+      ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5A7436FD2A2B69C8001DEC2E"
-            BuildableName = "DevBliss.app"
-            BlueprintName = "DevBliss"
-            ReferencedContainer = "container:DevBliss.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -56,16 +46,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5A7436FD2A2B69C8001DEC2E"
-            BuildableName = "DevBliss.app"
-            BlueprintName = "DevBliss"
-            ReferencedContainer = "container:DevBliss.xcodeproj">
+            BlueprintIdentifier = "FileContentSearchClient"
+            BuildableName = "FileContentSearchClient"
+            BlueprintName = "FileContentSearchClient"
+            ReferencedContainer = "container:">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
