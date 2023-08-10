@@ -76,12 +76,12 @@
                     state.isSearching = false
                     state.foundFiles = .init(uniqueElements: foundFiles)
                     state.selectedFiles = []
-                    state.output.updateText("\(foundFiles.count) files found.")
+                    _ = state.output.updateText("\(foundFiles.count) files found.")
                     return .none
                 case let .searchResponse(.failure(error)):
                     state.isSearching = false
                     print(error)
-                    state.output.updateText(error.localizedDescription)
+                    _ = state.output.updateText(error.localizedDescription)
                     return .none
                 case let .tableSortOrderChanged(comparator):
                     state.foundFiles.sort(using: comparator)
@@ -126,8 +126,7 @@
         }
 
         @State private var sortOrder = [
-            KeyPathComparator(\FoundFile.fileURL.absoluteString),
-            KeyPathComparator(\FoundFile.lines),
+            KeyPathComparator(\FoundFile.modifiedTime, order: .reverse),
         ]
 
         public var body: some View {
@@ -154,6 +153,7 @@
                     .onChange(of: sortOrder) { newValue in
                         viewStore.send(.tableSortOrderChanged(newValue))
                     }
+                    .help("the usaer")
                 } // <-VStack
                 OutputEditorView(
                     store: store.scope(
@@ -170,10 +170,14 @@
                 VStack(alignment: .leading) {
                     HStack(alignment: .center) {
                         Text(NSLocalizedString("Search Term", bundle: Bundle.module, comment: ""))
+
                         TextField(
                             NSLocalizedString("term to search inside the file...", bundle: Bundle.module, comment: ""),
                             text: viewStore.binding(\.$searchOptions.term)
                         )
+                        .onSubmit {
+                            viewStore.send(.directorySelectionButtonTouched)
+                        }
                     } // <-HStack
 
                     HStack {
@@ -185,6 +189,8 @@
                             } label: {
                                 Image(systemName: "folder.fill")
                             }
+                            .keyboardShortcut(.init("o"), modifiers: [.command])
+                            .help(NSLocalizedString("Choose directory (Cmd+O)", bundle: Bundle.module, comment: ""))
                         } // <-HStack
                         .onTapGesture {
                             viewStore.send(.directorySelectionButtonTouched)

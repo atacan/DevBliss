@@ -17,7 +17,6 @@ import Foundation
         )
     }
 
-    // refactor this by using url.lines instead of grep
     @Sendable
     func grepFolder(options: SearchOptions) async throws -> [FoundFile] {
         let folderUrl = URL(fileURLWithPath: options.folder)
@@ -25,7 +24,18 @@ import Foundation
         if options.searchHiddenFiles {
             fmOptions.insert(.skipsHiddenFiles)
         }
-        let files = walkDirectory(at: folderUrl, options: fmOptions) { url in
+        let files = walkDirectory(
+            at: folderUrl,
+            options: fmOptions,
+            folderCondition: { url in
+                if let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden {
+                    return isHidden == options.searchHiddenFiles && url.lastPathComponent.hasPrefix(".") == options
+                        .searchHiddenFiles
+                } else {
+                    return url.lastPathComponent.hasPrefix(".") == options.searchHiddenFiles
+                }
+            }
+        ) { url in
             guard let typeIdentifier = try? url.resourceValues(forKeys: [.contentTypeKey]).contentType,
                   let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden,
                   isHidden == options.searchHiddenFiles
@@ -37,16 +47,12 @@ import Foundation
 
         // concurrently run grepFile for each file
         let foundFiles = try await withThrowingTaskGroup(of: FoundFile?.self, returning: [FoundFile].self) { group in
-            var i = 0
             for try await file in files {
                 group.addTask {
                     try await grepFile(options: options, fileUrl: file)
                 }
-                i += 1
-                print(i)
-                if i % 2 == 0 {
-                    await Task.yield()
-                }
+                // otherwise it throws "too many files open" error
+                await Task.yield()
             }
 
             return try await group.reduce(into: []) { result, file in
@@ -78,11 +84,11 @@ import Foundation
 
         let modificationTime = try getModificationTime(for: fileUrl)
 
-        return FoundFile(
+        return try await FoundFile(
             fileURL: fileUrl,
             lineNumbers: lineNumbers,
             modifiedTime: modificationTime,
-            gitUsername: nil // TODO: get from another func
+            gitUsername: getLastCommitAuthor(for: fileUrl)
         )
     }
 
@@ -97,6 +103,14 @@ import Foundation
                 userInfo: [NSLocalizedDescriptionKey: "Failed to get modification time"]
             )
         }
+    }
+
+    func getLastCommitAuthor(for fileURL: URL) async throws -> String? {
+        @Dependency(\.commandLine) var commandLine
+        let command =
+            "cd \(fileURL.deletingLastPathComponent().path) && git log -1 --pretty=format:%an -- \(fileURL.lastPathComponent)"
+        let output = try await commandLine.run(command)
+        return output.text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     extension DependencyValues {
@@ -160,7 +174,8 @@ import Foundation
     func walkDirectory(
         at url: URL,
         options: FileManager.DirectoryEnumerationOptions,
-        condition: @escaping (URL) -> Bool
+        folderCondition: @escaping (URL) -> Bool,
+        fileCondition: @escaping (URL) -> Bool
     ) -> AsyncStream<URL> {
         AsyncStream { continuation in
             Task {
@@ -171,11 +186,17 @@ import Foundation
                 )
 
                 while let fileURL = enumerator?.nextObject() as? URL {
-                    if fileURL.hasDirectoryPath {
-                        for await item in walkDirectory(at: fileURL, options: options, condition: condition) {
+                    if fileURL.hasDirectoryPath,
+                       folderCondition(fileURL) {
+                        for await item in walkDirectory(
+                            at: fileURL,
+                            options: options,
+                            folderCondition: folderCondition,
+                            fileCondition: fileCondition
+                        ) {
                             continuation.yield(item)
                         }
-                    } else if condition(fileURL) {
+                    } else if fileCondition(fileURL) {
                         continuation.yield(fileURL)
                     }
                 }
