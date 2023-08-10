@@ -21,26 +21,29 @@ import Foundation
     func grepFolder(options: SearchOptions) async throws -> [FoundFile] {
         let folderUrl = URL(fileURLWithPath: options.folder)
         var fmOptions: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants]
-        if options.searchHiddenFiles {
+        if !options.searchHiddenFiles {
             fmOptions.insert(.skipsHiddenFiles)
         }
         let files = walkDirectory(
             at: folderUrl,
             options: fmOptions,
             folderCondition: { url in
-                if let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden {
-                    return isHidden == options.searchHiddenFiles
-                        && url.lastPathComponent.hasPrefix(".")
-                        == options
-                        .searchHiddenFiles
-                } else {
-                    return url.lastPathComponent.hasPrefix(".") == options.searchHiddenFiles
-                }
+//                if let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden {
+//                    return isHidden == options.searchHiddenFiles
+//                        && url.lastPathComponent.hasPrefix(".")
+//                        == options
+//                        .searchHiddenFiles
+//                } else {
+//                if options.searchHiddenFiles {return true} else{
+//                    return !url.lastPathComponent.hasPrefix(".")
+//                }
+                true
+//                }
             }
         ) { url in
             guard let typeIdentifier = try? url.resourceValues(forKeys: [.contentTypeKey]).contentType,
                   let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden,
-                  isHidden == options.searchHiddenFiles
+                  (isHidden == options.searchHiddenFiles) || (options.searchHiddenFiles)
             else {
                 return false
             }
