@@ -53,7 +53,7 @@ import Foundation
         // concurrently run grepFile for each file
         let foundFiles = try await withThrowingTaskGroup(of: FoundFile?.self, returning: [FoundFile].self) { group in
             for try await file in files {
-                print(file)
+//                print(file)
                 group.addTask {
                     try await grepFile(options: options, fileUrl: file)
                 }
@@ -83,16 +83,24 @@ import Foundation
 //            lineNumber += 1
 //        }
 
+//        let qfle = QFile(fileURL: fileUrl)
+//        try qfle.open()
+//        defer{qfle.close()}
+//        while let line = try qfle.readLine() {
+//            if line.contains(options.term) {
+//                lineNumbers.append(lineNumber)
+//            }
+//            lineNumber += 1
+//        }
+
         let handle = try FileHandle(forReadingFrom: fileUrl)
+        defer { try? handle.close() }
         for try await line in handle.bytes.lines {
             if line.contains(options.term) {
                 lineNumbers.append(lineNumber)
             }
             lineNumber += 1
         }
-        try handle.close()
-
-        await Task.yield()
 
         guard !lineNumbers.isEmpty else {
             return nil
@@ -222,3 +230,48 @@ import Foundation
     }
 
 #endif
+
+class QFile {
+    init(fileURL: URL) {
+        self.fileURL = fileURL
+    }
+
+    deinit {
+        // You must close before releasing the last reference.
+        precondition(self.file == nil)
+    }
+
+    let fileURL: URL
+
+    private var file: UnsafeMutablePointer<FILE>?
+
+    func open() throws {
+        guard let f = fopen(fileURL.path, "r") else {
+            throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil)
+        }
+        file = f
+    }
+
+    func close() {
+        if let f = file {
+            file = nil
+            let success = fclose(f) == 0
+            assert(success)
+        }
+    }
+
+    func readLine(maxLength: Int = 1024) throws -> String? {
+        guard let f = file else {
+            throw NSError(domain: NSPOSIXErrorDomain, code: Int(EBADF), userInfo: nil)
+        }
+        var buffer = [CChar](repeating: 0, count: maxLength)
+        guard fgets(&buffer, Int32(maxLength), f) != nil else {
+            if feof(f) != 0 {
+                return nil
+            } else {
+                throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil)
+            }
+        }
+        return String(cString: buffer)
+    }
+}
