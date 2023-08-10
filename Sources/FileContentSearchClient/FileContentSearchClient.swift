@@ -1,3 +1,5 @@
+import Foundation
+
 #if os(macOS)
     import CommandLineClient
     import Dependencies
@@ -13,63 +15,6 @@
         public static var liveValue = Self(
             run: { try await grepFolder(options: $0) }
         )
-
-        public static let cli = {
-            @Dependency(\.commandLine) var commandLine
-
-            return Self(
-                run: { options in
-
-                    let command =
-                        #"""
-                        # Set the search term and folder to search in
-                        SEARCH_TERM="\#(options.term)"
-                        SEARCH_FOLDER="\#(options.folder)"
-                        SEARCH_HIDDEN_FILES=\#(options.searchHiddenFiles)
-
-                        # Loop through all files in the folder and its subdirectories
-                        while IFS= read -r -d '' file; do
-                            # Check if the file is a regular file and not a binary file
-                            if [ -f "$file" ] && [ "$(file -b --mime-type "$file")" != "application/octet-stream" ] && [[ "$(file -b --mime-type "$file")" == text/* ]]; then
-                                # Check if the file is hidden and if hidden files should be searched
-                                if [ "$SEARCH_HIDDEN_FILES" = true ] || [ "$(basename "$file")" = "$(basename "$file" | sed 's/^\..*//')" ]; then
-                                    # Search for the search term in the file
-                                    grep_output=$(grep -nI "$SEARCH_TERM" "$file" | cut -d ':' -f 1 | tr '\n' ',' | sed 's/,$//')
-                                    # Check if the search term was found in the file
-                                    if [ -n "$grep_output" ]; then
-                                        # Get the last modified time of the file
-                                        modified_time=$(date -r "$file" "+%Y-%m-%d %H:%M:%S")
-                                        # Check if the file is in a git repository
-                                        if [ -n "$(git -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null)" ]; then
-                                            # Get the user who made the change in the first line that the search term is found in
-                                            line_number=$(echo "$grep_output" | cut -d ',' -f 1)
-                                            git_output=$(git blame -L "$line_number,+1" "$file" | head -n 1)
-                                            git_user=$(echo "$git_output" | sed 's/^[^(]*(//' | cut -d ' ' -f 1)
-                                            # Print the file path, lines that the search term is found, last modified time, and git user (if applicable)
-                                            echo "$file|$grep_output|$modified_time|$git_user"
-                                        else
-                                            # Print the file path, lines that the search term is found, and last modified time
-                                            echo "$file|$grep_output|$modified_time"
-                                        fi
-                                    fi
-                                fi
-                            fi
-                        done < <(if [ "$SEARCH_HIDDEN_FILES" = true ]; then
-                            find "$SEARCH_FOLDER" -type f -print0
-                        else
-                            find "$SEARCH_FOLDER" -type f -not -path '*/\.*' -print0
-                        fi)
-                        """#
-
-                    let output = try await commandLine.run(command)
-                    return
-                        output
-                            .text
-                            .components(separatedBy: "\n")
-                            .compactMap { FoundFile(input: $0) }
-                }
-            )
-        }()
     }
 
     // refactor this by using url.lines instead of grep
@@ -77,16 +22,19 @@
     func grepFolder(options: SearchOptions) async throws -> [FoundFile] {
         let folderUrl = URL(fileURLWithPath: options.folder)
         // list the files in the folder
-//        let files: [URL] = try FileManager.default.contentsOfDirectory(at: folderUrl, includingPropertiesForKeys: nil)
-//            .filter { url in
-//                guard let typeIdentifier = try? url.resourceValues(forKeys: [.typeIdentifierKey]).contentType else {
-//                    return false
-//                }
+        //        let files: [URL] = try FileManager.default.contentsOfDirectory(at: folderUrl,
+        //        includingPropertiesForKeys: nil)
+        //            .filter { url in
+        //                guard let typeIdentifier = try? url.resourceValues(forKeys: [.typeIdentifierKey]).contentType
+        //                else {
+        //                    return false
+        //                }
         ////                return UTTypeConformsTo(typeIdentifier as CFString, kUTTypeText)
-//                return UTType.conforms(typeIdentifier)(to: UTType.text)
-//            }
+        //                return UTType.conforms(typeIdentifier)(to: UTType.text)
+        //            }
 
-//        let files = try FileManager.default.contentsOfDirectory(at: folderUrl, includingPropertiesForKeys: nil)
+        //        let files = try FileManager.default.contentsOfDirectory(at: folderUrl, includingPropertiesForKeys:
+        //        nil)
         let fmOptions: FileManager.DirectoryEnumerationOptions = [.skipsHiddenFiles, .skipsPackageDescendants]
         let files = walkDirectory(at: folderUrl, options: fmOptions)
             .filter { url in
@@ -131,12 +79,27 @@
             return nil
         }
 
+        let modificationTime = try getModificationTime(for: fileUrl)
+
         return FoundFile(
             fileURL: fileUrl,
             lineNumbers: lineNumbers,
-            modifiedTime: Date(), // TODO: get from another func
+            modifiedTime: modificationTime,
             gitUsername: nil // TODO: get from another func
         )
+    }
+
+    func getModificationTime(for url: URL) throws -> Date {
+        let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
+        if let date = attributes[.modificationDate] as? Date {
+            return date
+        } else {
+            throw NSError(
+                domain: NSCocoaErrorDomain,
+                code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to get modification time"]
+            )
+        }
     }
 
     extension DependencyValues {
@@ -194,49 +157,30 @@
         public var gitUsernameCleaned: String {
             gitUsername ?? ""
         }
-
-        /// input: /Users/atacan/Downloads/blabla.txt|1,2,4|2023-06-19 23:10:34|atacan
-        init?(input: String) {
-            let components = input.components(separatedBy: "|")
-            guard components.count >= 3 else {
-                return nil
-            }
-            let fileURL = URL(string: components[0])!
-            let lineNumbers = components[1].components(separatedBy: ",").compactMap(Int.init)
-            let modifiedTimeString = components[2]
-            let modifiedTimeFormatter = DateFormatter()
-            modifiedTimeFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-            guard let modifiedTime = modifiedTimeFormatter.date(from: modifiedTimeString) else {
-                return nil
-            }
-            let gitUsername = components.count > 3 ? components[3] : nil
-
-            self.fileURL = fileURL
-            self.lineNumbers = lineNumbers
-            self.modifiedTime = modifiedTime
-            self.gitUsername = gitUsername
-        }
     }
-#endif
 
-import Foundation
+    // Recursive iteration
+    func walkDirectory(at url: URL, options: FileManager.DirectoryEnumerationOptions) -> AsyncStream<URL> {
+        AsyncStream { continuation in
+            Task {
+                let enumerator = FileManager.default.enumerator(
+                    at: url,
+                    includingPropertiesForKeys: nil,
+                    options: options
+                )
 
-// Recursive iteration
-func walkDirectory(at url: URL, options: FileManager.DirectoryEnumerationOptions) -> AsyncStream<URL> {
-    AsyncStream { continuation in
-        Task {
-            let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: nil, options: options)
-
-            while let fileURL = enumerator?.nextObject() as? URL {
-                if fileURL.hasDirectoryPath {
-                    for await item in walkDirectory(at: fileURL, options: options) {
-                        continuation.yield(item)
+                while let fileURL = enumerator?.nextObject() as? URL {
+                    if fileURL.hasDirectoryPath {
+                        for await item in walkDirectory(at: fileURL, options: options) {
+                            continuation.yield(item)
+                        }
+                    } else {
+                        continuation.yield(fileURL)
                     }
-                } else {
-                    continuation.yield(fileURL)
                 }
+                continuation.finish()
             }
-            continuation.finish()
         }
     }
-}
+
+#endif
