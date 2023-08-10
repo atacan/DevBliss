@@ -53,6 +53,7 @@ import Foundation
         // concurrently run grepFile for each file
         let foundFiles = try await withThrowingTaskGroup(of: FoundFile?.self, returning: [FoundFile].self) { group in
             for try await file in files {
+                print(file)
                 group.addTask {
                     try await grepFile(options: options, fileUrl: file)
                 }
@@ -72,16 +73,26 @@ import Foundation
 
     @Sendable
     func grepFile(options: SearchOptions, fileUrl: URL) async throws -> FoundFile? {
-        let lines = fileUrl.lines
         var lineNumbers: [Int] = []
         var lineNumber = 1
 
-        for try await line in lines {
+//        for try await line in fileUrl.lines {
+//            if line.contains(options.term) {
+//                lineNumbers.append(lineNumber)
+//            }
+//            lineNumber += 1
+//        }
+
+        let handle = try FileHandle(forReadingFrom: fileUrl)
+        for try await line in handle.bytes.lines {
             if line.contains(options.term) {
                 lineNumbers.append(lineNumber)
             }
             lineNumber += 1
         }
+        try handle.close()
+
+        await Task.yield()
 
         guard !lineNumbers.isEmpty else {
             return nil
