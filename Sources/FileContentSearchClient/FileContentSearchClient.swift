@@ -21,34 +21,19 @@ import Foundation
     @Sendable
     func grepFolder(options: SearchOptions) async throws -> [FoundFile] {
         let folderUrl = URL(fileURLWithPath: options.folder)
-        // list the files in the folder
-        //        let files: [URL] = try FileManager.default.contentsOfDirectory(at: folderUrl,
-        //        includingPropertiesForKeys: nil)
-        //            .filter { url in
-        //                guard let typeIdentifier = try? url.resourceValues(forKeys: [.typeIdentifierKey]).contentType
-        //                else {
-        //                    return false
-        //                }
-        ////                return UTTypeConformsTo(typeIdentifier as CFString, kUTTypeText)
-        //                return UTType.conforms(typeIdentifier)(to: UTType.text)
-        //            }
-
-        //        let files = try FileManager.default.contentsOfDirectory(at: folderUrl, includingPropertiesForKeys:
-        //        nil)
         var fmOptions: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants]
         if options.searchHiddenFiles {
             fmOptions.insert(.skipsHiddenFiles)
         }
-        let files = walkDirectory(at: folderUrl, options: fmOptions)
-            .filter { url in
-                guard let typeIdentifier = try? url.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier,
-                      let isHidden = try url.resourceValues(forKeys: [.isHiddenKey]).isHidden,
-                      isHidden == options.searchHiddenFiles
-                else {
-                    return false
-                }
-                return UTTypeConformsTo(typeIdentifier as CFString, kUTTypeText)
+        let files = walkDirectory(at: folderUrl, options: fmOptions) { url in
+            guard let typeIdentifier = try? url.resourceValues(forKeys: [.contentTypeKey]).contentType,
+                  let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden,
+                  isHidden == options.searchHiddenFiles
+            else {
+                return false
             }
+            return typeIdentifier.conforms(to: UTType.text)
+        }
 
         // concurrently run grepFile for each file
         let foundFiles = try await withThrowingTaskGroup(of: FoundFile?.self, returning: [FoundFile].self) { group in
@@ -172,7 +157,11 @@ import Foundation
     }
 
     // Recursive iteration
-    func walkDirectory(at url: URL, options: FileManager.DirectoryEnumerationOptions) -> AsyncStream<URL> {
+    func walkDirectory(
+        at url: URL,
+        options: FileManager.DirectoryEnumerationOptions,
+        condition: @escaping (URL) -> Bool
+    ) -> AsyncStream<URL> {
         AsyncStream { continuation in
             Task {
                 let enumerator = FileManager.default.enumerator(
@@ -183,10 +172,10 @@ import Foundation
 
                 while let fileURL = enumerator?.nextObject() as? URL {
                     if fileURL.hasDirectoryPath {
-                        for await item in walkDirectory(at: fileURL, options: options) {
+                        for await item in walkDirectory(at: fileURL, options: options, condition: condition) {
                             continuation.yield(item)
                         }
-                    } else {
+                    } else if condition(fileURL) {
                         continuation.yield(fileURL)
                     }
                 }
