@@ -29,7 +29,9 @@ import Foundation
             options: fmOptions,
             folderCondition: { url in
                 if let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden {
-                    return isHidden == options.searchHiddenFiles && url.lastPathComponent.hasPrefix(".") == options
+                    return isHidden == options.searchHiddenFiles
+                        && url.lastPathComponent.hasPrefix(".")
+                        == options
                         .searchHiddenFiles
                 } else {
                     return url.lastPathComponent.hasPrefix(".") == options.searchHiddenFiles
