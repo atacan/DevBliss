@@ -76,10 +76,12 @@
                     state.isSearching = false
                     state.foundFiles = .init(uniqueElements: foundFiles)
                     state.selectedFiles = []
+                    state.output.updateText("\(foundFiles.count) files found.")
                     return .none
                 case let .searchResponse(.failure(error)):
                     state.isSearching = false
                     print(error)
+                    state.output.updateText(error.localizedDescription)
                     return .none
                 case let .tableSortOrderChanged(comparator):
                     state.foundFiles.sort(using: comparator)

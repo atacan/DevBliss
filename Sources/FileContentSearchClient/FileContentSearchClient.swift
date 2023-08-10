@@ -35,10 +35,16 @@ import Foundation
 
         //        let files = try FileManager.default.contentsOfDirectory(at: folderUrl, includingPropertiesForKeys:
         //        nil)
-        let fmOptions: FileManager.DirectoryEnumerationOptions = [.skipsHiddenFiles, .skipsPackageDescendants]
+        var fmOptions: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants]
+        if options.searchHiddenFiles {
+            fmOptions.insert(.skipsHiddenFiles)
+        }
         let files = walkDirectory(at: folderUrl, options: fmOptions)
             .filter { url in
-                guard let typeIdentifier = try? url.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier else {
+                guard let typeIdentifier = try? url.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier,
+                      let isHidden = try url.resourceValues(forKeys: [.isHiddenKey]).isHidden,
+                      isHidden == options.searchHiddenFiles
+                else {
                     return false
                 }
                 return UTTypeConformsTo(typeIdentifier as CFString, kUTTypeText)
@@ -46,9 +52,15 @@ import Foundation
 
         // concurrently run grepFile for each file
         let foundFiles = try await withThrowingTaskGroup(of: FoundFile?.self, returning: [FoundFile].self) { group in
-            for await file in files {
+            var i = 0
+            for try await file in files {
                 group.addTask {
                     try await grepFile(options: options, fileUrl: file)
+                }
+                i += 1
+                print(i)
+                if i % 2 == 0 {
+                    await Task.yield()
                 }
             }
 
