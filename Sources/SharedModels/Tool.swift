@@ -67,6 +67,8 @@ public enum SettingsKey {
         public static var suffixReplaceWith = "PrefixSuffix_suffixReplaceWith"
         public static var suffixAdd = "PrefixSuffix_suffixAdd"
         public static var trimWhiteSpace = "PrefixSuffix_trimWhiteSpace"
+        public static var splitViewFraction = "PrefixSuffix_splitViewFraction"
+        public static var splitViewLayout = "PrefixSuffix_splitViewLayout"
     }
 
     public enum SwiftPretty {

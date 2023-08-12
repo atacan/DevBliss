@@ -87,9 +87,10 @@ public struct PrefixSuffixReducer: ReducerProtocol {
                 // https://github.com/pointfreeco/swift-composable-architecture/discussions/1952#discussioncomment-5167956
                 return state.inputOutput.output.updateText(result)
                     .map { Action.inputOutput(.output($0)) }
-            case .conversionResponse(.failure):
+            case let .conversionResponse(.failure(error)):
                 state.isConversionRequestInFlight = false
-                return .none
+                return state.inputOutput.output.updateText(error.localizedDescription)
+                    .map { Action.inputOutput(.output($0)) }
             case .inputOutput:
                 return .none
             }

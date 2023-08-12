@@ -88,9 +88,10 @@ public struct RegexMatchesReducer: ReducerProtocol {
                 state.isConversionRequestInFlight = false
                 // https://github.com/pointfreeco/swift-composable-architecture/discussions/1952#discussioncomment-5167956
                 _ = state.inputOutput.input.updateText(output.highlighted)
-                _ = state.inputOutput.outputSecond
+                _ = state.inputOutput.output
                     .updateText(output.output.flatMap(\.capturedGroups).joined(separator: "\n"))
-                return state.inputOutput.output.updateText(output.output.map(\.wholeMatch).joined(separator: "\n"))
+                return state.inputOutput.outputSecond
+                    .updateText(output.output.map(\.wholeMatch).joined(separator: "\n"))
                     .map { Action.inputOutput(.output($0)) }
             case let .conversionResponse(.failure(error)):
                 state.isConversionRequestInFlight = false
@@ -162,8 +163,8 @@ public struct RegexMatchesView: View {
             InputAttributedTwoOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: RegexMatchesReducer.Action.inputOutput),
                 inputEditorTitle: NSLocalizedString("Input", bundle: Bundle.module, comment: ""),
-                outputEditorTitle: NSLocalizedString("Matches", bundle: Bundle.module, comment: ""),
-                outputSecondEditorTitle: NSLocalizedString("Capturing Groups", bundle: Bundle.module, comment: "")
+                outputEditorTitle: NSLocalizedString("Capturing Groups", bundle: Bundle.module, comment: ""),
+                outputSecondEditorTitle: NSLocalizedString("Matches", bundle: Bundle.module, comment: "")
             )
         }
         .onAppear {

@@ -55,15 +55,24 @@ public struct NameGeneratorReducer: ReducerProtocol {
             case let .prefixSuffix(.generationResponse(.success(names))):
                 return state.output.updateText(names)
                     .map { Action.output($0) }
+            case let .prefixSuffix(.generationResponse(.failure(error))):
+                return state.output.updateText(error.localizedDescription)
+                    .map { Action.output($0) }
             case .prefixSuffix:
                 return .none
             case let .alternatingVowelsConsonants(.generationResponse(.success(names))):
                 return state.output.updateText(names)
                     .map { Action.output($0) }
+            case let .alternatingVowelsConsonants(.generationResponse(.failure(error))):
+                return state.output.updateText(error.localizedDescription)
+                    .map { Action.output($0) }
             case .alternatingVowelsConsonants:
                 return .none
             case let .probabilistic(.generationResponse(.success(names))):
                 return state.output.updateText(names)
+                    .map { Action.output($0) }
+            case let .probabilistic(.generationResponse(.failure(error))):
+                return state.output.updateText(error.localizedDescription)
                     .map { Action.output($0) }
             case .probabilistic:
                 return .none
