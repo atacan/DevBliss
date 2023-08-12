@@ -117,9 +117,9 @@ public struct SwiftPrettyReducer: ReducerProtocol {
     // ) -> EffectTask<Action> {
     //     switch action {
     //     case \.$text:
-    //         //            userDefaults.set(state.lockwoodConfig.text, forKey: SettingsKey.SwiftPretty.lockwoodConfig)
+    //         // userDefaults.set(state.lockwoodConfig.text, forKey: SettingsKey.SwiftPretty.lockwoodConfig)
     //         UserDefaults.standard.set(state.lockwoodConfig.text, forKey: SettingsKey.SwiftPretty.lockwoodConfig)
-    //         //            userDefaults.set(state.lockwoodConfig.text.data(using: .utf8), forKey:
+    //         // userDefaults.set(state.lockwoodConfig.text.data(using: .utf8), forKey:
     //         /SettingsKey.SwiftPretty.lockwoodConfig)
     //         return .none
     //     default:
