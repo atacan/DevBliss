@@ -11,7 +11,6 @@ let package = Package(
         .iOS(.v15),
     ],
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(name: "AppFeature", targets: ["AppFeature"]),
         .library(name: "BlissTheme", targets: ["BlissTheme"]),
         .library(name: "InputOutput", targets: ["InputOutput"]),
@@ -40,21 +39,17 @@ let package = Package(
         .library(name: "UUIDGeneratorFeature", targets: ["UUIDGeneratorFeature"]),
     ],
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.49.1"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "0.1.0"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.0.0"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.0.0"),
         .package(url: "https://github.com/stevengharris/SplitView", from: "3.1.0"),
         .package(url: "https://github.com/atacan/html-swift", branch: "main"),
         .package(url: "https://github.com/nkristek/Highlight.git", branch: "master"),
         .package(url: "https://github.com/atacan/MacSwiftUI", branch: "main"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.51.0"),
         .package(url: "https://github.com/atacan/TCAEnchancements", branch: "main"),
-        .package(url: "https://github.com/atacan/PillPickerView", branch: "develop"),
+        .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", from: "1.0.0"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
-
         .target(
             name: "AppFeature",
             dependencies: [
@@ -141,6 +136,7 @@ let package = Package(
                 "HtmlToSwiftClient",
                 "InputOutput",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
         ),
         .testTarget(
@@ -174,7 +170,6 @@ let package = Package(
             dependencies: [
                 "NameGeneratorClient",
                 "InputOutput",
-                "PillPickerView",
             ]
         ),
         .target(
@@ -259,7 +254,6 @@ let package = Package(
             name: "SharedModels",
             dependencies: []
         ),
-
         .testTarget(
             name: "HtmlToSwiftClientTests",
             dependencies: ["HtmlToSwiftClient"]

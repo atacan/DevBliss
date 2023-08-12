@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Dependencies
+import DependenciesAdditions
 import HtmlSwift
 import HtmlToSwiftClient
 import InputOutput
@@ -10,8 +11,8 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
-        @BindingState var dsl: SwiftDSL = .binaryBirds
-        @BindingState var component: HtmlOutputComponent = .fullHtml
+        @BindingState var dsl: SwiftDSL
+        @BindingState var component: HtmlOutputComponent
 
         public init(
             inputOutput: InputOutputEditorsReducer.State = .init(),
@@ -23,12 +24,13 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
             self.component = component
         }
 
-        public init(inputOutput: InputOutputEditorsReducer.State = .init()) {
-            self.inputOutput = inputOutput
+        public init(setInputOutput: InputOutputEditorsReducer.State = .init()) {
+            self.init(inputOutput: setInputOutput)
         }
 
         public init(input: String, output: String = "") {
-            self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
+            //            self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
+            self.init(setInputOutput: .init(input: .init(text: input), output: .init(text: output)))
         }
 
         public var outputText: String {
@@ -37,6 +39,7 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
     }
 
     public enum Action: BindableAction, Equatable {
+        case observePreferences
         case binding(BindingAction<State>)
         case convertButtonTouched
         case conversionResponse(TaskResult<String>)
@@ -44,12 +47,16 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
     }
 
     @Dependency(\.htmlToSwift) var htmlToSwift
+    @Dependency(\.userDefaults) var userDefaults
+
     private enum CancelID { case conversionRequest }
 
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
+            case .observePreferences:
+                return observeSettings()
             case .binding:
                 return .none
             case .convertButtonTouched:
@@ -82,6 +89,23 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
 
         Scope(state: \.inputOutput, action: /Action.inputOutput) {
             InputOutputEditorsReducer()
+        }
+    }
+
+    private func observeSettings() -> EffectTask<Action> {
+        .run { send in
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    for await newDsl: SwiftDSL?
+                        in userDefaults
+                        .rawRepresentableValues(forKey: SettingsKey.dsl.rawValue) {
+                        guard let newDsl else {
+                            return
+                        }
+                        await send(.binding(.set(\.$dsl, newDsl)))
+                    }
+                }
+            }
         }
     }
 }
@@ -148,6 +172,7 @@ public struct HtmlToSwiftView: View {
                 outputEditorTitle: "Swift"
             )
         }
+        .onAppear { viewStore.send(.observePreferences) }
     }
 
     private func dslLibraryName(for dsl: SwiftDSL) -> String {
@@ -197,3 +222,26 @@ struct HtmlToSwiftReducer_Previews: PreviewProvider {
         HtmlToSwiftView(store: .init(initialState: .init(), reducer: HtmlToSwiftReducer()))
     }
 }
+
+#if DEBUG
+    public struct HtmlToSwiftApp: App {
+        public init() {}
+
+        public var body: some Scene {
+            WindowGroup {
+                HtmlToSwiftView(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: HtmlToSwiftReducer()
+                            ._printChanges()
+                    )
+                )
+            }
+            #if os(macOS)
+            .windowStyle(.titleBar)
+            .windowToolbarStyle(.unified(showsTitle: true))
+            #endif
+        }
+    }
+
+#endif

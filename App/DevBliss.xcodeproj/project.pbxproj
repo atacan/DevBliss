@@ -9,9 +9,9 @@
 /* Begin PBXBuildFile section */
 		5A7437062A2B69C9001DEC2E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A7437052A2B69C9001DEC2E /* Assets.xcassets */; };
 		5A74370A2A2B69C9001DEC2E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A7437092A2B69C9001DEC2E /* Preview Assets.xcassets */; };
-		5AA0D0092A3508BC0013132B /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 5AA0D0082A3508BC0013132B /* AppFeature */; };
 		7920EBE62A8008FB00C27666 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7920EBE52A8008FB00C27666 /* main.swift */; };
 		79A1B2612A799F1A00186A8C /* DevBliss-InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 79A1B25F2A799F1A00186A8C /* DevBliss-InfoPlist.strings */; };
+		79A20DF22A87986500F168B1 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 79A20DF12A87986500F168B1 /* AppFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,7 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5AA0D0092A3508BC0013132B /* AppFeature in Frameworks */,
+				79A20DF22A87986500F168B1 /* AppFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,7 +102,7 @@
 			);
 			name = DevBliss;
 			packageProductDependencies = (
-				5AA0D0082A3508BC0013132B /* AppFeature */,
+				79A20DF12A87986500F168B1 /* AppFeature */,
 			);
 			productName = DevBliss;
 			productReference = 5A7436FE2A2B69C8001DEC2E /* DevBliss.app */;
@@ -400,7 +400,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		5AA0D0082A3508BC0013132B /* AppFeature */ = {
+		79A20DF12A87986500F168B1 /* AppFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AppFeature;
 		};

@@ -1,14 +1,18 @@
-import AppFeature
-
 #if DEBUG
-    //    import InputOutput
-    //    InputEditorApp.main()
+//    import InputOutput
+//    InputEditorApp.main()
+    import HtmlToSwiftFeature
+
+    HtmlToSwiftApp.main()
 
     #if os(macOS)
-        //        import FileContentSearchFeature
+//        import FileContentSearchFeature
 
-        //        FileContentSearchApp.main()
+//        FileContentSearchApp.main()
     #endif
-#endif
 
-TheApp.main()
+#else
+    import AppFeature
+
+    TheApp.main()
+#endif
