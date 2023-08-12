@@ -21,21 +21,21 @@ public struct SwiftPrettyReducer: ReducerProtocol {
             lockwoodConfig: InputEditorReducer.State = .init(text: blissConfigLockwood),
             useLockwood: Bool = true
         ) {
-//            @Dependency(\.userDefaults) var userDefaults
-            let config: InputEditorReducer.State = with(lockwoodConfig) {
-                .init(
-                    //                    text: userDefaults.string(forKey: SettingsKey.SwiftPretty.lockwoodConfig) ?? $0.text
-//                    text: String(data: userDefaults.data(forKey: SettingsKey.SwiftPretty.lockwoodConfig), encoding: .utf8) ?? $0.text
-                    text: UserDefaults.standard.string(forKey: SettingsKey.SwiftPretty.lockwoodConfig) ?? $0.text
-                )
-            }
-//            let config: InputEditorReducer.State = {
-//                if let data = userDefaults.data(forKey: SettingsKey.SwiftPretty.lockwoodConfig),
-//                   let text = String(data: data, encoding: .utf8) {
-//                    return .init(text: text)
-//                } else{return lockwoodConfig}
-//            }()
-            self.lockwoodConfig = config
+            // @Dependency(\.userDefaults) var userDefaults
+            // let config: InputEditorReducer.State = with(lockwoodConfig) {
+            // .init(
+            //         text: userDefaults.string(forKey: SettingsKey.SwiftPretty.lockwoodConfig) ?? $0.text
+            //         text: String(data: userDefaults.data(forKey: SettingsKey.SwiftPretty.lockwoodConfig), encoding: .utf8) ?? $0.text
+            // text: UserDefaults.standard.string(forKey: SettingsKey.SwiftPretty.lockwoodConfig) ?? $0.text
+            // )
+            // }
+            // let config: InputEditorReducer.State = {
+            //     if let data = userDefaults.data(forKey: SettingsKey.SwiftPretty.lockwoodConfig),
+            //        let text = String(data: data, encoding: .utf8) {
+            //         return .init(text: text)
+            //     } else{return lockwoodConfig}
+            // }()
+            self.lockwoodConfig = lockwoodConfig
             self.inputOutput = inputOutput
             self.useLockwood = useLockwood
         }
@@ -93,8 +93,8 @@ public struct SwiftPrettyReducer: ReducerProtocol {
                     .map { Action.inputOutput(.output($0)) }
             case .inputOutput:
                 return .none
-            case let .lockwoodConfig(.binding(action)):
-                return setPreferences(for: action, from: state)
+            // case let .lockwoodConfig(.binding(action)):
+            //     return setPreferences(for: action, from: state)
             case .lockwoodConfig:
                 return .none
             }
@@ -109,22 +109,23 @@ public struct SwiftPrettyReducer: ReducerProtocol {
         }
     }
 
-//    @Dependency(\.userDefaults) var userDefaults
+    //    @Dependency(\.userDefaults) var userDefaults
 
-    private func setPreferences(
-        for action: BindingAction<InputEditorReducer.State>,
-        from state: State
-    ) -> EffectTask<Action> {
-        switch action {
-        case \.$text:
-//            userDefaults.set(state.lockwoodConfig.text, forKey: SettingsKey.SwiftPretty.lockwoodConfig)
-            UserDefaults.standard.set(state.lockwoodConfig.text, forKey: SettingsKey.SwiftPretty.lockwoodConfig)
-//            userDefaults.set(state.lockwoodConfig.text.data(using: .utf8), forKey: SettingsKey.SwiftPretty.lockwoodConfig)
-            return .none
-        default:
-            return .none
-        }
-    }
+    // private func setPreferences(
+    //     for action: BindingAction<InputEditorReducer.State>,
+    //     from state: State
+    // ) -> EffectTask<Action> {
+    //     switch action {
+    //     case \.$text:
+    //         //            userDefaults.set(state.lockwoodConfig.text, forKey: SettingsKey.SwiftPretty.lockwoodConfig)
+    //         UserDefaults.standard.set(state.lockwoodConfig.text, forKey: SettingsKey.SwiftPretty.lockwoodConfig)
+    //         //            userDefaults.set(state.lockwoodConfig.text.data(using: .utf8), forKey:
+    //         /SettingsKey.SwiftPretty.lockwoodConfig)
+    //         return .none
+    //     default:
+    //         return .none
+    //     }
+    // }
 }
 
 public struct SwiftPrettyView: View {
