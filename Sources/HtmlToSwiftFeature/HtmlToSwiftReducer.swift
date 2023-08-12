@@ -4,6 +4,7 @@ import DependenciesAdditions
 import HtmlSwift
 import HtmlToSwiftClient
 import InputOutput
+import MacSwiftUI
 import SwiftUI
 
 public struct HtmlToSwiftReducer: ReducerProtocol {
@@ -172,8 +173,11 @@ public struct HtmlToSwiftView: View {
 
             Button(action: { viewStore.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                    .fixedSize(horizontal: true, vertical: false)
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
             }
+            .buttonStyle(LickableButtonStyle(isDefaultAction: true))
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Convert code (Cmd+Return)", bundle: Bundle.module, comment: ""))
             .padding(.bottom, 2)
