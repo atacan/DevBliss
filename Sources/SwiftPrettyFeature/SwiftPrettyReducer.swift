@@ -142,14 +142,14 @@ public struct SwiftPrettyView: View {
     public var body: some View {
         VSplit {
             VStack {
-                //            DisclosureGroup("Configuration", isExpanded: $configIsExpanded) {
-                //                Toggle("Use Lockwood", isOn: viewStore.binding(\.$useLockwood))
-                //                    .toggleStyle(.automatic)
-                //                    .frame(width: .nan)
+                // DisclosureGroup("Configuration", isExpanded: $configIsExpanded) {
+                //     Toggle("Use Lockwood", isOn: viewStore.binding(\.$useLockwood))
+                //         .toggleStyle(.automatic)
+                //         .frame(width: .nan)
                 lockwoodEditor
                     .padding(.horizontal)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
-                //            }
+                // }
 
                 Button(action: { viewStore.send(.convertButtonTouched) }) {
                     Text(NSLocalizedString("Format", bundle: Bundle.module, comment: ""))
