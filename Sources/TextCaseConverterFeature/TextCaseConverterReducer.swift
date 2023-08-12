@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Dependencies
+import DependenciesAdditions
 import InputOutput
 import SwiftUI
 import TextCaseConverterClient
@@ -36,6 +37,7 @@ public struct TextCaseConverterReducer: ReducerProtocol {
     }
 
     public enum Action: BindableAction, Equatable {
+        case observeSettings
         case binding(BindingAction<State>)
         case convertButtonTouched
         case conversionResponse(TaskResult<String>)
@@ -44,13 +46,16 @@ public struct TextCaseConverterReducer: ReducerProtocol {
 
     @Dependency(\.textCaseConverter) var textCaseConverter
     private enum CancelID { case conversionRequest }
+    @Dependency(\.userDefaults) var userDefaults
 
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
-            case .binding:
-                return .none
+            case .observeSettings:
+                return observeSettings()
+            case let .binding(action):
+                return setPreferences(for: action, from: state)
             case .convertButtonTouched:
                 state.isConversionRequestInFlight = true
                 return
@@ -85,6 +90,47 @@ public struct TextCaseConverterReducer: ReducerProtocol {
 
         Scope(state: \.inputOutput, action: /Action.inputOutput) {
             InputOutputEditorsReducer()
+        }
+    }
+
+    private func observeSettings() -> EffectTask<Action> {
+        .run { send in
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    if let newSourceCase: WordGroupCase = userDefaults
+                        .rawRepresentable(forKey: SettingsKey.sourceCase.rawValue) {
+                        await send(.binding(.set(\.$sourceCase, newSourceCase)))
+                    }
+                }
+                group.addTask {
+                    if let newTargetCase: WordGroupCase = userDefaults
+                        .rawRepresentable(forKey: SettingsKey.targetCase.rawValue) {
+                        await send(.binding(.set(\.$targetCase, newTargetCase)))
+                    }
+                }
+                group.addTask {
+                    if let newTextSeperator: WordGroupSeperator = userDefaults
+                        .rawRepresentable(forKey: SettingsKey.textSeperator.rawValue) {
+                        await send(.binding(.set(\.$textSeperator, newTextSeperator)))
+                    }
+                }
+            }
+        }
+    }
+
+    private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
+        switch action {
+        case \.$sourceCase:
+            userDefaults.set(state.sourceCase, forKey: SettingsKey.sourceCase.rawValue)
+            return .none
+        case \.$targetCase:
+            userDefaults.set(state.targetCase, forKey: SettingsKey.targetCase.rawValue)
+            return .none
+        case \.$textSeperator:
+            userDefaults.set(state.textSeperator, forKey: SettingsKey.textSeperator.rawValue)
+            return .none
+        default:
+            return .none
         }
     }
 }
@@ -145,7 +191,7 @@ public struct TextCaseConverterView: View {
                     }
                 }
                 Spacer()
-            }  // <-HStack
+            } // <-HStack
             .frame(maxWidth: 550)
             .labelsHidden()
 
@@ -161,6 +207,9 @@ public struct TextCaseConverterView: View {
                 inputEditorTitle: NSLocalizedString("Input", bundle: Bundle.module, comment: ""),
                 outputEditorTitle: NSLocalizedString("Output", bundle: Bundle.module, comment: "")
             )
+        }
+        .onAppear {
+            viewStore.send(.observeSettings)
         }
     }
 
@@ -179,4 +228,10 @@ struct TextCaseConverterReducer_Previews: PreviewProvider {
     static var previews: some View {
         TextCaseConverterView(store: .init(initialState: .init(), reducer: TextCaseConverterReducer()))
     }
+}
+
+enum SettingsKey: String {
+    case sourceCase = "TextCaseConverter_sourceCase"
+    case targetCase = "TextCaseConverter_targetCase"
+    case textSeperator = "TextCaseConverter_textSeperator"
 }

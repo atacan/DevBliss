@@ -9,18 +9,18 @@ extension TextCaseConverterClient: DependencyKey {
         Self(
             convert: { text, textSeperator, sourceCase, targetCase in
                 text
-                    .split(separator: textSeperator.rawValue)
+                    .split(separator: textSeperator.char)
                     .map { wordGroup -> String in
                         targetCase.textStyleType
                             .init(
                                 components:
-                                    sourceCase.textStyleType
+                                sourceCase.textStyleType
                                     .init(content: String(wordGroup).trimmingCharacters(in: .whitespaces))
                                     .split()
                             )
                             .content
                     }
-                    .joined(separator: String(textSeperator.rawValue))
+                    .joined(separator: String(textSeperator.char))
             }
         )
     }

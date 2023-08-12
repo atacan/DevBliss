@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Dependencies
+import DependenciesAdditions
 import InputOutput
 import PrefixSuffixClient
 import SwiftUI
@@ -30,6 +31,7 @@ public struct PrefixSuffixReducer: ReducerProtocol {
     }
 
     public enum Action: BindableAction, Equatable {
+        case observeSettings
         case binding(BindingAction<State>)
         case convertButtonTouched
         case conversionResponse(TaskResult<String>)
@@ -38,13 +40,16 @@ public struct PrefixSuffixReducer: ReducerProtocol {
 
     @Dependency(\.prefixSuffix) var prefixSuffix
     private enum CancelID { case conversionRequest }
+    @Dependency(\.userDefaults) var userDefaults
 
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
-            case .binding:
-                return .none
+            case .observeSettings:
+                return observeSettings()
+            case let .binding(action):
+                return setPreferences(for: action, from: state)
             case .convertButtonTouched:
                 state.isConversionRequestInFlight = true
                 return
@@ -76,6 +81,76 @@ public struct PrefixSuffixReducer: ReducerProtocol {
             InputOutputEditorsReducer()
         }
     }
+
+    private func observeSettings() -> EffectTask<Action> {
+        .run { send in
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    if let new_prefixReplace = userDefaults.string(forKey: SettingsKey.prefixReplace.rawValue) {
+                        await send(.binding(.set(\.$configuration.prefixReplace, new_prefixReplace)))
+                    }
+                }
+                group.addTask {
+                    if let new_prefixReplaceWith = userDefaults.string(forKey: SettingsKey.prefixReplaceWith.rawValue) {
+                        await send(.binding(.set(\.$configuration.prefixReplaceWith, new_prefixReplaceWith)))
+                    }
+                }
+                group.addTask {
+                    if let new_prefixAdd = userDefaults.string(forKey: SettingsKey.prefixAdd.rawValue) {
+                        await send(.binding(.set(\.$configuration.prefixAdd, new_prefixAdd)))
+                    }
+                }
+                group.addTask {
+                    if let new_suffixReplace = userDefaults.string(forKey: SettingsKey.suffixReplace.rawValue) {
+                        await send(.binding(.set(\.$configuration.suffixReplace, new_suffixReplace)))
+                    }
+                }
+                group.addTask {
+                    if let new_suffixReplaceWith = userDefaults.string(forKey: SettingsKey.suffixReplaceWith.rawValue) {
+                        await send(.binding(.set(\.$configuration.suffixReplaceWith, new_suffixReplaceWith)))
+                    }
+                }
+                group.addTask {
+                    if let new_suffixAdd = userDefaults.string(forKey: SettingsKey.suffixAdd.rawValue) {
+                        await send(.binding(.set(\.$configuration.suffixAdd, new_suffixAdd)))
+                    }
+                }
+                group.addTask {
+                    if let new_trimWhiteSpace = userDefaults.bool(forKey: SettingsKey.trimWhiteSpace.rawValue) {
+                        await send(.binding(.set(\.$configuration.trimWhiteSpace, new_trimWhiteSpace)))
+                    }
+                }
+            }
+        }
+    }
+
+    private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
+        switch action {
+        case \.$configuration.prefixReplace:
+            userDefaults.set(state.configuration.prefixReplace, forKey: SettingsKey.prefixReplace.rawValue)
+            return .none
+        case \.$configuration.prefixReplaceWith:
+            userDefaults.set(state.configuration.prefixReplaceWith, forKey: SettingsKey.prefixReplaceWith.rawValue)
+            return .none
+        case \.$configuration.prefixAdd:
+            userDefaults.set(state.configuration.prefixAdd, forKey: SettingsKey.prefixAdd.rawValue)
+            return .none
+        case \.$configuration.suffixReplace:
+            userDefaults.set(state.configuration.suffixReplace, forKey: SettingsKey.suffixReplace.rawValue)
+            return .none
+        case \.$configuration.suffixReplaceWith:
+            userDefaults.set(state.configuration.suffixReplaceWith, forKey: SettingsKey.suffixReplaceWith.rawValue)
+            return .none
+        case \.$configuration.suffixAdd:
+            userDefaults.set(state.configuration.suffixAdd, forKey: SettingsKey.suffixAdd.rawValue)
+            return .none
+        case \.$configuration.trimWhiteSpace:
+            userDefaults.set(state.configuration.trimWhiteSpace, forKey: SettingsKey.trimWhiteSpace.rawValue)
+            return .none
+        default:
+            return .none
+        }
+    }
 }
 
 public struct PrefixSuffixView: View {
@@ -101,13 +176,13 @@ public struct PrefixSuffixView: View {
         VStack {
             HStack(alignment: .center) {
                 Image(systemName: "arrow.forward")
-                .help(
-                    NSLocalizedString(
-                        "It first starts applying the prefix changes",
-                        bundle: Bundle.module,
-                        comment: ""
+                    .help(
+                        NSLocalizedString(
+                            "It first starts applying the prefix changes",
+                            bundle: Bundle.module,
+                            comment: ""
+                        )
                     )
-                )
                 VStack {
                     Text(NSLocalizedString("Prefix", bundle: Bundle.module, comment: ""))
                     Group {
@@ -140,18 +215,18 @@ public struct PrefixSuffixView: View {
                         .focused($focusedField, equals: .prefixAdd)
                         .onSubmit { focusNextField($focusedField) }
                         .help(NSLocalizedString("Then add Prefix", bundle: Bundle.module, comment: ""))
-                    }  // <-Group
+                    } // <-Group
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
                 }
                 Image(systemName: "arrow.forward.square.fill")
-                .help(
-                    NSLocalizedString(
-                        "Then it applies the suffix manipulation",
-                        bundle: Bundle.module,
-                        comment: ""
+                    .help(
+                        NSLocalizedString(
+                            "Then it applies the suffix manipulation",
+                            bundle: Bundle.module,
+                            comment: ""
+                        )
                     )
-                )
                 VStack {
                     Text(
                         NSLocalizedString(
@@ -190,24 +265,24 @@ public struct PrefixSuffixView: View {
                         .focused($focusedField, equals: .suffixAdd)
                         .onSubmit { focusNextField($focusedField) }
                         .help(NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""))
-                    }  // <-Group
+                    } // <-Group
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
                 }
                 Image(systemName: "backward.end")
-                .help(
-                    NSLocalizedString(
-                        "After applying prefix and suffice manipulations to each line separately, it ends.",
-                        bundle: Bundle.module,
-                        comment: ""
+                    .help(
+                        NSLocalizedString(
+                            "After applying prefix and suffice manipulations to each line separately, it ends.",
+                            bundle: Bundle.module,
+                            comment: ""
+                        )
                     )
-                )
-            }  // <-HStack
+            } // <-HStack
             .autocorrectionDisabled()
             #if os(iOS)
                 .textInputAutocapitalization(.never)
             #endif
-            .frame(maxWidth: 850)
+                .frame(maxWidth: 850)
 
             Button(action: { viewStore.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
@@ -225,6 +300,7 @@ public struct PrefixSuffixView: View {
         }
         .onAppear {
             focusedField = .prefixReplace
+            viewStore.send(.observeSettings)
         }
     }
 }
@@ -289,4 +365,14 @@ extension View {
             field.wrappedValue = newValue
         }
     }
+}
+
+enum SettingsKey: String {
+    case prefixReplace = "PrefixSuffix_prefixReplace"
+    case prefixReplaceWith = "PrefixSuffix_prefixReplaceWith"
+    case prefixAdd = "PrefixSuffix_prefixAdd"
+    case suffixReplace = "PrefixSuffix_suffixReplace"
+    case suffixReplaceWith = "PrefixSuffix_suffixReplaceWith"
+    case suffixAdd = "PrefixSuffix_suffixAdd"
+    case trimWhiteSpace = "PrefixSuffix_trimWhiteSpace"
 }

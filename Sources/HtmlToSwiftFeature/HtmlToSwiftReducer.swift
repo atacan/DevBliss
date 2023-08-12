@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Dependencies
+import DependenciesAdditions
 import HtmlSwift
 import HtmlToSwiftClient
 import InputOutput
@@ -37,6 +38,7 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
     }
 
     public enum Action: BindableAction, Equatable {
+        case observeSettings
         case binding(BindingAction<State>)
         case convertButtonTouched
         case conversionResponse(TaskResult<String>)
@@ -45,13 +47,16 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
 
     @Dependency(\.htmlToSwift) var htmlToSwift
     private enum CancelID { case conversionRequest }
+    @Dependency(\.userDefaults) var userDefaults
 
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
-            case .binding:
-                return .none
+            case .observeSettings:
+                return observeSettings()
+            case let .binding(action):
+                return setPreferences(for: action, from: state)
             case .convertButtonTouched:
                 state.isConversionRequestInFlight = true
                 return
@@ -82,6 +87,37 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
 
         Scope(state: \.inputOutput, action: /Action.inputOutput) {
             InputOutputEditorsReducer()
+        }
+    }
+
+    private func observeSettings() -> EffectTask<Action> {
+        .run { send in
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    if let newDsl: SwiftDSL = userDefaults.rawRepresentable(forKey: SettingsKey.dsl.rawValue) {
+                        await send(.binding(.set(\.$dsl, newDsl)))
+                    }
+                }
+                group.addTask {
+                    if let newComponent: HtmlOutputComponent = userDefaults
+                        .rawRepresentable(forKey: SettingsKey.component.rawValue) {
+                        await send(.binding(.set(\.$component, newComponent)))
+                    }
+                }
+            }
+        }
+    }
+
+    private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
+        switch action {
+        case \.$dsl:
+            userDefaults.set(state.dsl, forKey: SettingsKey.dsl.rawValue)
+            return .none
+        case \.$component:
+            userDefaults.set(state.component, forKey: SettingsKey.component.rawValue)
+            return .none
+        default:
+            return .none
         }
     }
 }
@@ -148,6 +184,9 @@ public struct HtmlToSwiftView: View {
                 outputEditorTitle: "Swift"
             )
         }
+        .onAppear {
+            viewStore.send(.observeSettings)
+        }
     }
 
     private func dslLibraryName(for dsl: SwiftDSL) -> String {
@@ -197,3 +236,31 @@ struct HtmlToSwiftReducer_Previews: PreviewProvider {
         HtmlToSwiftView(store: .init(initialState: .init(), reducer: HtmlToSwiftReducer()))
     }
 }
+
+enum SettingsKey: String {
+    case dsl = "HtmlToSwift_dsl"
+    case component = "HtmlToSwift_component"
+}
+
+#if DEBUG
+    public struct HtmlToSwiftApp: App {
+        public init() {}
+
+        public var body: some Scene {
+            WindowGroup {
+                HtmlToSwiftView(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: HtmlToSwiftReducer()
+                            ._printChanges()
+                    )
+                )
+            }
+            #if os(macOS)
+            .windowStyle(.titleBar)
+            .windowToolbarStyle(.unified(showsTitle: true))
+            #endif
+        }
+    }
+
+#endif

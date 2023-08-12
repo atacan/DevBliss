@@ -1,6 +1,7 @@
 import BlissTheme
 import ComposableArchitecture
 import Dependencies
+import DependenciesAdditions
 import InputOutput
 import RegexMatchesClient
 import SwiftUI
@@ -45,6 +46,7 @@ public struct RegexMatchesReducer: ReducerProtocol {
     }
 
     public enum Action: BindableAction, Equatable {
+        case observeSettings
         case binding(BindingAction<State>)
         case convertButtonTouched
         case conversionResponse(TaskResult<RegexMatchesHighlightOutput>)
@@ -53,14 +55,17 @@ public struct RegexMatchesReducer: ReducerProtocol {
 
     @Dependency(\.regexMatches) var regexMatches
     private enum CancelID { case conversionRequest }
+    @Dependency(\.userDefaults) var userDefaults
 
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
 
         Reduce<State, Action> { state, action in
             switch action {
-            case .binding:
-                return .none
+            case .observeSettings:
+                return observeSettings()
+            case let .binding(action):
+                return setPreferences(for: action, from: state)
             case .convertButtonTouched:
                 state.isConversionRequestInFlight = true
                 return
@@ -101,6 +106,28 @@ public struct RegexMatchesReducer: ReducerProtocol {
             InputAttributedTwoOutputAttributedEditorsReducer()
         }
     }
+
+    private func observeSettings() -> EffectTask<Action> {
+        .run { send in
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    if let newRegexPattern = userDefaults.string(forKey: SettingsKey.regexPattern.rawValue) {
+                        await send(.binding(.set(\.$regexPattern, newRegexPattern)))
+                    }
+                }
+            }
+        }
+    }
+
+    private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
+        switch action {
+        case \.$regexPattern:
+            userDefaults.set(state.regexPattern, forKey: SettingsKey.regexPattern.rawValue)
+            return .none
+        default:
+            return .none
+        }
+    }
 }
 
 public struct RegexMatchesView: View {
@@ -124,7 +151,7 @@ public struct RegexMatchesView: View {
             #if os(iOS)
                 .textInputAutocapitalization(.never)
             #endif
-            .padding()
+                .padding()
             Button(action: { viewStore.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Extract", bundle: Bundle.module, comment: ""))
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
@@ -139,6 +166,9 @@ public struct RegexMatchesView: View {
                 outputSecondEditorTitle: NSLocalizedString("Capturing Groups", bundle: Bundle.module, comment: "")
             )
         }
+        .onAppear {
+            viewStore.send(.observeSettings)
+        }
     }
 }
 
@@ -147,4 +177,8 @@ struct RegexMatchesReducer_Previews: PreviewProvider {
     static var previews: some View {
         RegexMatchesView(store: .init(initialState: .init(), reducer: RegexMatchesReducer()))
     }
+}
+
+enum SettingsKey: String {
+    case regexPattern = "RegexMatches_RegexPattern"
 }

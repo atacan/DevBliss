@@ -50,6 +50,7 @@ let package = Package(
         .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.51.0"),
         .package(url: "https://github.com/atacan/TCAEnchancements", branch: "main"),
         .package(url: "https://github.com/atacan/PillPickerView", branch: "develop"),
+        .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", from: "0.1.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -141,6 +142,7 @@ let package = Package(
                 "HtmlToSwiftClient",
                 "InputOutput",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
         ),
         .testTarget(

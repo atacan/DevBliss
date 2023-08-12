@@ -7,6 +7,7 @@ struct AppContentView: View {
             store: Store(
                 initialState: .init(),
                 reducer: AppReducer()
+//                    ._printChanges()
             )
         )
     }
