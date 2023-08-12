@@ -71,7 +71,30 @@ public enum SettingsKey {
         public static var splitViewLayout = "PrefixSuffix_splitViewLayout"
     }
 
+    public enum JsonPretty {
+        public static var splitViewFraction = "JsonPretty_splitViewFraction"
+        public static var splitViewLayout = "JsonPretty_splitViewLayout"
+    }
+
+    public enum HtmlToSwift {
+        public static var dsl = "HtmlToSwift_dsl"
+        public static var component = "HtmlToSwift_component"
+        public static var splitViewFraction = "HtmlToSwift_splitViewFraction"
+        public static var splitViewLayout = "HtmlToSwift_splitViewLayout"
+    }
+
+    public enum TextCaseConverter {
+        public static var sourceCase = "TextCaseConverter_sourceCase"
+        public static var targetCase = "TextCaseConverter_targetCase"
+        public static var textSeperator = "TextCaseConverter_textSeperator"
+
+        public static var splitViewFraction = "TextCaseConverter_splitViewFraction"
+        public static var splitViewLayout = "TextCaseConverter_splitViewLayout"
+    }
+
     public enum SwiftPretty {
         public static var lockwoodConfig = "SwiftPretty_lockwoodConfig"
+        public static var splitViewFraction = "SwiftPretty_splitViewFraction"
+        public static var splitViewLayout = "SwiftPretty_splitViewLayout"
     }
 }

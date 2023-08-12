@@ -51,9 +51,11 @@ public struct InputOutputAttributedEditorsView: View {
 
     let inputEditorTitle: String
     let outputEditorTitle: String
+    let keyForFraction: String
+    let keyForLayout: String
 
-    let fraction = FractionHolder.usingUserDefaults(0.5, key: "inputOutputSplitFraction")
-    @StateObject var layout = LayoutHolder.usingUserDefaults(.vertical, key: "inputOutputSplitLayout")
+    let fraction: FractionHolder
+    @ObservedObject var layout: LayoutHolder
     //    @StateObject var layout = LayoutHolder(.vertical)
     //    @StateObject var hide = SideHolder.usingUserDefaults(key: "inputOutputSplitSide")
     @StateObject var hide = SideHolder()
@@ -61,12 +63,19 @@ public struct InputOutputAttributedEditorsView: View {
     public init(
         store: StoreOf<InputOutputAttributedEditorsReducer>,
         inputEditorTitle: String,
-        outputEditorTitle: String
+        outputEditorTitle: String,
+        keyForFraction: String = "inputOutputSplitFraction",
+        keyForLayout: String = "inputOutputSplitLayout"
     ) {
         self.store = store
         self.viewStore = ViewStore(store)
+        self.fraction = FractionHolder.usingUserDefaults(0.5, key: keyForFraction)
+        self.layout = LayoutHolder.usingUserDefaults(.horizontal, key: keyForLayout)
+
         self.inputEditorTitle = inputEditorTitle
         self.outputEditorTitle = outputEditorTitle
+        self.keyForFraction = keyForFraction
+        self.keyForLayout = keyForLayout
     }
 
     public var body: some View {
@@ -161,8 +170,7 @@ struct InputOutputToolbarSplitItems: View {
                         //                                hide.toggle()
                         if hide.side == nil {
                             hide.hide(.primary)
-                        }
-                        else {
+                        } else {
                             hide.toggle()
                         }
                     }
@@ -174,8 +182,7 @@ struct InputOutputToolbarSplitItems: View {
                             .isHorizontal
                             ? Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left")
                             : Image(systemName: "dock.arrow.up.rectangle")
-                    }
-                    else {
+                    } else {
                         layout
                             .isHorizontal
                             ? Image(systemName: "rectangle.righthalf.inset.filled.arrow.right")

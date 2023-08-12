@@ -272,7 +272,9 @@ public struct PrefixSuffixView: View {
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: PrefixSuffixReducer.Action.inputOutput),
                 inputEditorTitle: NSLocalizedString("Input", bundle: Bundle.module, comment: ""),
-                outputEditorTitle: NSLocalizedString("Output", bundle: Bundle.module, comment: "")
+                outputEditorTitle: NSLocalizedString("Output", bundle: Bundle.module, comment: ""),
+                keyForFraction: SettingsKey.PrefixSuffix.splitViewFraction,
+                keyForLayout: SettingsKey.PrefixSuffix.splitViewLayout
             )
         }
         .onAppear {

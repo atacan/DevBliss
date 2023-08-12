@@ -4,6 +4,7 @@ import DependenciesAdditions
 import HtmlSwift
 import HtmlToSwiftClient
 import InputOutput
+import SharedModels
 import SwiftUI
 
 public struct HtmlToSwiftReducer: ReducerProtocol {
@@ -94,13 +95,13 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
         .run { send in
             await withTaskGroup(of: Void.self) { group in
                 group.addTask {
-                    if let newDsl: SwiftDSL = userDefaults.rawRepresentable(forKey: SettingsKey.dsl.rawValue) {
+                    if let newDsl: SwiftDSL = userDefaults.rawRepresentable(forKey: SettingsKey.HtmlToSwift.dsl) {
                         await send(.binding(.set(\.$dsl, newDsl)))
                     }
                 }
                 group.addTask {
                     if let newComponent: HtmlOutputComponent = userDefaults
-                        .rawRepresentable(forKey: SettingsKey.component.rawValue) {
+                        .rawRepresentable(forKey: SettingsKey.HtmlToSwift.component) {
                         await send(.binding(.set(\.$component, newComponent)))
                     }
                 }
@@ -111,10 +112,10 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
     private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
         switch action {
         case \.$dsl:
-            userDefaults.set(state.dsl, forKey: SettingsKey.dsl.rawValue)
+            userDefaults.set(state.dsl, forKey: SettingsKey.HtmlToSwift.dsl)
             return .none
         case \.$component:
-            userDefaults.set(state.component, forKey: SettingsKey.component.rawValue)
+            userDefaults.set(state.component, forKey: SettingsKey.HtmlToSwift.component)
             return .none
         default:
             return .none
@@ -181,7 +182,9 @@ public struct HtmlToSwiftView: View {
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: HtmlToSwiftReducer.Action.inputOutput),
                 inputEditorTitle: "Html",
-                outputEditorTitle: "Swift"
+                outputEditorTitle: "Swift",
+                keyForFraction: SettingsKey.HtmlToSwift.splitViewFraction,
+                keyForLayout: SettingsKey.HtmlToSwift.splitViewLayout
             )
         }
         .onAppear {
@@ -235,11 +238,6 @@ struct HtmlToSwiftReducer_Previews: PreviewProvider {
     static var previews: some View {
         HtmlToSwiftView(store: .init(initialState: .init(), reducer: HtmlToSwiftReducer()))
     }
-}
-
-enum SettingsKey: String {
-    case dsl = "HtmlToSwift_dsl"
-    case component = "HtmlToSwift_component"
 }
 
 #if DEBUG

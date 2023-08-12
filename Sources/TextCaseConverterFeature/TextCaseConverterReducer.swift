@@ -2,6 +2,7 @@ import ComposableArchitecture
 import Dependencies
 import DependenciesAdditions
 import InputOutput
+import SharedModels
 import SwiftUI
 import TextCaseConverterClient
 
@@ -103,19 +104,19 @@ public struct TextCaseConverterReducer: ReducerProtocol {
             await withTaskGroup(of: Void.self) { group in
                 group.addTask {
                     if let newSourceCase: WordGroupCase = userDefaults
-                        .rawRepresentable(forKey: SettingsKey.sourceCase.rawValue) {
+                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.sourceCase) {
                         await send(.binding(.set(\.$sourceCase, newSourceCase)))
                     }
                 }
                 group.addTask {
                     if let newTargetCase: WordGroupCase = userDefaults
-                        .rawRepresentable(forKey: SettingsKey.targetCase.rawValue) {
+                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.targetCase) {
                         await send(.binding(.set(\.$targetCase, newTargetCase)))
                     }
                 }
                 group.addTask {
                     if let newTextSeperator: WordGroupSeperator = userDefaults
-                        .rawRepresentable(forKey: SettingsKey.textSeperator.rawValue) {
+                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.textSeperator) {
                         await send(.binding(.set(\.$textSeperator, newTextSeperator)))
                     }
                 }
@@ -126,13 +127,13 @@ public struct TextCaseConverterReducer: ReducerProtocol {
     private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
         switch action {
         case \.$sourceCase:
-            userDefaults.set(state.sourceCase, forKey: SettingsKey.sourceCase.rawValue)
+            userDefaults.set(state.sourceCase, forKey: SettingsKey.TextCaseConverter.sourceCase)
             return .none
         case \.$targetCase:
-            userDefaults.set(state.targetCase, forKey: SettingsKey.targetCase.rawValue)
+            userDefaults.set(state.targetCase, forKey: SettingsKey.TextCaseConverter.targetCase)
             return .none
         case \.$textSeperator:
-            userDefaults.set(state.textSeperator, forKey: SettingsKey.textSeperator.rawValue)
+            userDefaults.set(state.textSeperator, forKey: SettingsKey.TextCaseConverter.textSeperator)
             return .none
         default:
             return .none
@@ -218,7 +219,9 @@ public struct TextCaseConverterView: View {
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: TextCaseConverterReducer.Action.inputOutput),
                 inputEditorTitle: NSLocalizedString("Input", bundle: Bundle.module, comment: ""),
-                outputEditorTitle: NSLocalizedString("Output", bundle: Bundle.module, comment: "")
+                outputEditorTitle: NSLocalizedString("Output", bundle: Bundle.module, comment: ""),
+                keyForFraction: SettingsKey.TextCaseConverter.splitViewFraction,
+                keyForLayout: SettingsKey.TextCaseConverter.splitViewLayout
             )
         }
         .onAppear {
@@ -241,10 +244,4 @@ struct TextCaseConverterReducer_Previews: PreviewProvider {
     static var previews: some View {
         TextCaseConverterView(store: .init(initialState: .init(), reducer: TextCaseConverterReducer()))
     }
-}
-
-enum SettingsKey: String {
-    case sourceCase = "TextCaseConverter_sourceCase"
-    case targetCase = "TextCaseConverter_targetCase"
-    case textSeperator = "TextCaseConverter_textSeperator"
 }

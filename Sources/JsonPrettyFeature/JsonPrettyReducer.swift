@@ -3,6 +3,7 @@ import ComposableArchitecture
 import Dependencies
 import InputOutput
 import JsonPrettyClient
+import SharedModels
 import SwiftUI
 
 public struct JsonPrettyReducer: ReducerProtocol {
@@ -95,7 +96,9 @@ public struct JsonPrettyView: View {
             InputOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: JsonPrettyReducer.Action.inputOutput),
                 inputEditorTitle: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
-                outputEditorTitle: NSLocalizedString("Pretty", bundle: Bundle.module, comment: "")
+                outputEditorTitle: NSLocalizedString("Pretty", bundle: Bundle.module, comment: ""),
+                keyForFraction: SettingsKey.JsonPretty.splitViewFraction,
+                keyForLayout: SettingsKey.JsonPretty.splitViewLayout
             )
         }
     }

@@ -51,17 +51,31 @@ public struct InputOutputEditorsView: View {
 
     let inputEditorTitle: String
     let outputEditorTitle: String
+    let keyForFraction: String
+    let keyForLayout: String
 
-    let fraction = FractionHolder.usingUserDefaults(0.5, key: "inputOutputSplitFraction")
-    @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: "inputOutputSplitLayout")
+    let fraction: FractionHolder
+    @ObservedObject var layout: LayoutHolder
     //    @StateObject var hide = SideHolder.usingUserDefaults(key: "inputOutputSplitSide")
     @StateObject var hide = SideHolder()
 
-    public init(store: StoreOf<InputOutputEditorsReducer>, inputEditorTitle: String, outputEditorTitle: String) {
+    public init(
+        store: StoreOf<InputOutputEditorsReducer>,
+        inputEditorTitle: String,
+        outputEditorTitle: String,
+        keyForFraction: String = "inputOutputSplitFraction",
+
+        keyForLayout: String = "inputOutputSplitLayout"
+    ) {
         self.store = store
         self.viewStore = ViewStore(store)
+        self.fraction = FractionHolder.usingUserDefaults(0.5, key: keyForFraction)
+        self.layout = LayoutHolder.usingUserDefaults(.horizontal, key: keyForLayout)
+
         self.inputEditorTitle = inputEditorTitle
         self.outputEditorTitle = outputEditorTitle
+        self.keyForFraction = keyForFraction
+        self.keyForLayout = keyForLayout
     }
 
     public var body: some View {

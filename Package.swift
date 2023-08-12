@@ -141,6 +141,7 @@ let package = Package(
             dependencies: [
                 "HtmlToSwiftClient",
                 "InputOutput",
+                "SharedModels",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
@@ -163,6 +164,7 @@ let package = Package(
             dependencies: [
                 "JsonPrettyClient",
                 "InputOutput",
+                "SharedModels",
             ]
         ),
         .target(
@@ -198,6 +200,7 @@ let package = Package(
             dependencies: [
                 "PrefixSuffixClient",
                 "InputOutput",
+                "SharedModels",
             ]
         ),
         .testTarget(
@@ -223,6 +226,7 @@ let package = Package(
             dependencies: [
                 "RegexMatchesClient",
                 "InputOutput",
+                "SharedModels",
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
         ),
@@ -259,6 +263,7 @@ let package = Package(
             dependencies: [
                 "TextCaseConverterClient",
                 "InputOutput",
+                "SharedModels",
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
         ),

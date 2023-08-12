@@ -163,7 +163,9 @@ public struct SwiftPrettyView: View {
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: SwiftPrettyReducer.Action.inputOutput),
                 inputEditorTitle: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
-                outputEditorTitle: NSLocalizedString("Pretty", bundle: Bundle.module, comment: "")
+                outputEditorTitle: NSLocalizedString("Pretty", bundle: Bundle.module, comment: ""),
+                keyForFraction: SettingsKey.SwiftPretty.splitViewFraction,
+                keyForLayout: SettingsKey.SwiftPretty.splitViewLayout
             )
         }
         .styling(visibleThickness: 2)
