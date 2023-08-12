@@ -47,11 +47,12 @@
             @Dependency(\.filePanel) var filePanel
         #endif
 
-        private enum CancelID { case generationRequest
+        private enum CancelID {
+            case generationRequest
             case readFileRequest
         }
 
-//        private enum ReadFileCancelID { case readFileRequest }
+        //        private enum ReadFileCancelID { case readFileRequest }
 
         public var body: some ReducerProtocol<State, Action> {
             BindingReducer()

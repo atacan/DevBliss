@@ -1,14 +1,14 @@
+import AppFeature
+
 #if DEBUG
     //    import InputOutput
     //    InputEditorApp.main()
 
     #if os(macOS)
-//        import FileContentSearchFeature
+        //        import FileContentSearchFeature
 
-//        FileContentSearchApp.main()
+        //        FileContentSearchApp.main()
     #endif
 #endif
-
-import AppFeature
 
 TheApp.main()

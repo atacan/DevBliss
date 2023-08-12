@@ -51,7 +51,8 @@ import Foundation
                 group.addTask {
                     try await grepFile(options: options, fileUrl: file)
                 }
-                i += 1; if i % 100 == 0 {
+                i += 1
+                if i % 100 == 0 {
                     await Task.yield()
                 }
             }
