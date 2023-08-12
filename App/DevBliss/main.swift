@@ -3,8 +3,10 @@
 #if DEBUG
     //    import InputOutput
     //    InputEditorApp.main()
-    // import HtmlToSwiftFeature
-    // HtmlToSwiftApp.main()
+//     import HtmlToSwiftFeature
+//     HtmlToSwiftApp.main()
+//     import SwiftPrettyFeature
+//     SwiftPrettyApp.main()
     import AppFeature
 
     TheApp.main()

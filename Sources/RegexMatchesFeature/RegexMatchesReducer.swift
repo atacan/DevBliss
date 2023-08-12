@@ -180,5 +180,5 @@ struct RegexMatchesReducer_Previews: PreviewProvider {
 }
 
 enum SettingsKey: String {
-    case regexPattern = "RegexMatches_RegexPattern"
+    case regexPattern = "RegexMatches_regexPattern"
 }

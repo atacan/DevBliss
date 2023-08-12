@@ -183,6 +183,8 @@ let package = Package(
             name: "PrefixSuffixClient",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                "SharedModels",
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
         ),
         .testTarget(
@@ -196,6 +198,12 @@ let package = Package(
             dependencies: [
                 "PrefixSuffixClient",
                 "InputOutput",
+            ]
+        ),
+        .testTarget(
+            name: "PrefixSuffixFeatureTests",
+            dependencies: [
+                "PrefixSuffixFeature",
             ]
         ),
         .target(
@@ -215,6 +223,7 @@ let package = Package(
             dependencies: [
                 "RegexMatchesClient",
                 "InputOutput",
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
         ),
         .target(
@@ -229,6 +238,14 @@ let package = Package(
             dependencies: [
                 "SwiftPrettyClient",
                 "InputOutput",
+                "SharedModels",
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
+            ]
+        ),
+        .testTarget(
+            name: "SwiftPrettyFeatureTests",
+            dependencies: [
+                "SwiftPrettyFeature",
             ]
         ),
         .target(
@@ -242,6 +259,7 @@ let package = Package(
             dependencies: [
                 "TextCaseConverterClient",
                 "InputOutput",
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
         ),
         .target(

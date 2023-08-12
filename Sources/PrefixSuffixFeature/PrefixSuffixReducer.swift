@@ -3,6 +3,7 @@ import Dependencies
 import DependenciesAdditions
 import InputOutput
 import PrefixSuffixClient
+import SharedModels
 import SwiftUI
 
 public struct PrefixSuffixReducer: ReducerProtocol {
@@ -16,13 +17,32 @@ public struct PrefixSuffixReducer: ReducerProtocol {
             inputOutput: InputOutputEditorsReducer.State = .init(),
             configuration: PrefixSuffixConfig = .init()
         ) {
+            @Dependency(\.userDefaults) var userDefaults
             self.inputOutput = inputOutput
-            self.configuration = configuration
+
+            let config: PrefixSuffixConfig = with(configuration) {
+                .init(
+                    prefixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplace) ?? $0
+                        .prefixReplace,
+                    prefixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplaceWith) ?? $0
+                        .prefixReplaceWith,
+                    prefixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixAdd) ?? $0.prefixAdd,
+                    suffixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplace) ?? $0
+                        .suffixReplace,
+                    suffixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplaceWith) ?? $0
+                        .suffixReplaceWith,
+                    suffixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixAdd) ?? $0.suffixAdd,
+                    trimWhiteSpace: userDefaults.bool(forKey: SettingsKey.PrefixSuffix.trimWhiteSpace) ?? $0
+                        .trimWhiteSpace
+                )
+            }
+
+            self.configuration = config
         }
 
         public init(input: String, output: String = "") {
-            self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
-            self.configuration = .init()
+            let inputOutput = InputOutputEditorsReducer.State(input: .init(text: input), output: .init(text: output))
+            self.init(inputOutput: inputOutput)
         }
 
         public var outputText: String {
@@ -31,7 +51,6 @@ public struct PrefixSuffixReducer: ReducerProtocol {
     }
 
     public enum Action: BindableAction, Equatable {
-        case observeSettings
         case binding(BindingAction<State>)
         case convertButtonTouched
         case conversionResponse(TaskResult<String>)
@@ -41,13 +60,12 @@ public struct PrefixSuffixReducer: ReducerProtocol {
     @Dependency(\.prefixSuffix) var prefixSuffix
     private enum CancelID { case conversionRequest }
     @Dependency(\.userDefaults) var userDefaults
+    @Dependency(\.mainQueue) var mainQueue
 
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
-            case .observeSettings:
-                return observeSettings()
             case let .binding(action):
                 return setPreferences(for: action, from: state)
             case .convertButtonTouched:
@@ -82,70 +100,28 @@ public struct PrefixSuffixReducer: ReducerProtocol {
         }
     }
 
-    private func observeSettings() -> EffectTask<Action> {
-        .run { send in
-            await withTaskGroup(of: Void.self) { group in
-                group.addTask {
-                    if let new_prefixReplace = userDefaults.string(forKey: SettingsKey.prefixReplace.rawValue) {
-                        await send(.binding(.set(\.$configuration.prefixReplace, new_prefixReplace)))
-                    }
-                }
-                group.addTask {
-                    if let new_prefixReplaceWith = userDefaults.string(forKey: SettingsKey.prefixReplaceWith.rawValue) {
-                        await send(.binding(.set(\.$configuration.prefixReplaceWith, new_prefixReplaceWith)))
-                    }
-                }
-                group.addTask {
-                    if let new_prefixAdd = userDefaults.string(forKey: SettingsKey.prefixAdd.rawValue) {
-                        await send(.binding(.set(\.$configuration.prefixAdd, new_prefixAdd)))
-                    }
-                }
-                group.addTask {
-                    if let new_suffixReplace = userDefaults.string(forKey: SettingsKey.suffixReplace.rawValue) {
-                        await send(.binding(.set(\.$configuration.suffixReplace, new_suffixReplace)))
-                    }
-                }
-                group.addTask {
-                    if let new_suffixReplaceWith = userDefaults.string(forKey: SettingsKey.suffixReplaceWith.rawValue) {
-                        await send(.binding(.set(\.$configuration.suffixReplaceWith, new_suffixReplaceWith)))
-                    }
-                }
-                group.addTask {
-                    if let new_suffixAdd = userDefaults.string(forKey: SettingsKey.suffixAdd.rawValue) {
-                        await send(.binding(.set(\.$configuration.suffixAdd, new_suffixAdd)))
-                    }
-                }
-                group.addTask {
-                    if let new_trimWhiteSpace = userDefaults.bool(forKey: SettingsKey.trimWhiteSpace.rawValue) {
-                        await send(.binding(.set(\.$configuration.trimWhiteSpace, new_trimWhiteSpace)))
-                    }
-                }
-            }
-        }
-    }
-
     private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
         switch action {
         case \.$configuration.prefixReplace:
-            userDefaults.set(state.configuration.prefixReplace, forKey: SettingsKey.prefixReplace.rawValue)
+            userDefaults.set(state.configuration.prefixReplace, forKey: SettingsKey.PrefixSuffix.prefixReplace)
             return .none
         case \.$configuration.prefixReplaceWith:
-            userDefaults.set(state.configuration.prefixReplaceWith, forKey: SettingsKey.prefixReplaceWith.rawValue)
+            userDefaults.set(state.configuration.prefixReplaceWith, forKey: SettingsKey.PrefixSuffix.prefixReplaceWith)
             return .none
         case \.$configuration.prefixAdd:
-            userDefaults.set(state.configuration.prefixAdd, forKey: SettingsKey.prefixAdd.rawValue)
+            userDefaults.set(state.configuration.prefixAdd, forKey: SettingsKey.PrefixSuffix.prefixAdd)
             return .none
         case \.$configuration.suffixReplace:
-            userDefaults.set(state.configuration.suffixReplace, forKey: SettingsKey.suffixReplace.rawValue)
+            userDefaults.set(state.configuration.suffixReplace, forKey: SettingsKey.PrefixSuffix.suffixReplace)
             return .none
         case \.$configuration.suffixReplaceWith:
-            userDefaults.set(state.configuration.suffixReplaceWith, forKey: SettingsKey.suffixReplaceWith.rawValue)
+            userDefaults.set(state.configuration.suffixReplaceWith, forKey: SettingsKey.PrefixSuffix.suffixReplaceWith)
             return .none
         case \.$configuration.suffixAdd:
-            userDefaults.set(state.configuration.suffixAdd, forKey: SettingsKey.suffixAdd.rawValue)
+            userDefaults.set(state.configuration.suffixAdd, forKey: SettingsKey.PrefixSuffix.suffixAdd)
             return .none
         case \.$configuration.trimWhiteSpace:
-            userDefaults.set(state.configuration.trimWhiteSpace, forKey: SettingsKey.trimWhiteSpace.rawValue)
+            userDefaults.set(state.configuration.trimWhiteSpace, forKey: SettingsKey.PrefixSuffix.trimWhiteSpace)
             return .none
         default:
             return .none
@@ -300,7 +276,6 @@ public struct PrefixSuffixView: View {
         }
         .onAppear {
             focusedField = .prefixReplace
-            viewStore.send(.observeSettings)
         }
     }
 }
@@ -365,14 +340,4 @@ extension View {
             field.wrappedValue = newValue
         }
     }
-}
-
-enum SettingsKey: String {
-    case prefixReplace = "PrefixSuffix_prefixReplace"
-    case prefixReplaceWith = "PrefixSuffix_prefixReplaceWith"
-    case prefixAdd = "PrefixSuffix_prefixAdd"
-    case suffixReplace = "PrefixSuffix_suffixReplace"
-    case suffixReplaceWith = "PrefixSuffix_suffixReplaceWith"
-    case suffixAdd = "PrefixSuffix_suffixAdd"
-    case trimWhiteSpace = "PrefixSuffix_trimWhiteSpace"
 }

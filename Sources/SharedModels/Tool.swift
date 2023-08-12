@@ -57,3 +57,19 @@ public enum Tool: CaseIterable, Identifiable {
         }
     }
 }
+
+public enum SettingsKey {
+    public enum PrefixSuffix {
+        public static var prefixReplace = "PrefixSuffix_prefixReplace"
+        public static var prefixReplaceWith = "PrefixSuffix_prefixReplaceWith"
+        public static var prefixAdd = "PrefixSuffix_prefixAdd"
+        public static var suffixReplace = "PrefixSuffix_suffixReplace"
+        public static var suffixReplaceWith = "PrefixSuffix_suffixReplaceWith"
+        public static var suffixAdd = "PrefixSuffix_suffixAdd"
+        public static var trimWhiteSpace = "PrefixSuffix_trimWhiteSpace"
+    }
+
+    public enum SwiftPretty {
+        public static var lockwoodConfig = "SwiftPretty_lockwoodConfig"
+    }
+}
