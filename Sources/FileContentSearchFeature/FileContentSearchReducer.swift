@@ -57,7 +57,7 @@
             BindingReducer()
             Reduce<State, Action> { state, action in
                 switch action {
-                case let .binding(action) where action.keyPath == \.$selectedFiles:
+                case .binding(\.$selectedFiles):
                     return .merge(
                         .cancel(id: CancelID.readFileRequest),
                         selectedFilesChanged(&state)
