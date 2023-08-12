@@ -2,6 +2,7 @@
     import ComposableArchitecture
     import FileContentSearchClient
     import FilePanelsClient
+    import FilesClient
     import InputOutput
     import SplitView
     import SwiftUI
@@ -15,6 +16,7 @@
             var foundFiles: IdentifiedArrayOf<FoundFile> = []
             var output: OutputEditorReducer.State
             var isSearching: Bool = false
+            var isReadingFile: Bool = false
 
             public init(
                 searchOptions: SearchOptions = .init(),
@@ -34,24 +36,32 @@
             case searchButtonTouched
             case directorySelectionButtonTouched
             case searchResponse(TaskResult<[FoundFile]>)
+            case selectedFileContentRead(TaskResult<String>)
             case output(OutputEditorReducer.Action)
             case tableSortOrderChanged([KeyPathComparator<FoundFile>])
         }
 
         @Dependency(\.fileContentSearch) var fileContentSearch
+        @Dependency(\.filesClient) var filesClient
         #if os(macOS)
             @Dependency(\.filePanel) var filePanel
         #endif
 
-        private enum CancelID { case generationRequest }
+        private enum CancelID { case generationRequest
+            case readFileRequest
+        }
+
+//        private enum ReadFileCancelID { case readFileRequest }
 
         public var body: some ReducerProtocol<State, Action> {
             BindingReducer()
             Reduce<State, Action> { state, action in
                 switch action {
                 case let .binding(action) where action.keyPath == \.$selectedFiles:
-                    selectedFilesChanged(&state)
-                    return .none
+                    return .merge(
+                        .cancel(id: CancelID.readFileRequest),
+                        selectedFilesChanged(&state)
+                    )
                 case .binding:
                     return .none
                 case .directorySelectionButtonTouched:
@@ -76,13 +86,20 @@
                     state.isSearching = false
                     state.foundFiles = .init(uniqueElements: foundFiles)
                     state.selectedFiles = []
-                    _ = state.output.updateText("\(foundFiles.count) files found.")
-                    return .none
+                    return state.output.updateText("\(foundFiles.count) files found.")
+                        .map { Action.output($0) }
                 case let .searchResponse(.failure(error)):
                     state.isSearching = false
-                    print(error)
-                    _ = state.output.updateText(error.localizedDescription)
-                    return .none
+                    return state.output.updateText(error.localizedDescription)
+                        .map { Action.output($0) }
+                case let .selectedFileContentRead(.success(content)):
+                    state.isReadingFile = false
+                    return state.output.updateText(content)
+                        .map { Action.output($0) }
+                case let .selectedFileContentRead(.failure(error)):
+                    state.isReadingFile = false
+                    return state.output.updateText(error.localizedDescription)
+                        .map { Action.output($0) }
                 case let .tableSortOrderChanged(comparator):
                     state.foundFiles.sort(using: comparator)
                     return .none
@@ -92,7 +109,6 @@
             }
             .onChange(of: \.selectedFiles) { selected, state, _ in
                 selectedFilesChanged(&state)
-                return .none
             }
 
             Scope(state: \.output, action: /Action.output) {
@@ -100,19 +116,26 @@
             }
         }
 
-        private func selectedFilesChanged(_ state: inout State) {
+        private func selectedFilesChanged(_ state: inout State) -> EffectTask<Action> {
             guard state.selectedFiles.count == 1,
                   let file = state.foundFiles[id: state.selectedFiles.first!]
             else {
-                return
+                state.isReadingFile = false
+                return .cancel(id: CancelID.readFileRequest)
             }
-            do {
-                // TODO: read the file asynchronously with a client. the content will be a response action handled by the reducer
-                let content = try String(contentsOf: file.fileURL)
-                _ = state.output.updateText(content)
-            } catch {
-                _ = state.output.updateText("\(error)")
-            }
+            state.isReadingFile = true
+            return
+                .run {
+                    send in
+                    await send(
+                        .selectedFileContentRead(
+                            TaskResult {
+                                try await filesClient.read(file.fileURL)
+                            }
+                        )
+                    )
+                }
+                .cancellable(id: CancelID.readFileRequest, cancelInFlight: true)
         }
     }
 
@@ -153,7 +176,6 @@
                     .onChange(of: sortOrder) { newValue in
                         viewStore.send(.tableSortOrderChanged(newValue))
                     }
-                    .help("the usaer")
                 } // <-VStack
                 OutputEditorView(
                     store: store.scope(
@@ -162,6 +184,7 @@
                     ),
                     title: NSLocalizedString("File Content", bundle: Bundle.module, comment: "")
                 )
+                .overlay(viewStore.isReadingFile ? ProgressView() : nil)
             }
         }
 
@@ -213,6 +236,18 @@
                         isOn: viewStore.binding(\.$searchOptions.searchHiddenFiles)
                     )
                     .toggleStyle(.checkbox)
+
+                    Toggle(
+                        NSLocalizedString("Search in sub-directories", bundle: Bundle.module, comment: ""),
+                        isOn: viewStore.binding(\.$searchOptions.searchInsideSubdirectories)
+                    )
+                    .toggleStyle(.checkbox)
+
+                    Toggle(
+                        NSLocalizedString("Search in packaged files", bundle: Bundle.module, comment: ""),
+                        isOn: viewStore.binding(\.$searchOptions.searchInsidePackages)
+                    )
+                    .toggleStyle(.checkbox)
                 }
                 .frame(maxWidth: 450)
 
@@ -258,6 +293,30 @@
             )
         }
     }
+
+    #if DEBUG
+        public struct FileContentSearchApp: App {
+            public init() {}
+
+            public var body: some Scene {
+                WindowGroup {
+                    FileContentSearchView(
+                        store: Store(
+                            initialState: .init(searchOptions: SearchOptions(searchTerm: "import")),
+                            reducer: FileContentSearchReducer()
+                                ._printChanges()
+                        )
+                    )
+                }
+                #if os(macOS)
+                .windowStyle(.titleBar)
+                .windowToolbarStyle(.unified(showsTitle: true))
+                #endif
+            }
+        }
+
+    #endif
+
 #else
     import ComposableArchitecture
 
@@ -267,27 +326,6 @@
         public enum Action: Equatable {}
         public var body: some ReducerProtocol<State, Action> {
             EmptyReducer()
-        }
-    }
-#endif
-
-#if DEBUG
-    public struct FileContentSearchApp: App {
-        public init() {}
-
-        public var body: some Scene {
-            WindowGroup {
-                FileContentSearchView(
-                    store: Store(
-                        initialState: .init(searchOptions: SearchOptions(searchTerm: "import")),
-                        reducer: FileContentSearchReducer()
-                    )
-                )
-            }
-            #if os(macOS)
-            .windowStyle(.titleBar)
-            .windowToolbarStyle(.unified(showsTitle: true))
-            #endif
         }
     }
 

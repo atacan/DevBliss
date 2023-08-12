@@ -20,26 +20,20 @@ import Foundation
     @Sendable
     func grepFolder(options: SearchOptions) async throws -> [FoundFile] {
         let folderUrl = URL(fileURLWithPath: options.folder)
-        var fmOptions: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants]
+        var fmOptions: FileManager.DirectoryEnumerationOptions = []
         if !options.searchHiddenFiles {
             fmOptions.insert(.skipsHiddenFiles)
+        }
+        if !options.searchInsidePackages {
+            fmOptions.insert(.skipsPackageDescendants)
+        }
+        if !options.searchInsideSubdirectories {
+            fmOptions.insert(.skipsSubdirectoryDescendants)
         }
         let files = walkDirectory(
             at: folderUrl,
             options: fmOptions,
-            folderCondition: { url in
-//                if let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden {
-//                    return isHidden == options.searchHiddenFiles
-//                        && url.lastPathComponent.hasPrefix(".")
-//                        == options
-//                        .searchHiddenFiles
-//                } else {
-//                if options.searchHiddenFiles {return true} else{
-//                    return !url.lastPathComponent.hasPrefix(".")
-//                }
-                true
-//                }
-            }
+            folderCondition: { url in true }
         ) { url in
             guard let typeIdentifier = try? url.resourceValues(forKeys: [.contentTypeKey]).contentType,
                   let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden,
@@ -52,13 +46,14 @@ import Foundation
 
         // concurrently run grepFile for each file
         let foundFiles = try await withThrowingTaskGroup(of: FoundFile?.self, returning: [FoundFile].self) { group in
+            var i = 0
             for try await file in files {
-//                print(file)
                 group.addTask {
                     try await grepFile(options: options, fileUrl: file)
                 }
-                // otherwise it throws "too many files open" error
-                await Task.yield()
+                i += 1; if i % 100 == 0 {
+                    await Task.yield()
+                }
             }
 
             return try await group.reduce(into: []) { result, file in
@@ -76,26 +71,30 @@ import Foundation
         var lineNumbers: [Int] = []
         var lineNumber = 1
 
-//        for try await line in fileUrl.lines {
-//            if line.contains(options.term) {
-//                lineNumbers.append(lineNumber)
-//            }
-//            lineNumber += 1
-//        }
+        /// this ignores the empty lines, hence gives wrong line number
+        /// also gives too many files error
+        // for try await line in fileUrl.lines {
+        //     if line.contains(options.term) {
+        //         lineNumbers.append(lineNumber)
+        //     }
+        //     lineNumber += 1
+        // }
 
-//        let qfle = QFile(fileURL: fileUrl)
-//        try qfle.open()
-//        defer{qfle.close()}
-//        while let line = try qfle.readLine() {
-//            if line.contains(options.term) {
-//                lineNumbers.append(lineNumber)
-//            }
-//            lineNumber += 1
-//        }
+        /// this ignores the empty lines, hence gives wrong line number
+        /// also gives too many files error
+        // let handle = try FileHandle(forReadingFrom: fileUrl)
+        // defer { try? handle.close() }
+        // for try await line in handle.bytes.lines {
+        //     if line.contains(options.term) {
+        //         lineNumbers.append(lineNumber)
+        //     }
+        //     lineNumber += 1
+        // }
 
-        let handle = try FileHandle(forReadingFrom: fileUrl)
-        defer { try? handle.close() }
-        for try await line in handle.bytes.lines {
+        let qfle = QFile(fileURL: fileUrl)
+        defer { qfle.close() }
+        try qfle.open()
+        while let line = try qfle.readLine() {
             if line.contains(options.term) {
                 lineNumbers.append(lineNumber)
             }
@@ -148,15 +147,21 @@ import Foundation
         public var term: String
         public var folder: String
         public var searchHiddenFiles: Bool
+        public var searchInsidePackages: Bool
+        public var searchInsideSubdirectories: Bool
 
         public init(
             searchTerm: String = .init(),
             searchFolder: String = .init(),
-            searchHiddenFiles: Bool = false
+            searchHiddenFiles: Bool = false,
+            searchInsidePackages: Bool = true,
+            searchInsideSubdirectories: Bool = true
         ) {
             self.term = searchTerm
             self.folder = searchFolder
             self.searchHiddenFiles = searchHiddenFiles
+            self.searchInsidePackages = searchInsidePackages
+            self.searchInsideSubdirectories = searchInsideSubdirectories
         }
     }
 
@@ -197,81 +202,75 @@ import Foundation
     // Recursive iteration
     func walkDirectory(
         at url: URL,
-        options: FileManager.DirectoryEnumerationOptions,
+        options fmOptions: FileManager.DirectoryEnumerationOptions,
         folderCondition: @escaping (URL) -> Bool,
         fileCondition: @escaping (URL) -> Bool
     ) -> AsyncStream<URL> {
         AsyncStream { continuation in
-            Task {
-                let enumerator = FileManager.default.enumerator(
-                    at: url,
-                    includingPropertiesForKeys: nil,
-                    options: options
-                )
 
-                while let fileURL = enumerator?.nextObject() as? URL {
-                    if fileURL.hasDirectoryPath,
-                       folderCondition(fileURL) {
-                        for await item in walkDirectory(
-                            at: fileURL,
-                            options: options,
-                            folderCondition: folderCondition,
-                            fileCondition: fileCondition
-                        ) {
-                            continuation.yield(item)
+            if let enumerator = FileManager.default.enumerator(
+                at: url,
+                includingPropertiesForKeys: [.isRegularFileKey],
+                options: fmOptions
+            ) {
+                for case let fileURL as URL in enumerator {
+                    do {
+                        let fileAttributes = try fileURL.resourceValues(forKeys: [.isRegularFileKey])
+                        if fileAttributes.isRegularFile!, fileCondition(fileURL) {
+                            continuation.yield(fileURL)
                         }
-                    } else if fileCondition(fileURL) {
-                        continuation.yield(fileURL)
-                    }
+                    } catch { print(error, fileURL) }
                 }
+                continuation.finish()
+            } else {
                 continuation.finish()
             }
         }
     }
 
-#endif
-
-class QFile {
-    init(fileURL: URL) {
-        self.fileURL = fileURL
-    }
-
-    deinit {
-        // You must close before releasing the last reference.
-        precondition(self.file == nil)
-    }
-
-    let fileURL: URL
-
-    private var file: UnsafeMutablePointer<FILE>?
-
-    func open() throws {
-        guard let f = fopen(fileURL.path, "r") else {
-            throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil)
+    class QFile {
+        init(fileURL: URL) {
+            self.fileURL = fileURL
         }
-        file = f
-    }
 
-    func close() {
-        if let f = file {
-            file = nil
-            let success = fclose(f) == 0
-            assert(success)
+        deinit {
+            // You must close before releasing the last reference.
+            precondition(self.file == nil)
         }
-    }
 
-    func readLine(maxLength: Int = 1024) throws -> String? {
-        guard let f = file else {
-            throw NSError(domain: NSPOSIXErrorDomain, code: Int(EBADF), userInfo: nil)
-        }
-        var buffer = [CChar](repeating: 0, count: maxLength)
-        guard fgets(&buffer, Int32(maxLength), f) != nil else {
-            if feof(f) != 0 {
-                return nil
-            } else {
+        let fileURL: URL
+
+        private var file: UnsafeMutablePointer<FILE>?
+
+        func open() throws {
+            guard let f = fopen(fileURL.path, "r") else {
                 throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil)
             }
+            file = f
         }
-        return String(cString: buffer)
+
+        func close() {
+            if let f = file {
+                file = nil
+                let success = fclose(f) == 0
+                assert(success)
+            }
+        }
+
+        func readLine(maxLength: Int = 1024) throws -> String? {
+            guard let f = file else {
+                throw NSError(domain: NSPOSIXErrorDomain, code: Int(EBADF), userInfo: nil)
+            }
+            var buffer = [CChar](repeating: 0, count: maxLength)
+            guard fgets(&buffer, Int32(maxLength), f) != nil else {
+                if feof(f) != 0 {
+                    return nil
+                } else {
+                    throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil)
+                }
+            }
+            return String(cString: buffer)
+        }
     }
-}
+
+#endif

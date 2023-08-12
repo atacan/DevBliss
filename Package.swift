@@ -19,6 +19,7 @@ let package = Package(
         .library(name: "CommandLineClient", targets: ["CommandLineClient"]),
         .library(name: "FileContentSearchClient", targets: ["FileContentSearchClient"]),
         .library(name: "FileContentSearchFeature", targets: ["FileContentSearchFeature"]),
+        .library(name: "FilesClient", targets: ["FilesClient"]),
         .library(name: "FilePanelsClient", targets: ["FilePanelsClient"]),
         .library(name: "HtmlToSwiftClient", targets: ["HtmlToSwiftClient"]),
         .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
@@ -110,8 +111,15 @@ let package = Package(
                 "FileContentSearchClient",
                 "FilePanelsClient",
                 "InputOutput",
+                "FilesClient",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "TCAEnchance", package: "TCAEnchancements"),
+            ]
+        ),
+        .target(
+            name: "FilesClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
