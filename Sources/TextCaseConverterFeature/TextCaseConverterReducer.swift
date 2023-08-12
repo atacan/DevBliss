@@ -40,6 +40,7 @@ public struct TextCaseConverterReducer: ReducerProtocol {
         case observeSettings
         case binding(BindingAction<State>)
         case convertButtonTouched
+        case switchCasesButtonTouched
         case conversionResponse(TaskResult<String>)
         case inputOutput(InputOutputEditorsReducer.Action)
     }
@@ -56,6 +57,9 @@ public struct TextCaseConverterReducer: ReducerProtocol {
                 return observeSettings()
             case let .binding(action):
                 return setPreferences(for: action, from: state)
+            case .switchCasesButtonTouched:
+                (state.sourceCase, state.targetCase) = (state.targetCase, state.sourceCase)
+                return .none
             case .convertButtonTouched:
                 state.isConversionRequestInFlight = true
                 return
@@ -165,6 +169,14 @@ public struct TextCaseConverterView: View {
                                 .tag(sourceCase)
                         }
                     }
+                }
+                VStack(alignment: .center, spacing: pickerTitleSpace) {
+                    Text(NSLocalizedString("", bundle: Bundle.module, comment: ""))
+                    Button(action: {
+                        viewStore.send(.switchCasesButtonTouched)
+                    }, label: {
+                        Image(systemName: "arrow.left.arrow.right")
+                    })
                 }
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
                     Text(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
