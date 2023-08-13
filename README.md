@@ -21,7 +21,6 @@
   - [Adding a new tool](#adding-a-new-tool)
 - [Thanks](#thanks)
 - [Conclusion](#conclusion)
-- [License](#license)
 - [Similar projects](#similar-projects)
 
 
@@ -182,10 +181,6 @@ Troubleshotting:
 ## Conclusion
 
 DevBliss is more than just a development tool - it's a catalyst for your coding productivity, a guardian of your privacy, and a platform that grows with your contributions. Experience the bliss of development with DevBliss - your local development powerhouse.
-
-## License
-
-MIT
 
 ## Similar projects
 - [DevToys for windows](https://devtoys.app/)
