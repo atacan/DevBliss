@@ -257,14 +257,14 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.htmlToSwift))
                     } destination: { store in
                         HtmlToSwiftView(store: store)
-                        .navigationTitle(
-                            NSLocalizedString(
-                                "Convert Html code to a DSL in Swift",
-                                bundle: Bundle.module,
-                                comment: "a navigationTitle"
+                            .navigationTitle(
+                                NSLocalizedString(
+                                    "Convert Html code to a DSL in Swift",
+                                    bundle: Bundle.module,
+                                    comment: "a navigationTitle"
+                                )
                             )
-                        )
-                        .padding(.top)
+                            .padding(.top)
                     } label: {
                         Label(
                             title: {
@@ -279,7 +279,7 @@ public struct AppView: View {
                             icon: {
                                 ZStack(alignment: .leading) {
                                     Image(systemName: "swift")
-                                    .offset(CGSize(width: 5, height: 0))
+                                        .offset(CGSize(width: 5, height: 0))
                                     Text(
                                         NSLocalizedString(
                                             "<>",
@@ -290,10 +290,11 @@ public struct AppView: View {
                                     .font(.monospaced(Font.system(size: 14))())
                                     .fontWeight(.thin)
                                     .offset(CGSize(width: 0, height: -7))
-                                }  // <-ZStack
+                                } // <-ZStack
                             }
                         )
                     }
+                    .keyboardShortcut(KeyEquivalent("1"))
 
                     NavigationLinkStore(
                         store.scope(state: \.$textCaseConverter, action: { .textCaseConverter($0) })
@@ -301,14 +302,14 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.textCaseConverter))
                     } destination: { store in
                         TextCaseConverterView(store: store)
-                        .navigationTitle(
-                            NSLocalizedString(
-                                "Convert case of list of words",
-                                bundle: Bundle.module,
-                                comment: "navigation title on top of the window"
+                            .navigationTitle(
+                                NSLocalizedString(
+                                    "Convert case of list of words",
+                                    bundle: Bundle.module,
+                                    comment: "navigation title on top of the window"
+                                )
                             )
-                        )
-                        .padding(.top)
+                            .padding(.top)
                     } label: {
                         Label(
                             title: {
@@ -331,6 +332,7 @@ public struct AppView: View {
                             }
                         )
                     }
+                    .keyboardShortcut(KeyEquivalent("2"))
 
                     NavigationLinkStore(
                         store.scope(state: \.$prefixSuffix, action: { .prefixSuffix($0) })
@@ -338,14 +340,14 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.prefixSuffix))
                     } destination: { store in
                         PrefixSuffixView(store: store)
-                        .navigationTitle(
-                            NSLocalizedString(
-                                "Change prefix or suffix of each line",
-                                bundle: Bundle.module,
-                                comment: "navigation title on top of the window"
+                            .navigationTitle(
+                                NSLocalizedString(
+                                    "Change prefix or suffix of each line",
+                                    bundle: Bundle.module,
+                                    comment: "navigation title on top of the window"
+                                )
                             )
-                        )
-                        .padding(.top)
+                            .padding(.top)
                     } label: {
                         Label(
                             title: {
@@ -360,6 +362,7 @@ public struct AppView: View {
                             icon: { Image(systemName: "arrow.right.and.line.vertical.and.arrow.left") }
                         )
                     }
+                    .keyboardShortcut(KeyEquivalent("3"))
 
                     NavigationLinkStore(
                         store.scope(state: \.$regexMatches, action: { .regexMatches($0) })
@@ -367,14 +370,14 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.regexMatches))
                     } destination: { store in
                         RegexMatchesView(store: store)
-                        .navigationTitle(
-                            NSLocalizedString(
-                                "Regex Matches",
-                                bundle: Bundle.module,
-                                comment: "navigation title on top of the window"
+                            .navigationTitle(
+                                NSLocalizedString(
+                                    "Regex Matches",
+                                    bundle: Bundle.module,
+                                    comment: "navigation title on top of the window"
+                                )
                             )
-                        )
-                        .padding(.top)
+                            .padding(.top)
                     } label: {
                         Label(
                             title: {
@@ -399,6 +402,7 @@ public struct AppView: View {
                         )
                     }
                 }
+                .keyboardShortcut(KeyEquivalent("4"))
 
                 Section(
                     NSLocalizedString(
@@ -413,10 +417,10 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.jsonPretty))
                     } destination: { store in
                         JsonPrettyView(store: store)
-                        .navigationTitle(
-                            NSLocalizedString("Format and Highlight Json", bundle: Bundle.module, comment: "")
-                        )
-                        .padding(.top)
+                            .navigationTitle(
+                                NSLocalizedString("Format and Highlight Json", bundle: Bundle.module, comment: "")
+                            )
+                            .padding(.top)
                     } label: {
                         Label(
                             title: {
@@ -440,6 +444,7 @@ public struct AppView: View {
                             }
                         )
                     }
+                    .keyboardShortcut(KeyEquivalent("5"))
 
                     NavigationLinkStore(
                         store.scope(state: \.$swiftPrettyLockwood, action: { .swiftPrettyLockwood($0) })
@@ -447,14 +452,14 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.swiftPrettyLockwood))
                     } destination: { store in
                         SwiftPrettyView(store: store)
-                        .navigationTitle(
-                            NSLocalizedString(
-                                "Format Swift code",
-                                bundle: Bundle.module,
-                                comment: "navigation title on top of the window"
+                            .navigationTitle(
+                                NSLocalizedString(
+                                    "Format Swift code",
+                                    bundle: Bundle.module,
+                                    comment: "navigation title on top of the window"
+                                )
                             )
-                        )
-                        .padding(.top)
+                            .padding(.top)
                     } label: {
                         Label(
                             title: {
@@ -469,6 +474,7 @@ public struct AppView: View {
                             icon: { Image(systemName: "swift") }
                         )
                     }
+                    .keyboardShortcut(KeyEquivalent("6"))
                 }
 
                 #if os(macOS)
@@ -486,14 +492,14 @@ public struct AppView: View {
                             viewStore.send(.navigationLinkTouched(.fileContentSearch))
                         } destination: { store in
                             FileContentSearchView(store: store)
-                            .navigationTitle(
-                                NSLocalizedString(
-                                    "Search inside files",
-                                    bundle: Bundle.module,
-                                    comment: "navigation title on top of the window"
+                                .navigationTitle(
+                                    NSLocalizedString(
+                                        "Search inside files",
+                                        bundle: Bundle.module,
+                                        comment: "navigation title on top of the window"
+                                    )
                                 )
-                            )
-                            .padding(.top)
+                                .padding(.top)
                         } label: {
                             Label(
                                 title: {
@@ -508,6 +514,7 @@ public struct AppView: View {
                                 icon: { Image(systemName: "doc.text.magnifyingglass") }
                             )
                         }
+                        .keyboardShortcut(KeyEquivalent("7"))
                     }
                 #endif
 
@@ -540,24 +547,25 @@ public struct AppView: View {
                         viewStore.send(.navigationLinkTouched(.nameGenerator))
                     } destination: { store in
                         NameGeneratorView(store: store)
-                        .navigationTitle(
-                            NSLocalizedString(
-                                "Generate names or words",
-                                bundle: Bundle.module,
-                                comment: "navigation title on top of the window"
+                            .navigationTitle(
+                                NSLocalizedString(
+                                    "Generate names or words",
+                                    bundle: Bundle.module,
+                                    comment: "navigation title on top of the window"
+                                )
                             )
-                        )
-                        .padding(.top)
+                            .padding(.top)
                     } label: {
                         Label(
                             title: { Text(NSLocalizedString("Name", bundle: Bundle.module, comment: "")) },
                             icon: { Image(systemName: "person") }
                         )
                     }
+                    .keyboardShortcut(KeyEquivalent("8"))
                 }
             }
             .listStyle(.sidebar)
-            .frame(minWidth: 150)  // to keep the toggle-sidebar button above the sidebar
+            .frame(minWidth: 150) // to keep the toggle-sidebar button above the sidebar
             .accessibilityLabel(NSLocalizedString("Sidebar with the list of tools", bundle: Bundle.module, comment: ""))
             #if os(macOS)
                 // it falls behind window toolbar and becomes unclickable
@@ -566,10 +574,10 @@ public struct AppView: View {
                     ToolbarItem {
                         Button {
                             NSApp.keyWindow?.firstResponder?
-                            .tryToPerform(
-                                #selector(NSSplitViewController.toggleSidebar(_:)),
-                                with: nil
-                            )
+                                .tryToPerform(
+                                    #selector(NSSplitViewController.toggleSidebar(_:)),
+                                    with: nil
+                                )
                         } label: {
                             Label("Toggle sidebar", systemImage: "sidebar.left")
                         }
@@ -582,7 +590,7 @@ public struct AppView: View {
             HStack(alignment: .center) {
                 Image(systemName: "rectangle.leadinghalf.inset.filled.arrow.leading")
                 Text(NSLocalizedString("Choose a tool from the Sidebar", bundle: Bundle.module, comment: ""))
-            }  // <-HStack
+            } // <-HStack
 
             .font(.title)
         }

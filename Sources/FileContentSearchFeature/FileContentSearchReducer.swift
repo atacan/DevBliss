@@ -13,17 +13,19 @@
         public struct State: Equatable {
             @BindingState var searchOptions: SearchOptions
             @BindingState var selectedFiles = Set<FoundFile.ID>()
-            var foundFiles: IdentifiedArrayOf<FoundFile> = []
+            var foundFiles: IdentifiedArrayOf<FoundFile>
             var output: OutputEditorReducer.State
             var isSearching: Bool = false
             var isReadingFile: Bool = false
 
             public init(
                 searchOptions: SearchOptions = .init(),
-                output: OutputEditorReducer.State = .init()
+                output: OutputEditorReducer.State = .init(),
+                foundFiles: IdentifiedArrayOf<FoundFile> = []
             ) {
                 self.searchOptions = searchOptions
                 self.output = output
+                self.foundFiles = foundFiles
             }
 
             public var outputText: String {
@@ -163,16 +165,19 @@
                             NSLocalizedString("File Path", bundle: Bundle.module, comment: ""),
                             value: \.fileURL.absoluteString
                         )
-                        .width(min: nil, ideal: 450, max: nil)
+                        .width(min: nil, ideal: 400, max: nil)
                         TableColumn(NSLocalizedString("Lines", bundle: Bundle.module, comment: ""), value: \.lines)
+                            .width(min: nil, ideal: 80, max: nil)
                         TableColumn(
                             NSLocalizedString("Modified", bundle: Bundle.module, comment: ""),
                             value: \.modifiedTimeString
                         )
+                        .width(min: nil, ideal: 100, max: nil)
                         TableColumn(
                             NSLocalizedString("Git User", bundle: Bundle.module, comment: ""),
                             value: \.gitUsernameCleaned
                         )
+                        .width(min: nil, ideal: 100, max: nil)
                     }
                     .onChange(of: sortOrder) { newValue in
                         viewStore.send(.tableSortOrderChanged(newValue))
@@ -287,7 +292,15 @@
                             searchFolder: "/Users/atacan/Documents/myway/Repositories/scripts/backup",
                             searchHiddenFiles: false
                         ),
-                        output: .init()
+                        output: .init(text: "Something inside\nthis file is very important", outputControls: .init()),
+                        foundFiles: [
+                            FoundFile(
+                                fileURL: URL(string: "Users/atacan/amazement/secret.swift")!,
+                                lineNumbers: [23, 34, 43],
+                                modifiedTime: Date(timeIntervalSince1970: 12300),
+                                gitUsername: "atacan"
+                            ),
+                        ]
                     ),
                     reducer: FileContentSearchReducer()
                 )
