@@ -38,6 +38,7 @@ let package = Package(
         .library(name: "TextCaseConverterFeature", targets: ["TextCaseConverterFeature"]),
         .library(name: "UUIDGeneratorClient", targets: ["UUIDGeneratorClient"]),
         .library(name: "UUIDGeneratorFeature", targets: ["UUIDGeneratorFeature"]),
+        .library(name: "AppImageGenerator", targets: ["AppImageGenerator"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -288,6 +289,25 @@ let package = Package(
         .testTarget(
             name: "HtmlToSwiftClientTests",
             dependencies: ["HtmlToSwiftClient"]
+        ),
+        .target(
+            name: "AppImageGenerator",
+            dependencies: [
+                "AppFeature",
+            ],
+            resources: [.process("Resources/Media.xcassets")]
+        ),
+        .executableTarget(
+            name: "AppImageGeneratorRun",
+            dependencies: [
+                "AppImageGenerator",
+            ]
+        ),
+        .testTarget(
+            name: "AppImageGeneratorTest",
+            dependencies: [
+                "AppFeature",
+            ]
         ),
     ]
 )

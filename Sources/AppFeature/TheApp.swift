@@ -1,8 +1,9 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct AppContentView: View {
-    var body: some View {
+public struct AppContentView: View {
+    public init() {}
+    public var body: some View {
         AppView(
             store: Store(
                 initialState: .init(),
