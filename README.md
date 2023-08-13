@@ -184,5 +184,5 @@ DevBliss is more than just a development tool - it's a catalyst for your coding 
 
 ## Similar projects
 - [DevToys for windows](https://devtoys.app/)
-- [DevToys For mac](https://github.com/ObuchiYuki/DevToysMac)
+- [DevToys for Mac](https://github.com/ObuchiYuki/DevToysMac)
 - [Boop](https://boop.okat.best)
