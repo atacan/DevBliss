@@ -19,6 +19,7 @@ struct ViewInsideMacbookView: View {
                         Circle().fill(.green)
                             .frame(width: 22)
                     }
+                    .opacity(0.8)
                     .offset(x: 37, y: 32)
                 }
             Image("MacBook", bundle: .module)
