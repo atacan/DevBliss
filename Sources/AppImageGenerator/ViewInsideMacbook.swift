@@ -1,3 +1,4 @@
+import AppFeature
 import ComposableArchitecture
 import HtmlToSwiftFeature
 import SwiftUI
@@ -26,9 +27,19 @@ struct ViewInsideMacbookView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 2200, height: 1600, alignment: .center)
-            HtmlToSwiftView(store: Store(initialState: .init(), reducer: {
-                HtmlToSwiftReducer()
-            }))
+
+//            HtmlToSwiftView(store: Store(initialState: .init(), reducer: {
+//                HtmlToSwiftReducer()
+//            }))
+//            AppContentView()
+            AppView(
+                store: Store(
+                    initialState: .init(htmlToSwift: .init()),
+                    reducer: AppReducer()
+                    //                    ._printChanges()
+                )
+            )
+
             .frame(width: 1400, height: 900, alignment: .center)
         }
     }
