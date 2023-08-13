@@ -605,7 +605,6 @@ public struct AppView: View {
                 .keyboardShortcut(.tab, modifiers: .control)
 
                 Button {
-                    print("previousToolButtonTouched")
                     viewStore.send(.previousToolButtonTouched)
                 } label: {
                     EmptyView()
