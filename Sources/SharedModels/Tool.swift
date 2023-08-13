@@ -1,13 +1,13 @@
-public enum Tool: CaseIterable, Identifiable {
+public enum Tool: Int, CaseIterable, Identifiable {
     case htmlToSwift
-    case jsonPretty
     case textCaseConverter
-    case uuidGenerator
     case prefixSuffix
     case regexMatches
+    case jsonPretty
     case swiftPrettyLockwood
     case fileContentSearch
     case nameGenerator
+    case uuidGenerator
 
     public var id: Self { self }
 
@@ -55,6 +55,40 @@ public enum Tool: CaseIterable, Identifiable {
         case .nameGenerator:
             return false
         }
+    }
+
+    var isActive: Bool {
+        switch self {
+        case .uuidGenerator:
+            return false
+        case .fileContentSearch:
+            #if os(macOS)
+                return true
+            #else
+                return false
+            #endif
+        default:
+            return true
+        }
+    }
+
+    public func previous() -> Self {
+        let all = Self.allCases.filter(\.isActive)
+        var idx = all.firstIndex(of: self)!
+        if idx == all.startIndex {
+            let lastIndex = all.index(all.endIndex, offsetBy: -1)
+            return all[lastIndex]
+        } else {
+            all.formIndex(&idx, offsetBy: -1)
+            return all[idx]
+        }
+    }
+
+    public func next() -> Self {
+        let all = Self.allCases.filter(\.isActive)
+        let idx = all.firstIndex(of: self)!
+        let next = all.index(after: idx)
+        return all[next == all.endIndex ? all.startIndex : next]
     }
 }
 

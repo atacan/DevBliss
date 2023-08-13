@@ -23,6 +23,7 @@ public struct AppReducer: ReducerProtocol {
         @PresentationState var swiftPrettyLockwood: SwiftPrettyReducer.State?
         @PresentationState var fileContentSearch: FileContentSearchReducer.State?
         @PresentationState var nameGenerator: NameGeneratorReducer.State?
+        var currentTool: Tool? = nil
 
         public init(
             htmlToSwift: HtmlToSwiftReducer.State? = nil,
@@ -58,6 +59,8 @@ public struct AppReducer: ReducerProtocol {
         case fileContentSearch(PresentationAction<FileContentSearchReducer.Action>)
         case nameGenerator(PresentationAction<NameGeneratorReducer.Action>)
         case navigationLinkTouched(Tool)
+        case nextToolButtonTouched
+        case previousToolButtonTouched
     }
 
     public var body: some ReducerProtocol<State, Action> {
@@ -133,6 +136,13 @@ public struct AppReducer: ReducerProtocol {
                     return .none
             #endif
 
+            case .nextToolButtonTouched:
+                handleNextToolNavigation(state: &state)
+                return .none
+            case .previousToolButtonTouched:
+                handlePreviousToolNavigation(state: &state)
+                return .none
+
             case let .navigationLinkTouched(tool):
                 handleNavigation(tool: tool, state: &state)
                 return .none
@@ -187,6 +197,7 @@ public struct AppReducer: ReducerProtocol {
     }
 
     private func handleOtherTool(thisToolOutput: String?, otherTool: Tool, state: inout State) {
+        state.currentTool = otherTool
         switch otherTool {
         case .htmlToSwift:
             state.htmlToSwift = HtmlToSwiftReducer.State(input: thisToolOutput ?? "")
@@ -210,6 +221,7 @@ public struct AppReducer: ReducerProtocol {
     }
 
     private func handleNavigation(tool: Tool, state: inout State) {
+        state.currentTool = tool
         switch tool {
         case .htmlToSwift:
             state.htmlToSwift = .init()
@@ -230,6 +242,26 @@ public struct AppReducer: ReducerProtocol {
         case .nameGenerator:
             state.nameGenerator = .init()
         }
+    }
+
+    private func handleNextToolNavigation(state: inout State) {
+        // find the current tool
+        guard let currentTool = state.currentTool else {
+            return
+        }
+        // find the next tool
+        let nextTool = currentTool.next()
+        handleNavigation(tool: nextTool, state: &state)
+    }
+
+    private func handlePreviousToolNavigation(state: inout State) {
+        // find the current tool
+        guard let currentTool = state.currentTool else {
+            return
+        }
+        // find the next tool
+        let previousTool = currentTool.previous()
+        handleNavigation(tool: previousTool, state: &state)
     }
 }
 
@@ -563,6 +595,24 @@ public struct AppView: View {
                     }
                     .keyboardShortcut(KeyEquivalent("8"))
                 }
+
+                Button {
+                    viewStore.send(.nextToolButtonTouched)
+                } label: {
+                    EmptyView()
+                } // <-Button
+                .buttonStyle(.plain)
+                .keyboardShortcut(.tab, modifiers: .control)
+
+                Button {
+                    print("previousToolButtonTouched")
+                    viewStore.send(.previousToolButtonTouched)
+                } label: {
+                    EmptyView()
+                }
+                .buttonStyle(.plain)
+                .keyboardShortcut(.tab, modifiers: [.control, .option])
+//                .keyboardShortcut(.tab, modifiers: [.control, .shift]) // doesn't work! 😠
             }
             .listStyle(.sidebar)
             .frame(minWidth: 150) // to keep the toggle-sidebar button above the sidebar
