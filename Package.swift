@@ -48,7 +48,7 @@ let package = Package(
         .package(url: "https://github.com/nkristek/Highlight.git", branch: "master"),
         .package(url: "https://github.com/atacan/MacSwiftUI", branch: "main"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.51.0"),
-        .package(url: "https://github.com/atacan/TCAEnchancements", branch: "main"),
+        .package(url: "https://github.com/atacan/TCAEnchancements", from: "0.49.1"),
         .package(url: "https://github.com/atacan/PillPickerView", branch: "develop"),
         .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", from: "0.1.0"),
     ],
