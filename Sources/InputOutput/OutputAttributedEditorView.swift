@@ -73,8 +73,7 @@ extension OutputAttributedEditorReducer.State {
     public mutating func updateText(
         _ newText: NSMutableAttributedString
     )
-        -> EffectTask<OutputAttributedEditorReducer.Action>
-    {
+        -> EffectTask<OutputAttributedEditorReducer.Action> {
         text = newText
         return .none
     }
@@ -116,7 +115,8 @@ public struct OutputAttributedEditorView: View {
                 Spacer()
             }
             #if os(macOS)
-                MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
+//                MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
+                NeonEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
                     .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
             #elseif os(iOS)
                 ScrollView {
@@ -137,7 +137,7 @@ public struct OutputAttributedEditorView: View {
         .overlay(
             OutputControlsView(
                 store:
-                    store
+                store
                     .scope(
                         state: \.outputControls,
                         action: OutputAttributedEditorReducer.Action.outputControls

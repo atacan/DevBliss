@@ -10,13 +10,13 @@ import SwiftUI
 public struct HtmlToSwiftReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
-        var inputOutput: InputOutputEditorsReducer.State
+        var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
         @BindingState var dsl: SwiftDSL = .binaryBirds
         @BindingState var component: HtmlOutputComponent = .fullHtml
 
         public init(
-            inputOutput: InputOutputEditorsReducer.State = .init(),
+            inputOutput: InputOutputAttributedEditorsReducer.State = .init(),
             dsl: SwiftDSL = .binaryBirds,
             component: HtmlOutputComponent = .fullHtml
         ) {
@@ -25,16 +25,16 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
             self.component = component
         }
 
-        public init(inputOutput: InputOutputEditorsReducer.State = .init()) {
-            self.inputOutput = inputOutput
-        }
-
         public init(input: String, output: String = "") {
-            self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
+            let inputOutput: InputOutputAttributedEditorsReducer.State = .init(
+                input: .init(text: input),
+                output: .init(text: .init(string: output))
+            )
+            self.init(inputOutput: inputOutput)
         }
 
         public var outputText: String {
-            inputOutput.output.text
+            inputOutput.output.text.string
         }
     }
 
@@ -43,7 +43,7 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
         case binding(BindingAction<State>)
         case convertButtonTouched
         case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+        case inputOutput(InputOutputAttributedEditorsReducer.Action)
     }
 
     @Dependency(\.htmlToSwift) var htmlToSwift
@@ -87,7 +87,7 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
         }
 
         Scope(state: \.inputOutput, action: /Action.inputOutput) {
-            InputOutputEditorsReducer()
+            InputOutputAttributedEditorsReducer()
         }
     }
 
@@ -179,7 +179,7 @@ public struct HtmlToSwiftView: View {
             .help(NSLocalizedString("Convert code (Cmd+Return)", bundle: Bundle.module, comment: ""))
             .padding(.bottom, 2)
 
-            InputOutputEditorsView(
+            InputOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: HtmlToSwiftReducer.Action.inputOutput),
                 inputEditorTitle: "Html",
                 outputEditorTitle: "Swift",
