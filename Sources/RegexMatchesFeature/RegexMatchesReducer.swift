@@ -10,7 +10,7 @@ public struct RegexMatchesReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
         var inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State
-        @BindingState var regexPattern: String
+        @BindingState public var regexPattern: String
         var isConversionRequestInFlight = false
 
         public init(

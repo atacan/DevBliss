@@ -22,6 +22,8 @@ public struct InputEditorReducer: ReducerProtocol {
         // case saveAsButtonTouched
         case pasteButtonAnimationEnded
         case inputEditorDrop(InputEditorDropReducer.Action)
+        case append(String)
+        case prepend(String)
     }
 
     // @Dependency(\.continuousClock) var clock
@@ -53,6 +55,10 @@ public struct InputEditorReducer: ReducerProtocol {
                 return .none
             case .inputEditorDrop:
                 return .none
+            case let .append(text):
+                return .send(.binding(.set(\.$text, state.text.appending(text))))
+            case let .prepend(text):
+                return .send(.binding(.set(\.$text, text + state.text)))
             }
         }
         Scope(state: \.inputEditorDrop, action: /Action.inputEditorDrop) {

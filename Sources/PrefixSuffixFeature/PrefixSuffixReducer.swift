@@ -9,8 +9,8 @@ import SwiftUI
 public struct PrefixSuffixReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
-        var inputOutput: InputOutputEditorsReducer.State
-        @BindingState var configuration: PrefixSuffixConfig
+        public var inputOutput: InputOutputEditorsReducer.State
+        @BindingState public var configuration: PrefixSuffixConfig
         var isConversionRequestInFlight = false
 
         public init(

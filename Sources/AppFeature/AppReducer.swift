@@ -18,7 +18,7 @@ public struct AppReducer: ReducerProtocol {
         @PresentationState var jsonPretty: JsonPrettyReducer.State?
         @PresentationState var textCaseConverter: TextCaseConverterReducer.State?
         @PresentationState var uuidGenerator: UUIDGeneratorReducer.State?
-        @PresentationState var prefixSuffix: PrefixSuffixReducer.State?
+        @PresentationState public var prefixSuffix: PrefixSuffixReducer.State?
         @PresentationState var regexMatches: RegexMatchesReducer.State?
         @PresentationState var swiftPrettyLockwood: SwiftPrettyReducer.State?
         @PresentationState var fileContentSearch: FileContentSearchReducer.State?
@@ -67,17 +67,17 @@ public struct AppReducer: ReducerProtocol {
         Reduce<State, Action> { state, action in
             switch action {
             case let .htmlToSwift(
-                .presented(.inputOutput(.output(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
+                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
             ):
                 handleOtherTool(thisToolOutput: state.htmlToSwift?.outputText, otherTool: otherTool, state: &state)
                 return .none
             case let .jsonPretty(
-                .presented(.inputOutput(.output(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
+                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
             ):
                 handleOtherTool(thisToolOutput: state.jsonPretty?.outputText, otherTool: otherTool, state: &state)
                 return .none
             case let .textCaseConverter(
-                .presented(.inputOutput(.output(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
+                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
             ):
                 handleOtherTool(
                     thisToolOutput: state.textCaseConverter?.outputText,
@@ -86,22 +86,22 @@ public struct AppReducer: ReducerProtocol {
                 )
                 return .none
             case let .uuidGenerator(
-                .presented(.output(.outputControls(.inputOtherToolButtonTouched(otherTool))))
+                .presented(.output(.outputControls(.otherToolSelected(otherTool))))
             ):
                 handleOtherTool(thisToolOutput: state.uuidGenerator?.outputText, otherTool: otherTool, state: &state)
                 return .none
             case let .prefixSuffix(
-                .presented(.inputOutput(.output(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
+                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
             ):
                 handleOtherTool(thisToolOutput: state.prefixSuffix?.outputText, otherTool: otherTool, state: &state)
                 return .none
             case let .regexMatches(
-                .presented(.inputOutput(.output(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
+                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
             ):
                 handleOtherTool(thisToolOutput: state.regexMatches?.outputText, otherTool: otherTool, state: &state)
                 return .none
             case let .regexMatches(
-                .presented(.inputOutput(.outputSecond(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
+                .presented(.inputOutput(.outputSecond(.outputControls(.otherToolSelected(otherTool)))))
             ):
                 handleOtherTool(
                     thisToolOutput: state.regexMatches?.outputSecondText,
@@ -110,7 +110,7 @@ public struct AppReducer: ReducerProtocol {
                 )
                 return .none
             case let .swiftPrettyLockwood(
-                .presented(.inputOutput(.output(.outputControls(.inputOtherToolButtonTouched(otherTool)))))
+                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
             ):
                 handleOtherTool(
                     thisToolOutput: state.swiftPrettyLockwood?.outputText,
@@ -119,14 +119,14 @@ public struct AppReducer: ReducerProtocol {
                 )
                 return .none
             case let .nameGenerator(
-                .presented(.output(.outputControls(.inputOtherToolButtonTouched(otherTool))))
+                .presented(.output(.outputControls(.otherToolSelected(otherTool))))
             ):
                 handleOtherTool(thisToolOutput: state.nameGenerator?.outputText, otherTool: otherTool, state: &state)
                 return .none
 
             #if os(macOS)
                 case let .fileContentSearch(
-                    .presented(.output(.outputControls(.inputOtherToolButtonTouched(otherTool))))
+                    .presented(.output(.outputControls(.otherToolSelected(otherTool))))
                 ):
                     handleOtherTool(
                         thisToolOutput: state.fileContentSearch?.outputText,

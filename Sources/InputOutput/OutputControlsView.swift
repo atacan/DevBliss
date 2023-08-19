@@ -8,26 +8,36 @@ public struct OutputControlsReducer: ReducerProtocol {
     public init() {}
     public struct State: Equatable {
         var copyButtonAnimating: Bool = false
+        @BindingState var isOtherToolsPopoverVisible = false
 
         public init() {}
     }
 
-    public enum Action: Equatable {
+    public enum Action: BindableAction, Equatable {
+        case binding(BindingAction<State>)
         case copyButtonTouched
         case saveAsButtonTouched
-        case inputOtherToolButtonTouched(Tool)
+        case otherToolSelected(Tool)
+        case moveToOtherToolButtonTouched
         case copyEnded
     }
 
     public var body: some ReducerProtocol<State, Action> {
+        BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
+            case .binding:
+                return .none
             case .copyButtonTouched:
                 state.copyButtonAnimating = true
                 return .none
             case .saveAsButtonTouched:
                 return .none
-            case .inputOtherToolButtonTouched:
+            case .moveToOtherToolButtonTouched:
+                state.isOtherToolsPopoverVisible = true
+                return .none
+            case .otherToolSelected:
+                state.isOtherToolsPopoverVisible = false
                 return .none
             case .copyEnded:
                 state.copyButtonAnimating = false
@@ -40,8 +50,6 @@ public struct OutputControlsReducer: ReducerProtocol {
 struct OutputControlsView: View {
     let store: StoreOf<OutputControlsReducer>
     @ObservedObject var viewStore: ViewStoreOf<OutputControlsReducer>
-
-    @State var isOtherToolsPopoverVisible = false
 
     let copyButtonTitle: String
     let saveAsButtonTitle: String
@@ -71,7 +79,7 @@ struct OutputControlsView: View {
                             ? ThemeColor.Text.success
                             : ThemeColor.Text.controlText
                     )
-            }  // <-Button
+            } // <-Button
             .font(.footnote)
             .keyboardShortcut("c", modifiers: [.command, .shift])
             .help(NSLocalizedString("Copy to clipboard (Command+Shift+C)", bundle: Bundle.module, comment: ""))
@@ -81,7 +89,7 @@ struct OutputControlsView: View {
                 viewStore.send(.saveAsButtonTouched)
             } label: {
                 Image(systemName: "opticaldiscdrive")
-            }  // <-Button
+            } // <-Button
 
             .font(.footnote)
             .keyboardShortcut("s", modifiers: [.command, .shift])
@@ -89,10 +97,10 @@ struct OutputControlsView: View {
             .accessibilityLabel(NSLocalizedString("Save to disk", bundle: Bundle.module, comment: ""))
 
             Button {
-                isOtherToolsPopoverVisible = true
+                viewStore.send(.moveToOtherToolButtonTouched)
             } label: {
                 Image(systemName: "wand.and.rays.inverse")
-            }  // <-Button
+            } // <-Button
             .font(.footnote)
             .keyboardShortcut("u", modifiers: [.command, .shift])
             .help(
@@ -103,7 +111,7 @@ struct OutputControlsView: View {
                 )
             )
             .accessibilityLabel(NSLocalizedString("Input it to the other tools", bundle: Bundle.module, comment: ""))
-            .popover(isPresented: $isOtherToolsPopoverVisible) {
+            .popover(isPresented: viewStore.binding(\.$isOtherToolsPopoverVisible)) {
                 VStack(alignment: .leading) {
                     #if os(macOS)
                         popContent
@@ -111,7 +119,7 @@ struct OutputControlsView: View {
                         HStack(alignment: .center) {
                             Spacer()
                             Button(action: {
-                                isOtherToolsPopoverVisible = false
+                                viewStore.send(.binding(.set(\.$isOtherToolsPopoverVisible, false)))
                             }) {
                                 Image(systemName: "xmark.circle")
                                     .opacity(0.8)
@@ -125,13 +133,13 @@ struct OutputControlsView: View {
                             }
                             .padding()
                             .buttonStyle(.plain)
-                        }  // <-HStack
+                        } // <-HStack
 
                         Spacer()
                         popContent
                         Spacer()
                     #endif
-                }  // <-VStack
+                } // <-VStack
                 .padding()
             }
         }
@@ -154,8 +162,7 @@ struct OutputControlsView: View {
             .padding(.bottom)
             ForEach(Tool.allCases.filter(\.isInputtable)) { tool in
                 Button(action: {
-                    isOtherToolsPopoverVisible = false
-                    viewStore.send(.inputOtherToolButtonTouched(tool))
+                    viewStore.send(.otherToolSelected(tool))
                 }) {
                     Text(tool.name)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -163,8 +170,8 @@ struct OutputControlsView: View {
                 }
                 .buttonStyle(.plain)
                 Divider()
-            }  // <-ForEach
-        }  // <-Group
+            } // <-ForEach
+        } // <-Group
     }
 }
 
