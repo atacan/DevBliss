@@ -143,6 +143,7 @@ struct InputOutputToolbarSplitItems: View {
                         ? Image(systemName: "rectangle.split.1x2") : Image(systemName: "rectangle.split.2x1")
                 }
             )
+            .keyboardShortcut(KeyEquivalent("a"), modifiers: [.command, .shift])
             .disabled(hide.side != nil)
             .help(layout.isHorizontal ? "Vertical split" : "Horizontal split")
             .accessibilityLabel(
@@ -190,6 +191,7 @@ struct InputOutputToolbarSplitItems: View {
                     }
                 }
             )
+            .keyboardShortcut(KeyEquivalent("l"), modifiers: [.command, .option])
             .help(hide.side == nil ? "Hide input editor" : "Show input editor")
             .accessibilityLabel(hide.side == nil ? "Hide input editor" : "Show input editor")
         }
