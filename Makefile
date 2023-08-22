@@ -38,7 +38,7 @@ format: check_uncommitted
 	git commit -m "Format code"
 
 en-xcloc:
-	xcodebuild -exportLocalizations -localizationPath ./localisations/ -exportLanguage en -sdk iphoneos16.4
+	xcodebuild -exportLocalizations -localizationPath ./localisations/ -exportLanguage en -sdk iphoneos17.0
 
 move-xcloc: check_uncommitted
 	unzip -o ~/Downloads/export.zip -d ./localisations/
@@ -48,7 +48,7 @@ move-xcloc: check_uncommitted
 import-xcloc: check_uncommitted
 	for lang in de nl fr it ja pl pt es tr sq zh ko ru; do \
 		if [ -d "./localisations/$$lang.xcloc/" ]; then \
-			xcodebuild -importLocalizations -localizationPath ./localisations/$$lang.xcloc/ -sdk iphoneos16.4 ; \
+			xcodebuild -importLocalizations -localizationPath ./localisations/$$lang.xcloc/ -sdk iphoneos17.0 ; \
 		else \
 			echo "Directory ./localisations/$$lang.xcloc/ does not exist." ; \
 		fi ; \

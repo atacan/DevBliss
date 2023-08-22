@@ -2,14 +2,9 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
   <file original="Sources/AppFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.0" build-num="15A5219j"/>
     </header>
     <body>
-      <trans-unit id="%@  Choose a tool from the Sidebar" xml:space="preserve">
-        <source>%@  Choose a tool from the Sidebar</source>
-        <target>%@  Choose a tool from the Sidebar</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
       <trans-unit id="(.*)" xml:space="preserve">
         <source>(.*)</source>
         <target>(.*)</target>
@@ -30,11 +25,6 @@
         <target>Change prefix or suffix of each line</target>
         <note>navigation title on top of the window</note>
       </trans-unit>
-      <trans-unit id="Choose a tool from the Sidebar" xml:space="preserve">
-        <source>Choose a tool from the Sidebar</source>
-        <target>Choose a tool from the Sidebar</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
       <trans-unit id="Convert Html code to a DSL in Swift" xml:space="preserve">
         <source>Convert Html code to a DSL in Swift</source>
         <target>Convert Html code to a DSL in Swift</target>
@@ -49,6 +39,11 @@
         <source>Converters</source>
         <target>Converters</target>
         <note>sidebar section name for a group of tools</note>
+      </trans-unit>
+      <trans-unit id="Copy output" xml:space="preserve">
+        <source>Copy output</source>
+        <target>Copy output</target>
+        <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="File" xml:space="preserve">
         <source>File</source>
@@ -85,10 +80,30 @@
         <target>Generate names or words</target>
         <note>navigation title on top of the window</note>
       </trans-unit>
+      <trans-unit id="Generate output" xml:space="preserve">
+        <source>Generate output</source>
+        <target>Generate output</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Generators" xml:space="preserve">
         <source>Generators</source>
         <target>Generators</target>
         <note>sidebar section name for a group of tools</note>
+      </trans-unit>
+      <trans-unit id="Go to a tool by order" xml:space="preserve">
+        <source>Go to a tool by order</source>
+        <target>Go to a tool by order</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Go to the next tool" xml:space="preserve">
+        <source>Go to the next tool</source>
+        <target>Go to the next tool</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Go to the previous tool" xml:space="preserve">
+        <source>Go to the previous tool</source>
+        <target>Go to the previous tool</target>
+        <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="Html to Swift" xml:space="preserve">
         <source>Html to Swift</source>
@@ -100,9 +115,29 @@
         <target>Json</target>
         <note>sidebar name for the tool</note>
       </trans-unit>
+      <trans-unit id="Layout" xml:space="preserve">
+        <source>Layout</source>
+        <target>Layout</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Move output to another tool" xml:space="preserve">
+        <source>Move output to another tool</source>
+        <target>Move output to another tool</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Name" xml:space="preserve">
         <source>Name</source>
         <target>Name</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Navigation" xml:space="preserve">
+        <source>Navigation</source>
+        <target>Navigation</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Past to Input" xml:space="preserve">
+        <source>Past to Input</source>
+        <target>Past to Input</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="Prefix Suffix" xml:space="preserve">
@@ -110,25 +145,15 @@
         <target>Prefix Suffix</target>
         <note>tool name on the sidebar</note>
       </trans-unit>
-      <trans-unit id="Pretty print Swift code" xml:space="preserve">
-        <source>Pretty print Swift code</source>
-        <target>Pretty print Swift code</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Pretty print and Highlight Json" xml:space="preserve">
-        <source>Pretty print and Highlight Json</source>
-        <target>Pretty print and Highlight Json</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
       <trans-unit id="Regex Matches" xml:space="preserve">
         <source>Regex Matches</source>
         <target>Regex Matches</target>
         <note>navigation title on top of the window
    tool name on the sidebar</note>
       </trans-unit>
-      <trans-unit id="Replace and add prefix or suffix to each line" xml:space="preserve">
-        <source>Replace and add prefix or suffix to each line</source>
-        <target>Replace and add prefix or suffix to each line</target>
+      <trans-unit id="Save output as..." xml:space="preserve">
+        <source>Save output as...</source>
+        <target>Save output as...</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="Search inside files" xml:space="preserve">
@@ -151,6 +176,11 @@
         <target>Text Case</target>
         <note>tool name on the sidebar</note>
       </trans-unit>
+      <trans-unit id="Toggle input editor" xml:space="preserve">
+        <source>Toggle input editor</source>
+        <target>Toggle input editor</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Toggle sidebar" xml:space="preserve">
         <source>Toggle sidebar</source>
         <target>Toggle sidebar</target>
@@ -159,6 +189,16 @@
       <trans-unit id="Toggle sidebar (Command+Shift+L)" xml:space="preserve">
         <source>Toggle sidebar (Command+Shift+L)</source>
         <target>Toggle sidebar (Command+Shift+L)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Toggle split alignment" xml:space="preserve">
+        <source>Toggle split alignment</source>
+        <target>Toggle split alignment</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Tool Usage" xml:space="preserve">
+        <source>Tool Usage</source>
+        <target>Tool Usage</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="UUID" xml:space="preserve">
@@ -171,13 +211,73 @@
         <target>{.,}</target>
         <note>icon next to the tool name on the sidebar</note>
       </trans-unit>
+      <trans-unit id="⌃⇥" xml:space="preserve">
+        <source>⌃⇥</source>
+        <target>⌃⇥</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="⌘1, ⌘2" xml:space="preserve">
+        <source>⌘1, ⌘2</source>
+        <target>⌘1, ⌘2</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="⌘U" xml:space="preserve">
+        <source>⌘U</source>
+        <target>⌘U</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="⌘⇧A" xml:space="preserve">
+        <source>⌘⇧A</source>
+        <target>⌘⇧A</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="⌘⇧C" xml:space="preserve">
+        <source>⌘⇧C</source>
+        <target>⌘⇧C</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="⌘⇧L" xml:space="preserve">
+        <source>⌘⇧L</source>
+        <target>⌘⇧L</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="⌘⇧P" xml:space="preserve">
+        <source>⌘⇧P</source>
+        <target>⌘⇧P</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="⌘⇧S" xml:space="preserve">
+        <source>⌘⇧S</source>
+        <target>⌘⇧S</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="⌘⌥L" xml:space="preserve">
+        <source>⌘⌥L</source>
+        <target>⌘⌥L</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="⌘⏎" xml:space="preserve">
+        <source>⌘⏎</source>
+        <target>⌘⏎</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="⌥⌃⇥" xml:space="preserve">
+        <source>⌥⌃⇥</source>
+        <target>⌥⌃⇥</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
     </body>
   </file>
   <file original="Sources/FileContentSearchFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.0" build-num="15A5219j"/>
     </header>
     <body>
+      <trans-unit id="Choose directory (Cmd+O)" xml:space="preserve">
+        <source>Choose directory (Cmd+O)</source>
+        <target>Choose directory (Cmd+O)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Directory" xml:space="preserve">
         <source>Directory</source>
         <target>Directory</target>
@@ -223,6 +323,16 @@
         <target>Search also hidden files and folders</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Search in packaged files" xml:space="preserve">
+        <source>Search in packaged files</source>
+        <target>Search in packaged files</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Search in sub-directories" xml:space="preserve">
+        <source>Search in sub-directories</source>
+        <target>Search in sub-directories</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="Start searching (Cmd+Return)" xml:space="preserve">
         <source>Start searching (Cmd+Return)</source>
         <target>Start searching (Cmd+Return)</target>
@@ -237,7 +347,7 @@
   </file>
   <file original="Sources/HtmlToSwiftFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.0" build-num="15A5219j"/>
     </header>
     <body>
       <trans-unit id="Binary Birds" xml:space="preserve">
@@ -289,7 +399,7 @@
   </file>
   <file original="Sources/InputOutput/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.0" build-num="15A5219j"/>
     </header>
     <body>
       <trans-unit id="Close pop over" xml:space="preserve">
@@ -305,6 +415,16 @@
       <trans-unit id="Copy to clipboard (Command+Shift+C)" xml:space="preserve">
         <source>Copy to clipboard (Command+Shift+C)</source>
         <target>Copy to clipboard (Command+Shift+C)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Hide input editor" xml:space="preserve">
+        <source>Hide input editor</source>
+        <target>Hide input editor</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Horizontal split" xml:space="preserve">
+        <source>Horizontal split</source>
+        <target>Horizontal split</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="Input it to the other tools" xml:space="preserve">
@@ -342,19 +462,19 @@
         <target>Save to disk (Command+Shift+S)</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Show input editor" xml:space="preserve">
+        <source>Show input editor</source>
+        <target>Show input editor</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Vertical split" xml:space="preserve">
+        <source>Vertical split</source>
+        <target>Vertical split</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="horizontal split" xml:space="preserve">
         <source>horizontal split</source>
         <target>horizontal split</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="the input and output editor will be located next to each other" xml:space="preserve">
-        <source>the input and output editor will be located next to each other</source>
-        <target>the input and output editor will be located next to each other</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="the input and output editor will be located underneath each other" xml:space="preserve">
-        <source>the input and output editor will be located underneath each other</source>
-        <target>the input and output editor will be located underneath each other</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="the input and output editor will be positioned next to each other" xml:space="preserve">
@@ -376,7 +496,7 @@
   </file>
   <file original="Sources/JsonPrettyFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.0" build-num="15A5219j"/>
     </header>
     <body>
       <trans-unit id="Format" xml:space="preserve">
@@ -403,7 +523,7 @@
   </file>
   <file original="Sources/NameGeneratorFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.0" build-num="15A5219j"/>
     </header>
     <body>
       <trans-unit id=" " xml:space="preserve">
@@ -416,9 +536,9 @@
         <target>%d</target>
         <note>value of a numeric input value for voice-over</note>
       </trans-unit>
-      <trans-unit id="%d %" xml:space="preserve">
-        <source>%1$d %2$</source>
-        <target>%1$d %2$</target>
+      <trans-unit id="%d percent" xml:space="preserve">
+        <source>%d percent</source>
+        <target>%d percent</target>
         <note>value of a numeric input value for voice-over</note>
       </trans-unit>
       <trans-unit id="(viewStore.maxLength)" xml:space="preserve">
@@ -474,6 +594,11 @@
       <trans-unit id="Generate names (Cmd+Return)" xml:space="preserve">
         <source>Generate names (Cmd+Return)</source>
         <target>Generate names (Cmd+Return)</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Generation Type" xml:space="preserve">
+        <source>Generation Type</source>
+        <target>Generation Type</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="Letter" xml:space="preserve">
@@ -551,6 +676,11 @@
         <target>minimum length for the names</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="names to be generated" xml:space="preserve">
+        <source>names to be generated</source>
+        <target>names to be generated</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="string to be used to split input into a list" xml:space="preserve">
         <source>string to be used to split input into a list</source>
         <target>string to be used to split input into a list</target>
@@ -565,7 +695,7 @@
   </file>
   <file original="Sources/PrefixSuffixFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.0" build-num="15A5219j"/>
     </header>
     <body>
       <trans-unit id="After applying prefix and suffice manipulations to each line separately, it ends." xml:space="preserve">
@@ -662,7 +792,7 @@
   </file>
   <file original="Sources/RegexMatchesFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.0" build-num="15A5219j"/>
     </header>
     <body>
       <trans-unit id="Capturing Groups" xml:space="preserve">
@@ -699,7 +829,7 @@
   </file>
   <file original="Sources/SwiftPrettyFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.0" build-num="15A5219j"/>
     </header>
     <body>
       <trans-unit id="Format" xml:space="preserve">
@@ -731,7 +861,7 @@
   </file>
   <file original="Sources/TextCaseConverterFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.0" build-num="15A5219j"/>
     </header>
     <body>
       <trans-unit id="Convert" xml:space="preserve">
@@ -783,7 +913,7 @@
   </file>
   <file original="Sources/UUIDGeneratorFeature/Resources/en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="14.3.1" build-num="14E300c"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.0" build-num="15A5219j"/>
     </header>
     <body>
       <trans-unit id="Generate" xml:space="preserve">
