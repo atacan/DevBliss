@@ -2,9 +2,6 @@
 " " = " ";
 
 /* value of a numeric input value for voice-over */
-"(Int(viewStore.alternationProbability * 100))%" = "(Int(viewStore.alternationProbability * 100))%";
-
-/* value of a numeric input value for voice-over */
 "(viewStore.maxLength)" = "(AnsichtSpeichern.maxLength)";
 
 /* value of a numeric input value for voice-over */
@@ -12,6 +9,12 @@
 
 /* value of a numeric input value for voice-over */
 "(viewStore.numberOfNames)" = "(viewStore.numberOfNames)";
+
+/* value of a numeric input value for voice-over */
+"%d" = "%d";
+
+/* value of a numeric input value for voice-over */
+"%d percent" = " %d Prozent";
 
 /* No comment provided by engineer. */
 "Add to (title)" = "Hinzufügen zu (Titel)";
@@ -38,6 +41,9 @@
 "Generate names (Cmd+Return)" = "Namen generieren (Cmd+Return)";
 
 /* No comment provided by engineer. */
+"Generation Type" = "Typ der Generation";
+
+/* No comment provided by engineer. */
 "Letter" = "Brief";
 
 /* No comment provided by engineer. */
@@ -54,6 +60,9 @@
 
 /* No comment provided by engineer. */
 "Minimum length of the names" = "Mindestlänge der Namen";
+
+/* No comment provided by engineer. */
+"names to be generated" = "Namen generieren";
 
 /* No comment provided by engineer. */
 "Number of names" = "Anzahl von Namen";

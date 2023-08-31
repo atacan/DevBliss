@@ -4,20 +4,47 @@
 /* icon next to the tool name on the sidebar */
 "{.,}" = "{.,}";
 
-/* No comment provided by engineer. */
-"%@  Choose a tool from the Sidebar" = "%@ サイドバーからツールを選択してください";
-
 /* icon next to the tool name on the sidebar */
 "<>" = "<>";
+
+/* No comment provided by engineer. */
+"⌃⇥" = "⌃⇥";
+
+/* No comment provided by engineer. */
+"⌘⇧A" = "⌘⇧A";
+
+/* No comment provided by engineer. */
+"⌘⇧C" = "⌘⇧C";
+
+/* No comment provided by engineer. */
+"⌘⇧L" = "⌘⇧L";
+
+/* No comment provided by engineer. */
+"⌘⇧P" = "⌘⇧P";
+
+/* No comment provided by engineer. */
+"⌘⇧S" = "⌘⇧S";
+
+/* No comment provided by engineer. */
+"⌘⌥L" = "⌘⌥L";
+
+/* No comment provided by engineer. */
+"⌘⏎" = "⌘⏎";
+
+/* No comment provided by engineer. */
+"⌘1, ⌘2" = "⌘1、⌘2";
+
+/* No comment provided by engineer. */
+"⌘U" = "⌘U";
+
+/* No comment provided by engineer. */
+"⌥⌃⇥" = "⌥⌃⇥";
 
 /* icon next to the tool name on the sidebar */
 "Aa" = "Aa";
 
 /* navigation title on top of the window */
 "Change prefix or suffix of each line" = "各行の接頭辞または接尾辞を変更する";
-
-/* No comment provided by engineer. */
-"Choose a tool from the Sidebar" = "サイドバーからツールを選択してください";
 
 /* navigation title on top of the window */
 "Convert case of list of words" = "単語リストのケースを変換する";
@@ -27,6 +54,9 @@
 
 /* sidebar section name for a group of tools */
 "Converters" = "変換ツール";
+
+/* No comment provided by engineer. */
+"Copy output" = "出力をコピー";
 
 /* sidebar section name for a group of tools */
 "File" = "ファイル";
@@ -46,11 +76,23 @@
 /* navigation title on top of the window */
 "Generate names or words" = "名前または単語を生成する";
 
+/* No comment provided by engineer. */
+"Generate output" = "出力を生成する";
+
 /* navigation title on top of the window */
 "Generate UUIDs" = "UUIDの生成";
 
 /* sidebar section name for a group of tools */
 "Generators" = "ジェネレーター";
+
+/* No comment provided by engineer. */
+"Go to a tool by order" = "順序でツールに移動する";
+
+/* No comment provided by engineer. */
+"Go to the next tool" = "次のツールに進む";
+
+/* No comment provided by engineer. */
+"Go to the previous tool" = "前のツールに移動する";
 
 /* tool name on the sidebar */
 "Html to Swift" = "サイドバーのツール名";
@@ -59,23 +101,29 @@
 "Json" = "Json";
 
 /* No comment provided by engineer. */
+"Layout" = "レイアウト";
+
+/* No comment provided by engineer. */
+"Move output to another tool" = "出力を別のツールに移動する";
+
+/* No comment provided by engineer. */
 "Name" = "名前";
+
+/* No comment provided by engineer. */
+"Navigation" = "ナビゲーション";
+
+/* No comment provided by engineer. */
+"Paste to Input" = "入力に貼り付ける";
 
 /* tool name on the sidebar */
 "Prefix Suffix" = "接頭語 接尾語";
-
-/* No comment provided by engineer. */
-"Pretty print and Highlight Json" = "Jsonを整形して強調表示する";
-
-/* No comment provided by engineer. */
-"Pretty print Swift code" = "Swiftコードをきれいに印刷する";
 
 /* navigation title on top of the window
    tool name on the sidebar */
 "Regex Matches" = "正規表現の一致";
 
 /* No comment provided by engineer. */
-"Replace and add prefix or suffix to each line" = "各行に置換してプレフィックスまたはサフィックスを追加する";
+"Save output as..." = "出力を保存する...";
 
 /* navigation title on top of the window */
 "Search inside files" = "ファイル内の検索";
@@ -90,10 +138,19 @@
 "Text Case" = "サイドバー上のツール名";
 
 /* No comment provided by engineer. */
+"Toggle input editor" = "入力エディタを切り替える";
+
+/* No comment provided by engineer. */
 "Toggle sidebar" = "サイドバーを切り替える";
 
 /* No comment provided by engineer. */
 "Toggle sidebar (Command+Shift+L)" = "サイドバーを切り替える（コマンド+シフト+L）";
+
+/* No comment provided by engineer. */
+"Toggle split alignment" = "分割配置の切り替え";
+
+/* No comment provided by engineer. */
+"Tool Usage" = "ツールの使用";
 
 /* icon next to the tool name on the sidebar */
 "UUID" = "UUID";

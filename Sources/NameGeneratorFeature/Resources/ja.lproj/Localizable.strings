@@ -2,9 +2,6 @@
 " " = " ";
 
 /* value of a numeric input value for voice-over */
-"(Int(viewStore.alternationProbability * 100))%" = "(Int(viewStore.alternationProbability * 100))%";
-
-/* value of a numeric input value for voice-over */
 "(viewStore.maxLength)" = "(viewStore.maxLength)";
 
 /* value of a numeric input value for voice-over */
@@ -12,6 +9,12 @@
 
 /* value of a numeric input value for voice-over */
 "(viewStore.numberOfNames)" = "（viewStore.numberOfNames）";
+
+/* value of a numeric input value for voice-over */
+"%d" = "％d";
+
+/* value of a numeric input value for voice-over */
+"%d percent" = "％d パーセント";
 
 /* No comment provided by engineer. */
 "Add to (title)" = "（タイトル）に追加";
@@ -38,6 +41,9 @@
 "Generate names (Cmd+Return)" = "名前を生成する（Cmd+Return）";
 
 /* No comment provided by engineer. */
+"Generation Type" = "世代のタイプ";
+
+/* No comment provided by engineer. */
 "Letter" = "レター";
 
 /* No comment provided by engineer. */
@@ -54,6 +60,9 @@
 
 /* No comment provided by engineer. */
 "Minimum length of the names" = "名前の最小文字数";
+
+/* No comment provided by engineer. */
+"names to be generated" = "生成される名前";
 
 /* No comment provided by engineer. */
 "Number of names" = "名前の数";

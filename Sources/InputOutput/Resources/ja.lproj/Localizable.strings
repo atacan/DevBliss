@@ -8,7 +8,13 @@
 "Copy to clipboard (Command+Shift+C)" = "クリップボードにコピーする（Command+Shift+C）";
 
 /* No comment provided by engineer. */
+"Hide input editor" = "入力エディタを非表示";
+
+/* No comment provided by engineer. */
 "horizontal split" = "水平分割";
+
+/* No comment provided by engineer. */
+"Horizontal split" = "水平分割";
 
 /* No comment provided by engineer. */
 "Input it to the other tools" = "他のツールに入力する";
@@ -32,10 +38,7 @@
 "Save to disk (Command+Shift+S)" = "ディスクに保存する（Command+Shift+S）";
 
 /* No comment provided by engineer. */
-"the input and output editor will be located next to each other" = "入力と出力のエディタは隣り合って配置されます。";
-
-/* No comment provided by engineer. */
-"the input and output editor will be located underneath each other" = "入力と出力のエディタは、互いの下に配置されます。";
+"Show input editor" = "入力エディタを表示する";
 
 /* No comment provided by engineer. */
 "the input and output editor will be positioned next to each other" = "入力と出力のエディタは隣り合って配置されます";
@@ -45,4 +48,7 @@
 
 /* No comment provided by engineer. */
 "vertical split" = "垂直分割";
+
+/* No comment provided by engineer. */
+"Vertical split" = "垂直分割";
 

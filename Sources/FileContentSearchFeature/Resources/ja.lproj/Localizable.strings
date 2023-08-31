@@ -1,4 +1,7 @@
 /* No comment provided by engineer. */
+"Choose directory (Cmd+O)" = "ディレクトリを選択する (Cmd+O)";
+
+/* No comment provided by engineer. */
 "Directory" = "ディレクトリ";
 
 /* No comment provided by engineer. */
@@ -21,6 +24,12 @@
 
 /* No comment provided by engineer. */
 "Search also hidden files and folders" = "も隠れたファイルやフォルダを検索します";
+
+/* No comment provided by engineer. */
+"Search in packaged files" = "パッケージ化されたファイル内を検索";
+
+/* No comment provided by engineer. */
+"Search in sub-directories" = "サブディレクトリ内を検索";
 
 /* No comment provided by engineer. */
 "Search Term" = "検索語句";

@@ -8,7 +8,13 @@
 "Copy to clipboard (Command+Shift+C)" = "Copier dans le presse-papiers (Commande+Maj+C)";
 
 /* No comment provided by engineer. */
+"Hide input editor" = "Masquer l'éditeur de saisie";
+
+/* No comment provided by engineer. */
 "horizontal split" = "division horizontale";
+
+/* No comment provided by engineer. */
+"Horizontal split" = "Fraction horizontale";
 
 /* No comment provided by engineer. */
 "Input it to the other tools" = "Entrez-le dans les autres outils";
@@ -32,10 +38,7 @@
 "Save to disk (Command+Shift+S)" = "Enregistrer sur le disque (Commande+Maj+S)";
 
 /* No comment provided by engineer. */
-"the input and output editor will be located next to each other" = "l'éditeur d'entrée et de sortie sera situé côte à côte";
-
-/* No comment provided by engineer. */
-"the input and output editor will be located underneath each other" = "l'éditeur d'entrée et de sortie sera situé l'un en dessous de l'autre";
+"Show input editor" = "Afficher l'éditeur de texte";
 
 /* No comment provided by engineer. */
 "the input and output editor will be positioned next to each other" = "l'éditeur d'entrée et de sortie sera positionné côte à côte";
@@ -45,4 +48,7 @@
 
 /* No comment provided by engineer. */
 "vertical split" = "découpage vertical";
+
+/* No comment provided by engineer. */
+"Vertical split" = "Partage vertical";
 

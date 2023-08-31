@@ -4,20 +4,47 @@
 /* icon next to the tool name on the sidebar */
 "{.,}" = "{.,}";
 
-/* No comment provided by engineer. */
-"%@  Choose a tool from the Sidebar" = "%@ 请选择一个工具从侧边栏";
-
 /* icon next to the tool name on the sidebar */
 "<>" = "<>";
+
+/* No comment provided by engineer. */
+"⌃⇥" = "⌃⇥";
+
+/* No comment provided by engineer. */
+"⌘⇧A" = "⌘⇧A";
+
+/* No comment provided by engineer. */
+"⌘⇧C" = "⌘⇧C";
+
+/* No comment provided by engineer. */
+"⌘⇧L" = "⌘⇧L";
+
+/* No comment provided by engineer. */
+"⌘⇧P" = "⌘⇧P";
+
+/* No comment provided by engineer. */
+"⌘⇧S" = "⌘⇧S";
+
+/* No comment provided by engineer. */
+"⌘⌥L" = "⌘⌥L";
+
+/* No comment provided by engineer. */
+"⌘⏎" = "⌘⏎";
+
+/* No comment provided by engineer. */
+"⌘1, ⌘2" = "⌘1，⌘2";
+
+/* No comment provided by engineer. */
+"⌘U" = "⌘U";
+
+/* No comment provided by engineer. */
+"⌥⌃⇥" = "⌥⌃⇥";
 
 /* icon next to the tool name on the sidebar */
 "Aa" = "Aa";
 
 /* navigation title on top of the window */
 "Change prefix or suffix of each line" = "更改每行的前缀或后缀";
-
-/* No comment provided by engineer. */
-"Choose a tool from the Sidebar" = "从侧栏选择一个工具";
 
 /* navigation title on top of the window */
 "Convert case of list of words" = "转换单词列表的大小写";
@@ -27,6 +54,9 @@
 
 /* sidebar section name for a group of tools */
 "Converters" = "转换器";
+
+/* No comment provided by engineer. */
+"Copy output" = "复制输出";
 
 /* sidebar section name for a group of tools */
 "File" = "文件";
@@ -46,11 +76,23 @@
 /* navigation title on top of the window */
 "Generate names or words" = "生成名称或单词";
 
+/* No comment provided by engineer. */
+"Generate output" = "生成输出";
+
 /* navigation title on top of the window */
 "Generate UUIDs" = "生成 UUID";
 
 /* sidebar section name for a group of tools */
 "Generators" = "生成器";
+
+/* No comment provided by engineer. */
+"Go to a tool by order" = "按顺序访问一个工具";
+
+/* No comment provided by engineer. */
+"Go to the next tool" = "转到下一个工具";
+
+/* No comment provided by engineer. */
+"Go to the previous tool" = "返回上一个工具";
 
 /* tool name on the sidebar */
 "Html to Swift" = "Html转为Swift";
@@ -59,23 +101,29 @@
 "Json" = "Json";
 
 /* No comment provided by engineer. */
+"Layout" = "布局";
+
+/* No comment provided by engineer. */
+"Move output to another tool" = "将输出移到另一个工具";
+
+/* No comment provided by engineer. */
 "Name" = "姓名";
+
+/* No comment provided by engineer. */
+"Navigation" = "导航";
+
+/* No comment provided by engineer. */
+"Paste to Input" = "粘贴到输入";
 
 /* tool name on the sidebar */
 "Prefix Suffix" = "前缀后缀";
-
-/* No comment provided by engineer. */
-"Pretty print and Highlight Json" = "漂亮地打印和突出显示Json";
-
-/* No comment provided by engineer. */
-"Pretty print Swift code" = "漂亮地打印 Swift 代码";
 
 /* navigation title on top of the window
    tool name on the sidebar */
 "Regex Matches" = "正则表达式匹配";
 
 /* No comment provided by engineer. */
-"Replace and add prefix or suffix to each line" = "替换并为每一行添加前缀或后缀";
+"Save output as..." = "将输出保存为...";
 
 /* navigation title on top of the window */
 "Search inside files" = "在文件内搜索";
@@ -90,10 +138,19 @@
 "Text Case" = "文本案例";
 
 /* No comment provided by engineer. */
+"Toggle input editor" = "切换输入编辑器";
+
+/* No comment provided by engineer. */
 "Toggle sidebar" = "切换侧边栏";
 
 /* No comment provided by engineer. */
 "Toggle sidebar (Command+Shift+L)" = "切换侧边栏（Command+Shift+L）";
+
+/* No comment provided by engineer. */
+"Toggle split alignment" = "切换分割对齐";
+
+/* No comment provided by engineer. */
+"Tool Usage" = "工具使用";
 
 /* icon next to the tool name on the sidebar */
 "UUID" = "UUID";

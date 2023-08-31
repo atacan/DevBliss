@@ -8,7 +8,13 @@
 "Copy to clipboard (Command+Shift+C)" = "Copia negli appunti (Comando+Maiusc+C)";
 
 /* No comment provided by engineer. */
+"Hide input editor" = "Nascondi l'editor di input";
+
+/* No comment provided by engineer. */
 "horizontal split" = "divisione orizzontale";
+
+/* No comment provided by engineer. */
+"Horizontal split" = "Divisione orizzontale";
 
 /* No comment provided by engineer. */
 "Input it to the other tools" = "Inseriscilo negli altri strumenti";
@@ -32,10 +38,7 @@
 "Save to disk (Command+Shift+S)" = "Salva su disco (Comando+Maiusc+S)";
 
 /* No comment provided by engineer. */
-"the input and output editor will be located next to each other" = "il campo di input e quello di output saranno posizionati uno accanto all'altro";
-
-/* No comment provided by engineer. */
-"the input and output editor will be located underneath each other" = "l'editor di input e output sarà posizionato uno sotto l'altro";
+"Show input editor" = "Mostra editor di input";
 
 /* No comment provided by engineer. */
 "the input and output editor will be positioned next to each other" = "l'editor di input e output saranno posizionati l'uno accanto all'altro";
@@ -45,4 +48,7 @@
 
 /* No comment provided by engineer. */
 "vertical split" = "split verticale";
+
+/* No comment provided by engineer. */
+"Vertical split" = "Divisione verticale";
 

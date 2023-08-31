@@ -4,20 +4,47 @@
 /* icon next to the tool name on the sidebar */
 "{.,}" = "{.,}";
 
-/* No comment provided by engineer. */
-"%@  Choose a tool from the Sidebar" = "%@ Choisissez un outil dans la barre latérale";
-
 /* icon next to the tool name on the sidebar */
 "<>" = "<>";
+
+/* No comment provided by engineer. */
+"⌃⇥" = "⌃⇥";
+
+/* No comment provided by engineer. */
+"⌘⇧A" = "⌘⇧A";
+
+/* No comment provided by engineer. */
+"⌘⇧C" = "⌘⇧C";
+
+/* No comment provided by engineer. */
+"⌘⇧L" = "⌘⇧L";
+
+/* No comment provided by engineer. */
+"⌘⇧P" = "⌘⇧P";
+
+/* No comment provided by engineer. */
+"⌘⇧S" = "⌘⇧S";
+
+/* No comment provided by engineer. */
+"⌘⌥L" = "⌘⌥L";
+
+/* No comment provided by engineer. */
+"⌘⏎" = "⌘⏎";
+
+/* No comment provided by engineer. */
+"⌘1, ⌘2" = "⌘1, ⌘2";
+
+/* No comment provided by engineer. */
+"⌘U" = "⌘U";
+
+/* No comment provided by engineer. */
+"⌥⌃⇥" = "⌥⌃⇥";
 
 /* icon next to the tool name on the sidebar */
 "Aa" = "Aa";
 
 /* navigation title on top of the window */
 "Change prefix or suffix of each line" = "Changer le préfixe ou le suffixe de chaque ligne";
-
-/* No comment provided by engineer. */
-"Choose a tool from the Sidebar" = "Choisissez un outil dans la barre latérale";
 
 /* navigation title on top of the window */
 "Convert case of list of words" = "Convertir le cas de la liste des mots";
@@ -27,6 +54,9 @@
 
 /* sidebar section name for a group of tools */
 "Converters" = "Convertisseurs";
+
+/* No comment provided by engineer. */
+"Copy output" = "Copier la sortie";
 
 /* sidebar section name for a group of tools */
 "File" = "Fichier";
@@ -46,11 +76,23 @@
 /* navigation title on top of the window */
 "Generate names or words" = "Générer des noms ou des mots";
 
+/* No comment provided by engineer. */
+"Generate output" = "Générer la sortie";
+
 /* navigation title on top of the window */
 "Generate UUIDs" = "Générer des UUID";
 
 /* sidebar section name for a group of tools */
 "Generators" = "Générateurs";
+
+/* No comment provided by engineer. */
+"Go to a tool by order" = "Accédez à un outil par commande";
+
+/* No comment provided by engineer. */
+"Go to the next tool" = "Passer à l'outil suivant";
+
+/* No comment provided by engineer. */
+"Go to the previous tool" = "Aller à l'outil précédent";
 
 /* tool name on the sidebar */
 "Html to Swift" = "Html en Swift";
@@ -59,23 +101,29 @@
 "Json" = "Json";
 
 /* No comment provided by engineer. */
+"Layout" = "Disposition";
+
+/* No comment provided by engineer. */
+"Move output to another tool" = "Déplacer la sortie vers un autre outil";
+
+/* No comment provided by engineer. */
 "Name" = "Nom";
+
+/* No comment provided by engineer. */
+"Navigation" = "Navigation";
+
+/* No comment provided by engineer. */
+"Paste to Input" = "Coller dans le champ de saisie";
 
 /* tool name on the sidebar */
 "Prefix Suffix" = "Préfixe Suffixe";
-
-/* No comment provided by engineer. */
-"Pretty print and Highlight Json" = "Pretty print et mettre en évidence JSON";
-
-/* No comment provided by engineer. */
-"Pretty print Swift code" = "Imprimer joli le code Swift";
 
 /* navigation title on top of the window
    tool name on the sidebar */
 "Regex Matches" = "Correspondances d'expressions régulières";
 
 /* No comment provided by engineer. */
-"Replace and add prefix or suffix to each line" = "Remplacez et ajoutez un préfixe ou un suffixe à chaque ligne";
+"Save output as..." = "Enregistrer la sortie sous...";
 
 /* navigation title on top of the window */
 "Search inside files" = "Rechercher dans les fichiers";
@@ -90,10 +138,19 @@
 "Text Case" = "Cas de texte";
 
 /* No comment provided by engineer. */
+"Toggle input editor" = "Basculer l'éditeur de saisie";
+
+/* No comment provided by engineer. */
 "Toggle sidebar" = "Afficher/masquer la barre latérale";
 
 /* No comment provided by engineer. */
 "Toggle sidebar (Command+Shift+L)" = "Basculer la barre latérale (Commande+Majuscule+L)";
+
+/* No comment provided by engineer. */
+"Toggle split alignment" = "Basculer l'alignement de scission";
+
+/* No comment provided by engineer. */
+"Tool Usage" = "Utilisation de l'outil";
 
 /* icon next to the tool name on the sidebar */
 "UUID" = "UUID";

@@ -8,7 +8,13 @@
 "Copy to clipboard (Command+Shift+C)" = "复制到剪贴板（Command+Shift+C）";
 
 /* No comment provided by engineer. */
+"Hide input editor" = "隐藏输入编辑器";
+
+/* No comment provided by engineer. */
 "horizontal split" = "水平分割";
+
+/* No comment provided by engineer. */
+"Horizontal split" = "水平分割";
 
 /* No comment provided by engineer. */
 "Input it to the other tools" = "输入到其他工具中";
@@ -32,10 +38,7 @@
 "Save to disk (Command+Shift+S)" = "将其保存到磁盘（命令+Shift+S）";
 
 /* No comment provided by engineer. */
-"the input and output editor will be located next to each other" = "输入和输出编辑器将位于彼此旁边";
-
-/* No comment provided by engineer. */
-"the input and output editor will be located underneath each other" = "输入和输出编辑器将位于彼此下方";
+"Show input editor" = "显示输入编辑器";
 
 /* No comment provided by engineer. */
 "the input and output editor will be positioned next to each other" = "输入和输出编辑器将会彼此相邻";
@@ -45,4 +48,7 @@
 
 /* No comment provided by engineer. */
 "vertical split" = "垂直分割";
+
+/* No comment provided by engineer. */
+"Vertical split" = "垂直分割";
 

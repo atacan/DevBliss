@@ -1,4 +1,7 @@
 /* No comment provided by engineer. */
+"Choose directory (Cmd+O)" = "选择目录（Cmd+O）";
+
+/* No comment provided by engineer. */
 "Directory" = "目录";
 
 /* No comment provided by engineer. */
@@ -21,6 +24,12 @@
 
 /* No comment provided by engineer. */
 "Search also hidden files and folders" = "搜索也包括隐藏文件和文件夹";
+
+/* No comment provided by engineer. */
+"Search in packaged files" = "在打包文件中搜索";
+
+/* No comment provided by engineer. */
+"Search in sub-directories" = "在子目录中搜索";
 
 /* No comment provided by engineer. */
 "Search Term" = "搜索词";

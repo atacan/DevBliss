@@ -2,9 +2,6 @@
 " " = " ";
 
 /* value of a numeric input value for voice-over */
-"(Int(viewStore.alternationProbability * 100))%" = "(Int(viewStore.alternationProbability * 100))%";
-
-/* value of a numeric input value for voice-over */
 "(viewStore.maxLength)" = "(viewStore.maxLength)";
 
 /* value of a numeric input value for voice-over */
@@ -12,6 +9,12 @@
 
 /* value of a numeric input value for voice-over */
 "(viewStore.numberOfNames)" = "(viewStore.numberOfNames)";
+
+/* value of a numeric input value for voice-over */
+"%d" = "%d";
+
+/* value of a numeric input value for voice-over */
+"%d percent" = "%d procent";
 
 /* No comment provided by engineer. */
 "Add to (title)" = "Dodaj do";
@@ -38,6 +41,9 @@
 "Generate names (Cmd+Return)" = "Generuj nazwy (Cmd+Return)";
 
 /* No comment provided by engineer. */
+"Generation Type" = "Typ pokolenia";
+
+/* No comment provided by engineer. */
 "Letter" = "List";
 
 /* No comment provided by engineer. */
@@ -54,6 +60,9 @@
 
 /* No comment provided by engineer. */
 "Minimum length of the names" = "Minimalna długość nazw";
+
+/* No comment provided by engineer. */
+"names to be generated" = "nazwy do wygenerowania";
 
 /* No comment provided by engineer. */
 "Number of names" = "Liczba nazw";

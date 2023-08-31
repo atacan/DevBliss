@@ -2,9 +2,6 @@
 " " = " ";
 
 /* value of a numeric input value for voice-over */
-"(Int(viewStore.alternationProbability * 100))%" = "(Int(viewStore.alternationProbability * 100))%";
-
-/* value of a numeric input value for voice-over */
 "(viewStore.maxLength)" = "(viewStore.maxLength)";
 
 /* value of a numeric input value for voice-over */
@@ -12,6 +9,12 @@
 
 /* value of a numeric input value for voice-over */
 "(viewStore.numberOfNames)" = "(viewStore.numberOfNames)";
+
+/* value of a numeric input value for voice-over */
+"%d" = "%d";
+
+/* value of a numeric input value for voice-over */
+"%d percent" = "%d 百分比";
 
 /* No comment provided by engineer. */
 "Add to (title)" = "添加到（标题）";
@@ -38,6 +41,9 @@
 "Generate names (Cmd+Return)" = "生成名称（Cmd+Return）";
 
 /* No comment provided by engineer. */
+"Generation Type" = "生成类型";
+
+/* No comment provided by engineer. */
 "Letter" = "信件";
 
 /* No comment provided by engineer. */
@@ -54,6 +60,9 @@
 
 /* No comment provided by engineer. */
 "Minimum length of the names" = "名称的最小长度";
+
+/* No comment provided by engineer. */
+"names to be generated" = "要生成的姓名";
 
 /* No comment provided by engineer. */
 "Number of names" = "姓名数量";

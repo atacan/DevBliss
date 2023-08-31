@@ -1,4 +1,7 @@
 /* No comment provided by engineer. */
+"Choose directory (Cmd+O)" = "Scegli directory (Cmd+O)";
+
+/* No comment provided by engineer. */
 "Directory" = "Elenco";
 
 /* No comment provided by engineer. */
@@ -21,6 +24,12 @@
 
 /* No comment provided by engineer. */
 "Search also hidden files and folders" = "Cerca anche file e cartelle nascosti";
+
+/* No comment provided by engineer. */
+"Search in packaged files" = "Cerca nei file confezionati";
+
+/* No comment provided by engineer. */
+"Search in sub-directories" = "Cerca nelle sotto-cartelle";
 
 /* No comment provided by engineer. */
 "Search Term" = "Termine di ricerca";

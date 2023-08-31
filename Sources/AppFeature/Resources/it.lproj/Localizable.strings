@@ -4,20 +4,47 @@
 /* icon next to the tool name on the sidebar */
 "{.,}" = "{.,}";
 
-/* No comment provided by engineer. */
-"%@  Choose a tool from the Sidebar" = "%@ Scegli un strumento dalla barra laterale";
-
 /* icon next to the tool name on the sidebar */
 "<>" = "<>";
+
+/* No comment provided by engineer. */
+"⌃⇥" = "⌃⇥";
+
+/* No comment provided by engineer. */
+"⌘⇧A" = "⌘⇧A";
+
+/* No comment provided by engineer. */
+"⌘⇧C" = "⌘⇧C";
+
+/* No comment provided by engineer. */
+"⌘⇧L" = "⌘⇧L";
+
+/* No comment provided by engineer. */
+"⌘⇧P" = "⌘⇧P";
+
+/* No comment provided by engineer. */
+"⌘⇧S" = "⌘⇧S";
+
+/* No comment provided by engineer. */
+"⌘⌥L" = "⌘⌥L";
+
+/* No comment provided by engineer. */
+"⌘⏎" = "⌘⏎";
+
+/* No comment provided by engineer. */
+"⌘1, ⌘2" = "⌘1, ⌘2";
+
+/* No comment provided by engineer. */
+"⌘U" = "⌘U";
+
+/* No comment provided by engineer. */
+"⌥⌃⇥" = "⌥⌃⇥";
 
 /* icon next to the tool name on the sidebar */
 "Aa" = "Aa";
 
 /* navigation title on top of the window */
 "Change prefix or suffix of each line" = "Cambia prefisso o suffisso di ogni riga";
-
-/* No comment provided by engineer. */
-"Choose a tool from the Sidebar" = "Scegli un'opzione dalla barra laterale";
 
 /* navigation title on top of the window */
 "Convert case of list of words" = "Convertire il caso di una lista di parole";
@@ -27,6 +54,9 @@
 
 /* sidebar section name for a group of tools */
 "Converters" = "Convertitori";
+
+/* No comment provided by engineer. */
+"Copy output" = "Copia l'output";
 
 /* sidebar section name for a group of tools */
 "File" = "File";
@@ -46,11 +76,23 @@
 /* navigation title on top of the window */
 "Generate names or words" = "Genera nomi o parole";
 
+/* No comment provided by engineer. */
+"Generate output" = "Genera output";
+
 /* navigation title on top of the window */
 "Generate UUIDs" = "Generare UUID";
 
 /* sidebar section name for a group of tools */
 "Generators" = "Generator";
+
+/* No comment provided by engineer. */
+"Go to a tool by order" = "Vai a uno strumento per ordine";
+
+/* No comment provided by engineer. */
+"Go to the next tool" = "Passa al prossimo strumento";
+
+/* No comment provided by engineer. */
+"Go to the previous tool" = "Vai allo strumento precedente";
 
 /* tool name on the sidebar */
 "Html to Swift" = "Html a Swift";
@@ -59,23 +101,29 @@
 "Json" = "Json";
 
 /* No comment provided by engineer. */
+"Layout" = "Layout";
+
+/* No comment provided by engineer. */
+"Move output to another tool" = "Sposta l'output su un altro strumento";
+
+/* No comment provided by engineer. */
 "Name" = "Nome";
+
+/* No comment provided by engineer. */
+"Navigation" = "Navigazione";
+
+/* No comment provided by engineer. */
+"Paste to Input" = "Incolla nell'input";
 
 /* tool name on the sidebar */
 "Prefix Suffix" = "Prefisso Suffisso";
-
-/* No comment provided by engineer. */
-"Pretty print and Highlight Json" = "Pretty print e Evidenzia Json";
-
-/* No comment provided by engineer. */
-"Pretty print Swift code" = "Stampa formattata del codice Swift";
 
 /* navigation title on top of the window
    tool name on the sidebar */
 "Regex Matches" = "Corrispondenze Regex";
 
 /* No comment provided by engineer. */
-"Replace and add prefix or suffix to each line" = "Sostituisci e aggiungi prefisso o suffisso ad ogni riga";
+"Save output as..." = "Salva output come...";
 
 /* navigation title on top of the window */
 "Search inside files" = "Ricerca all'interno dei file";
@@ -90,10 +138,19 @@
 "Text Case" = "Caso di test";
 
 /* No comment provided by engineer. */
+"Toggle input editor" = "Attiva/disattiva l'editor di input";
+
+/* No comment provided by engineer. */
 "Toggle sidebar" = "Barra laterale";
 
 /* No comment provided by engineer. */
 "Toggle sidebar (Command+Shift+L)" = "Attiva/disattiva la barra laterale (Command+Shift+L)";
+
+/* No comment provided by engineer. */
+"Toggle split alignment" = "Allineamento dividere";
+
+/* No comment provided by engineer. */
+"Tool Usage" = "Utilizzo degli strumenti";
 
 /* icon next to the tool name on the sidebar */
 "UUID" = "UUID";
