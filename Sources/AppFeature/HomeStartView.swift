@@ -15,17 +15,17 @@ struct HomeStartView: View {
             VStack(alignment: .description, spacing: 8) {
                 HStack {
                     Text("⌘1, ⌘2")
-                    Text("Go to a tool by order")
+                    Text(NSLocalizedString("Go to a tool by order", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
                 HStack {
                     Text("⌃⇥")
-                    Text("Go to the next tool")
+                    Text(NSLocalizedString("Go to the next tool", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
                 HStack {
                     Text("⌥⌃⇥")
-                    Text("Go to the previous tool")
+                    Text(NSLocalizedString("Go to the previous tool", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
             }
@@ -43,27 +43,27 @@ struct HomeStartView: View {
             VStack(alignment: .description, spacing: 8) {
                 HStack {
                     Text("⌘⏎")
-                    Text("Generate output")
+                    Text(NSLocalizedString("Generate output", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
                 HStack {
                     Text("⌘⇧C")
-                    Text("Copy output")
+                    Text(NSLocalizedString("Copy output", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
                 HStack {
                     Text("⌘⇧S")
-                    Text("Save output as...")
+                    Text(NSLocalizedString("Save output as...", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
                 HStack {
                     Text("⌘U")
-                    Text("Move output to another tool")
+                    Text(NSLocalizedString("Move output to another tool", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
                 HStack {
                     Text("⌘⇧P")
-                    Text("Past to Input")
+                    Text(NSLocalizedString("Paste to Input", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
             } // <-VStack
@@ -81,17 +81,17 @@ struct HomeStartView: View {
             VStack(alignment: .description, spacing: 8) {
                 HStack {
                     Text("⌘⇧L")
-                    Text("Toggle sidebar")
+                    Text(NSLocalizedString("Toggle sidebar", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
                 HStack {
                     Text("⌘⇧A")
-                    Text("Toggle split alignment")
+                    Text(NSLocalizedString("Toggle split alignment", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
                 HStack {
                     Text("⌘⌥L")
-                    Text("Toggle input editor")
+                    Text(NSLocalizedString("Toggle input editor", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
             } // <-VStack

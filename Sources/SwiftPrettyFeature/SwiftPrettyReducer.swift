@@ -221,7 +221,7 @@ public let blissConfigLockwood = """
 --header strip
 --hexgrouping 4,8
 --hexliteralcase uppercase
---ifdef indent
+--ifdef no-indent
 --importgrouping alpha
 --indent 4
 --indentcase false
@@ -276,24 +276,24 @@ public let blissConfigLockwood = """
 """
 
 #if DEBUG
-    public struct SwiftPrettyApp: App {
-        public init() {}
+public struct SwiftPrettyApp: App {
+    public init() {}
 
-        public var body: some Scene {
-            WindowGroup {
-                SwiftPrettyView(
-                    store: Store(
-                        initialState: .init(),
-                        reducer: SwiftPrettyReducer()
-                            ._printChanges()
-                    )
+    public var body: some Scene {
+        WindowGroup {
+            SwiftPrettyView(
+                store: Store(
+                    initialState: .init(),
+                    reducer: SwiftPrettyReducer()
+                        ._printChanges()
                 )
-            }
-            #if os(macOS)
-            .windowStyle(.titleBar)
-            .windowToolbarStyle(.unified(showsTitle: true))
-            #endif
+            )
         }
+        #if os(macOS)
+        .windowStyle(.titleBar)
+        .windowToolbarStyle(.unified(showsTitle: true))
+        #endif
     }
+}
 
 #endif
