@@ -101,10 +101,10 @@ struct HomeStartView: View {
     }
 }
 
-#Preview {
-    HomeStartView()
-    //        .frame(width: 400)
-}
+// #Preview {
+//    HomeStartView()
+//            .frame(width: 400)
+// }
 
 extension HorizontalAlignment {
     struct Descriptions: AlignmentID {

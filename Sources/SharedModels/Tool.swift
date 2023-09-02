@@ -1,3 +1,5 @@
+import Foundation
+
 public enum Tool: Int, CaseIterable, Identifiable {
     case htmlToSwift
     case textCaseConverter
@@ -14,23 +16,23 @@ public enum Tool: Int, CaseIterable, Identifiable {
     public var name: String {
         switch self {
         case .htmlToSwift:
-            return "HTML to Swift"
+            return NSLocalizedString("HTML to Swift", bundle: Bundle.module, comment: "")
         case .jsonPretty:
-            return "JSON Formatter"
+            return NSLocalizedString("JSON Formatter", bundle: Bundle.module, comment: "")
         case .textCaseConverter:
-            return "Text Case Converter"
+            return NSLocalizedString("Text Case Converter", bundle: Bundle.module, comment: "")
         case .uuidGenerator:
-            return "UUID Generator"
+            return NSLocalizedString("UUID Generator", bundle: Bundle.module, comment: "")
         case .prefixSuffix:
-            return "Prefix Suffix"
+            return NSLocalizedString("Prefix Suffix", bundle: Bundle.module, comment: "")
         case .regexMatches:
-            return "Regex Matches"
+            return NSLocalizedString("Regex Matches", bundle: Bundle.module, comment: "")
         case .swiftPrettyLockwood:
-            return "Swift Pretty"
+            return NSLocalizedString("Swift Pretty", bundle: Bundle.module, comment: "")
         case .fileContentSearch:
-            return "File Content Search"
+            return NSLocalizedString("File Content Search", bundle: Bundle.module, comment: "")
         case .nameGenerator:
-            return "Name Generator"
+            return NSLocalizedString("Name Generator", bundle: Bundle.module, comment: "")
         }
     }
 
@@ -63,9 +65,9 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return false
         case .fileContentSearch:
             #if os(macOS)
-                return true
+            return true
             #else
-                return false
+            return false
             #endif
         default:
             return true

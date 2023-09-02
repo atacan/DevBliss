@@ -282,7 +282,8 @@ let package = Package(
         ),
         .target(
             name: "SharedModels",
-            dependencies: []
+            dependencies: [],
+            resources: [.process("Resources")]
         ),
 
         .testTarget(

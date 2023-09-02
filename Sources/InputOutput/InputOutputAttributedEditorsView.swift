@@ -145,10 +145,15 @@ struct InputOutputToolbarSplitItems: View {
             )
             .keyboardShortcut(KeyEquivalent("a"), modifiers: [.command, .shift])
             .disabled(hide.side != nil)
-            .help(layout.isHorizontal ? "Vertical split" : "Horizontal split")
+            .help(
+                layout
+                    .isHorizontal ? NSLocalizedString("Vertical split", bundle: Bundle.module, comment: "") :
+                    NSLocalizedString("Horizontal split", bundle: Bundle.module, comment: "")
+            )
             .accessibilityLabel(
                 layout
-                    .isHorizontal ? "vertical split" : "horizontal split"
+                    .isHorizontal ? NSLocalizedString("vertical split", bundle: Bundle.module, comment: "") :
+                    NSLocalizedString("horizontal split", bundle: Bundle.module, comment: "")
             )
             .accessibilityHint(
                 layout
@@ -192,8 +197,16 @@ struct InputOutputToolbarSplitItems: View {
                 }
             )
             .keyboardShortcut(KeyEquivalent("l"), modifiers: [.command, .option])
-            .help(hide.side == nil ? "Hide input editor" : "Show input editor")
-            .accessibilityLabel(hide.side == nil ? "Hide input editor" : "Show input editor")
+            .help(
+                hide
+                    .side == nil ? NSLocalizedString("Hide input editor", bundle: Bundle.module, comment: "") :
+                    NSLocalizedString("Show input editor", bundle: Bundle.module, comment: "")
+            )
+            .accessibilityLabel(hide.side == nil ? NSLocalizedString(
+                "Hide input editor",
+                bundle: Bundle.module,
+                comment: ""
+            ) : NSLocalizedString("Show input editor", bundle: Bundle.module, comment: ""))
         }
     }
 }
