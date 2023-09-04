@@ -125,15 +125,15 @@ public struct AppReducer: ReducerProtocol {
                 return .none
 
             #if os(macOS)
-                case let .fileContentSearch(
-                    .presented(.output(.outputControls(.otherToolSelected(otherTool))))
-                ):
-                    handleOtherTool(
-                        thisToolOutput: state.fileContentSearch?.outputText,
-                        otherTool: otherTool,
-                        state: &state
-                    )
-                    return .none
+            case let .fileContentSearch(
+                .presented(.output(.outputControls(.otherToolSelected(otherTool))))
+            ):
+                handleOtherTool(
+                    thisToolOutput: state.fileContentSearch?.outputText,
+                    otherTool: otherTool,
+                    state: &state
+                )
+                return .none
             #endif
 
             case .nextToolButtonTouched:
@@ -511,43 +511,43 @@ public struct AppView: View {
 
                 #if os(macOS)
 
-                    Section(
-                        NSLocalizedString(
-                            "File",
-                            bundle: Bundle.module,
-                            comment: "sidebar section name for a group of tools"
-                        )
+                Section(
+                    NSLocalizedString(
+                        "File",
+                        bundle: Bundle.module,
+                        comment: "sidebar section name for a group of tools"
+                    )
+                ) {
+                    NavigationLinkStore(
+                        store.scope(state: \.$fileContentSearch, action: { .fileContentSearch($0) })
                     ) {
-                        NavigationLinkStore(
-                            store.scope(state: \.$fileContentSearch, action: { .fileContentSearch($0) })
-                        ) {
-                            viewStore.send(.navigationLinkTouched(.fileContentSearch))
-                        } destination: { store in
-                            FileContentSearchView(store: store)
-                                .navigationTitle(
+                        viewStore.send(.navigationLinkTouched(.fileContentSearch))
+                    } destination: { store in
+                        FileContentSearchView(store: store)
+                            .navigationTitle(
+                                NSLocalizedString(
+                                    "Search inside files",
+                                    bundle: Bundle.module,
+                                    comment: "navigation title on top of the window"
+                                )
+                            )
+                            .padding(.top)
+                    } label: {
+                        Label(
+                            title: {
+                                Text(
                                     NSLocalizedString(
-                                        "Search inside files",
+                                        "File Search",
                                         bundle: Bundle.module,
-                                        comment: "navigation title on top of the window"
+                                        comment: "tool name on the sidebar"
                                     )
                                 )
-                                .padding(.top)
-                        } label: {
-                            Label(
-                                title: {
-                                    Text(
-                                        NSLocalizedString(
-                                            "File Search",
-                                            bundle: Bundle.module,
-                                            comment: "tool name on the sidebar"
-                                        )
-                                    )
-                                },
-                                icon: { Image(systemName: "doc.text.magnifyingglass") }
-                            )
-                        }
-                        .keyboardShortcut(KeyEquivalent("7"))
+                            },
+                            icon: { Image(systemName: "doc.text.magnifyingglass") }
+                        )
                     }
+                    .keyboardShortcut(KeyEquivalent("7"))
+                }
                 #endif
 
                 Section(
@@ -595,23 +595,24 @@ public struct AppView: View {
                     }
                     .keyboardShortcut(KeyEquivalent("8"))
                 }
+                .overlay {
+                    Button {
+                        viewStore.send(.nextToolButtonTouched)
+                    } label: {
+                        EmptyView()
+                    } // <-Button
+                    .buttonStyle(.plain)
+                    .keyboardShortcut(.tab, modifiers: .control)
 
-                Button {
-                    viewStore.send(.nextToolButtonTouched)
-                } label: {
-                    EmptyView()
-                } // <-Button
-                .buttonStyle(.plain)
-                .keyboardShortcut(.tab, modifiers: .control)
-
-                Button {
-                    viewStore.send(.previousToolButtonTouched)
-                } label: {
-                    EmptyView()
+                    Button {
+                        viewStore.send(.previousToolButtonTouched)
+                    } label: {
+                        EmptyView()
+                    }
+                    .buttonStyle(.plain)
+                    .keyboardShortcut(.tab, modifiers: [.control, .option])
+                    //                .keyboardShortcut(.tab, modifiers: [.control, .shift]) // doesn't work! 😠
                 }
-                .buttonStyle(.plain)
-                .keyboardShortcut(.tab, modifiers: [.control, .option])
-//                .keyboardShortcut(.tab, modifiers: [.control, .shift]) // doesn't work! 😠
             }
             .listStyle(.sidebar)
             .frame(minWidth: 150) // to keep the toggle-sidebar button above the sidebar
