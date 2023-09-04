@@ -1,7 +1,22 @@
 # DevBliss - Your Local Development Helper for macOS and iOS
 
-<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><a href="https://apps.apple.com/us/app/blissum/id6464085978?itscg=30200&amp;itsct=apps_box_appicon" style="display: flex; justify-content: center; gap: 20px; margin-bottom: 14pt; width: 170px; height: 170px; border-radius: 22%; overflow: hidden; display: inline-block; vertical-align: middle;"><img src="https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/a0/3d/ad/a03dad56-2f51-4bfd-e1bc-0421a985fc67/AppIcon-1x_U007epad-85-220.png/540x540bb.jpg" alt="Blissum" style="width: 170px; height: 170px; border-radius: 22%; overflow: hidden; display: inline-block; vertical-align: middle;"></a></div>
-<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 14pt;"><a href="https://apps.apple.com/us/app/blissum/id6464085978?itsct=apps_box_badge&amp;itscg=30200" style="display: inline-block; overflow: hidden; border-radius: 13px; width: 250px; height: 83px;"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1693699200" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 83px;"></a></div>
+<table align="center">
+    <tr>
+        <td align="center">
+            <a href="https://apps.apple.com/us/app/blissum/id6464085978?itscg=30200&amp;itsct=apps_box_appicon">
+                <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/a0/3d/ad/a03dad56-2f51-4bfd-e1bc-0421a985fc67/AppIcon-1x_U007epad-85-220.png/540x540bb.jpg" alt="Blissum" width="170px" height="170px" style="border-radius: 22%;">
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <a href="https://apps.apple.com/us/app/blissum/id6464085978?itsct=apps_box_badge&amp;itscg=30200">
+                <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1693699200" alt="Download on the App Store" width="250px" height="83px" style="border-radius: 13px;">
+            </a>
+        </td>
+    </tr>
+</table>
+
 
 - [Why Choose DevBliss?](#why-choose-devbliss)
 - [Key Features](#key-features)
