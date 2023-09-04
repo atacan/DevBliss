@@ -1,15 +1,15 @@
 # DevBliss - Your Local Development Helper for macOS and iOS
 
-<table align="center">
+<table align="center" border="0" cellspacing="0" cellpadding="0">
     <tr>
-        <td align="center">
+        <td align="center" style="border: none;">
             <a href="https://apps.apple.com/us/app/blissum/id6464085978?itscg=30200&amp;itsct=apps_box_appicon">
                 <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/a0/3d/ad/a03dad56-2f51-4bfd-e1bc-0421a985fc67/AppIcon-1x_U007epad-85-220.png/540x540bb.jpg" alt="Blissum" width="170px" height="170px" style="border-radius: 22%;">
             </a>
         </td>
     </tr>
     <tr>
-        <td align="center">
+        <td align="center" style="border: none;">
             <a href="https://apps.apple.com/us/app/blissum/id6464085978?itsct=apps_box_badge&amp;itscg=30200">
                 <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1693699200" alt="Download on the App Store" width="250px" height="83px" style="border-radius: 13px;">
             </a>
