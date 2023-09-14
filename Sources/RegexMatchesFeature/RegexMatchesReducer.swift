@@ -183,3 +183,26 @@ struct RegexMatchesReducer_Previews: PreviewProvider {
 enum SettingsKey: String {
     case regexPattern = "RegexMatches_regexPattern"
 }
+
+#if DEBUG
+public struct RegexMatchesApp: App {
+    public init() {}
+
+    public var body: some Scene {
+        WindowGroup {
+            RegexMatchesView(
+                store: Store(
+                    initialState: .init(),
+                    reducer: RegexMatchesReducer()
+                        ._printChanges()
+                )
+            )
+        }
+        #if os(macOS)
+        .windowStyle(.titleBar)
+        .windowToolbarStyle(.unified(showsTitle: true))
+        #endif
+    }
+}
+
+#endif

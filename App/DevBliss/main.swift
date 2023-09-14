@@ -1,22 +1,24 @@
 
 
 #if DEBUG
-    //    import InputOutput
-    //    InputEditorApp.main()
+//    import InputOutput
+//    InputEditorApp.main()
 //     import HtmlToSwiftFeature
 //     HtmlToSwiftApp.main()
 //     import SwiftPrettyFeature
 //     SwiftPrettyApp.main()
-    import AppFeature
+import RegexMatchesFeature
 
-    TheApp.main()
-    #if os(macOS)
-        //        import FileContentSearchFeature
+RegexMatchesApp.main()
+//    import AppFeature
+//    TheApp.main()
+#if os(macOS)
+//        import FileContentSearchFeature
 
-        //        FileContentSearchApp.main()
-    #endif
+//        FileContentSearchApp.main()
+#endif
 #else
-    import AppFeature
+import AppFeature
 
-    TheApp.main()
+TheApp.main()
 #endif

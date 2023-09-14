@@ -25,30 +25,62 @@ func matchRegex(
     in attributedString: NSAttributedString,
     pattern: String
 ) -> [RegexMatchesOutput] {
-    guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else {
-        return []
+    var matchesOutput: [RegexMatchesOutput] = []
+
+    do {
+        let regex = try NSRegularExpression(pattern: pattern, options: [])
+        let nsString = attributedString.string as NSString
+
+        let matches = regex.matches(
+            in: attributedString.string,
+            options: [],
+            range: NSRange(location: 0, length: nsString.length)
+        )
+
+        for match in matches {
+            let wholeMatchRange = match.range(at: 0)
+            let wholeMatch = nsString.substring(with: wholeMatchRange)
+
+            var capturedGroups: [String] = []
+            var capturedGroupRanges: [NSRange] = []
+
+            for i in 1 ..< match.numberOfRanges {
+                let capturedGroupRange = match.range(at: i)
+                if capturedGroupRange.location != NSNotFound {
+                    let capturedGroup = nsString.substring(with: capturedGroupRange)
+                    capturedGroups.append(capturedGroup)
+                    capturedGroupRanges.append(capturedGroupRange)
+                }
+            }
+
+            let matchOutput = RegexMatchesOutput(
+                wholeMatch: wholeMatch,
+                capturedGroups: capturedGroups,
+                wholeMatchRange: wholeMatchRange,
+                capturedGroupRanges: capturedGroupRanges
+            )
+
+            matchesOutput.append(matchOutput)
+        }
+
+    } catch {
+        // Handle errors here if necessary
+//            print("Error creating regex: \(error)")
+        return matchesOutput
     }
 
-    let string = attributedString.string
-    let range = NSRange(location: 0, length: string.utf16.count)
-    let matches = regex.matches(in: string, options: [], range: range)
+    return matchesOutput
+}
 
-    return matches.map { match in
-        let matchString = (string as NSString).substring(with: match.range)
-        let groupRanges = (0 ..< match.numberOfRanges)
-            .map { index in
-                match.range(at: index)
+extension NSRegularExpression {
+    func captureGroups(in string: String, range: NSRange) -> [NSTextCheckingResult] {
+        let matches = matches(in: string, options: [], range: range)
+        return matches.compactMap { match in
+            guard match.numberOfRanges > 1 else {
+                return nil
             }
-        let groups = groupRanges.dropFirst()
-            .map { range in
-                (string as NSString).substring(with: range)
-            }
-        return RegexMatchesOutput(
-            wholeMatch: matchString,
-            capturedGroups: groups,
-            wholeMatchRange: match.range,
-            capturedGroupRanges: .init(groupRanges.dropFirst())
-        )
+            return match.range(at: 1) == NSRange(location: NSNotFound, length: 0) ? nil : match
+        }
     }
 }
 
@@ -87,19 +119,19 @@ func highlightRegexMatches(
 
     for matchOutput in matchOutputs {
         #if os(macOS)
-            let wholeMatchColor = NSColor(cgColor: config.wholeMatchColor)
-            let captureColor = NSColor(cgColor: config.capturedGroupColor)
+        let wholeMatchColor = NSColor(cgColor: config.wholeMatchColor)
+        let captureColor = NSColor(cgColor: config.capturedGroupColor)
         #else
-            let wholeMatchColor = UIColor(cgColor: config.wholeMatchColor)
-            let captureColor = UIColor(cgColor: config.capturedGroupColor)
+        let wholeMatchColor = UIColor(cgColor: config.wholeMatchColor)
+        let captureColor = UIColor(cgColor: config.capturedGroupColor)
         #endif
         let wholeMatchAttributes: [NSAttributedString.Key: Any] = [
-            .backgroundColor: wholeMatchColor
+            .backgroundColor: wholeMatchColor,
         ]
         mutableAttributedString.addAttributes(wholeMatchAttributes, range: matchOutput.wholeMatchRange)
         matchOutput.capturedGroupRanges.forEach { range in
             let captureAttributes: [NSAttributedString.Key: Any] = [
-                .backgroundColor: captureColor
+                .backgroundColor: captureColor,
             ]
             mutableAttributedString.addAttributes(captureAttributes, range: range)
         }

@@ -1,4 +1,7 @@
+import Dependencies
 import XCTest
+
+@testable import RegexMatchesClient
 
 final class RegexMatchesClientTests: XCTestCase {
     override func setUpWithError() throws {
