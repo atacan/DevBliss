@@ -4,7 +4,7 @@ import ComposableArchitecture
 import SwiftUI
 
 #if os(macOS)
-    import MacSwiftUI
+import MacSwiftUI
 #endif
 
 public struct InputAttributedEditorReducer: ReducerProtocol {
@@ -82,6 +82,14 @@ extension InputAttributedEditorReducer.State {
         text = .init(attributedString: newText)
         return .none
     }
+
+    public mutating func removeColorFromAttributedString() {
+        text.enumerateAttributes(in: NSRange(location: 0, length: text.length), options: []) { attributes, range, _ in
+            if let _ = attributes[NSAttributedString.Key.backgroundColor] {
+                text.removeAttribute(NSAttributedString.Key.backgroundColor, range: range)
+            }
+        }
+    }
 }
 
 public struct InputAttributedEditorView: View {
@@ -111,41 +119,7 @@ public struct InputAttributedEditorView: View {
                 Spacer()
             }
             #if os(macOS)
-                MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
-                    .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
-                    .overlay(content: {
-                        InputEditorDropView(
-                            store: store.scope(
-                                state: \.inputEditorDrop,
-                                action: InputAttributedEditorReducer.Action.inputEditorDrop
-                            )
-                        )
-                    })
-            #elseif os(iOS)
-                //                ScrollView {
-                //                    Text(AttributedString(viewStore.text))
-                //                        .font(.monospaced(.body)())
-                //                        .textSelection(.enabled)
-                TextEditor(
-                    text: viewStore.binding(
-                        get: { state in
-                            state.text.string
-                        },
-                        send: { newValue in
-                            .binding(.set(\.$text, .init(string: newValue)))
-                        }
-                    )
-                )
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-                .font(
-                    .init(
-                        UIFont.monospacedSystemFont(
-                            ofSize: UIFont.systemFontSize,
-                            weight: UIFont.Weight.regular
-                        )
-                    )
-                )
+            MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
                 .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
                 .overlay(content: {
                     InputEditorDropView(
@@ -155,7 +129,41 @@ public struct InputAttributedEditorView: View {
                         )
                     )
                 })
-                //                }
+            #elseif os(iOS)
+            //                ScrollView {
+            //                    Text(AttributedString(viewStore.text))
+            //                        .font(.monospaced(.body)())
+            //                        .textSelection(.enabled)
+            TextEditor(
+                text: viewStore.binding(
+                    get: { state in
+                        state.text.string
+                    },
+                    send: { newValue in
+                        .binding(.set(\.$text, .init(string: newValue)))
+                    }
+                )
+            )
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .font(
+                .init(
+                    UIFont.monospacedSystemFont(
+                        ofSize: UIFont.systemFontSize,
+                        weight: UIFont.Weight.regular
+                    )
+                )
+            )
+            .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
+            .overlay(content: {
+                InputEditorDropView(
+                    store: store.scope(
+                        state: \.inputEditorDrop,
+                        action: InputAttributedEditorReducer.Action.inputEditorDrop
+                    )
+                )
+            })
+            //                }
             #endif
         }
         .overlay(
@@ -196,23 +204,23 @@ struct InputAttributedEditorView_Previews: PreviewProvider {
 
 func regularAttributedString(_ error: String) -> NSAttributedString {
     #if os(macOS)
-        let textColor = NSColor(ThemeColor.Text.editedText)
-        let attributes = [
-            NSAttributedString.Key.foregroundColor: textColor,
-            NSAttributedString.Key.font:
-                NSFont
-                .monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: NSFont.Weight.regular),
-        ]
-        let attributedString = NSAttributedString(string: error, attributes: attributes)
+    let textColor = NSColor(ThemeColor.Text.editedText)
+    let attributes = [
+        NSAttributedString.Key.foregroundColor: textColor,
+        NSAttributedString.Key.font:
+            NSFont
+            .monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: NSFont.Weight.regular),
+    ]
+    let attributedString = NSAttributedString(string: error, attributes: attributes)
     #else
-        let attributes = [
-            NSAttributedString.Key.foregroundColor: UIColor(ThemeColor.Text.editedText),
-            NSAttributedString.Key.font: UIFont.monospacedSystemFont(
-                ofSize: UIFont.systemFontSize,
-                weight: UIFont.Weight.regular
-            ),
-        ]
-        let attributedString = NSAttributedString(string: error, attributes: attributes)
+    let attributes = [
+        NSAttributedString.Key.foregroundColor: UIColor(ThemeColor.Text.editedText),
+        NSAttributedString.Key.font: UIFont.monospacedSystemFont(
+            ofSize: UIFont.systemFontSize,
+            weight: UIFont.Weight.regular
+        ),
+    ]
+    let attributedString = NSAttributedString(string: error, attributes: attributes)
     #endif
     return attributedString
 }
