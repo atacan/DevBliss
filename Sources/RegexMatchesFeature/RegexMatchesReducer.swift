@@ -68,6 +68,7 @@ public struct RegexMatchesReducer: ReducerProtocol {
                 return setPreferences(for: action, from: state)
             case .convertButtonTouched:
                 state.isConversionRequestInFlight = true
+                state.inputOutput.input.removeColorFromAttributedString()
                 return
                     .run { [input = state.inputOutput.input.text, regexPattern = state.regexPattern] send in
                         await send(
