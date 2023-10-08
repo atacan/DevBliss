@@ -124,7 +124,7 @@ struct InputEditorDropView: View {
                 phase = 20
             }
             .onDrop(
-                of: [UTType.plainText],
+                of: [UTType.text],
                 delegate: URLDropDelegate(
                     urls: viewStore.binding(\.$droppedUrls),
                     isDropInProgress: viewStore.binding(\.$isDropInProgress),
@@ -137,12 +137,12 @@ struct InputEditorDropView: View {
 
 // preview
 #if DEBUG
-    struct InputEditorDropView_Previews: PreviewProvider {
-        static var previews: some View {
-            InputEditorDropView(
-                store: Store(initialState: .init(isDropInProgress: true), reducer: InputEditorDropReducer())
-            )
-            .padding()
-        }
+struct InputEditorDropView_Previews: PreviewProvider {
+    static var previews: some View {
+        InputEditorDropView(
+            store: Store(initialState: .init(isDropInProgress: true), reducer: InputEditorDropReducer())
+        )
+        .padding()
     }
+}
 #endif
