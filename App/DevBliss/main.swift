@@ -7,11 +7,12 @@
 //     HtmlToSwiftApp.main()
 //     import SwiftPrettyFeature
 //     SwiftPrettyApp.main()
-import RegexMatchesFeature
+// import RegexMatchesFeature
 
-RegexMatchesApp.main()
-//    import AppFeature
-//    TheApp.main()
+// RegexMatchesApp.main()
+import AppFeature
+
+TheApp.main()
 #if os(macOS)
 //        import FileContentSearchFeature
 
