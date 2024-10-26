@@ -253,7 +253,7 @@ public let blissConfigLockwood = """
 --structthreshold 0
 --tabwidth unspecified
 --throwcapturing
---disable trailingClosures
+--disable trailingclosures
 --trimwhitespace always
 --typeattributes prev-line
 --typeblanklines remove
