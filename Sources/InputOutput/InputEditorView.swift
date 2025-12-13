@@ -34,7 +34,7 @@ public struct InputEditorReducer {
 
     public var body: some Reducer<State, Action> {
         BindingReducer()
-        Scope(state: \.inputEditorDrop, action: /Action.inputEditorDrop) {
+        Scope(state: \.inputEditorDrop, action: \.inputEditorDrop) {
             InputEditorDropReducer()
         }
         Reduce<State, Action> { state, action -> Effect<Action> in

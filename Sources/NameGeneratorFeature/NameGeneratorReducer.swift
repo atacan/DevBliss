@@ -82,16 +82,16 @@ public struct NameGeneratorReducer {
                 return .none
             }
         }
-        Scope(state: \.prefixSuffix, action: /Action.prefixSuffix) {
+        Scope(state: \.prefixSuffix, action: \.prefixSuffix) {
             NameGeneratorPrefixSuffixReducer()
         }
-        Scope(state: \.alternatingVowelsConsonants, action: /Action.alternatingVowelsConsonants) {
+        Scope(state: \.alternatingVowelsConsonants, action: \.alternatingVowelsConsonants) {
             NameGeneratorAlternatingReducer()
         }
-        Scope(state: \.probabilistic, action: /Action.probabilistic) {
+        Scope(state: \.probabilistic, action: \.probabilistic) {
             NameGeneratorProbabilisticReducer()
         }
-        Scope(state: \.output, action: /Action.output) {
+        Scope(state: \.output, action: \.output) {
             OutputEditorReducer()
         }
     }

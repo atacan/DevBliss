@@ -88,7 +88,7 @@ public struct HtmlToSwiftReducer {
             }
         }
 
-        Scope(state: \.inputOutput, action: /Action.inputOutput) {
+        Scope(state: \.inputOutput, action: \.inputOutput) {
             InputOutputEditorsReducer()
         }
     }

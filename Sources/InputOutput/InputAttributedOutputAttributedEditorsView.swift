@@ -40,11 +40,11 @@ public struct InputAttributedOutputAttributedEditorsReducer {
             }
         }
 
-        Scope(state: \.input, action: /Action.input) {
+        Scope(state: \.input, action: \.input) {
             InputAttributedEditorReducer()
         }
 
-        Scope(state: \.output, action: /Action.output) {
+        Scope(state: \.output, action: \.output) {
             OutputAttributedEditorReducer()
         }
     }

@@ -70,7 +70,7 @@ public struct UUIDGeneratorReducer {
                 return .none
             }
         }
-        Scope(state: \.output, action: /Action.output) {
+        Scope(state: \.output, action: \.output) {
             OutputEditorReducer()
         }
     }
