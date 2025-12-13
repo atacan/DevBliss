@@ -6,7 +6,8 @@ import JsonPrettyClient
 import SharedModels
 import SwiftUI
 
-public struct JsonPrettyReducer: Reducer {
+@Reducer
+public struct JsonPrettyReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {

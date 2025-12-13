@@ -6,7 +6,8 @@ import SharedModels
 import SwiftUI
 import TextCaseConverterClient
 
-public struct TextCaseConverterReducer: Reducer {
+@Reducer
+public struct TextCaseConverterReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
