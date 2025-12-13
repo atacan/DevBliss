@@ -18,7 +18,7 @@ final class PrefixSuffixFeatureTests: XCTestCase {
         }
 
         // user changed the text field
-        await store.send(.binding(.set(\.$configuration.prefixReplace, inputPrefixReplace))) {
+        await store.send(.binding(.set(\.configuration.prefixReplace, inputPrefixReplace))) {
             $0.configuration.prefixReplace = inputPrefixReplace
         }
 

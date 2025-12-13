@@ -5,7 +5,8 @@ import FilePanelsClient
 import MacSwiftUI
 import SwiftUI
 
-public struct OutputEditorReducer: Reducer {
+@Reducer
+public struct OutputEditorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {

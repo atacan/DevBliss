@@ -7,7 +7,8 @@ import SwiftUI
     import MacSwiftUI
 #endif
 
-public struct InputAttributedEditorReducer: Reducer {
+@Reducer
+public struct InputAttributedEditorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {

@@ -4,7 +4,8 @@ import ComposableArchitecture
 import SharedModels
 import SwiftUI
 
-public struct OutputControlsReducer: Reducer {
+@Reducer
+public struct OutputControlsReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {

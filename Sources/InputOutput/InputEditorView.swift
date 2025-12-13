@@ -3,7 +3,8 @@ import ClipboardClient
 import ComposableArchitecture
 import SwiftUI
 
-public struct InputEditorReducer: Reducer {
+@Reducer
+public struct InputEditorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {

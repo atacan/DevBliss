@@ -4,8 +4,10 @@ import ComposableArchitecture
 import SplitView
 import SwiftUI
 
-public struct InputOutputEditorsReducer: Reducer {
+@Reducer
+public struct InputOutputEditorsReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         public var input: InputEditorReducer.State
         public var output: OutputEditorReducer.State
