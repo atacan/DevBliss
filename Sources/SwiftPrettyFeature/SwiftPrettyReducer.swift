@@ -190,110 +190,110 @@ struct SwiftPrettyReducer_Previews: PreviewProvider {
 }
 
 public let blissConfigLockwood = """
---acronyms ID,URL,UUID
---allman false
---assetliterals visual-width
---asynccapturing
---beforemarks
---binarygrouping 4,8
---categorymark "MARK: %c"
---classthreshold 0
---closingparen balanced
---closurevoid remove
---commas always
---conflictmarkers reject
---decimalgrouping 3,6
---elseposition same-line
---emptybraces no-space
---enumnamespaces always
---enumthreshold 0
---exponentcase lowercase
---exponentgrouping disabled
---extensionacl on-declarations
---extensionlength 0
---extensionmark "MARK: - %t + %c"
---fractiongrouping disabled
---fragment false
---funcattributes prev-line
---generictypes
---groupedextension "MARK: %c"
---guardelse auto
---header strip
---hexgrouping 4,8
---hexliteralcase uppercase
---ifdef no-indent
---importgrouping alpha
---indent 4
---indentcase false
---indentstrings false
---lifecycle
---lineaftermarks true
---linebreaks lf
---markcategories false
---markextensions always
---marktypes always
---maxwidth 120
---modifierorder
---nevertrailing
---nospaceoperators
---nowrapoperators
---octalgrouping 4,8
---operatorfunc spaced
---organizetypes actor,class,enum,struct
---patternlet hoist
---ranges spaced
---redundanttype infer-locals-only
---self init-only
---selfrequired
---semicolons inline
---shortoptionals always
---smarttabs enabled
---someAny true
---stripunusedargs always
---structthreshold 0
---tabwidth unspecified
---throwcapturing
---disable trailingclosures
---trimwhitespace always
---typeattributes prev-line
---typeblanklines remove
---typemark "MARK: - %t"
---varattributes preserve
---voidtype void
---wraparguments before-first
---wrapcollections before-first
---wrapconditions after-first
---wrapeffects preserve
---wrapenumcases always
---wrapparameters default
---wrapreturntype preserve
---wrapternary default
---wraptypealiases preserve
---xcodeindentation disabled
---yodaswap always
---disable enumNamespaces,unusedArguments,wrapMultilineStatementBraces
---enable blankLineAfterImports,isEmpty,sortedSwitchCases,wrapConditionalBodies,wrapEnumCases,wrapSwitchCases
-"""
+    --acronyms ID,URL,UUID
+    --allman false
+    --assetliterals visual-width
+    --asynccapturing
+    --beforemarks
+    --binarygrouping 4,8
+    --categorymark "MARK: %c"
+    --classthreshold 0
+    --closingparen balanced
+    --closurevoid remove
+    --commas always
+    --conflictmarkers reject
+    --decimalgrouping 3,6
+    --elseposition same-line
+    --emptybraces no-space
+    --enumnamespaces always
+    --enumthreshold 0
+    --exponentcase lowercase
+    --exponentgrouping disabled
+    --extensionacl on-declarations
+    --extensionlength 0
+    --extensionmark "MARK: - %t + %c"
+    --fractiongrouping disabled
+    --fragment false
+    --funcattributes prev-line
+    --generictypes
+    --groupedextension "MARK: %c"
+    --guardelse auto
+    --header strip
+    --hexgrouping 4,8
+    --hexliteralcase uppercase
+    --ifdef no-indent
+    --importgrouping alpha
+    --indent 4
+    --indentcase false
+    --indentstrings false
+    --lifecycle
+    --lineaftermarks true
+    --linebreaks lf
+    --markcategories false
+    --markextensions always
+    --marktypes always
+    --maxwidth 120
+    --modifierorder
+    --nevertrailing
+    --nospaceoperators
+    --nowrapoperators
+    --octalgrouping 4,8
+    --operatorfunc spaced
+    --organizetypes actor,class,enum,struct
+    --patternlet hoist
+    --ranges spaced
+    --redundanttype infer-locals-only
+    --self init-only
+    --selfrequired
+    --semicolons inline
+    --shortoptionals always
+    --smarttabs enabled
+    --someAny true
+    --stripunusedargs always
+    --structthreshold 0
+    --tabwidth unspecified
+    --throwcapturing
+    --disable trailingclosures
+    --trimwhitespace always
+    --typeattributes prev-line
+    --typeblanklines remove
+    --typemark "MARK: - %t"
+    --varattributes preserve
+    --voidtype void
+    --wraparguments before-first
+    --wrapcollections before-first
+    --wrapconditions after-first
+    --wrapeffects preserve
+    --wrapenumcases always
+    --wrapparameters default
+    --wrapreturntype preserve
+    --wrapternary default
+    --wraptypealiases preserve
+    --xcodeindentation disabled
+    --yodaswap always
+    --disable enumNamespaces,unusedArguments,wrapMultilineStatementBraces
+    --enable blankLineAfterImports,isEmpty,sortedSwitchCases,wrapConditionalBodies,wrapEnumCases,wrapSwitchCases
+    """
 
 #if DEBUG
-public struct SwiftPrettyApp: App {
-    public init() {}
+    public struct SwiftPrettyApp: App {
+        public init() {}
 
-    public var body: some Scene {
-        WindowGroup {
-            SwiftPrettyView(
-                store: Store(
-                    initialState: .init(),
-                    reducer: SwiftPrettyReducer()
-                        ._printChanges()
+        public var body: some Scene {
+            WindowGroup {
+                SwiftPrettyView(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: SwiftPrettyReducer()
+                            ._printChanges()
+                    )
                 )
-            )
+            }
+            #if os(macOS)
+                .windowStyle(.titleBar)
+                .windowToolbarStyle(.unified(showsTitle: true))
+            #endif
         }
-        #if os(macOS)
-        .windowStyle(.titleBar)
-        .windowToolbarStyle(.unified(showsTitle: true))
-        #endif
     }
-}
 
 #endif

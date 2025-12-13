@@ -125,15 +125,15 @@ public struct AppReducer: ReducerProtocol {
                 return .none
 
             #if os(macOS)
-            case let .fileContentSearch(
-                .presented(.output(.outputControls(.otherToolSelected(otherTool))))
-            ):
-                handleOtherTool(
-                    thisToolOutput: state.fileContentSearch?.outputText,
-                    otherTool: otherTool,
-                    state: &state
-                )
-                return .none
+                case let .fileContentSearch(
+                    .presented(.output(.outputControls(.otherToolSelected(otherTool))))
+                ):
+                    handleOtherTool(
+                        thisToolOutput: state.fileContentSearch?.outputText,
+                        otherTool: otherTool,
+                        state: &state
+                    )
+                    return .none
             #endif
 
             case .nextToolButtonTouched:
@@ -322,7 +322,7 @@ public struct AppView: View {
                                     .font(.monospaced(Font.system(size: 14))())
                                     .fontWeight(.thin)
                                     .offset(CGSize(width: 0, height: -7))
-                                } // <-ZStack
+                                }  // <-ZStack
                             }
                         )
                     }
@@ -511,43 +511,43 @@ public struct AppView: View {
 
                 #if os(macOS)
 
-                Section(
-                    NSLocalizedString(
-                        "File",
-                        bundle: Bundle.module,
-                        comment: "sidebar section name for a group of tools"
-                    )
-                ) {
-                    NavigationLinkStore(
-                        store.scope(state: \.$fileContentSearch, action: { .fileContentSearch($0) })
+                    Section(
+                        NSLocalizedString(
+                            "File",
+                            bundle: Bundle.module,
+                            comment: "sidebar section name for a group of tools"
+                        )
                     ) {
-                        viewStore.send(.navigationLinkTouched(.fileContentSearch))
-                    } destination: { store in
-                        FileContentSearchView(store: store)
-                            .navigationTitle(
-                                NSLocalizedString(
-                                    "Search inside files",
-                                    bundle: Bundle.module,
-                                    comment: "navigation title on top of the window"
-                                )
-                            )
-                            .padding(.top)
-                    } label: {
-                        Label(
-                            title: {
-                                Text(
+                        NavigationLinkStore(
+                            store.scope(state: \.$fileContentSearch, action: { .fileContentSearch($0) })
+                        ) {
+                            viewStore.send(.navigationLinkTouched(.fileContentSearch))
+                        } destination: { store in
+                            FileContentSearchView(store: store)
+                                .navigationTitle(
                                     NSLocalizedString(
-                                        "File Search",
+                                        "Search inside files",
                                         bundle: Bundle.module,
-                                        comment: "tool name on the sidebar"
+                                        comment: "navigation title on top of the window"
                                     )
                                 )
-                            },
-                            icon: { Image(systemName: "doc.text.magnifyingglass") }
-                        )
+                                .padding(.top)
+                        } label: {
+                            Label(
+                                title: {
+                                    Text(
+                                        NSLocalizedString(
+                                            "File Search",
+                                            bundle: Bundle.module,
+                                            comment: "tool name on the sidebar"
+                                        )
+                                    )
+                                },
+                                icon: { Image(systemName: "doc.text.magnifyingglass") }
+                            )
+                        }
+                        .keyboardShortcut(KeyEquivalent("7"))
                     }
-                    .keyboardShortcut(KeyEquivalent("7"))
-                }
                 #endif
 
                 Section(
@@ -600,7 +600,7 @@ public struct AppView: View {
                         viewStore.send(.nextToolButtonTouched)
                     } label: {
                         EmptyView()
-                    } // <-Button
+                    }  // <-Button
                     .buttonStyle(.plain)
                     .keyboardShortcut(.tab, modifiers: .control)
 
@@ -615,7 +615,7 @@ public struct AppView: View {
                 }
             }
             .listStyle(.sidebar)
-            .frame(minWidth: 150) // to keep the toggle-sidebar button above the sidebar
+            .frame(minWidth: 150)  // to keep the toggle-sidebar button above the sidebar
             .accessibilityLabel(NSLocalizedString("Sidebar with the list of tools", bundle: Bundle.module, comment: ""))
             #if os(macOS)
                 // it falls behind window toolbar and becomes unclickable
@@ -624,10 +624,10 @@ public struct AppView: View {
                     ToolbarItem {
                         Button {
                             NSApp.keyWindow?.firstResponder?
-                                .tryToPerform(
-                                    #selector(NSSplitViewController.toggleSidebar(_:)),
-                                    with: nil
-                                )
+                            .tryToPerform(
+                                #selector(NSSplitViewController.toggleSidebar(_:)),
+                                with: nil
+                            )
                         } label: {
                             Label("Toggle sidebar", systemImage: "sidebar.left")
                         }

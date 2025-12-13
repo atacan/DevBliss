@@ -153,7 +153,7 @@ public struct RegexMatchesView: View {
             #if os(iOS)
                 .textInputAutocapitalization(.never)
             #endif
-                .padding()
+            .padding()
             Button(action: { viewStore.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Extract", bundle: Bundle.module, comment: ""))
                     .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
@@ -186,24 +186,24 @@ enum SettingsKey: String {
 }
 
 #if DEBUG
-public struct RegexMatchesApp: App {
-    public init() {}
+    public struct RegexMatchesApp: App {
+        public init() {}
 
-    public var body: some Scene {
-        WindowGroup {
-            RegexMatchesView(
-                store: Store(
-                    initialState: .init(),
-                    reducer: RegexMatchesReducer()
-                        ._printChanges()
+        public var body: some Scene {
+            WindowGroup {
+                RegexMatchesView(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: RegexMatchesReducer()
+                            ._printChanges()
+                    )
                 )
-            )
+            }
+            #if os(macOS)
+                .windowStyle(.titleBar)
+                .windowToolbarStyle(.unified(showsTitle: true))
+            #endif
         }
-        #if os(macOS)
-        .windowStyle(.titleBar)
-        .windowToolbarStyle(.unified(showsTitle: true))
-        #endif
     }
-}
 
 #endif

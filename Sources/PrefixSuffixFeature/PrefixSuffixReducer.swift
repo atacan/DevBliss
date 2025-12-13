@@ -22,17 +22,22 @@ public struct PrefixSuffixReducer: ReducerProtocol {
 
             let config: PrefixSuffixConfig = with(configuration) {
                 .init(
-                    prefixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplace) ?? $0
+                    prefixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplace)
+                        ?? $0
                         .prefixReplace,
-                    prefixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplaceWith) ?? $0
+                    prefixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplaceWith)
+                        ?? $0
                         .prefixReplaceWith,
                     prefixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixAdd) ?? $0.prefixAdd,
-                    suffixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplace) ?? $0
+                    suffixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplace)
+                        ?? $0
                         .suffixReplace,
-                    suffixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplaceWith) ?? $0
+                    suffixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplaceWith)
+                        ?? $0
                         .suffixReplaceWith,
                     suffixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixAdd) ?? $0.suffixAdd,
-                    trimWhiteSpace: userDefaults.bool(forKey: SettingsKey.PrefixSuffix.trimWhiteSpace) ?? $0
+                    trimWhiteSpace: userDefaults.bool(forKey: SettingsKey.PrefixSuffix.trimWhiteSpace)
+                        ?? $0
                         .trimWhiteSpace
                 )
             }
@@ -192,7 +197,7 @@ public struct PrefixSuffixView: View {
                         .focused($focusedField, equals: .prefixAdd)
                         .onSubmit { focusNextField($focusedField) }
                         .help(NSLocalizedString("Then add Prefix", bundle: Bundle.module, comment: ""))
-                    } // <-Group
+                    }  // <-Group
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
                 }
@@ -242,7 +247,7 @@ public struct PrefixSuffixView: View {
                         .focused($focusedField, equals: .suffixAdd)
                         .onSubmit { focusNextField($focusedField) }
                         .help(NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""))
-                    } // <-Group
+                    }  // <-Group
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
                 }
@@ -254,12 +259,12 @@ public struct PrefixSuffixView: View {
                             comment: ""
                         )
                     )
-            } // <-HStack
+            }  // <-HStack
             .autocorrectionDisabled()
             #if os(iOS)
                 .textInputAutocapitalization(.never)
             #endif
-                .frame(maxWidth: 850)
+            .frame(maxWidth: 850)
 
             Button(action: { viewStore.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))

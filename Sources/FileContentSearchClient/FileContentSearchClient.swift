@@ -36,8 +36,8 @@ import Foundation
             folderCondition: { url in true }
         ) { url in
             guard let typeIdentifier = try? url.resourceValues(forKeys: [.contentTypeKey]).contentType,
-                  let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden,
-                  (isHidden == options.searchHiddenFiles) || (options.searchHiddenFiles)
+                let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden,
+                (isHidden == options.searchHiddenFiles) || (options.searchHiddenFiles)
             else {
                 return false
             }
@@ -120,7 +120,8 @@ import Foundation
         let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
         if let date = attributes[.modificationDate] as? Date {
             return date
-        } else {
+        }
+        else {
             throw NSError(
                 domain: NSCocoaErrorDomain,
                 code: 0,
@@ -220,10 +221,12 @@ import Foundation
                         if fileAttributes.isRegularFile!, fileCondition(fileURL) {
                             continuation.yield(fileURL)
                         }
-                    } catch { print(error, fileURL) }
+                    }
+                    catch { print(error, fileURL) }
                 }
                 continuation.finish()
-            } else {
+            }
+            else {
                 continuation.finish()
             }
         }
@@ -266,7 +269,8 @@ import Foundation
             guard fgets(&buffer, Int32(maxLength), f) != nil else {
                 if feof(f) != 0 {
                     return nil
-                } else {
+                }
+                else {
                     throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil)
                 }
             }

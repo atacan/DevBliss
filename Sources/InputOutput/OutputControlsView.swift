@@ -79,7 +79,7 @@ struct OutputControlsView: View {
                             ? ThemeColor.Text.success
                             : ThemeColor.Text.controlText
                     )
-            } // <-Button
+            }  // <-Button
             .font(.footnote)
             .keyboardShortcut("c", modifiers: [.command, .shift])
             .help(NSLocalizedString("Copy to clipboard (Command+Shift+C)", bundle: Bundle.module, comment: ""))
@@ -89,7 +89,7 @@ struct OutputControlsView: View {
                 viewStore.send(.saveAsButtonTouched)
             } label: {
                 Image(systemName: "opticaldiscdrive")
-            } // <-Button
+            }  // <-Button
 
             .font(.footnote)
             .keyboardShortcut("s", modifiers: [.command, .shift])
@@ -100,7 +100,7 @@ struct OutputControlsView: View {
                 viewStore.send(.moveToOtherToolButtonTouched)
             } label: {
                 Image(systemName: "wand.and.rays.inverse")
-            } // <-Button
+            }  // <-Button
             .font(.footnote)
             .keyboardShortcut("u", modifiers: [.command, .shift])
             .help(
@@ -133,13 +133,13 @@ struct OutputControlsView: View {
                             }
                             .padding()
                             .buttonStyle(.plain)
-                        } // <-HStack
+                        }  // <-HStack
 
                         Spacer()
                         popContent
                         Spacer()
                     #endif
-                } // <-VStack
+                }  // <-VStack
                 .padding()
             }
         }
@@ -170,8 +170,8 @@ struct OutputControlsView: View {
                 }
                 .buttonStyle(.plain)
                 Divider()
-            } // <-ForEach
-        } // <-Group
+            }  // <-ForEach
+        }  // <-Group
     }
 }
 

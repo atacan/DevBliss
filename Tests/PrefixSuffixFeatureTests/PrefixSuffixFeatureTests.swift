@@ -1,8 +1,8 @@
 import ComposableArchitecture
+import SharedModels
 import XCTest
 
 @testable import PrefixSuffixFeature
-import SharedModels
 
 @MainActor
 final class PrefixSuffixFeatureTests: XCTestCase {

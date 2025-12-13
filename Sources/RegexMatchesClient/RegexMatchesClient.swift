@@ -63,9 +63,10 @@ func matchRegex(
             matchesOutput.append(matchOutput)
         }
 
-    } catch {
+    }
+    catch {
         // Handle errors here if necessary
-//            print("Error creating regex: \(error)")
+        //            print("Error creating regex: \(error)")
         return matchesOutput
     }
 
@@ -119,19 +120,19 @@ func highlightRegexMatches(
 
     for matchOutput in matchOutputs {
         #if os(macOS)
-        let wholeMatchColor = NSColor(cgColor: config.wholeMatchColor)
-        let captureColor = NSColor(cgColor: config.capturedGroupColor)
+            let wholeMatchColor = NSColor(cgColor: config.wholeMatchColor)
+            let captureColor = NSColor(cgColor: config.capturedGroupColor)
         #else
-        let wholeMatchColor = UIColor(cgColor: config.wholeMatchColor)
-        let captureColor = UIColor(cgColor: config.capturedGroupColor)
+            let wholeMatchColor = UIColor(cgColor: config.wholeMatchColor)
+            let captureColor = UIColor(cgColor: config.capturedGroupColor)
         #endif
         let wholeMatchAttributes: [NSAttributedString.Key: Any] = [
-            .backgroundColor: wholeMatchColor,
+            .backgroundColor: wholeMatchColor
         ]
         mutableAttributedString.addAttributes(wholeMatchAttributes, range: matchOutput.wholeMatchRange)
         matchOutput.capturedGroupRanges.forEach { range in
             let captureAttributes: [NSAttributedString.Key: Any] = [
-                .backgroundColor: captureColor,
+                .backgroundColor: captureColor
             ]
             mutableAttributedString.addAttributes(captureAttributes, range: range)
         }

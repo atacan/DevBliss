@@ -24,11 +24,13 @@ struct URLDropDelegate: DropDelegate {
         for itemProvider in info.itemProviders(for: [acceptedType]) {
             itemProvider.loadItem(forTypeIdentifier: acceptedType.identifier, options: nil) { item, error in
                 if let data = item as? Data,
-                   let url = URL(dataRepresentation: data, relativeTo: nil) {
+                    let url = URL(dataRepresentation: data, relativeTo: nil)
+                {
                     DispatchQueue.main.async {
                         urls.append(url)
                     }
-                } else {
+                }
+                else {
                     noProblem = false
                 }
             }
@@ -137,12 +139,12 @@ struct InputEditorDropView: View {
 
 // preview
 #if DEBUG
-struct InputEditorDropView_Previews: PreviewProvider {
-    static var previews: some View {
-        InputEditorDropView(
-            store: Store(initialState: .init(isDropInProgress: true), reducer: InputEditorDropReducer())
-        )
-        .padding()
+    struct InputEditorDropView_Previews: PreviewProvider {
+        static var previews: some View {
+            InputEditorDropView(
+                store: Store(initialState: .init(isDropInProgress: true), reducer: InputEditorDropReducer())
+            )
+            .padding()
+        }
     }
-}
 #endif
