@@ -46,8 +46,7 @@ public struct InputOutputEditorsReducer: Reducer {
 }
 
 public struct InputOutputEditorsView: View {
-    let store: StoreOf<InputOutputEditorsReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputOutputEditorsReducer>
+    @Perception.Bindable var store: StoreOf<InputOutputEditorsReducer>
 
     let inputEditorTitle: String
     let outputEditorTitle: String
@@ -68,7 +67,6 @@ public struct InputOutputEditorsView: View {
         keyForLayout: String = "inputOutputSplitLayout"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
         self.fraction = FractionHolder.usingUserDefaults(0.5, key: keyForFraction)
         self.layout = LayoutHolder.usingUserDefaults(.horizontal, key: keyForLayout)
 
