@@ -130,20 +130,18 @@ public struct SwiftPrettyReducer: Reducer {
 
 public struct SwiftPrettyView: View {
     let store: StoreOf<SwiftPrettyReducer>
-    @ObservedObject var viewStore: ViewStoreOf<SwiftPrettyReducer>
 
     @State var configIsExpanded = true
 
     public init(store: StoreOf<SwiftPrettyReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
         VSplit {
             VStack {
                 // DisclosureGroup("Configuration", isExpanded: $configIsExpanded) {
-                //     Toggle("Use Lockwood", isOn: viewStore.binding(\.$useLockwood))
+                //     Toggle("Use Lockwood", isOn: store.binding(\.$useLockwood))
                 //         .toggleStyle(.automatic)
                 //         .frame(width: .nan)
                 lockwoodEditor
@@ -151,9 +149,9 @@ public struct SwiftPrettyView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 // }
 
-                Button(action: { viewStore.send(.convertButtonTouched) }) {
+                Button(action: { store.send(.convertButtonTouched) }) {
                     Text(NSLocalizedString("Format", bundle: Bundle.module, comment: ""))
-                        .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
+                        .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
                 }
                 .padding(.bottom)
                 .keyboardShortcut(.return, modifiers: [.command])

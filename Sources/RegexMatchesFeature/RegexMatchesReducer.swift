@@ -134,18 +134,16 @@ public struct RegexMatchesReducer: Reducer {
 
 public struct RegexMatchesView: View {
     let store: StoreOf<RegexMatchesReducer>
-    @ObservedObject var viewStore: ViewStoreOf<RegexMatchesReducer>
 
     public init(store: StoreOf<RegexMatchesReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
         VStack {
             TextField(
                 NSLocalizedString("Regex pattern", bundle: Bundle.module, comment: ""),
-                text: viewStore.binding(\.$regexPattern)
+                text: store.binding(\.$regexPattern)
             )
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .font(.monospaced(.body)())
@@ -154,9 +152,9 @@ public struct RegexMatchesView: View {
                 .textInputAutocapitalization(.never)
             #endif
             .padding()
-            Button(action: { viewStore.send(.convertButtonTouched) }) {
+            Button(action: { store.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Extract", bundle: Bundle.module, comment: ""))
-                    .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
+                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Extract matches (Cmd+Return)", bundle: Bundle.module, comment: ""))
@@ -169,7 +167,7 @@ public struct RegexMatchesView: View {
             )
         }
         .onAppear {
-            viewStore.send(.observeSettings)
+            store.send(.observeSettings)
         }
     }
 }

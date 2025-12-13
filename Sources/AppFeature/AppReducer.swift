@@ -267,10 +267,8 @@ public struct AppReducer: Reducer {
 
 public struct AppView: View {
     let store: StoreOf<AppReducer>
-    @ObservedObject var viewStore: ViewStoreOf<AppReducer>
     public init(store: StoreOf<AppReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -286,7 +284,7 @@ public struct AppView: View {
                     NavigationLinkStore(
                         store.scope(state: \.$htmlToSwift, action: { .htmlToSwift($0) })
                     ) {
-                        viewStore.send(.navigationLinkTouched(.htmlToSwift))
+                        store.send(.navigationLinkTouched(.htmlToSwift))
                     } destination: { store in
                         HtmlToSwiftView(store: store)
                             .navigationTitle(
@@ -331,7 +329,7 @@ public struct AppView: View {
                     NavigationLinkStore(
                         store.scope(state: \.$textCaseConverter, action: { .textCaseConverter($0) })
                     ) {
-                        viewStore.send(.navigationLinkTouched(.textCaseConverter))
+                        store.send(.navigationLinkTouched(.textCaseConverter))
                     } destination: { store in
                         TextCaseConverterView(store: store)
                             .navigationTitle(
@@ -369,7 +367,7 @@ public struct AppView: View {
                     NavigationLinkStore(
                         store.scope(state: \.$prefixSuffix, action: { .prefixSuffix($0) })
                     ) {
-                        viewStore.send(.navigationLinkTouched(.prefixSuffix))
+                        store.send(.navigationLinkTouched(.prefixSuffix))
                     } destination: { store in
                         PrefixSuffixView(store: store)
                             .navigationTitle(
@@ -399,7 +397,7 @@ public struct AppView: View {
                     NavigationLinkStore(
                         store.scope(state: \.$regexMatches, action: { .regexMatches($0) })
                     ) {
-                        viewStore.send(.navigationLinkTouched(.regexMatches))
+                        store.send(.navigationLinkTouched(.regexMatches))
                     } destination: { store in
                         RegexMatchesView(store: store)
                             .navigationTitle(
@@ -446,7 +444,7 @@ public struct AppView: View {
                     NavigationLinkStore(
                         store.scope(state: \.$jsonPretty, action: { .jsonPretty($0) })
                     ) {
-                        viewStore.send(.navigationLinkTouched(.jsonPretty))
+                        store.send(.navigationLinkTouched(.jsonPretty))
                     } destination: { store in
                         JsonPrettyView(store: store)
                             .navigationTitle(
@@ -481,7 +479,7 @@ public struct AppView: View {
                     NavigationLinkStore(
                         store.scope(state: \.$swiftPrettyLockwood, action: { .swiftPrettyLockwood($0) })
                     ) {
-                        viewStore.send(.navigationLinkTouched(.swiftPrettyLockwood))
+                        store.send(.navigationLinkTouched(.swiftPrettyLockwood))
                     } destination: { store in
                         SwiftPrettyView(store: store)
                             .navigationTitle(
@@ -521,7 +519,7 @@ public struct AppView: View {
                         NavigationLinkStore(
                             store.scope(state: \.$fileContentSearch, action: { .fileContentSearch($0) })
                         ) {
-                            viewStore.send(.navigationLinkTouched(.fileContentSearch))
+                            store.send(.navigationLinkTouched(.fileContentSearch))
                         } destination: { store in
                             FileContentSearchView(store: store)
                                 .navigationTitle(
@@ -560,7 +558,7 @@ public struct AppView: View {
                     // NavigationLinkStore(
                     //     store.scope(state: \.$uuidGenerator, action: { .uuidGenerator($0) })
                     // ) {
-                    //     viewStore.send(.navigationLinkTouched(.uuidGenerator))
+                    //     store.send(.navigationLinkTouched(.uuidGenerator))
                     // } destination: { store in
                     //     UUIDGeneratorView(store: store)
                     //     .navigationTitle(NSLocalizedString("Generate UUIDs", bundle: Bundle.module, comment:
@@ -576,7 +574,7 @@ public struct AppView: View {
                     NavigationLinkStore(
                         store.scope(state: \.$nameGenerator, action: { .nameGenerator($0) })
                     ) {
-                        viewStore.send(.navigationLinkTouched(.nameGenerator))
+                        store.send(.navigationLinkTouched(.nameGenerator))
                     } destination: { store in
                         NameGeneratorView(store: store)
                             .navigationTitle(
@@ -597,7 +595,7 @@ public struct AppView: View {
                 }
                 .overlay {
                     Button {
-                        viewStore.send(.nextToolButtonTouched)
+                        store.send(.nextToolButtonTouched)
                     } label: {
                         EmptyView()
                     }  // <-Button
@@ -605,7 +603,7 @@ public struct AppView: View {
                     .keyboardShortcut(.tab, modifiers: .control)
 
                     Button {
-                        viewStore.send(.previousToolButtonTouched)
+                        store.send(.previousToolButtonTouched)
                     } label: {
                         EmptyView()
                     }

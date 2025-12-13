@@ -134,40 +134,38 @@ public struct NameGeneratorProbabilisticReducer: Reducer {
 
 public struct NameGeneratorProbabilisticView: View {
     let store: StoreOf<NameGeneratorProbabilisticReducer>
-    @ObservedObject var viewStore: ViewStoreOf<NameGeneratorProbabilisticReducer>
 
     public init(store: StoreOf<NameGeneratorProbabilisticReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
         ScrollView {
             VStack {
                 LetterWeightsInputView(
-                    vowelsInput: viewStore.binding(\.$vowelsInput),
+                    vowelsInput: store.binding(\.$vowelsInput),
                     title: NSLocalizedString("Vowels", bundle: Bundle.module, comment: ""),
                     plustButtonAction: {
-                        viewStore.send(.addVowelButtontouched)
+                        store.send(.addVowelButtontouched)
                     },
                     deleteButtonAction: { id in
-                        viewStore.send(.deleteVowelButtontouched(id))
+                        store.send(.deleteVowelButtontouched(id))
                     }
                 )
                 LetterWeightsInputView(
-                    vowelsInput: viewStore.binding(\.$consonantsInput),
+                    vowelsInput: store.binding(\.$consonantsInput),
                     title: NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""),
                     plustButtonAction: {
-                        viewStore.send(.addConsonantButtontouched)
+                        store.send(.addConsonantButtontouched)
                     },
                     deleteButtonAction: { id in
-                        viewStore.send(.deleteConsonantButtontouched(id))
+                        store.send(.deleteConsonantButtontouched(id))
                     }
                 )
                 HStack {
                     VStack {
                         Text(NSLocalizedString("Min. length", bundle: Bundle.module, comment: ""))
-                        IntegerTextField(value: viewStore.binding(\.$minLength), range: 1 ... 15)
+                        IntegerTextField(value: store.binding(\.$minLength), range: 1 ... 15)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(
@@ -182,14 +180,14 @@ public struct NameGeneratorProbabilisticView: View {
                             "%d",
                             tableName: nil,
                             bundle: Bundle.module,
-                            value: "\(viewStore.minLength)",
+                            value: "\(store.minLength)",
                             comment: "value of a numeric input value for voice-over"
                         )
                     )
 
                     VStack {
                         Text(NSLocalizedString("Max. length", bundle: Bundle.module, comment: ""))
-                        IntegerTextField(value: viewStore.binding(\.$maxLength), range: 1 ... 15)
+                        IntegerTextField(value: store.binding(\.$maxLength), range: 1 ... 15)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(
@@ -204,7 +202,7 @@ public struct NameGeneratorProbabilisticView: View {
                             "%d",
                             tableName: nil,
                             bundle: Bundle.module,
-                            value: "\(viewStore.maxLength)",
+                            value: "\(store.maxLength)",
                             comment: "value of a numeric input value for voice-over"
                         )
                     )
@@ -219,7 +217,7 @@ public struct NameGeneratorProbabilisticView: View {
                                     comment: ""
                                 )
                             )
-                        Slider(value: viewStore.binding(\.$alternationProbability), in: 0 ... 1)
+                        Slider(value: store.binding(\.$alternationProbability), in: 0 ... 1)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(
@@ -237,13 +235,13 @@ public struct NameGeneratorProbabilisticView: View {
                                     bundle: Bundle.module,
                                     comment: "value of a numeric input value for voice-over"
                                 ),
-                            Int(viewStore.alternationProbability * 100)
+                            Int(store.alternationProbability * 100)
                         )
                     )
 
                     VStack {
                         Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                        IntegerTextField(value: viewStore.binding(\.$numberOfNames), range: 1 ... 200)
+                        IntegerTextField(value: store.binding(\.$numberOfNames), range: 1 ... 200)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(NSLocalizedString("names to be generated", bundle: Bundle.module, comment: ""))
@@ -255,7 +253,7 @@ public struct NameGeneratorProbabilisticView: View {
                                     bundle: Bundle.module,
                                     comment: "value of a numeric input value for voice-over"
                                 ),
-                                viewStore.numberOfNames
+                                store.numberOfNames
                             ),
                             bundle: Bundle.module,
                             comment: "value of a numeric input value for voice-over"
@@ -264,12 +262,12 @@ public struct NameGeneratorProbabilisticView: View {
                 }
 
                 Button(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
-                    viewStore.send(.generateButtonTouched)
+                    store.send(.generateButtonTouched)
                 }
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
                 .overlay(
-                    viewStore.isGenerating
+                    store.isGenerating
                         ? ProgressView()
                         : nil
                 )

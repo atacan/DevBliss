@@ -3,8 +3,11 @@ import InputOutput
 import SwiftUI
 import UUIDGeneratorClient
 
-public struct UUIDGeneratorReducer: Reducer {
+@Reducer
+public struct UUIDGeneratorReducer {
     public init() {}
+    
+    @ObservableState
     public struct State: Equatable {
         var count: Int
         var textCase: TextCase
@@ -76,39 +79,37 @@ public struct UUIDGeneratorReducer: Reducer {
 
 public struct UUIDGeneratorView: View {
     let store: Store<UUIDGeneratorReducer.State, UUIDGeneratorReducer.Action>
-    @ObservedObject var viewStore: ViewStore<UUIDGeneratorReducer.State, UUIDGeneratorReducer.Action>
 
     public init(store: StoreOf<UUIDGeneratorReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
         VStack(alignment: .center) {
             //            HStack {
-            //                //            TextField("How many?", value: viewStore.binding(\.$count), formatter:
+            //                //            TextField("How many?", value: store.binding(\.$count), formatter:
             //                /NumberFormatter())
             //                //                .textFieldStyle(RoundedBorderTextFieldStyle())
             //                //                .frame(maxWidth: 100)
-            //                //            Stepper("", value: viewStore.binding(\.$count), in: 1...1_000_000)
-            //                Stepper(value: viewStore.binding(\.$count), in: 1 ... 1000) {
+            //                //            Stepper("", value: store.binding(\.$count), in: 1...1_000_000)
+            //                Stepper(value: store.binding(\.$count), in: 1 ... 1000) {
             //                    //                Text("sdfkjds")
-            //                    TextField("How many?", value: viewStore.binding(\.$count), formatter:
+            //                    TextField("How many?", value: store.binding(\.$count), formatter:
             //                    NumberFormatter())
             //                        .textFieldStyle(RoundedBorderTextFieldStyle())
             //                }
             //                .frame(maxWidth: 250)
             //            }
             HStack {
-                IntegerTextField(value: viewStore.binding(\.$count), range: 1 ... 1_000_000)
-                Picker("", selection: viewStore.binding(\.$textCase)) {
+                IntegerTextField(value: store.binding(\.$count), range: 1 ... 1_000_000)
+                Picker("", selection: store.binding(\.$textCase)) {
                     Text(NSLocalizedString("lowercase", bundle: Bundle.module, comment: "")).tag(TextCase.lower)
                     Text(NSLocalizedString("UPPERCASE", bundle: Bundle.module, comment: "")).tag(TextCase.upper)
                 }
             }
             .frame(maxWidth: 250)
             Button {
-                viewStore.send(.generateButtonTouched)
+                store.send(.generateButtonTouched)
             } label: {
                 Text(NSLocalizedString("Generate", bundle: Bundle.module, comment: ""))
             }  // <-Button

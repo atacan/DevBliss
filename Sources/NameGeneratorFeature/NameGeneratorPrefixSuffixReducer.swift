@@ -126,11 +126,9 @@ public struct NameGeneratorPrefixSuffixReducer: Reducer {
 
 public struct NameGeneratorPrefixSuffixView: View {
     let store: StoreOf<NameGeneratorPrefixSuffixReducer>
-    @ObservedObject var viewStore: ViewStoreOf<NameGeneratorPrefixSuffixReducer>
 
     public init(store: StoreOf<NameGeneratorPrefixSuffixReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -140,7 +138,7 @@ public struct NameGeneratorPrefixSuffixView: View {
                     Text(NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$prefixesInput)
+                        text: store.binding(\.$prefixesInput)
                     )
                     .textFieldStyle(.roundedBorder)
                     .font(.monospaced(.title3)())
@@ -149,7 +147,7 @@ public struct NameGeneratorPrefixSuffixView: View {
                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$inputSeparator)
+                        text: store.binding(\.$inputSeparator)
                     )
                     .textFieldStyle(.roundedBorder)
                     .font(.monospaced(.title3)())
@@ -168,7 +166,7 @@ public struct NameGeneratorPrefixSuffixView: View {
                     Text(NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$suffixesInput)
+                        text: store.binding(\.$suffixesInput)
                     )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
@@ -177,7 +175,7 @@ public struct NameGeneratorPrefixSuffixView: View {
                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
                     TextField(
                         NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$inputSeparator)
+                        text: store.binding(\.$inputSeparator)
                     )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
@@ -195,7 +193,7 @@ public struct NameGeneratorPrefixSuffixView: View {
             HStack(alignment: .bottom) {
                 VStack {
                     Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: viewStore.binding(\.$numberOfNames), range: 1 ... 200)
+                    IntegerTextField(value: store.binding(\.$numberOfNames), range: 1 ... 200)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -207,13 +205,13 @@ public struct NameGeneratorPrefixSuffixView: View {
                 )
                 .accessibilityValue(
                     NSLocalizedString(
-                        "\(viewStore.numberOfNames)",
+                        "\(store.numberOfNames)",
                         bundle: Bundle.module,
                         comment: "value of a numeric input value for voice-over"
                     )
                 )
                 Button(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
-                    viewStore.send(.generateButtonTouched)
+                    store.send(.generateButtonTouched)
                 }
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))

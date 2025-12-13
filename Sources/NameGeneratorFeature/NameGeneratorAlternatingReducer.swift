@@ -93,11 +93,9 @@ public struct NameGeneratorAlternatingReducer: Reducer {
 
 public struct NameGeneratorAlternatingView: View {
     let store: StoreOf<NameGeneratorAlternatingReducer>
-    @ObservedObject var viewStore: ViewStoreOf<NameGeneratorAlternatingReducer>
 
     public init(store: StoreOf<NameGeneratorAlternatingReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -107,7 +105,7 @@ public struct NameGeneratorAlternatingView: View {
                     Text(NSLocalizedString("Vowels", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$vowelsInput)
+                        text: store.binding(\.$vowelsInput)
                     )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
@@ -116,7 +114,7 @@ public struct NameGeneratorAlternatingView: View {
                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$inputSeparator)
+                        text: store.binding(\.$inputSeparator)
                     )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
@@ -128,7 +126,7 @@ public struct NameGeneratorAlternatingView: View {
                     Text(NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$consonantsInput)
+                        text: store.binding(\.$consonantsInput)
                     )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
@@ -137,7 +135,7 @@ public struct NameGeneratorAlternatingView: View {
                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
                     TextField(
                         NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$inputSeparator)
+                        text: store.binding(\.$inputSeparator)
                     )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
@@ -148,7 +146,7 @@ public struct NameGeneratorAlternatingView: View {
             HStack {
                 VStack {
                     Text(NSLocalizedString("Min. length", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: viewStore.binding(\.$minLength), range: 1 ... 15)
+                    IntegerTextField(value: store.binding(\.$minLength), range: 1 ... 15)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -160,7 +158,7 @@ public struct NameGeneratorAlternatingView: View {
                 )
                 .accessibilityValue(
                     NSLocalizedString(
-                        "\(viewStore.minLength)",
+                        "\(store.minLength)",
                         bundle: Bundle.module,
                         comment: "value of a numeric input value for voice-over"
                     )
@@ -168,7 +166,7 @@ public struct NameGeneratorAlternatingView: View {
 
                 VStack {
                     Text(NSLocalizedString("Max. length", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: viewStore.binding(\.$maxLength), range: 1 ... 15)
+                    IntegerTextField(value: store.binding(\.$maxLength), range: 1 ... 15)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -180,7 +178,7 @@ public struct NameGeneratorAlternatingView: View {
                 )
                 .accessibilityValue(
                     NSLocalizedString(
-                        "\(viewStore.maxLength)",
+                        "\(store.maxLength)",
                         bundle: Bundle.module,
                         comment: "value of a numeric input value for voice-over"
                     )
@@ -188,7 +186,7 @@ public struct NameGeneratorAlternatingView: View {
 
                 VStack {
                     Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: viewStore.binding(\.$numberOfNames), range: 1 ... 200)
+                    IntegerTextField(value: store.binding(\.$numberOfNames), range: 1 ... 200)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -205,13 +203,13 @@ public struct NameGeneratorAlternatingView: View {
                             bundle: Bundle.module,
                             comment: "value of a numeric input value for voice-over"
                         ),
-                        viewStore.numberOfNames
+                        store.numberOfNames
                     )
                 )
             }
 
             Button(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
-                viewStore.send(.generateButtonTouched)
+                store.send(.generateButtonTouched)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
