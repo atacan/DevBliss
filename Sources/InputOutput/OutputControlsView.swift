@@ -4,7 +4,7 @@ import ComposableArchitecture
 import SharedModels
 import SwiftUI
 
-public struct OutputControlsReducer: ReducerProtocol {
+public struct OutputControlsReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         var copyButtonAnimating: Bool = false
@@ -22,7 +22,7 @@ public struct OutputControlsReducer: ReducerProtocol {
         case copyEnded
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -56,14 +56,15 @@ struct OutputControlsView: View {
 
     public init(
         store: StoreOf<OutputControlsReducer> = .init(
-            initialState: .init(),
-            reducer: OutputControlsReducer()
-        ),
+            initialState: .init()
+        ) {
+            OutputControlsReducer()
+        },
         copyButtonTitle: String = "Copy",
         saveAsButtonTitle: String = "Save As..."
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
         self.copyButtonTitle = copyButtonTitle
         self.saveAsButtonTitle = saveAsButtonTitle
     }
@@ -111,7 +112,7 @@ struct OutputControlsView: View {
                 )
             )
             .accessibilityLabel(NSLocalizedString("Input it to the other tools", bundle: Bundle.module, comment: ""))
-            .popover(isPresented: viewStore.binding(\.$isOtherToolsPopoverVisible)) {
+            .popover(isPresented: store.binding(\.$isOtherToolsPopoverVisible)) {
                 VStack(alignment: .leading) {
                     #if os(macOS)
                         popContent

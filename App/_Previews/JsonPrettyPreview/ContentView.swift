@@ -6,15 +6,16 @@ struct ContentView: View {
     var body: some View {
         #if os(iOS)
             NavigationView {
-                JsonPrettyView(store: Store(initialState: .init(), reducer: JsonPrettyReducer()))
+                JsonPrettyView(store: Store(initialState: .init()) { JsonPrettyReducer() })
                     .padding()
             }
         #else
             JsonPrettyView(
                 store: Store(
-                    initialState: .init(),
-                    reducer: JsonPrettyReducer()._printChanges()
-                )
+                    initialState: .init()
+                ) {
+                    JsonPrettyReducer()._printChanges()
+                }
             )
             .padding()
         #endif

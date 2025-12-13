@@ -3,7 +3,7 @@ import InputOutput
 import NameGeneratorClient
 import SwiftUI
 
-public struct NameGeneratorPrefixSuffixReducer: ReducerProtocol {
+public struct NameGeneratorPrefixSuffixReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         @BindingState var prefixesInput: String
@@ -84,7 +84,7 @@ public struct NameGeneratorPrefixSuffixReducer: ReducerProtocol {
     @Dependency(\.nameGenerator) var nameGenerator
     private enum CancelID { case generationRequest }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -130,7 +130,7 @@ public struct NameGeneratorPrefixSuffixView: View {
 
     public init(store: StoreOf<NameGeneratorPrefixSuffixReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {

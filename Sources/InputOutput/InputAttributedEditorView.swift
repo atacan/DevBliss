@@ -7,7 +7,7 @@ import SwiftUI
     import MacSwiftUI
 #endif
 
-public struct InputAttributedEditorReducer: ReducerProtocol {
+public struct InputAttributedEditorReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         @BindingState public var text: NSMutableAttributedString
@@ -33,7 +33,7 @@ public struct InputAttributedEditorReducer: ReducerProtocol {
     @Dependency(\.mainQueue) var mainQueue
     @Dependency(\.clipboard) var clipboard
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
 
         Reduce<State, Action> { state, action in
@@ -45,9 +45,9 @@ public struct InputAttributedEditorReducer: ReducerProtocol {
                 if let clip = clipboard.getString() {
                     _ = state.updateText(clip)
                 }
-                return .task {
+                return .run { send in
                     try await mainQueue.sleep(for: .milliseconds(200))
-                    return .pasteButtonAnimationEnded
+                    await send(.pasteButtonAnimationEnded)
                 }
             case .pasteButtonAnimationEnded:
                 state.pasteButtonAnimating = false
@@ -65,7 +65,7 @@ public struct InputAttributedEditorReducer: ReducerProtocol {
 }
 
 extension InputAttributedEditorReducer.State {
-    public mutating func updateText(_ newText: String) -> EffectTask<InputAttributedEditorReducer.Action> {
+    public mutating func updateText(_ newText: String) -> Effect<InputAttributedEditorReducer.Action> {
         text = .init(attributedString: regularAttributedString(newText))
         return .none
     }
@@ -73,13 +73,13 @@ extension InputAttributedEditorReducer.State {
     public mutating func updateText(
         _ newText: NSMutableAttributedString
     )
-        -> EffectTask<InputAttributedEditorReducer.Action>
+        -> Effect<InputAttributedEditorReducer.Action>
     {
         text = newText
         return .none
     }
 
-    public mutating func updateText(_ newText: NSAttributedString) -> EffectTask<InputAttributedEditorReducer.Action> {
+    public mutating func updateText(_ newText: NSAttributedString) -> Effect<InputAttributedEditorReducer.Action> {
         text = .init(attributedString: newText)
         return .none
     }
@@ -106,7 +106,7 @@ public struct InputAttributedEditorView: View {
         pasteButtonTitle: String = "Paste"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
         self.title = title
         self.pasteButtonTitle = pasteButtonTitle
     }
@@ -196,9 +196,10 @@ struct InputAttributedEditorView_Previews: PreviewProvider {
     static var previews: some View {
         InputAttributedEditorView(
             store: Store(
-                initialState: InputAttributedEditorReducer.State(),
-                reducer: InputAttributedEditorReducer()
-            )
+                initialState: InputAttributedEditorReducer.State()
+            ) {
+                InputAttributedEditorReducer()
+            }
         )
     }
 }

@@ -3,7 +3,7 @@ import ClipboardClient
 import ComposableArchitecture
 import SwiftUI
 
-public struct InputEditorReducer: ReducerProtocol {
+public struct InputEditorReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         @BindingState public var text: String
@@ -30,7 +30,7 @@ public struct InputEditorReducer: ReducerProtocol {
     @Dependency(\.mainQueue) var mainQueue
     @Dependency(\.clipboard) var clipboard
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -41,9 +41,9 @@ public struct InputEditorReducer: ReducerProtocol {
                 if let clip = clipboard.getString() {
                     state.text = clip
                 }
-                return .task {
+                return .run { send in
                     try await mainQueue.sleep(for: .milliseconds(200))
-                    return .pasteButtonAnimationEnded
+                    await send(.pasteButtonAnimationEnded)
                 }
             // case .saveAsButtonTouched:
             // return .none
@@ -68,12 +68,12 @@ public struct InputEditorReducer: ReducerProtocol {
 }
 
 extension InputEditorReducer.State {
-    public mutating func updateText(_ newText: String) -> EffectTask<InputEditorReducer.Action> {
+    public mutating func updateText(_ newText: String) -> Effect<InputEditorReducer.Action> {
         text = newText
         return .none
     }
 
-    public mutating func updateText(_ newText: NSAttributedString) -> EffectTask<InputEditorReducer.Action> {
+    public mutating func updateText(_ newText: NSAttributedString) -> Effect<InputEditorReducer.Action> {
         text = newText.string
         return .none
     }
@@ -92,7 +92,7 @@ public struct InputEditorView: View {
         pasteButtonTitle: String = "Paste"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
         self.title = title
         self.pasteButtonTitle = pasteButtonTitle
     }
@@ -142,9 +142,10 @@ struct InputView_Previews: PreviewProvider {
             store: Store(
                 initialState: InputEditorReducer.State(
                     inputEditorDrop: .init(isDropInProgress: true)
-                ),
-                reducer: InputEditorReducer()
-            )
+                )
+            ) {
+                InputEditorReducer()
+            }
         )
         .padding()
     }
@@ -159,10 +160,11 @@ struct InputView_Previews: PreviewProvider {
                     store: Store(
                         initialState: .init(
                             inputEditorDrop: .init(isDropInProgress: false)
-                        ),
-                        reducer: InputEditorReducer()
+                        )
+                    ) {
+                        InputEditorReducer()
                             ._printChanges()
-                    )
+                    }
                 )
             }
             #if os(macOS)

@@ -8,7 +8,7 @@ import SplitView
 import SwiftPrettyClient
 import SwiftUI
 
-public struct SwiftPrettyReducer: ReducerProtocol {
+public struct SwiftPrettyReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
@@ -61,7 +61,7 @@ public struct SwiftPrettyReducer: ReducerProtocol {
     @Dependency(\.swiftPretty) var swiftPretty
     private enum CancelID { case conversionRequest }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -114,7 +114,7 @@ public struct SwiftPrettyReducer: ReducerProtocol {
     // private func setPreferences(
     //     for action: BindingAction<InputEditorReducer.State>,
     //     from state: State
-    // ) -> EffectTask<Action> {
+    // ) -> Effect<Action> {
     //     switch action {
     //     case \.$text:
     //         // userDefaults.set(state.lockwoodConfig.text, forKey: SettingsKey.SwiftPretty.lockwoodConfig)
@@ -136,7 +136,7 @@ public struct SwiftPrettyView: View {
 
     public init(store: StoreOf<SwiftPrettyReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -185,7 +185,7 @@ public struct SwiftPrettyView: View {
 // preview
 struct SwiftPrettyReducer_Previews: PreviewProvider {
     static var previews: some View {
-        SwiftPrettyView(store: .init(initialState: .init(), reducer: SwiftPrettyReducer()))
+        SwiftPrettyView(store: .init(initialState: .init()) { SwiftPrettyReducer() })
     }
 }
 

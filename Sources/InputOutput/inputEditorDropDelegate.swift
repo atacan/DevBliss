@@ -44,7 +44,7 @@ struct URLDropDelegate: DropDelegate {
     }
 }
 
-public struct InputEditorDropReducer: ReducerProtocol {
+public struct InputEditorDropReducer: Reducer {
     public struct State: Equatable {
         @BindingState var isDropInProgress: Bool
         @BindingState var droppedUrls: [URL]
@@ -64,7 +64,7 @@ public struct InputEditorDropReducer: ReducerProtocol {
         case droppedFileContent(String)
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -100,7 +100,7 @@ struct InputEditorDropView: View {
 
     init(store: StoreOf<InputEditorDropReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     var body: some View {
@@ -142,7 +142,9 @@ struct InputEditorDropView: View {
     struct InputEditorDropView_Previews: PreviewProvider {
         static var previews: some View {
             InputEditorDropView(
-                store: Store(initialState: .init(isDropInProgress: true), reducer: InputEditorDropReducer())
+               store: Store(initialState: .init(isDropInProgress: true)) {
+                   InputEditorDropReducer()
+               }
             )
             .padding()
         }

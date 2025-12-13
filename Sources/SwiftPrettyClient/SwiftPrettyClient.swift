@@ -14,9 +14,9 @@ extension SwiftPrettyClient: DependencyKey {
                 let data = Data(config.utf8)
                 do {
                     let args = try parseConfigFile(data)
-                    let formatOptions = try formatOptionsFor(args)!
-                    let formatted = try format(input, options: formatOptions)
-                    return continuation.resume(returning: formatted)
+                    let formatOptions = try formatOptionsFor(args.first ?? [:])!
+                    let result = try format(input, options: formatOptions)
+                    return continuation.resume(returning: result.output)
                 }
                 catch {
                     return continuation.resume(throwing: error)

@@ -6,7 +6,7 @@ import InputOutput
 import RegexMatchesClient
 import SwiftUI
 
-public struct RegexMatchesReducer: ReducerProtocol {
+public struct RegexMatchesReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         var inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State
@@ -57,7 +57,7 @@ public struct RegexMatchesReducer: ReducerProtocol {
     private enum CancelID { case conversionRequest }
     @Dependency(\.userDefaults) var userDefaults
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
 
         Reduce<State, Action> { state, action in
@@ -109,7 +109,7 @@ public struct RegexMatchesReducer: ReducerProtocol {
         }
     }
 
-    private func observeSettings() -> EffectTask<Action> {
+    private func observeSettings() -> Effect<Action> {
         .run { send in
             await withTaskGroup(of: Void.self) { group in
                 group.addTask {
@@ -121,7 +121,7 @@ public struct RegexMatchesReducer: ReducerProtocol {
         }
     }
 
-    private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
+    private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
         switch action {
         case \.$regexPattern:
             userDefaults.set(state.regexPattern, forKey: SettingsKey.regexPattern.rawValue)
@@ -138,7 +138,7 @@ public struct RegexMatchesView: View {
 
     public init(store: StoreOf<RegexMatchesReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -177,7 +177,7 @@ public struct RegexMatchesView: View {
 // preview
 struct RegexMatchesReducer_Previews: PreviewProvider {
     static var previews: some View {
-        RegexMatchesView(store: .init(initialState: .init(), reducer: RegexMatchesReducer()))
+        RegexMatchesView(store: .init(initialState: .init()) { RegexMatchesReducer() })
     }
 }
 
@@ -193,10 +193,11 @@ enum SettingsKey: String {
             WindowGroup {
                 RegexMatchesView(
                     store: Store(
-                        initialState: .init(),
-                        reducer: RegexMatchesReducer()
+                        initialState: .init()
+                    ) {
+                        RegexMatchesReducer()
                             ._printChanges()
-                    )
+                    }
                 )
             }
             #if os(macOS)

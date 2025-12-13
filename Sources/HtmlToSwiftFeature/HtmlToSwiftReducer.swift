@@ -7,7 +7,7 @@ import InputOutput
 import SharedModels
 import SwiftUI
 
-public struct HtmlToSwiftReducer: ReducerProtocol {
+public struct HtmlToSwiftReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
@@ -50,7 +50,7 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
     private enum CancelID { case conversionRequest }
     @Dependency(\.userDefaults) var userDefaults
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -91,7 +91,7 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
         }
     }
 
-    private func observeSettings() -> EffectTask<Action> {
+    private func observeSettings() -> Effect<Action> {
         .run { send in
             await withTaskGroup(of: Void.self) { group in
                 group.addTask {
@@ -111,7 +111,7 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
         }
     }
 
-    private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
+    private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
         switch action {
         case \.$dsl:
             userDefaults.set(state.dsl, forKey: SettingsKey.HtmlToSwift.dsl)
@@ -131,7 +131,7 @@ public struct HtmlToSwiftView: View {
 
     public init(store: StoreOf<HtmlToSwiftReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     #if os(iOS)
@@ -238,7 +238,7 @@ public struct HtmlToSwiftView: View {
 // preview
 struct HtmlToSwiftReducer_Previews: PreviewProvider {
     static var previews: some View {
-        HtmlToSwiftView(store: .init(initialState: .init(), reducer: HtmlToSwiftReducer()))
+        HtmlToSwiftView(store: .init(initialState: .init()) { HtmlToSwiftReducer() })
     }
 }
 
@@ -250,10 +250,11 @@ struct HtmlToSwiftReducer_Previews: PreviewProvider {
             WindowGroup {
                 HtmlToSwiftView(
                     store: Store(
-                        initialState: .init(),
-                        reducer: HtmlToSwiftReducer()
+                        initialState: .init()
+                    ) {
+                        HtmlToSwiftReducer()
                             ._printChanges()
-                    )
+                    }
                 )
             }
             #if os(macOS)

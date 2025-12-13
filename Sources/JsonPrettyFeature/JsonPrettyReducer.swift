@@ -6,7 +6,7 @@ import JsonPrettyClient
 import SharedModels
 import SwiftUI
 
-public struct JsonPrettyReducer: ReducerProtocol {
+public struct JsonPrettyReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         var inputOutput: InputOutputAttributedEditorsReducer.State
@@ -35,7 +35,7 @@ public struct JsonPrettyReducer: ReducerProtocol {
     @Dependency(\.jsonPretty) var jsonPretty
     private enum CancelID { case conversionRequest }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         Reduce<State, Action> { state, action in
             switch action {
             case .binding:
@@ -81,7 +81,7 @@ public struct JsonPrettyView: View {
 
     public init(store: StoreOf<JsonPrettyReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -107,6 +107,6 @@ public struct JsonPrettyView: View {
 // preview
 struct JsonPrettyReducer_Previews: PreviewProvider {
     static var previews: some View {
-        JsonPrettyView(store: .init(initialState: .init(), reducer: JsonPrettyReducer()))
+        JsonPrettyView(store: .init(initialState: .init()) { JsonPrettyReducer() })
     }
 }
