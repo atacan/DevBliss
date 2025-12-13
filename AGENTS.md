@@ -191,3 +191,148 @@ When implementing features:
 5. At session end, ensure all work is tracked and synced
 
 The goal: your agent maintains perfect memory of project state across sessions and helps coordinate work across the team.
+
+## Agent Communication with MCP Agent Mail
+
+**IMPORTANT**: This project now uses **MCP Agent Mail** for agent-to-agent coordination. Use it when multiple agents are working simultaneously to avoid conflicts and stay synchronized.
+
+### What is Agent Mail?
+
+Agent Mail is an asynchronous messaging and file coordination system that lets agents:
+
+- Exchange messages and updates (like email for agents)
+- Signal file editing intent with reservations (avoid merge conflicts)
+- Search conversation history
+- Maintain a synchronized view of ongoing work
+
+### When to Use Agent Mail
+
+Use agent_mail when:
+- Multiple agents are working on the same project simultaneously
+- You need to signal which files you're editing (file reservations)
+- You want to leave notes or progress updates for other agents
+- You're splitting work across frontend/backend or other boundaries
+
+### Quick Start
+
+1. **Start the server** (if not already running):
+   ```bash
+   am
+   # or: cd /path/to/mcp_agent_mail && uv run python -m mcp_agent_mail.cli serve-http
+   ```
+
+2. **Register your identity** (once per session):
+   ```
+   ensure_project("/Users/atacan/Developer/Repositories/DevBliss")
+   register_agent(project_key="/Users/atacan/Developer/Repositories/DevBliss", program="Claude Code", model="Claude 3.5", name="<your-agent-name>")
+   ```
+
+3. **Reserve files before editing**:
+   ```
+   file_reservation_paths(
+     project_key="/Users/atacan/Developer/Repositories/DevBliss",
+     agent_name="<your-name>",
+     paths=["Sources/MyFeature/**"],
+     ttl_seconds=3600,
+     exclusive=true,
+     reason="Implementing feature bd-123"
+   )
+   ```
+
+4. **Send a message** to announce your work:
+   ```
+   send_message(
+     project_key="/Users/atacan/Developer/Repositories/DevBliss",
+     sender_name="<your-name>",
+     subject="[bd-123] Starting implementation",
+     body_md="Working on feature bd-123. ETA: 2 hours.",
+     thread_id="bd-123"
+   )
+   ```
+
+5. **Release reservations** when done:
+   ```
+   release_file_reservations(
+     project_key="/Users/atacan/Developer/Repositories/DevBliss",
+     agent_name="<your-name>"
+   )
+   ```
+
+### Agent Naming
+
+Use memorable adjective+noun names (agent_mail will auto-generate if needed):
+- ✅ PurpleGarden, BlueLake, GreenCastle, OrangeFox
+- ❌ agent1, Agent_2, claude_code
+
+### Best Practices
+
+1. **Link to Beads issues**: Use `thread_id="bd-123"` to tie messages to your task
+2. **Be explicit about files**: When reserving, use glob patterns matching actual edits
+3. **Communicate intent**: Message subjects should be clear (`[bd-123] Starting feature X`)
+4. **Release promptly**: Don't hold file reservations longer than needed
+5. **Check inbox before starting**: See what other agents are working on
+6. **Use the web UI**: Open `http://127.0.0.1:8765/mail` to browse messages visually
+
+### File Reservations
+
+Reservations signal intent to edit (not cryptographically enforced):
+
+```
+# Exclusive: "I'm the only one touching these files"
+exclusive=true
+
+# Shared: "I'm editing these, others might too"
+exclusive=false
+
+# TTL: How long to hold the reservation (default 1 hour)
+ttl_seconds=3600
+```
+
+### Contact Policies
+
+By default, agents use `auto` policy (messages allowed in same thread or with overlapping reservations).
+
+To change:
+```
+set_contact_policy(
+  project_key="/Users/atacan/Developer/Repositories/DevBliss",
+  agent_name="<your-name>",
+  policy="open"  # or "contacts_only", "auto", "block_all"
+)
+```
+
+### Useful Tools
+
+| Tool | Purpose |
+|------|---------|
+| `send_message` | Send a message to agents or in a thread |
+| `fetch_inbox` | Check your inbox for new messages |
+| `file_reservation_paths` | Reserve files before editing |
+| `release_file_reservations` | Release files when done |
+| `search_messages` | Search message history (FTS5) |
+| `summarize_thread` | Get a summary of a conversation |
+| `whois` | Look up an agent's profile |
+| `list_agents` | See all registered agents |
+
+### Configuration
+
+See `.claude/agent-mail.local.md` for detailed setup and configuration options.
+
+### Integration with Beads
+
+When creating a Beads issue, use the same issue ID in your agent_mail messages:
+
+```bash
+# Create a task
+bd create "Implement authentication" -t feature -p 1 --json
+# Returns: bd-42
+
+# Start working
+send_message(..., thread_id="bd-42", subject="[bd-42] Starting...")
+
+# Complete work
+bd close bd-42 --reason "Completed"
+send_message(..., thread_id="bd-42", subject="[bd-42] Completed")
+```
+
+This keeps task tracking and communication synchronized.
