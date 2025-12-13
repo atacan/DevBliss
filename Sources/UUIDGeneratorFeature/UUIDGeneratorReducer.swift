@@ -5,6 +5,7 @@ import UUIDGeneratorClient
 
 public struct UUIDGeneratorReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var count: Int
         var textCase: TextCase
@@ -75,7 +76,7 @@ public struct UUIDGeneratorReducer: Reducer {
 }
 
 public struct UUIDGeneratorView: View {
-    let store: Store<UUIDGeneratorReducer.State, UUIDGeneratorReducer.Action>
+    @Perception.Bindable var store: Store<UUIDGeneratorReducer.State, UUIDGeneratorReducer.Action>
 
     public init(store: StoreOf<UUIDGeneratorReducer>) {
         self.store = store
@@ -98,8 +99,8 @@ public struct UUIDGeneratorView: View {
             //                .frame(maxWidth: 250)
             //            }
             HStack {
-                IntegerTextField(value: store.binding(\.$count), range: 1 ... 1_000_000)
-                Picker("", selection: store.binding(\.$textCase)) {
+                IntegerTextField(value: $store.count, range: 1 ... 1_000_000)
+                Picker("", selection: $store.textCase) {
                     Text(NSLocalizedString("lowercase", bundle: Bundle.module, comment: "")).tag(TextCase.lower)
                     Text(NSLocalizedString("UPPERCASE", bundle: Bundle.module, comment: "")).tag(TextCase.upper)
                 }

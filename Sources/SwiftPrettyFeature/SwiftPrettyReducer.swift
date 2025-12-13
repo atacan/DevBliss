@@ -10,6 +10,7 @@ import SwiftUI
 
 public struct SwiftPrettyReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
@@ -129,7 +130,7 @@ public struct SwiftPrettyReducer: Reducer {
 }
 
 public struct SwiftPrettyView: View {
-    let store: StoreOf<SwiftPrettyReducer>
+    @Perception.Bindable var store: StoreOf<SwiftPrettyReducer>
 
     @State var configIsExpanded = true
 

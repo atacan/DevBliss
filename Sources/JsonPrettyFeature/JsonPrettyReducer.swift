@@ -8,6 +8,7 @@ import SwiftUI
 
 public struct JsonPrettyReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
@@ -76,7 +77,7 @@ public struct JsonPrettyReducer: Reducer {
 }
 
 public struct JsonPrettyView: View {
-    let store: StoreOf<JsonPrettyReducer>
+    @Perception.Bindable var store: StoreOf<JsonPrettyReducer>
 
     public init(store: StoreOf<JsonPrettyReducer>) {
         self.store = store

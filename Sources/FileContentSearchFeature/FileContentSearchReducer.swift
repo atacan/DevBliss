@@ -10,6 +10,7 @@
 
     public struct FileContentSearchReducer: Reducer {
         public init() {}
+    @ObservableState
         public struct State: Equatable {
             var searchOptions: SearchOptions
             var selectedFiles = Set<FoundFile.ID>()
@@ -60,11 +61,6 @@
             BindingReducer()
             Reduce<State, Action> { state, action in
                 switch action {
-                case .binding(\.$selectedFiles):
-                    return .merge(
-                        .cancel(id: CancelID.readFileRequest),
-                        selectedFilesChanged(&state)
-                    )
                 case .binding:
                     return .none
                 case .directorySelectionButtonTouched:
@@ -336,6 +332,7 @@
 
     public struct FileContentSearchReducer: Reducer {
         public init() {}
+    @ObservableState
         public struct State: Equatable { public init() {} }
         public enum Action: Equatable {}
         public var body: some Reducer<State, Action> {

@@ -87,8 +87,7 @@ extension OutputAttributedEditorReducer.State {
 }
 
 public struct OutputAttributedEditorView: View {
-    let store: StoreOf<OutputAttributedEditorReducer>
-    @ObservedObject var viewStore: ViewStoreOf<OutputAttributedEditorReducer>
+    @Perception.Bindable var store: StoreOf<OutputAttributedEditorReducer>
     @State var isActivitySheetPresented: Bool = false
 
     let title: String
@@ -102,7 +101,6 @@ public struct OutputAttributedEditorView: View {
         saveAsButtonTitle: String = "Save As…"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
         self.title = title
         self.copyButtonTitle = copyButtonTitle
         self.saveAsButtonTitle = saveAsButtonTitle
@@ -117,18 +115,18 @@ public struct OutputAttributedEditorView: View {
                 Spacer()
             }
             #if os(macOS)
-                MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
+                MacEditorView(text: $store.text, hasHorizontalScroll: false)
                     .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
             #elseif os(iOS)
                 ScrollView {
-                    Text(AttributedString(viewStore.text))
+                    Text(AttributedString(store.text))
                         .font(.monospaced(.body)())
                         .textSelection(.enabled)
                         .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
                         .sheet(isPresented: $isActivitySheetPresented) {
                             ActivityView(
                                 isSheetPresented: $isActivitySheetPresented,
-                                activityItems: [viewStore.text],
+                                activityItems: [store.text],
                                 applicationActivities: []
                             )
                         }

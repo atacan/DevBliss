@@ -33,7 +33,10 @@ public struct InputEditorReducer: Reducer {
 
     public var body: some Reducer<State, Action> {
         BindingReducer()
-        Reduce<State, Action> { state, action in
+        Scope(state: \.inputEditorDrop, action: /Action.inputEditorDrop) {
+            InputEditorDropReducer()
+        }
+        Reduce<State, Action> { state, action -> Effect<Action> in
             switch action {
             case .binding:
                 return .none
@@ -57,13 +60,12 @@ public struct InputEditorReducer: Reducer {
             case .inputEditorDrop:
                 return .none
             case let .append(text):
-                return .send(.binding(.set(\.$text, state.text.appending(text))))
+                state.text.append(text)
+                return .none
             case let .prepend(text):
-                return .send(.binding(.set(\.$text, text + state.text)))
+                state.text = text + state.text
+                return .none
             }
-        }
-        Scope(state: \.inputEditorDrop, action: /Action.inputEditorDrop) {
-            InputEditorDropReducer()
         }
     }
 }
@@ -118,7 +120,7 @@ public struct InputEditorView: View {
                     Image(systemName: "doc.on.clipboard.fill")
                 }  // <-Button
                 .foregroundColor(
-                    viewStore.pasteButtonAnimating
+                    store.pasteButtonAnimating
                         ? ThemeColor.Text.success
                         : ThemeColor.Text.controlText
                 )

@@ -8,6 +8,7 @@ import SwiftUI
 
 public struct PrefixSuffixReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         public var inputOutput: InputOutputEditorsReducer.State
         public var configuration: PrefixSuffixConfig
@@ -136,7 +137,7 @@ public struct PrefixSuffixReducer: Reducer {
 }
 
 public struct PrefixSuffixView: View {
-    let store: StoreOf<PrefixSuffixReducer>
+    @Perception.Bindable var store: StoreOf<PrefixSuffixReducer>
 
     @FocusState private var focusedField: Field?
     enum Field: Int, Hashable {
