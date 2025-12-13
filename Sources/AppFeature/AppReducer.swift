@@ -13,7 +13,6 @@ import UUIDGeneratorFeature
 
 public struct AppReducer: Reducer {
     public init() {}
-    @ObservableState
     public struct State: Equatable {
         @PresentationState var htmlToSwift: HtmlToSwiftReducer.State?
         @PresentationState var jsonPretty: JsonPrettyReducer.State?
@@ -644,10 +643,9 @@ public struct AppView: View {
 struct AppView_Previews: PreviewProvider {
     static var previews: some View {
         AppView(
-            store: .init(
-                initialState: AppReducer.State(),
-                reducer: AppReducer()
-            )
+            store: Store(initialState: AppReducer.State()) {
+                AppReducer()
+            }
         )
     }
 }

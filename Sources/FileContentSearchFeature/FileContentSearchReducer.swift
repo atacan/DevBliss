@@ -139,7 +139,7 @@
     }
 
     public struct FileContentSearchView: View {
-        let store: Store<FileContentSearchReducer.State, FileContentSearchReducer.Action>
+        @Perception.Bindable var store: Store<FileContentSearchReducer.State, FileContentSearchReducer.Action>
 
         public init(store: StoreOf<FileContentSearchReducer>) {
             self.store = store
@@ -154,7 +154,7 @@
                 VStack(alignment: .center) {
                     inputView
 
-                    Table(store.foundFiles, selection: store.binding(\.$selectedFiles), sortOrder: $sortOrder) {
+                    Table(store.foundFiles, selection: $store.selectedFiles, sortOrder: $sortOrder) {
                         TableColumn(
                             NSLocalizedString("File Path", bundle: Bundle.module, comment: ""),
                             value: \.fileURL.absoluteString
@@ -196,7 +196,7 @@
 
                         TextField(
                             NSLocalizedString("term to search inside the file...", bundle: Bundle.module, comment: ""),
-                            text: store.binding(\.$searchOptions.term)
+                            text: $store.searchOptions.term
                         )
                         .onSubmit {
                             store.send(.directorySelectionButtonTouched)
@@ -233,19 +233,19 @@
 
                     Toggle(
                         NSLocalizedString("Search also hidden files and folders", bundle: Bundle.module, comment: ""),
-                        isOn: store.binding(\.$searchOptions.searchHiddenFiles)
+                        isOn: $store.searchOptions.searchHiddenFiles
                     )
                     .toggleStyle(.checkbox)
 
                     Toggle(
                         NSLocalizedString("Search in sub-directories", bundle: Bundle.module, comment: ""),
-                        isOn: store.binding(\.$searchOptions.searchInsideSubdirectories)
+                        isOn: $store.searchOptions.searchInsideSubdirectories
                     )
                     .toggleStyle(.checkbox)
 
                     Toggle(
                         NSLocalizedString("Search in packaged files", bundle: Bundle.module, comment: ""),
-                        isOn: store.binding(\.$searchOptions.searchInsidePackages)
+                        isOn: $store.searchOptions.searchInsidePackages
                     )
                     .toggleStyle(.checkbox)
                 }
@@ -287,14 +287,16 @@
                             searchHiddenFiles: false
                         ),
                         output: .init(text: "Something inside\nthis file is very important", outputControls: .init()),
-                        foundFiles: [
-                            FoundFile(
-                                fileURL: URL(string: "Users/atacan/amazement/secret.swift")!,
-                                lineNumbers: [23, 34, 43],
-                                modifiedTime: Date(timeIntervalSince1970: 12300),
-                                gitUsername: "atacan"
-                            )
-                        ]
+                        foundFiles: IdentifiedArrayOf(
+                            uniqueElements: [
+                                FoundFile(
+                                    fileURL: URL(string: "Users/atacan/amazement/secret.swift")!,
+                                    lineNumbers: [23, 34, 43],
+                                    modifiedTime: Date(timeIntervalSince1970: 12300),
+                                    gitUsername: "atacan"
+                                )
+                            ]
+                        )
                     )
                 ) {
                     FileContentSearchReducer()

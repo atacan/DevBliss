@@ -93,7 +93,7 @@ public struct NameGeneratorAlternatingReducer: Reducer {
 }
 
 public struct NameGeneratorAlternatingView: View {
-    let store: StoreOf<NameGeneratorAlternatingReducer>
+    @Perception.Bindable var store: StoreOf<NameGeneratorAlternatingReducer>
 
     public init(store: StoreOf<NameGeneratorAlternatingReducer>) {
         self.store = store
@@ -106,17 +106,17 @@ public struct NameGeneratorAlternatingView: View {
                     Text(NSLocalizedString("Vowels", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""),
-                        text: store.binding(\.$vowelsInput)
+                        text: $store.vowelsInput
                     )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
-                }  // <-VStack
-                VStack(alignment: .leading) {
-                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
-                    TextField(
-                        NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        text: store.binding(\.$inputSeparator)
-                    )
+                    }  // <-VStack
+                    VStack(alignment: .leading) {
+                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
+                     TextField(
+                         NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
+                         text: $store.inputSeparator
+                     )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 60)
@@ -124,20 +124,20 @@ public struct NameGeneratorAlternatingView: View {
             }
             HStack {
                 VStack(alignment: .leading) {
-                    Text(NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""))
-                    TextField(
-                        NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
-                        text: store.binding(\.$consonantsInput)
-                    )
-                    .font(.monospaced(.title3)())
-                    .textFieldStyle(.roundedBorder)
-                }
-                VStack(alignment: .leading) {
-                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
-                    TextField(
-                        NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        text: store.binding(\.$inputSeparator)
-                    )
+                        Text(NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""))
+                        TextField(
+                            NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
+                            text: $store.consonantsInput
+                        )
+                        .font(.monospaced(.title3)())
+                        .textFieldStyle(.roundedBorder)
+                    }
+                    VStack(alignment: .leading) {
+                        Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
+                        TextField(
+                            NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
+                            text: $store.inputSeparator
+                        )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 60)
@@ -147,7 +147,7 @@ public struct NameGeneratorAlternatingView: View {
             HStack {
                 VStack {
                     Text(NSLocalizedString("Min. length", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: store.binding(\.$minLength), range: 1 ... 15)
+                    IntegerTextField(value: $store.minLength, range: 1 ... 15)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -167,7 +167,7 @@ public struct NameGeneratorAlternatingView: View {
 
                 VStack {
                     Text(NSLocalizedString("Max. length", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: store.binding(\.$maxLength), range: 1 ... 15)
+                    IntegerTextField(value: $store.maxLength, range: 1 ... 15)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -187,7 +187,7 @@ public struct NameGeneratorAlternatingView: View {
 
                 VStack {
                     Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: store.binding(\.$numberOfNames), range: 1 ... 200)
+                    IntegerTextField(value: $store.numberOfNames, range: 1 ... 200)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -227,10 +227,9 @@ public struct NameGeneratorAlternatingView: View {
 
         static var previews: some View {
             NameGeneratorAlternatingView(
-                store: Store(
-                    initialState: .init(),
-                    reducer: NameGeneratorAlternatingReducer()
-                )
+                store: Store(initialState: .init()) {
+                    NameGeneratorAlternatingReducer()
+                }
             )
         }
     }

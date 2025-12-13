@@ -123,19 +123,10 @@ public struct TextCaseConverterReducer: Reducer {
     }
 
     private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
-        switch action {
-        case \.$sourceCase:
-            userDefaults.set(state.sourceCase, forKey: SettingsKey.TextCaseConverter.sourceCase)
-            return .none
-        case \.$targetCase:
-            userDefaults.set(state.targetCase, forKey: SettingsKey.TextCaseConverter.targetCase)
-            return .none
-        case \.$textSeperator:
-            userDefaults.set(state.textSeperator, forKey: SettingsKey.TextCaseConverter.textSeperator)
-            return .none
-        default:
-            return .none
-        }
+        userDefaults.set(state.sourceCase, forKey: SettingsKey.TextCaseConverter.sourceCase)
+        userDefaults.set(state.targetCase, forKey: SettingsKey.TextCaseConverter.targetCase)
+        userDefaults.set(state.textSeperator, forKey: SettingsKey.TextCaseConverter.textSeperator)
+        return .none
     }
 }
 
@@ -167,27 +158,27 @@ public struct TextCaseConverterView: View {
                                 .tag(sourceCase)
                         }
                     }
-                }
-                VStack(alignment: .center, spacing: pickerTitleSpace) {
-                    Text(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("To", bundle: Bundle.module, comment: ""),
-                        selection: $store.targetCase
-                    ) {
-                        ForEach(WordGroupCase.allCases) { targetCase in
-                            Text(targetCase.rawValue)
-                                .tag(targetCase)
-                        }
                     }
-                }
+                    VStack(alignment: .center, spacing: pickerTitleSpace) {
+                     Text(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
+                     Picker(
+                         NSLocalizedString("To", bundle: Bundle.module, comment: ""),
+                         selection: $store.targetCase
+                     ) {
+                         ForEach(WordGroupCase.allCases) { targetCase in
+                             Text(targetCase.rawValue)
+                                 .tag(targetCase)
+                         }
+                     }
+                    }
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
                     Text(NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""),
                         selection: $store.textSeperator
                     ) {
-                        ForEach(WordGroupSeperator.allCases) { seperator in
-                            Text(seperator.displayValue)
+                        ForEach(WordGroupSeperator.allCases) { (seperator: WordGroupSeperator) in
+                            Text(seperator == .newLine ? "New Line" : "Space")
                                 .tag(seperator)
                         }
                     }

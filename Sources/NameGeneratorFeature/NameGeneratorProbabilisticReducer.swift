@@ -134,7 +134,7 @@ public struct NameGeneratorProbabilisticReducer: Reducer {
 }
 
 public struct NameGeneratorProbabilisticView: View {
-    let store: StoreOf<NameGeneratorProbabilisticReducer>
+    @Perception.Bindable var store: StoreOf<NameGeneratorProbabilisticReducer>
 
     public init(store: StoreOf<NameGeneratorProbabilisticReducer>) {
         self.store = store
@@ -144,7 +144,7 @@ public struct NameGeneratorProbabilisticView: View {
         ScrollView {
             VStack {
                 LetterWeightsInputView(
-                    vowelsInput: store.binding(\.$vowelsInput),
+                    vowelsInput: $store.vowelsInput,
                     title: NSLocalizedString("Vowels", bundle: Bundle.module, comment: ""),
                     plustButtonAction: {
                         store.send(.addVowelButtontouched)
@@ -154,7 +154,7 @@ public struct NameGeneratorProbabilisticView: View {
                     }
                 )
                 LetterWeightsInputView(
-                    vowelsInput: store.binding(\.$consonantsInput),
+                    vowelsInput: $store.consonantsInput,
                     title: NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""),
                     plustButtonAction: {
                         store.send(.addConsonantButtontouched)
@@ -166,7 +166,7 @@ public struct NameGeneratorProbabilisticView: View {
                 HStack {
                     VStack {
                         Text(NSLocalizedString("Min. length", bundle: Bundle.module, comment: ""))
-                        IntegerTextField(value: store.binding(\.$minLength), range: 1 ... 15)
+                        IntegerTextField(value: $store.minLength, range: 1 ... 15)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(
@@ -188,7 +188,7 @@ public struct NameGeneratorProbabilisticView: View {
 
                     VStack {
                         Text(NSLocalizedString("Max. length", bundle: Bundle.module, comment: ""))
-                        IntegerTextField(value: store.binding(\.$maxLength), range: 1 ... 15)
+                        IntegerTextField(value: $store.maxLength, range: 1 ... 15)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(
@@ -218,7 +218,7 @@ public struct NameGeneratorProbabilisticView: View {
                                     comment: ""
                                 )
                             )
-                        Slider(value: store.binding(\.$alternationProbability), in: 0 ... 1)
+                        Slider(value: $store.alternationProbability, in: 0 ... 1)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(
@@ -242,7 +242,7 @@ public struct NameGeneratorProbabilisticView: View {
 
                     VStack {
                         Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                        IntegerTextField(value: store.binding(\.$numberOfNames), range: 1 ... 200)
+                        IntegerTextField(value: $store.numberOfNames, range: 1 ... 200)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(NSLocalizedString("names to be generated", bundle: Bundle.module, comment: ""))
@@ -286,10 +286,9 @@ public struct NameGeneratorProbabilisticView: View {
 
         static var previews: some View {
             NameGeneratorProbabilisticView(
-                store: Store(
-                    initialState: .init(),
-                    reducer: NameGeneratorProbabilisticReducer()
-                )
+                store: Store(initialState: .init()) {
+                    NameGeneratorProbabilisticReducer()
+                }
             )
         }
     }
