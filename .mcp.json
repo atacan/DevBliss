@@ -3,7 +3,7 @@
     "type": "http",
     "url": "http://127.0.0.1:8765/mcp",
     "headers": {
-      "Authorization": "Bearer ${AGENT_MAIL_TOKEN}"
+      "Authorization": "Bearer f77ca3fb89a87386200ef8358802bda751b99593c2b9a0be4c8d36b0dd65fb66"
     }
   }
 }
