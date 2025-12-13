@@ -1,41 +1,73 @@
-# install the swift formatters and pre-commit hook helper
-install-formatters:
-	brew install swiftformat
-	brew install swift-format
-	npm install -g --save-dev git-format-staged
+# ------------------------------------------------------------------------------
+# Configuration
+# ------------------------------------------------------------------------------
 
-# Create and fill the pre-commit hook
-precommit:
-	touch .git/hooks/pre-commit
-	chmod +x .git/hooks/pre-commit
-	echo '#!/bin/bash' > .git/hooks/pre-commit
-	echo '' >> .git/hooks/pre-commit
-	# echo 'git-format-staged --formatter "swift-format . -i -p --ignore-unparsable-files -r --configuration .swift-format '\''{}'\''" "*.swift"' >> .git/hooks/pre-commit
-	echo 'git-format-staged --formatter "swiftformat --config .swiftformat --swiftversion 5.7 stdin --stdinpath '\''{}'\''" "*.swift"' >> .git/hooks/pre-commit
+# Shell settings: fail on error, pipefail
+SHELL := /bin/bash
+.SHELLFLAGS := -eu -o pipefail -c
 
-# Setup the environment
-start: install-formatters precommit
+# Swift Format Settings
+SWIFT_FORMAT_OPTIONS := -i -p --ignore-unparsable-files --configuration .swift-format
+SWIFT_FORMAT_TARGETS := ./Sources ./Tests
 
-check_uncommitted:
-	@if git diff-index --quiet HEAD --; then \
-		echo '\033[32mNo uncommitted changes found.\033[0m'; \
-	else \
-		echo '\033[31mUncommitted changes detected. Aborting.\033[0m'; \
+# Docker Settings
+DOCKER_IMAGE := swift:latest
+
+# Visuals
+RED    := \033[31m
+GREEN  := \033[32m
+YELLOW := \033[33m
+RESET  := \033[0m
+
+# ------------------------------------------------------------------------------
+# Meta Targets
+# ------------------------------------------------------------------------------
+
+.PHONY: all help check-clean merge-main format test-on-linux generate build test
+
+# Default target runs help
+all: help
+
+# auto-doc: Parses comments starting with '##' to generate a help menu
+help:
+	@echo "$(YELLOW)Available commands:$(RESET)"
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(GREEN)%-20s$(RESET) %s\n", $$1, $$2}'
+
+# ------------------------------------------------------------------------------
+# Git Operations
+# ------------------------------------------------------------------------------
+
+check-clean: ## Check if there are uncommitted changes
+	@echo "$(YELLOW)Checking for uncommitted changes...$(RESET)"
+	@git diff-index --quiet HEAD -- || (echo "$(RED)Error: Uncommitted changes detected. Commit or stash them first.$(RESET)" && exit 1)
+	@echo "$(GREEN)Clean.$(RESET)"
+
+merge-main: check-clean ## Merge current branch into main and push
+	$(eval BRANCH := $(shell git branch --show-current))
+	@if [ "$(BRANCH)" == "main" ]; then \
+		echo "$(RED)Error: You are already on main.$(RESET)"; \
 		exit 1; \
 	fi
+	@echo "$(YELLOW)Merging $(BRANCH) into main...$(RESET)"
+	git checkout main
+	git pull origin main
+	git merge "$(BRANCH)"
+	git push origin main
+	@echo "$(GREEN)Successfully merged $(BRANCH) into main and pushed.$(RESET)"
+	@# Optional: switch back to the original branch
+	@# git checkout "$(BRANCH)"
 
-# Run the formatters manually
-format: check_uncommitted
-	# check if there are any uncommitted changes, if so, abort
-	git diff-index --quiet HEAD --
-	# run the formatters
-	# nicklockwood/SwiftFormat
-	swiftformat --config .swiftformat --swiftversion 5.7 .
-	# apple/swift-format
-	swift-format . -i -p --ignore-unparsable-files -r --configuration .swift-format
-	# commit
-	git add .
-	git commit -m "Format code"
+# ------------------------------------------------------------------------------
+# Code Quality
+# ------------------------------------------------------------------------------
+
+format: check-clean ## Run swift-format on Sources and Tests
+	@echo "$(YELLOW)Formatting Swift files...$(RESET)"
+	@which swift-format > /dev/null || (echo "$(RED)swift-format not found.$(RESET)" && exit 1)
+	@find $(SWIFT_FORMAT_TARGETS) -name "*.swift" -not -path "*/GeneratedSources/*" \
+		| xargs swift-format $(SWIFT_FORMAT_OPTIONS)
+	@git add .
+	@echo "$(GREEN)Formatting complete. Changes staged.$(RESET)"
 
 en-xcloc:
 	xcodebuild -exportLocalizations -localizationPath ./localisations/ -exportLanguage en -sdk iphoneos17.0
