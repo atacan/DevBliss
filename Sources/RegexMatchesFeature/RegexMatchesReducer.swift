@@ -6,7 +6,8 @@ import InputOutput
 import RegexMatchesClient
 import SwiftUI
 
-public struct RegexMatchesReducer: Reducer {
+@Reducer
+public struct RegexMatchesReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
