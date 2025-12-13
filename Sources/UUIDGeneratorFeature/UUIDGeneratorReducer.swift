@@ -3,7 +3,7 @@ import InputOutput
 import SwiftUI
 import UUIDGeneratorClient
 
-public struct UUIDGeneratorReducer: ReducerProtocol {
+public struct UUIDGeneratorReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         @BindingState var count: Int
@@ -36,7 +36,7 @@ public struct UUIDGeneratorReducer: ReducerProtocol {
     @Dependency(\.uuidGenerator) var uuidGenerator
     private enum CancelID { case generationRequest }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -80,7 +80,7 @@ public struct UUIDGeneratorView: View {
 
     public init(store: StoreOf<UUIDGeneratorReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -127,9 +127,10 @@ struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
         UUIDGeneratorView(
             store: Store(
-                initialState: UUIDGeneratorReducer.State(),
-                reducer: UUIDGeneratorReducer()
-            )
+                initialState: UUIDGeneratorReducer.State()
+            ) {
+                UUIDGeneratorReducer()
+            }
         )
     }
 }

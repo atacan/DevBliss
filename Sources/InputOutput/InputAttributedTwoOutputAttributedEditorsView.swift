@@ -4,7 +4,7 @@ import ComposableArchitecture
 import SplitView
 import SwiftUI
 
-public struct InputAttributedTwoOutputAttributedEditorsReducer: ReducerProtocol {
+public struct InputAttributedTwoOutputAttributedEditorsReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         public var input: InputAttributedEditorReducer.State
@@ -29,7 +29,7 @@ public struct InputAttributedTwoOutputAttributedEditorsReducer: ReducerProtocol 
         case outputSecond(OutputAttributedEditorReducer.Action)
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -79,7 +79,7 @@ public struct InputAttributedTwoOutputAttributedEditorsView: View {
         outputSecondEditorTitle: String
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
         self.inputEditorTitle = inputEditorTitle
         self.outputEditorTitle = outputEditorTitle
         self.outputSecondEditorTitle = outputSecondEditorTitle
@@ -143,14 +143,13 @@ public struct InputAttributedTwoOutputAttributedEditorsView: View {
 
 struct InputAttributedTwoOutputAttributedEditorsView_Previews: PreviewProvider {
     static var previews: some View {
-        InputAttributedTwoOutputAttributedEditorsView(
-            store: Store(
-                initialState: .init(),
-                reducer: InputAttributedTwoOutputAttributedEditorsReducer()
-            ),
-            inputEditorTitle: "Input",
-            outputEditorTitle: "Output",
-            outputSecondEditorTitle: "Output Secondary"
-        )
+       InputAttributedTwoOutputAttributedEditorsView(
+           store: Store(initialState: .init()) {
+               InputAttributedTwoOutputAttributedEditorsReducer()
+           },
+           inputEditorTitle: "Input",
+           outputEditorTitle: "Output",
+           outputSecondEditorTitle: "Output Secondary"
+       )
     }
 }

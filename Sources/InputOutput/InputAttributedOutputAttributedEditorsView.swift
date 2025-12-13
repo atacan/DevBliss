@@ -4,7 +4,7 @@ import ComposableArchitecture
 import SplitView
 import SwiftUI
 
-public struct InputAttributedOutputAttributedEditorsReducer: ReducerProtocol {
+public struct InputAttributedOutputAttributedEditorsReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         public var input: InputAttributedEditorReducer.State
@@ -25,7 +25,7 @@ public struct InputAttributedOutputAttributedEditorsReducer: ReducerProtocol {
         case output(OutputAttributedEditorReducer.Action)
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -67,7 +67,7 @@ public struct InputAttributedOutputAttributedEditorsView: View {
         outputEditorTitle: String
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
         self.inputEditorTitle = inputEditorTitle
         self.outputEditorTitle = outputEditorTitle
     }
@@ -110,9 +110,10 @@ struct InputAttributedOutputAttributedEditorsView_Previews: PreviewProvider {
     static var previews: some View {
         InputAttributedOutputAttributedEditorsView(
             store: Store(
-                initialState: .init(),
-                reducer: InputAttributedOutputAttributedEditorsReducer()
-            ),
+                initialState: .init()
+            ) {
+                InputAttributedOutputAttributedEditorsReducer()
+            },
             inputEditorTitle: "Input",
             outputEditorTitle: "Output"
         )

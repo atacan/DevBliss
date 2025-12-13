@@ -8,7 +8,7 @@ import SwiftUI
     import MacSwiftUI
 #endif
 
-public struct OutputAttributedEditorReducer: ReducerProtocol {
+public struct OutputAttributedEditorReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         @BindingState public var text: NSMutableAttributedString
@@ -32,7 +32,7 @@ public struct OutputAttributedEditorReducer: ReducerProtocol {
         @Dependency(\.filePanel) var filePanel
     #endif
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
 
         // call it before the core reducer, so that animation starts earlier
@@ -46,9 +46,9 @@ public struct OutputAttributedEditorReducer: ReducerProtocol {
                 return .none
             case .outputControls(.copyButtonTouched):
                 clipboard.copyString(state.text.string)
-                return .task {
+                return .run { send in
                     try await mainQueue.sleep(for: .milliseconds(200))
-                    return .outputControls(.copyEnded)
+                    await send(.outputControls(.copyEnded))
                 }
             case .outputControls(.saveAsButtonTouched):
                 #if os(macOS)
@@ -65,7 +65,7 @@ public struct OutputAttributedEditorReducer: ReducerProtocol {
 }
 
 extension OutputAttributedEditorReducer.State {
-    public mutating func updateText(_ newText: String) -> EffectTask<OutputAttributedEditorReducer.Action> {
+    public mutating func updateText(_ newText: String) -> Effect<OutputAttributedEditorReducer.Action> {
         text = .init(attributedString: regularAttributedString(newText))
         return .none
     }
@@ -73,13 +73,13 @@ extension OutputAttributedEditorReducer.State {
     public mutating func updateText(
         _ newText: NSMutableAttributedString
     )
-        -> EffectTask<OutputAttributedEditorReducer.Action>
+        -> Effect<OutputAttributedEditorReducer.Action>
     {
         text = newText
         return .none
     }
 
-    public mutating func updateText(_ newText: NSAttributedString) -> EffectTask<OutputAttributedEditorReducer.Action> {
+    public mutating func updateText(_ newText: NSAttributedString) -> Effect<OutputAttributedEditorReducer.Action> {
         text = .init(attributedString: newText)
         return .none
     }
@@ -101,7 +101,7 @@ public struct OutputAttributedEditorView: View {
         saveAsButtonTitle: String = "Save As…"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
         self.title = title
         self.copyButtonTitle = copyButtonTitle
         self.saveAsButtonTitle = saveAsButtonTitle
@@ -155,9 +155,10 @@ struct OutputAttributedEditorView_Previews: PreviewProvider {
     static var previews: some View {
         OutputAttributedEditorView(
             store: Store(
-                initialState: OutputAttributedEditorReducer.State(),
-                reducer: OutputAttributedEditorReducer()
-            )
+                initialState: OutputAttributedEditorReducer.State()
+            ) {
+                OutputAttributedEditorReducer()
+            }
         )
     }
 }

@@ -8,7 +8,7 @@
     import SwiftUI
     import TCAEnchance
 
-    public struct FileContentSearchReducer: ReducerProtocol {
+    public struct FileContentSearchReducer: Reducer {
         public init() {}
         public struct State: Equatable {
             @BindingState var searchOptions: SearchOptions
@@ -56,7 +56,7 @@
 
         //        private enum ReadFileCancelID { case readFileRequest }
 
-        public var body: some ReducerProtocol<State, Action> {
+        public var body: some Reducer<State, Action> {
             BindingReducer()
             Reduce<State, Action> { state, action in
                 switch action {
@@ -119,7 +119,7 @@
             }
         }
 
-        private func selectedFilesChanged(_ state: inout State) -> EffectTask<Action> {
+        private func selectedFilesChanged(_ state: inout State) -> Effect<Action> {
             guard state.selectedFiles.count == 1,
                 let file = state.foundFiles[id: state.selectedFiles.first!]
             else {
@@ -148,7 +148,7 @@
 
         public init(store: StoreOf<FileContentSearchReducer>) {
             self.store = store
-            self.viewStore = ViewStore(store)
+            self.viewStore = ViewStore(store, observe: { $0 })
         }
 
         @State private var sortOrder = [
@@ -301,9 +301,10 @@
                                 gitUsername: "atacan"
                             )
                         ]
-                    ),
-                    reducer: FileContentSearchReducer()
-                )
+                    )
+                ) {
+                    FileContentSearchReducer()
+                }
             )
         }
     }
@@ -316,10 +317,11 @@
                 WindowGroup {
                     FileContentSearchView(
                         store: Store(
-                            initialState: .init(searchOptions: SearchOptions(searchTerm: "import")),
-                            reducer: FileContentSearchReducer()
+                            initialState: .init(searchOptions: SearchOptions(searchTerm: "import"))
+                        ) {
+                            FileContentSearchReducer()
                                 ._printChanges()
-                        )
+                        }
                     )
                 }
                 #if os(macOS)
@@ -334,11 +336,11 @@
 #else
     import ComposableArchitecture
 
-    public struct FileContentSearchReducer: ReducerProtocol {
+    public struct FileContentSearchReducer: Reducer {
         public init() {}
         public struct State: Equatable { public init() {} }
         public enum Action: Equatable {}
-        public var body: some ReducerProtocol<State, Action> {
+        public var body: some Reducer<State, Action> {
             EmptyReducer()
         }
     }

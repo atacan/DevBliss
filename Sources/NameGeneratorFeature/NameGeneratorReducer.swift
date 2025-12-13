@@ -10,7 +10,7 @@ public enum GenerationType {
     case probabilistic
 }
 
-public struct NameGeneratorReducer: ReducerProtocol {
+public struct NameGeneratorReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         @BindingState var generationType: GenerationType
@@ -46,7 +46,7 @@ public struct NameGeneratorReducer: ReducerProtocol {
         case output(OutputEditorReducer.Action)
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -101,7 +101,7 @@ public struct NameGeneratorView: View {
 
     public init(store: StoreOf<NameGeneratorReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -168,7 +168,9 @@ public struct NameGeneratorView: View {
     struct NameGeneratorView_Previews: PreviewProvider {
         static var previews: some View {
             NameGeneratorView(
-                store: Store(initialState: .init(), reducer: NameGeneratorReducer())
+               store: Store(initialState: .init()) {
+                   NameGeneratorReducer()
+               }
             )
         }
     }

@@ -5,7 +5,7 @@ import FilePanelsClient
 import MacSwiftUI
 import SwiftUI
 
-public struct OutputEditorReducer: ReducerProtocol {
+public struct OutputEditorReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         @BindingState public var text: String
@@ -29,7 +29,7 @@ public struct OutputEditorReducer: ReducerProtocol {
         @Dependency(\.filePanel) var filePanel
     #endif
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
 
         // call it before the core reducer, so that animation starts earlier
@@ -43,9 +43,9 @@ public struct OutputEditorReducer: ReducerProtocol {
                 return .none
             case .outputControls(.copyButtonTouched):
                 clipboard.copyString(state.text)
-                return .task {
+                return .run { send in
                     try await mainQueue.sleep(for: .milliseconds(400))
-                    return .outputControls(.copyEnded)
+                    await send(.outputControls(.copyEnded))
                 }
             case .outputControls(.saveAsButtonTouched):
                 #if os(macOS)
@@ -62,12 +62,12 @@ public struct OutputEditorReducer: ReducerProtocol {
 }
 
 extension OutputEditorReducer.State {
-    public mutating func updateText(_ newText: String) -> EffectTask<OutputEditorReducer.Action> {
+    public mutating func updateText(_ newText: String) -> Effect<OutputEditorReducer.Action> {
         text = newText
         return .none
     }
 
-    public mutating func updateText(_ newText: NSAttributedString) -> EffectTask<OutputEditorReducer.Action> {
+    public mutating func updateText(_ newText: NSAttributedString) -> Effect<OutputEditorReducer.Action> {
         text = newText.string
         return .none
     }
@@ -88,7 +88,7 @@ public struct OutputEditorView: View {
         saveAsButtonTitle: String = "Save As…"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
         self.title = title
         self.copyButtonTitle = copyButtonTitle
         self.saveAsButtonTitle = saveAsButtonTitle
@@ -126,9 +126,10 @@ struct OutputView_Previews: PreviewProvider {
     static var previews: some View {
         OutputEditorView(
             store: Store(
-                initialState: OutputEditorReducer.State(),
-                reducer: OutputEditorReducer()
-            )
+                initialState: OutputEditorReducer.State()
+            ) {
+                OutputEditorReducer()
+            }
         )
     }
 }

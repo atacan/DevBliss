@@ -11,7 +11,7 @@ import SwiftUI
 import TextCaseConverterFeature
 import UUIDGeneratorFeature
 
-public struct AppReducer: ReducerProtocol {
+public struct AppReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         @PresentationState var htmlToSwift: HtmlToSwiftReducer.State?
@@ -63,7 +63,7 @@ public struct AppReducer: ReducerProtocol {
         case previousToolButtonTouched
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         Reduce<State, Action> { state, action in
             switch action {
             case let .htmlToSwift(
@@ -270,7 +270,7 @@ public struct AppView: View {
     @ObservedObject var viewStore: ViewStoreOf<AppReducer>
     public init(store: StoreOf<AppReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {

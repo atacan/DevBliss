@@ -3,7 +3,7 @@ import InputOutput
 import NameGeneratorClient
 import SwiftUI
 
-public struct NameGeneratorProbabilisticReducer: ReducerProtocol {
+public struct NameGeneratorProbabilisticReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         @BindingState var vowelsInput: [LetterWeight]
@@ -73,7 +73,7 @@ public struct NameGeneratorProbabilisticReducer: ReducerProtocol {
     @Dependency(\.nameGenerator) var nameGenerator
     private enum CancelID { case generationRequest }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -138,7 +138,7 @@ public struct NameGeneratorProbabilisticView: View {
 
     public init(store: StoreOf<NameGeneratorProbabilisticReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {

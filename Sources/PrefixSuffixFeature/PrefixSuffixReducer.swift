@@ -6,7 +6,7 @@ import PrefixSuffixClient
 import SharedModels
 import SwiftUI
 
-public struct PrefixSuffixReducer: ReducerProtocol {
+public struct PrefixSuffixReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         public var inputOutput: InputOutputEditorsReducer.State
@@ -67,7 +67,7 @@ public struct PrefixSuffixReducer: ReducerProtocol {
     @Dependency(\.userDefaults) var userDefaults
     @Dependency(\.mainQueue) var mainQueue
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -106,7 +106,7 @@ public struct PrefixSuffixReducer: ReducerProtocol {
         }
     }
 
-    private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
+    private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
         switch action {
         case \.$configuration.prefixReplace:
             userDefaults.set(state.configuration.prefixReplace, forKey: SettingsKey.PrefixSuffix.prefixReplace)
@@ -151,7 +151,7 @@ public struct PrefixSuffixView: View {
 
     public init(store: StoreOf<PrefixSuffixReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -291,7 +291,7 @@ public struct PrefixSuffixView: View {
 // preview
 struct PrefixSuffixReducer_Previews: PreviewProvider {
     static var previews: some View {
-        PrefixSuffixView(store: .init(initialState: .init(), reducer: PrefixSuffixReducer()))
+        PrefixSuffixView(store: .init(initialState: .init()) { PrefixSuffixReducer() })
     }
 }
 

@@ -6,7 +6,7 @@ import SharedModels
 import SwiftUI
 import TextCaseConverterClient
 
-public struct TextCaseConverterReducer: ReducerProtocol {
+public struct TextCaseConverterReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
@@ -50,7 +50,7 @@ public struct TextCaseConverterReducer: ReducerProtocol {
     private enum CancelID { case conversionRequest }
     @Dependency(\.userDefaults) var userDefaults
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -99,7 +99,7 @@ public struct TextCaseConverterReducer: ReducerProtocol {
         }
     }
 
-    private func observeSettings() -> EffectTask<Action> {
+    private func observeSettings() -> Effect<Action> {
         .run { send in
             await withTaskGroup(of: Void.self) { group in
                 group.addTask {
@@ -130,7 +130,7 @@ public struct TextCaseConverterReducer: ReducerProtocol {
         }
     }
 
-    private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
+    private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
         switch action {
         case \.$sourceCase:
             userDefaults.set(state.sourceCase, forKey: SettingsKey.TextCaseConverter.sourceCase)
@@ -159,7 +159,7 @@ public struct TextCaseConverterView: View {
 
     public init(store: StoreOf<TextCaseConverterReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -251,6 +251,6 @@ public struct TextCaseConverterView: View {
 // preview
 struct TextCaseConverterReducer_Previews: PreviewProvider {
     static var previews: some View {
-        TextCaseConverterView(store: .init(initialState: .init(), reducer: TextCaseConverterReducer()))
+        TextCaseConverterView(store: .init(initialState: .init()) { TextCaseConverterReducer() })
     }
 }
