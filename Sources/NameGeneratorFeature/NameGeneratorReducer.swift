@@ -97,7 +97,7 @@ public struct NameGeneratorReducer: Reducer {
 }
 
 public struct NameGeneratorView: View {
-    let store: StoreOf<NameGeneratorReducer>
+    @Perception.Bindable var store: StoreOf<NameGeneratorReducer>
 
     public init(store: StoreOf<NameGeneratorReducer>) {
         self.store = store
@@ -107,9 +107,7 @@ public struct NameGeneratorView: View {
         VStack {
             Picker(
                 "Generation Type",
-                selection: store.binding(
-                    \.$generationType
-                )
+                selection: $store.generationType
             ) {
                 Text(NSLocalizedString("Prefix Suffix", bundle: Bundle.module, comment: ""))
                     .tag(GenerationType.prefixSuffix)

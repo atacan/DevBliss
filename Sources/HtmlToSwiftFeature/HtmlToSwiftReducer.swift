@@ -131,29 +131,29 @@ public struct HtmlToSwiftView: View {
             HStack(alignment: .center) {
                 Spacer()
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
-                    Text(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
-                        selection: .dsl
-                    ) {
-                        ForEach(SwiftDSL.allCases) { dsl in
-                            Text(dslLibraryName(for: dsl))
-                                .tag(dsl)
-                        }
-                    }
-                }  // <-VStack
-                VStack(alignment: .center, spacing: pickerTitleSpace) {
-                    Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
-                        selection: .component
-                    ) {
-                        ForEach(HtmlOutputComponent.allCases) { component in
-                            Text(outputComponentPickerName(for: component))
-                                .tag(component)
-                        }
-                    }
-                }
+                     Text(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
+                     Picker(
+                         NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
+                         selection: $store.dsl
+                     ) {
+                         ForEach(SwiftDSL.allCases) { dsl in
+                             Text(dslLibraryName(for: dsl))
+                                 .tag(dsl)
+                         }
+                     }
+                 }  // <-VStack
+                 VStack(alignment: .center, spacing: pickerTitleSpace) {
+                     Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
+                     Picker(
+                         NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
+                         selection: $store.component
+                     ) {
+                         ForEach(HtmlOutputComponent.allCases) { component in
+                             Text(outputComponentPickerName(for: component))
+                                 .tag(component)
+                         }
+                     }
+                 }
                 Spacer()
             }  // <-HStack
             .frame(maxWidth: 450)

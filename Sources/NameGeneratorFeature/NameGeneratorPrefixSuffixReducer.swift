@@ -126,7 +126,7 @@ public struct NameGeneratorPrefixSuffixReducer: Reducer {
 }
 
 public struct NameGeneratorPrefixSuffixView: View {
-    let store: StoreOf<NameGeneratorPrefixSuffixReducer>
+    @Perception.Bindable var store: StoreOf<NameGeneratorPrefixSuffixReducer>
 
     public init(store: StoreOf<NameGeneratorPrefixSuffixReducer>) {
         self.store = store
@@ -139,16 +139,16 @@ public struct NameGeneratorPrefixSuffixView: View {
                     Text(NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""),
-                        text: store.binding(\.$prefixesInput)
+                        text: $store.prefixesInput
                     )
                     .textFieldStyle(.roundedBorder)
                     .font(.monospaced(.title3)())
-                }  // <-VStack
-                VStack(alignment: .leading) {
+                    }  // <-VStack
+                    VStack(alignment: .leading) {
                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        text: store.binding(\.$inputSeparator)
+                        text: $store.inputSeparator
                     )
                     .textFieldStyle(.roundedBorder)
                     .font(.monospaced(.title3)())
@@ -164,20 +164,20 @@ public struct NameGeneratorPrefixSuffixView: View {
             }
             HStack {
                 VStack(alignment: .leading) {
-                    Text(NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""))
-                    TextField(
-                        NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
-                        text: store.binding(\.$suffixesInput)
-                    )
-                    .font(.monospaced(.title3)())
-                    .textFieldStyle(.roundedBorder)
-                }
-                VStack(alignment: .leading) {
-                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
-                    TextField(
-                        NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        text: store.binding(\.$inputSeparator)
-                    )
+                        Text(NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""))
+                        TextField(
+                            NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
+                            text: $store.suffixesInput
+                        )
+                        .font(.monospaced(.title3)())
+                        .textFieldStyle(.roundedBorder)
+                    }
+                    VStack(alignment: .leading) {
+                        Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
+                        TextField(
+                            NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
+                            text: $store.inputSeparator
+                        )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 60)
@@ -194,7 +194,7 @@ public struct NameGeneratorPrefixSuffixView: View {
             HStack(alignment: .bottom) {
                 VStack {
                     Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: store.binding(\.$numberOfNames), range: 1 ... 200)
+                    IntegerTextField(value: $store.numberOfNames, range: 1 ... 200)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -243,9 +243,10 @@ public struct NameGeneratorPrefixSuffixView: View {
                     initialState: .init(
                         prefixesInput: namePrefixesMock.joined(separator: ";"),
                         suffixesInput: nameSuffixesMock.joined(separator: ";")
-                    ),
-                    reducer: NameGeneratorPrefixSuffixReducer()
-                )
+                    )
+                ) {
+                    NameGeneratorPrefixSuffixReducer()
+                }
             )
         }
     }

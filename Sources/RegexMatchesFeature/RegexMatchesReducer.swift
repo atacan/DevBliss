@@ -64,7 +64,7 @@ public struct RegexMatchesReducer: Reducer {
         Reduce<State, Action> { state, action in
             switch action {
             case .observeSettings:
-                return observeSettings()
+                        return observeSettings(&state)
             case let .binding(action):
                 return setPreferences(for: action, from: state)
             case .convertButtonTouched:
@@ -110,31 +110,21 @@ public struct RegexMatchesReducer: Reducer {
         }
     }
 
-    private func observeSettings() -> Effect<Action> {
-        .run { send in
-            await withTaskGroup(of: Void.self) { group in
-                group.addTask {
-                    if let newRegexPattern = userDefaults.string(forKey: SettingsKey.regexPattern.rawValue) {
-                        await send(.binding(.set(\.$regexPattern, newRegexPattern)))
-                    }
-                }
-            }
+    private func observeSettings(_ state: inout State) -> Effect<Action> {
+        if let newRegexPattern = userDefaults.string(forKey: SettingsKey.regexPattern.rawValue) {
+            state.regexPattern = newRegexPattern
         }
+        return .none
     }
 
     private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
-        switch action {
-        case \.$regexPattern:
-            userDefaults.set(state.regexPattern, forKey: SettingsKey.regexPattern.rawValue)
-            return .none
-        default:
-            return .none
-        }
+        userDefaults.set(state.regexPattern, forKey: SettingsKey.regexPattern.rawValue)
+        return .none
     }
 }
 
 public struct RegexMatchesView: View {
-    let store: StoreOf<RegexMatchesReducer>
+    @Perception.Bindable var store: StoreOf<RegexMatchesReducer>
 
     public init(store: StoreOf<RegexMatchesReducer>) {
         self.store = store
@@ -144,7 +134,7 @@ public struct RegexMatchesView: View {
         VStack {
             TextField(
                 NSLocalizedString("Regex pattern", bundle: Bundle.module, comment: ""),
-                text: store.binding(\.$regexPattern)
+                text: $store.regexPattern
             )
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .font(.monospaced(.body)())

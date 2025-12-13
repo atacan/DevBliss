@@ -37,6 +37,7 @@ public struct JsonPrettyReducer: Reducer {
     private enum CancelID { case conversionRequest }
 
     public var body: some Reducer<State, Action> {
+        BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
             case .binding:

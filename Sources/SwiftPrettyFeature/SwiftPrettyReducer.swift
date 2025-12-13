@@ -68,7 +68,7 @@ public struct SwiftPrettyReducer: Reducer {
             switch action {
             case .binding:
                 return .none
-            case .convertButtonTouched:
+            case .convertButtonTouched: 
                 state.isConversionRequestInFlight = true
                 return
                     .run { [config = state.lockwoodConfig.text, input = state.inputOutput.input] send in
@@ -275,18 +275,17 @@ public let blissConfigLockwood = """
     """
 
 #if DEBUG
-    public struct SwiftPrettyApp: App {
-        public init() {}
-
-        public var body: some Scene {
-            WindowGroup {
-                SwiftPrettyView(
-                    store: Store(
-                        initialState: .init(),
-                        reducer: SwiftPrettyReducer()
-                            ._printChanges()
-                    )
-                )
+     public struct SwiftPrettyApp: App {
+         public init() {}
+ 
+         public var body: some Scene {
+             WindowGroup {
+                 SwiftPrettyView(
+                     store: Store(initialState: .init()) {
+                         SwiftPrettyReducer()
+                             ._printChanges()
+                     }
+                 )
             }
             #if os(macOS)
                 .windowStyle(.titleBar)
