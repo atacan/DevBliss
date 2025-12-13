@@ -10,7 +10,8 @@ public enum GenerationType {
     case probabilistic
 }
 
-public struct NameGeneratorReducer: Reducer {
+@Reducer
+public struct NameGeneratorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {

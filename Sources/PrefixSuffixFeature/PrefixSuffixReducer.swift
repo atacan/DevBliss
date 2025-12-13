@@ -6,7 +6,8 @@ import PrefixSuffixClient
 import SharedModels
 import SwiftUI
 
-public struct PrefixSuffixReducer: Reducer {
+@Reducer
+public struct PrefixSuffixReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {

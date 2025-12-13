@@ -7,7 +7,8 @@ import InputOutput
 import SharedModels
 import SwiftUI
 
-public struct HtmlToSwiftReducer: Reducer {
+@Reducer
+public struct HtmlToSwiftReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {

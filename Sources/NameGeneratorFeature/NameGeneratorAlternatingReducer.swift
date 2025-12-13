@@ -3,7 +3,8 @@ import InputOutput
 import NameGeneratorClient
 import SwiftUI
 
-public struct NameGeneratorAlternatingReducer: Reducer {
+@Reducer
+public struct NameGeneratorAlternatingReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {

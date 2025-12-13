@@ -8,7 +8,8 @@ import SplitView
 import SwiftPrettyClient
 import SwiftUI
 
-public struct SwiftPrettyReducer: Reducer {
+@Reducer
+public struct SwiftPrettyReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {

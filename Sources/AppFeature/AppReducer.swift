@@ -11,18 +11,20 @@ import SwiftUI
 import TextCaseConverterFeature
 import UUIDGeneratorFeature
 
-public struct AppReducer: Reducer {
+@Reducer
+public struct AppReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
-        @PresentationState var htmlToSwift: HtmlToSwiftReducer.State?
-        @PresentationState var jsonPretty: JsonPrettyReducer.State?
-        @PresentationState var textCaseConverter: TextCaseConverterReducer.State?
-        @PresentationState var uuidGenerator: UUIDGeneratorReducer.State?
-        @PresentationState public var prefixSuffix: PrefixSuffixReducer.State?
-        @PresentationState var regexMatches: RegexMatchesReducer.State?
-        @PresentationState var swiftPrettyLockwood: SwiftPrettyReducer.State?
-        @PresentationState var fileContentSearch: FileContentSearchReducer.State?
-        @PresentationState var nameGenerator: NameGeneratorReducer.State?
+        @Presents var htmlToSwift: HtmlToSwiftReducer.State?
+        @Presents var jsonPretty: JsonPrettyReducer.State?
+        @Presents var textCaseConverter: TextCaseConverterReducer.State?
+        @Presents var uuidGenerator: UUIDGeneratorReducer.State?
+        @Presents public var prefixSuffix: PrefixSuffixReducer.State?
+        @Presents var regexMatches: RegexMatchesReducer.State?
+        @Presents var swiftPrettyLockwood: SwiftPrettyReducer.State?
+        @Presents var fileContentSearch: FileContentSearchReducer.State?
+        @Presents var nameGenerator: NameGeneratorReducer.State?
         var currentTool: Tool? = nil
 
         public init(

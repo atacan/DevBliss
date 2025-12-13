@@ -8,7 +8,8 @@
     import SwiftUI
     import TCAEnchance
 
-    public struct FileContentSearchReducer: Reducer {
+    @Reducer
+    public struct FileContentSearchReducer {
         public init() {}
     @ObservableState
         public struct State: Equatable {
