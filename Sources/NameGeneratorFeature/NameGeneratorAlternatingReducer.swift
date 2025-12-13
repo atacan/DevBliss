@@ -6,12 +6,12 @@ import SwiftUI
 public struct NameGeneratorAlternatingReducer: Reducer {
     public init() {}
     public struct State: Equatable {
-        @BindingState var vowelsInput: String
-        @BindingState var consonantsInput: String
-        @BindingState var inputSeparator: String
-        @BindingState var minLength: Int
-        @BindingState var maxLength: Int
-        @BindingState var numberOfNames: Int
+        var vowelsInput: String
+        var consonantsInput: String
+        var inputSeparator: String
+        var minLength: Int
+        var maxLength: Int
+        var numberOfNames: Int
         var isGenerating: Bool = false
 
         public init(

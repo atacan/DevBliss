@@ -11,9 +11,9 @@ import SwiftUI
 public struct OutputAttributedEditorReducer: Reducer {
     public init() {}
     public struct State: Equatable {
-        @BindingState public var text: NSMutableAttributedString
+        public var text: NSMutableAttributedString
         var outputControls: OutputControlsReducer.State
-        @BindingState var isActivitySheetPresented: Bool = false
+        var isActivitySheetPresented: Bool = false
 
         public init(text: NSMutableAttributedString = .init(), outputControls: OutputControlsReducer.State = .init()) {
             self.text = text

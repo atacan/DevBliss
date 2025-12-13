@@ -6,12 +6,12 @@ import SwiftUI
 public struct NameGeneratorProbabilisticReducer: Reducer {
     public init() {}
     public struct State: Equatable {
-        @BindingState var vowelsInput: [LetterWeight]
-        @BindingState var consonantsInput: [LetterWeight]
-        @BindingState var minLength: Int
-        @BindingState var maxLength: Int
-        @BindingState var alternationProbability: Double
-        @BindingState var numberOfNames: Int
+        var vowelsInput: [LetterWeight]
+        var consonantsInput: [LetterWeight]
+        var minLength: Int
+        var maxLength: Int
+        var alternationProbability: Double
+        var numberOfNames: Int
         var isGenerating: Bool = false
 
         public init(

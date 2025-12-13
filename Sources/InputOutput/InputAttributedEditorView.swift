@@ -10,7 +10,7 @@ import SwiftUI
 public struct InputAttributedEditorReducer: Reducer {
     public init() {}
     public struct State: Equatable {
-        @BindingState public var text: NSMutableAttributedString
+        public var text: NSMutableAttributedString
         var pasteButtonAnimating: Bool = false
         var inputEditorDrop: InputEditorDropReducer.State
 

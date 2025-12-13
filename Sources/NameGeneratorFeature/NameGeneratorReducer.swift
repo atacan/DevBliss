@@ -13,7 +13,7 @@ public enum GenerationType {
 public struct NameGeneratorReducer: Reducer {
     public init() {}
     public struct State: Equatable {
-        @BindingState var generationType: GenerationType
+        var generationType: GenerationType
         var prefixSuffix: NameGeneratorPrefixSuffixReducer.State
         var alternatingVowelsConsonants: NameGeneratorAlternatingReducer.State
         var probabilistic: NameGeneratorProbabilisticReducer.State

@@ -5,8 +5,9 @@ import SwiftUI
 
 public struct InputEditorReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
-        @BindingState public var text: String
+        public var text: String
         var pasteButtonAnimating: Bool = false
         var inputEditorDrop: InputEditorDropReducer.State
 
@@ -80,8 +81,7 @@ extension InputEditorReducer.State {
 }
 
 public struct InputEditorView: View {
-    let store: StoreOf<InputEditorReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputEditorReducer>
+    @Perception.Bindable var store: StoreOf<InputEditorReducer>
 
     let title: String
     let pasteButtonTitle: String
@@ -92,7 +92,6 @@ public struct InputEditorView: View {
         pasteButtonTitle: String = "Paste"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
         self.title = title
         self.pasteButtonTitle = pasteButtonTitle
     }
@@ -104,7 +103,7 @@ public struct InputEditorView: View {
                 Text(title)
                 Spacer()
             }
-            MyPlainTextEditor(text: viewStore.binding(\.$text), isActivitySheetPresented: .constant(false))
+            MyPlainTextEditor(text: $store.text, isActivitySheetPresented: .constant(false))
                 .overlay(content: {
                     InputEditorDropView(
                         store: store.scope(state: \.inputEditorDrop, action: InputEditorReducer.Action.inputEditorDrop)
@@ -114,7 +113,7 @@ public struct InputEditorView: View {
         .overlay(
             HStack {
                 Button {
-                    viewStore.send(.pasteButtonTouched)
+                    store.send(.pasteButtonTouched)
                 } label: {
                     Image(systemName: "doc.on.clipboard.fill")
                 }  // <-Button

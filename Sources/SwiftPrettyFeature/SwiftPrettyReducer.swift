@@ -14,7 +14,7 @@ public struct SwiftPrettyReducer: Reducer {
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var lockwoodConfig: InputEditorReducer.State
-        @BindingState var useLockwood: Bool
+        var useLockwood: Bool
 
         public init(
             inputOutput: InputOutputEditorsReducer.State = .init(),

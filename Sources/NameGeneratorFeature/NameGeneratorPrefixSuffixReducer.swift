@@ -6,10 +6,10 @@ import SwiftUI
 public struct NameGeneratorPrefixSuffixReducer: Reducer {
     public init() {}
     public struct State: Equatable {
-        @BindingState var prefixesInput: String
-        @BindingState var suffixesInput: String
-        @BindingState var inputSeparator: String
-        @BindingState var numberOfNames: Int
+        var prefixesInput: String
+        var suffixesInput: String
+        var inputSeparator: String
+        var numberOfNames: Int
         var isGenerating: Bool = false
 
         public init(

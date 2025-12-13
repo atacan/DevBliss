@@ -11,9 +11,9 @@ public struct TextCaseConverterReducer: Reducer {
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
-        @BindingState public var sourceCase: WordGroupCase
-        @BindingState public var targetCase: WordGroupCase
-        @BindingState public var textSeperator: WordGroupSeperator
+        public var sourceCase: WordGroupCase
+        public var targetCase: WordGroupCase
+        public var textSeperator: WordGroupSeperator
 
         public init(
             inputOutput: InputOutputEditorsReducer.State = .init(),
