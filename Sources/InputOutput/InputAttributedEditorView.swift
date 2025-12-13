@@ -9,6 +9,7 @@ import SwiftUI
 
 public struct InputAttributedEditorReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         public var text: NSMutableAttributedString
         var pasteButtonAnimating: Bool = false
@@ -16,7 +17,7 @@ public struct InputAttributedEditorReducer: Reducer {
 
         public init(
             text: NSMutableAttributedString = .init(),
-            b inputEditorDrop: InputEditorDropReducer.State = .init()
+            inputEditorDrop: InputEditorDropReducer.State = .init()
         ) {
             self.text = text
             self.inputEditorDrop = inputEditorDrop
@@ -94,8 +95,7 @@ extension InputAttributedEditorReducer.State {
 }
 
 public struct InputAttributedEditorView: View {
-    let store: StoreOf<InputAttributedEditorReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputAttributedEditorReducer>
+    @Perception.Bindable var store: StoreOf<InputAttributedEditorReducer>
 
     let title: String
     let pasteButtonTitle: String
@@ -106,7 +106,6 @@ public struct InputAttributedEditorView: View {
         pasteButtonTitle: String = "Paste"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
         self.title = title
         self.pasteButtonTitle = pasteButtonTitle
     }
@@ -120,7 +119,7 @@ public struct InputAttributedEditorView: View {
                 Spacer()
             }
             #if os(macOS)
-                MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
+                MacEditorView(text: $store.text, hasHorizontalScroll: false)
                     .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
                     .overlay(content: {
                         InputEditorDropView(
@@ -132,11 +131,11 @@ public struct InputAttributedEditorView: View {
                     })
             #elseif os(iOS)
                 //                ScrollView {
-                //                    Text(AttributedString(viewStore.text))
+                //                    Text(AttributedString(store.text))
                 //                        .font(.monospaced(.body)())
                 //                        .textSelection(.enabled)
                 TextEditor(
-                    text: viewStore.binding(
+                    text: store.binding(
                         get: { state in
                             state.text.string
                         },
@@ -170,12 +169,12 @@ public struct InputAttributedEditorView: View {
         .overlay(
             HStack {
                 Button {
-                    viewStore.send(.pasteButtonTouched)
+                    store.send(.pasteButtonTouched)
                 } label: {
                     Image(systemName: "doc.on.clipboard.fill")
                 }  // <-Button
                 .foregroundColor(
-                    viewStore.pasteButtonAnimating
+                    store.pasteButtonAnimating
                         ? ThemeColor.Text.success
                         : ThemeColor.Text.controlText
                 )

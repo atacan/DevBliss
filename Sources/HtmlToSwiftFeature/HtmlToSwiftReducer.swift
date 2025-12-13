@@ -9,6 +9,7 @@ import SwiftUI
 
 public struct HtmlToSwiftReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
@@ -126,7 +127,7 @@ public struct HtmlToSwiftReducer: Reducer {
 }
 
 public struct HtmlToSwiftView: View {
-    let store: StoreOf<HtmlToSwiftReducer>
+    @Perception.Bindable var store: StoreOf<HtmlToSwiftReducer>
 
     public init(store: StoreOf<HtmlToSwiftReducer>) {
         self.store = store
@@ -146,7 +147,7 @@ public struct HtmlToSwiftView: View {
                     Text(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
-                        selection: store.binding(\.$dsl)
+                        selection: .dsl
                     ) {
                         ForEach(SwiftDSL.allCases) { dsl in
                             Text(dslLibraryName(for: dsl))
@@ -158,7 +159,7 @@ public struct HtmlToSwiftView: View {
                     Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
-                        selection: store.binding(\.$component)
+                        selection: .component
                     ) {
                         ForEach(HtmlOutputComponent.allCases) { component in
                             Text(outputComponentPickerName(for: component))

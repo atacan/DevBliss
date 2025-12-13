@@ -8,6 +8,7 @@ import TextCaseConverterClient
 
 public struct TextCaseConverterReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
@@ -55,7 +56,7 @@ public struct TextCaseConverterReducer: Reducer {
         Reduce<State, Action> { state, action in
             switch action {
             case .observeSettings:
-                return observeSettings()
+                return observeSettings(&state)
             case let .binding(action):
                 return setPreferences(for: action, from: state)
             case .switchCasesButtonTouched:
@@ -99,35 +100,26 @@ public struct TextCaseConverterReducer: Reducer {
         }
     }
 
-    private func observeSettings() -> Effect<Action> {
-        .run { send in
-            await withTaskGroup(of: Void.self) { group in
-                group.addTask {
-                    if let newSourceCase: WordGroupCase =
-                        userDefaults
-                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.sourceCase)
-                    {
-                        await send(.binding(.set(\.$sourceCase, newSourceCase)))
-                    }
-                }
-                group.addTask {
-                    if let newTargetCase: WordGroupCase =
-                        userDefaults
-                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.targetCase)
-                    {
-                        await send(.binding(.set(\.$targetCase, newTargetCase)))
-                    }
-                }
-                group.addTask {
-                    if let newTextSeperator: WordGroupSeperator =
-                        userDefaults
-                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.textSeperator)
-                    {
-                        await send(.binding(.set(\.$textSeperator, newTextSeperator)))
-                    }
-                }
-            }
+    private func observeSettings(_ state: inout State) -> Effect<Action> {
+        if let newSourceCase: WordGroupCase =
+            userDefaults
+            .rawRepresentable(forKey: SettingsKey.TextCaseConverter.sourceCase)
+        {
+            state.sourceCase = newSourceCase
         }
+        if let newTargetCase: WordGroupCase =
+            userDefaults
+            .rawRepresentable(forKey: SettingsKey.TextCaseConverter.targetCase)
+        {
+            state.targetCase = newTargetCase
+        }
+        if let newTextSeperator: WordGroupSeperator =
+            userDefaults
+            .rawRepresentable(forKey: SettingsKey.TextCaseConverter.textSeperator)
+        {
+            state.textSeperator = newTextSeperator
+        }
+        return .none
     }
 
     private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
@@ -148,7 +140,7 @@ public struct TextCaseConverterReducer: Reducer {
 }
 
 public struct TextCaseConverterView: View {
-    let store: StoreOf<TextCaseConverterReducer>
+    @Perception.Bindable var store: StoreOf<TextCaseConverterReducer>
 
     #if os(iOS)
         private let pickerTitleSpace: CGFloat = 0
@@ -168,7 +160,7 @@ public struct TextCaseConverterView: View {
                     Text(NSLocalizedString("From", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("From", bundle: Bundle.module, comment: ""),
-                        selection: store.binding(\.$sourceCase)
+                        selection: $store.sourceCase
                     ) {
                         ForEach(WordGroupCase.allCases) { sourceCase in
                             Text(sourceCase.rawValue)
@@ -177,21 +169,10 @@ public struct TextCaseConverterView: View {
                     }
                 }
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
-                    Text(NSLocalizedString("", bundle: Bundle.module, comment: ""))
-                    Button(
-                        action: {
-                            store.send(.switchCasesButtonTouched)
-                        },
-                        label: {
-                            Image(systemName: "arrow.left.arrow.right")
-                        }
-                    )
-                }
-                VStack(alignment: .center, spacing: pickerTitleSpace) {
                     Text(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("To", bundle: Bundle.module, comment: ""),
-                        selection: store.binding(\.$targetCase)
+                        selection: $store.targetCase
                     ) {
                         ForEach(WordGroupCase.allCases) { targetCase in
                             Text(targetCase.rawValue)
@@ -200,28 +181,39 @@ public struct TextCaseConverterView: View {
                     }
                 }
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
-                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
+                    Text(NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""))
                     Picker(
-                        NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        selection: store.binding(\.$textSeperator)
+                        NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""),
+                        selection: $store.textSeperator
                     ) {
-                        ForEach(WordGroupSeperator.allCases) { textSeperator in
-                            Text(textSeparatorPickerName(for: textSeperator))
-                                .tag(textSeperator)
+                        ForEach(WordGroupSeperator.allCases) { seperator in
+                            Text(seperator.displayValue)
+                                .tag(seperator)
                         }
                     }
                 }
                 Spacer()
-            }  // <-HStack
-            .frame(maxWidth: 550)
+            }
+            .frame(maxWidth: 600)
             .labelsHidden()
 
-            Button(action: { store.send(.convertButtonTouched) }) {
-                Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
-                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+            HStack {
+                Button {
+                    store.send(.switchCasesButtonTouched)
+                } label: {
+                    Image(systemName: "arrow.left.and.right")
+                }
+                .keyboardShortcut("w", modifiers: [.command, .shift])
+                .help(NSLocalizedString("Switch source and target cases (Cmd+Shift+W)", bundle: Bundle.module, comment: ""))
+
+                Button(action: { store.send(.convertButtonTouched) }) {
+                    Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
+                        .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+                }
+                .keyboardShortcut(.return, modifiers: [.command])
+                .help(NSLocalizedString("Convert code (Cmd+Return)", bundle: Bundle.module, comment: ""))
+                .padding(.bottom, 2)
             }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Convert cases (Cmd+Return)", bundle: Bundle.module, comment: ""))
 
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: TextCaseConverterReducer.Action.inputOutput),
@@ -235,20 +227,66 @@ public struct TextCaseConverterView: View {
             store.send(.observeSettings)
         }
     }
-
-    private func textSeparatorPickerName(for sep: WordGroupSeperator) -> String {
-        switch sep {
-        case .newLine:
-            return NSLocalizedString("New Line", bundle: Bundle.module, comment: "")
-        case .space:
-            return NSLocalizedString("Space", bundle: Bundle.module, comment: "")
-        }
-    }
 }
 
 // preview
 struct TextCaseConverterReducer_Previews: PreviewProvider {
     static var previews: some View {
         TextCaseConverterView(store: .init(initialState: .init()) { TextCaseConverterReducer() })
+    }
+}
+
+// https://stackoverflow.com/a/71531523
+extension View {
+    /// Focuses next field in sequence, from the given `FocusState`.
+    /// Requires a currently active focus state and a next field available in the sequence.
+    ///
+    /// Example usage:
+    /// ```
+    /// .onSubmit { self.focusNextField($focusedField) }
+    /// ```
+    /// Given that `focusField` is an enum that represents the focusable fields. For example:
+    /// ```
+    /// @FocusState private var focusedField: Field?
+    /// enum Field: Int, Hashable {
+    ///    case name
+    ///    case country
+    ///    case city
+    /// }
+    /// ```
+    func focusNextField<F: RawRepresentable>(_ field: FocusState<F?>.Binding) where F.RawValue == Int {
+        guard let currentValue = field.wrappedValue else {
+            return
+        }
+        let nextValue = currentValue.rawValue + 1
+        if let newValue = F(rawValue: nextValue) {
+            field.wrappedValue = newValue
+        }
+    }
+
+    /// Focuses previous field in sequence, from the given `FocusState`.
+    /// Requires a currently active focus state and a previous field available in the sequence.
+    ///
+    /// Example usage:
+    /// ```
+    /// .onSubmit { self.focusNextField($focusedField) }
+    /// ```
+    /// Given that `focusField` is an enum that represents the focusable fields. For example:
+    /// ```
+    /// @FocusState private var focusedField: Field?
+    /// enum Field: Int, Hashable {
+    ///    case name
+    ///    case country
+    ///    case city
+    /// }
+    /// ```
+    func focusPreviousField<F: RawRepresentable>(_ field: FocusState<F?>.Binding) where F.RawValue == Int {
+        guard let currentValue = field.wrappedValue else {
+            return
+        }
+        let nextValue = currentValue.rawValue - 1
+        if let newValue = F(rawValue: nextValue) {
+            field.wrappedValue = newValue
+        }
     }
 }
