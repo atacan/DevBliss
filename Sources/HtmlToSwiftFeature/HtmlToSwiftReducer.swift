@@ -127,11 +127,9 @@ public struct HtmlToSwiftReducer: Reducer {
 
 public struct HtmlToSwiftView: View {
     let store: StoreOf<HtmlToSwiftReducer>
-    @ObservedObject var viewStore: ViewStoreOf<HtmlToSwiftReducer>
 
     public init(store: StoreOf<HtmlToSwiftReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     #if os(iOS)
@@ -148,7 +146,7 @@ public struct HtmlToSwiftView: View {
                     Text(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
-                        selection: viewStore.binding(\.$dsl)
+                        selection: store.binding(\.$dsl)
                     ) {
                         ForEach(SwiftDSL.allCases) { dsl in
                             Text(dslLibraryName(for: dsl))
@@ -160,7 +158,7 @@ public struct HtmlToSwiftView: View {
                     Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
-                        selection: viewStore.binding(\.$component)
+                        selection: store.binding(\.$component)
                     ) {
                         ForEach(HtmlOutputComponent.allCases) { component in
                             Text(outputComponentPickerName(for: component))
@@ -173,9 +171,9 @@ public struct HtmlToSwiftView: View {
             .frame(maxWidth: 450)
             .labelsHidden()
 
-            Button(action: { viewStore.send(.convertButtonTouched) }) {
+            Button(action: { store.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
-                    .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
+                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Convert code (Cmd+Return)", bundle: Bundle.module, comment: ""))
@@ -190,7 +188,7 @@ public struct HtmlToSwiftView: View {
             )
         }
         .onAppear {
-            viewStore.send(.observeSettings)
+            store.send(.observeSettings)
         }
     }
 

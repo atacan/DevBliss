@@ -97,18 +97,16 @@ public struct NameGeneratorReducer: Reducer {
 
 public struct NameGeneratorView: View {
     let store: StoreOf<NameGeneratorReducer>
-    @ObservedObject var viewStore: ViewStoreOf<NameGeneratorReducer>
 
     public init(store: StoreOf<NameGeneratorReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
         VStack {
             Picker(
                 "Generation Type",
-                selection: viewStore.binding(
+                selection: store.binding(
                     \.$generationType
                 )
             ) {
@@ -124,7 +122,7 @@ public struct NameGeneratorView: View {
 
             VSplit {
                 Group {
-                    switch viewStore.generationType {
+                    switch store.generationType {
                     case .prefixSuffix:
                         NameGeneratorPrefixSuffixView(
                             store: store.scope(

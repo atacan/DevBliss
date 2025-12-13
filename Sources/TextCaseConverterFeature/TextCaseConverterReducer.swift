@@ -149,7 +149,6 @@ public struct TextCaseConverterReducer: Reducer {
 
 public struct TextCaseConverterView: View {
     let store: StoreOf<TextCaseConverterReducer>
-    @ObservedObject var viewStore: ViewStoreOf<TextCaseConverterReducer>
 
     #if os(iOS)
         private let pickerTitleSpace: CGFloat = 0
@@ -159,7 +158,6 @@ public struct TextCaseConverterView: View {
 
     public init(store: StoreOf<TextCaseConverterReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -170,7 +168,7 @@ public struct TextCaseConverterView: View {
                     Text(NSLocalizedString("From", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("From", bundle: Bundle.module, comment: ""),
-                        selection: viewStore.binding(\.$sourceCase)
+                        selection: store.binding(\.$sourceCase)
                     ) {
                         ForEach(WordGroupCase.allCases) { sourceCase in
                             Text(sourceCase.rawValue)
@@ -182,7 +180,7 @@ public struct TextCaseConverterView: View {
                     Text(NSLocalizedString("", bundle: Bundle.module, comment: ""))
                     Button(
                         action: {
-                            viewStore.send(.switchCasesButtonTouched)
+                            store.send(.switchCasesButtonTouched)
                         },
                         label: {
                             Image(systemName: "arrow.left.arrow.right")
@@ -193,7 +191,7 @@ public struct TextCaseConverterView: View {
                     Text(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("To", bundle: Bundle.module, comment: ""),
-                        selection: viewStore.binding(\.$targetCase)
+                        selection: store.binding(\.$targetCase)
                     ) {
                         ForEach(WordGroupCase.allCases) { targetCase in
                             Text(targetCase.rawValue)
@@ -205,7 +203,7 @@ public struct TextCaseConverterView: View {
                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        selection: viewStore.binding(\.$textSeperator)
+                        selection: store.binding(\.$textSeperator)
                     ) {
                         ForEach(WordGroupSeperator.allCases) { textSeperator in
                             Text(textSeparatorPickerName(for: textSeperator))
@@ -218,9 +216,9 @@ public struct TextCaseConverterView: View {
             .frame(maxWidth: 550)
             .labelsHidden()
 
-            Button(action: { viewStore.send(.convertButtonTouched) }) {
+            Button(action: { store.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
-                    .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
+                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Convert cases (Cmd+Return)", bundle: Bundle.module, comment: ""))
@@ -234,7 +232,7 @@ public struct TextCaseConverterView: View {
             )
         }
         .onAppear {
-            viewStore.send(.observeSettings)
+            store.send(.observeSettings)
         }
     }
 

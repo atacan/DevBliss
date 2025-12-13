@@ -10,6 +10,7 @@ import SwiftUI
 
 public struct OutputAttributedEditorReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         public var text: NSMutableAttributedString
         var outputControls: OutputControlsReducer.State

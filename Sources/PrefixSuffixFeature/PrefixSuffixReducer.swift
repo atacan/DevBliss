@@ -137,7 +137,6 @@ public struct PrefixSuffixReducer: Reducer {
 
 public struct PrefixSuffixView: View {
     let store: StoreOf<PrefixSuffixReducer>
-    @ObservedObject var viewStore: ViewStoreOf<PrefixSuffixReducer>
 
     @FocusState private var focusedField: Field?
     enum Field: Int, Hashable {
@@ -151,7 +150,6 @@ public struct PrefixSuffixView: View {
 
     public init(store: StoreOf<PrefixSuffixReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
     }
 
     public var body: some View {
@@ -170,7 +168,7 @@ public struct PrefixSuffixView: View {
                     Group {
                         TextField(
                             NSLocalizedString("Replace prefix", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.prefixReplace)
+                            text: store.binding(\.$configuration.prefixReplace)
                         )
                         .focused($focusedField, equals: .prefixReplace)
                         .onSubmit { focusNextField($focusedField) }
@@ -178,7 +176,7 @@ public struct PrefixSuffixView: View {
 
                         TextField(
                             NSLocalizedString("with", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.prefixReplaceWith)
+                            text: store.binding(\.$configuration.prefixReplaceWith)
                         )
                         .focused($focusedField, equals: .prefixReplaceWith)
                         .onSubmit { focusNextField($focusedField) }
@@ -192,7 +190,7 @@ public struct PrefixSuffixView: View {
 
                         TextField(
                             NSLocalizedString("Then add Prefix", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.prefixAdd)
+                            text: store.binding(\.$configuration.prefixAdd)
                         )
                         .focused($focusedField, equals: .prefixAdd)
                         .onSubmit { focusNextField($focusedField) }
@@ -220,7 +218,7 @@ public struct PrefixSuffixView: View {
                     Group {
                         TextField(
                             NSLocalizedString("Replace suffix", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.suffixReplace)
+                            text: store.binding(\.$configuration.suffixReplace)
                         )
                         .focused($focusedField, equals: .suffixReplace)
                         .onSubmit { focusNextField($focusedField) }
@@ -228,7 +226,7 @@ public struct PrefixSuffixView: View {
 
                         TextField(
                             NSLocalizedString("with", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.suffixReplaceWith)
+                            text: store.binding(\.$configuration.suffixReplaceWith)
                         )
                         .focused($focusedField, equals: .suffixReplaceWith)
                         .onSubmit { focusNextField($focusedField) }
@@ -242,7 +240,7 @@ public struct PrefixSuffixView: View {
 
                         TextField(
                             NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.suffixAdd)
+                            text: store.binding(\.$configuration.suffixAdd)
                         )
                         .focused($focusedField, equals: .suffixAdd)
                         .onSubmit { focusNextField($focusedField) }
@@ -266,9 +264,9 @@ public struct PrefixSuffixView: View {
             #endif
             .frame(maxWidth: 850)
 
-            Button(action: { viewStore.send(.convertButtonTouched) }) {
+            Button(action: { store.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
-                    .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
+                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Convert (Cmd+Return)", bundle: Bundle.module, comment: ""))
