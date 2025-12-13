@@ -196,6 +196,38 @@ The goal: your agent maintains perfect memory of project state across sessions a
 
 **IMPORTANT**: This project now uses **MCP Agent Mail** for agent-to-agent coordination. Use it when multiple agents are working simultaneously to avoid conflicts and stay synchronized.
 
+### For Amp Agents
+
+Agent Mail is configured as an MCP server in your Amp settings:
+
+```bash
+# View MCP configuration
+cat ~/.config/amp/settings.json | grep -A 5 agent-mail
+
+# Doctor check (verify connection)
+amp mcp doctor agent-mail
+
+# Available tools will appear in Amp as:
+# mcp__agent_mail__send_message
+# mcp__agent_mail__fetch_inbox
+# mcp__agent_mail__file_reservation_paths
+# etc.
+```
+
+### Amp Permissions
+
+Agent Mail tools are safe to use. You can pre-allow them in your `amp.permissions`:
+
+```bash
+# Allow all agent_mail tools
+amp permissions edit
+
+# Add this line:
+allow mcp__agent_mail_*
+```
+
+Then save and exit. Amp agents can now use all agent_mail coordination tools without prompts.
+
 ### What is Agent Mail?
 
 Agent Mail is an asynchronous messaging and file coordination system that lets agents:
