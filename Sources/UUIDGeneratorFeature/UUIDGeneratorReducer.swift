@@ -3,7 +3,8 @@ import InputOutput
 import SwiftUI
 import UUIDGeneratorClient
 
-public struct UUIDGeneratorReducer: Reducer {
+@Reducer
+public struct UUIDGeneratorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
