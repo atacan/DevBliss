@@ -5,6 +5,7 @@ import SwiftUI
 
 public struct NameGeneratorAlternatingReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var vowelsInput: String
         var consonantsInput: String

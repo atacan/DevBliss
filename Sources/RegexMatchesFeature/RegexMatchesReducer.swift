@@ -8,6 +8,7 @@ import SwiftUI
 
 public struct RegexMatchesReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State
         public var regexPattern: String

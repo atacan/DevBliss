@@ -5,6 +5,7 @@ import SwiftUI
 
 public struct NameGeneratorProbabilisticReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var vowelsInput: [LetterWeight]
         var consonantsInput: [LetterWeight]
