@@ -49,8 +49,7 @@ public struct InputAttributedOutputAttributedEditorsReducer: Reducer {
 }
 
 public struct InputAttributedOutputAttributedEditorsView: View {
-    let store: StoreOf<InputAttributedOutputAttributedEditorsReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputAttributedOutputAttributedEditorsReducer>
+    @Perception.Bindable var store: StoreOf<InputAttributedOutputAttributedEditorsReducer>
 
     let inputEditorTitle: String
     let outputEditorTitle: String
@@ -67,7 +66,6 @@ public struct InputAttributedOutputAttributedEditorsView: View {
         outputEditorTitle: String
     ) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
         self.inputEditorTitle = inputEditorTitle
         self.outputEditorTitle = outputEditorTitle
     }
