@@ -111,7 +111,7 @@
                 selectedFilesChanged(&state)
             }
 
-            Scope(state: \.output, action: /Action.output) {
+            Scope(state: \.output, action: \.output) {
                 OutputEditorReducer()
             }
         }

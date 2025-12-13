@@ -72,7 +72,7 @@ public struct JsonPrettyReducer {
             }
         }
 
-        Scope(state: \.inputOutput, action: /Action.inputOutput) {
+        Scope(state: \.inputOutput, action: \.inputOutput) {
             InputOutputAttributedEditorsReducer()
         }
     }

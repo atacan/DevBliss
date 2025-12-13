@@ -102,11 +102,11 @@ public struct SwiftPrettyReducer {
             }
         }
 
-        Scope(state: \.inputOutput, action: /Action.inputOutput) {
+        Scope(state: \.inputOutput, action: \.inputOutput) {
             InputOutputEditorsReducer()
         }
 
-        Scope(state: \.lockwoodConfig, action: /Action.lockwoodConfig) {
+        Scope(state: \.lockwoodConfig, action: \.lockwoodConfig) {
             InputEditorReducer()
         }
     }

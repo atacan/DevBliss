@@ -37,11 +37,11 @@ public struct InputOutputEditorsReducer {
             }
         }
 
-        Scope(state: \.input, action: /Action.input) {
+        Scope(state: \.input, action: \.input) {
             InputEditorReducer()
         }
 
-        Scope(state: \.output, action: /Action.output) {
+        Scope(state: \.output, action: \.output) {
             OutputEditorReducer()
         }
     }

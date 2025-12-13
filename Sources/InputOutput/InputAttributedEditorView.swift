@@ -60,7 +60,7 @@ public struct InputAttributedEditorReducer {
                 return .none
             }
         }
-        Scope(state: \.inputEditorDrop, action: /Action.inputEditorDrop) {
+        Scope(state: \.inputEditorDrop, action: \.inputEditorDrop) {
             InputEditorDropReducer()
         }
     }

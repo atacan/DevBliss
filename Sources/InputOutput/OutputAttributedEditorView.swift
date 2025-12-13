@@ -38,7 +38,7 @@ public struct OutputAttributedEditorReducer {
         BindingReducer()
 
         // call it before the core reducer, so that animation starts earlier
-        Scope(state: \.outputControls, action: /Action.outputControls) {
+        Scope(state: \.outputControls, action: \.outputControls) {
             OutputControlsReducer()
         }
 

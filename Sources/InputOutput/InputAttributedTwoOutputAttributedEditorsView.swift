@@ -46,15 +46,15 @@ public struct InputAttributedTwoOutputAttributedEditorsReducer {
             }
         }
 
-        Scope(state: \.input, action: /Action.input) {
+        Scope(state: \.input, action: \.input) {
             InputAttributedEditorReducer()
         }
 
-        Scope(state: \.output, action: /Action.output) {
+        Scope(state: \.output, action: \.output) {
             OutputAttributedEditorReducer()
         }
 
-        Scope(state: \.outputSecond, action: /Action.outputSecond) {
+        Scope(state: \.outputSecond, action: \.outputSecond) {
             OutputAttributedEditorReducer()
         }
     }

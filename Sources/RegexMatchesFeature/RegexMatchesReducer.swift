@@ -106,7 +106,7 @@ public struct RegexMatchesReducer {
             }
         }
 
-        Scope(state: \.inputOutput, action: /Action.inputOutput) {
+        Scope(state: \.inputOutput, action: \.inputOutput) {
             InputAttributedTwoOutputAttributedEditorsReducer()
         }
     }

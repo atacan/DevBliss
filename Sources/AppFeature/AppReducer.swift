@@ -169,31 +169,31 @@ public struct AppReducer {
                 return .none
             }
         }
-        .ifLet(\.$htmlToSwift, action: /Action.htmlToSwift) {
+        .ifLet(\.$htmlToSwift, action: \.htmlToSwift) {
             HtmlToSwiftReducer()
         }
-        .ifLet(\.$jsonPretty, action: /Action.jsonPretty) {
+        .ifLet(\.$jsonPretty, action: \.jsonPretty) {
             JsonPrettyReducer()
         }
-        .ifLet(\.$textCaseConverter, action: /Action.textCaseConverter) {
+        .ifLet(\.$textCaseConverter, action: \.textCaseConverter) {
             TextCaseConverterReducer()
         }
-        .ifLet(\.$uuidGenerator, action: /Action.uuidGenerator) {
+        .ifLet(\.$uuidGenerator, action: \.uuidGenerator) {
             UUIDGeneratorReducer()
         }
-        .ifLet(\.$prefixSuffix, action: /Action.prefixSuffix) {
+        .ifLet(\.$prefixSuffix, action: \.prefixSuffix) {
             PrefixSuffixReducer()
         }
-        .ifLet(\.$regexMatches, action: /Action.regexMatches) {
+        .ifLet(\.$regexMatches, action: \.regexMatches) {
             RegexMatchesReducer()
         }
-        .ifLet(\.$swiftPrettyLockwood, action: /Action.swiftPrettyLockwood) {
+        .ifLet(\.$swiftPrettyLockwood, action: \.swiftPrettyLockwood) {
             SwiftPrettyReducer()
         }
-        .ifLet(\.$fileContentSearch, action: /Action.fileContentSearch) {
+        .ifLet(\.$fileContentSearch, action: \.fileContentSearch) {
             FileContentSearchReducer()
         }
-        .ifLet(\.$nameGenerator, action: /Action.nameGenerator) {
+        .ifLet(\.$nameGenerator, action: \.nameGenerator) {
             NameGeneratorReducer()
         }
     }
@@ -284,7 +284,7 @@ public struct AppView: View {
                     )
                 ) {
                     NavigationLinkStore(
-                        store.scope(state: \.$htmlToSwift, action: { .htmlToSwift($0) })
+                        store.scope(state: \.$htmlToSwift, action: \.htmlToSwift)
                     ) {
                         store.send(.navigationLinkTouched(.htmlToSwift))
                     } destination: { store in
@@ -329,7 +329,7 @@ public struct AppView: View {
                     .keyboardShortcut(KeyEquivalent("1"))
 
                     NavigationLinkStore(
-                        store.scope(state: \.$textCaseConverter, action: { .textCaseConverter($0) })
+                        store.scope(state: \.$textCaseConverter, action: \.textCaseConverter)
                     ) {
                         store.send(.navigationLinkTouched(.textCaseConverter))
                     } destination: { store in
@@ -367,7 +367,7 @@ public struct AppView: View {
                     .keyboardShortcut(KeyEquivalent("2"))
 
                     NavigationLinkStore(
-                        store.scope(state: \.$prefixSuffix, action: { .prefixSuffix($0) })
+                        store.scope(state: \.$prefixSuffix, action: \.prefixSuffix)
                     ) {
                         store.send(.navigationLinkTouched(.prefixSuffix))
                     } destination: { store in
@@ -397,7 +397,7 @@ public struct AppView: View {
                     .keyboardShortcut(KeyEquivalent("3"))
 
                     NavigationLinkStore(
-                        store.scope(state: \.$regexMatches, action: { .regexMatches($0) })
+                        store.scope(state: \.$regexMatches, action: \.regexMatches)
                     ) {
                         store.send(.navigationLinkTouched(.regexMatches))
                     } destination: { store in
@@ -444,7 +444,7 @@ public struct AppView: View {
                     )
                 ) {
                     NavigationLinkStore(
-                        store.scope(state: \.$jsonPretty, action: { .jsonPretty($0) })
+                        store.scope(state: \.$jsonPretty, action: \.jsonPretty)
                     ) {
                         store.send(.navigationLinkTouched(.jsonPretty))
                     } destination: { store in
@@ -479,7 +479,7 @@ public struct AppView: View {
                     .keyboardShortcut(KeyEquivalent("5"))
 
                     NavigationLinkStore(
-                        store.scope(state: \.$swiftPrettyLockwood, action: { .swiftPrettyLockwood($0) })
+                        store.scope(state: \.$swiftPrettyLockwood, action: \.swiftPrettyLockwood)
                     ) {
                         store.send(.navigationLinkTouched(.swiftPrettyLockwood))
                     } destination: { store in
@@ -519,7 +519,7 @@ public struct AppView: View {
                         )
                     ) {
                         NavigationLinkStore(
-                            store.scope(state: \.$fileContentSearch, action: { .fileContentSearch($0) })
+                            store.scope(state: \.$fileContentSearch, action: \.fileContentSearch)
                         ) {
                             store.send(.navigationLinkTouched(.fileContentSearch))
                         } destination: { store in
@@ -574,7 +574,7 @@ public struct AppView: View {
                     // }
 
                     NavigationLinkStore(
-                        store.scope(state: \.$nameGenerator, action: { .nameGenerator($0) })
+                        store.scope(state: \.$nameGenerator, action: \.nameGenerator)
                     ) {
                         store.send(.navigationLinkTouched(.nameGenerator))
                     } destination: { store in
