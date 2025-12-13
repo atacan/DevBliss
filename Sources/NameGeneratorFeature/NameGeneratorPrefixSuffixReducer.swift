@@ -5,6 +5,7 @@ import SwiftUI
 
 public struct NameGeneratorPrefixSuffixReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var prefixesInput: String
         var suffixesInput: String

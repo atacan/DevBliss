@@ -56,7 +56,7 @@ public struct HtmlToSwiftReducer: Reducer {
         Reduce<State, Action> { state, action in
             switch action {
             case .observeSettings:
-                return observeSettings()
+                return observeSettings(&state)
             case let .binding(action):
                 return setPreferences(for: action, from: state)
             case .convertButtonTouched:
@@ -92,37 +92,24 @@ public struct HtmlToSwiftReducer: Reducer {
         }
     }
 
-    private func observeSettings() -> Effect<Action> {
-        .run { send in
-            await withTaskGroup(of: Void.self) { group in
-                group.addTask {
-                    if let newDsl: SwiftDSL = userDefaults.rawRepresentable(forKey: SettingsKey.HtmlToSwift.dsl) {
-                        await send(.binding(.set(\.$dsl, newDsl)))
-                    }
-                }
-                group.addTask {
-                    if let newComponent: HtmlOutputComponent =
-                        userDefaults
-                        .rawRepresentable(forKey: SettingsKey.HtmlToSwift.component)
-                    {
-                        await send(.binding(.set(\.$component, newComponent)))
-                    }
-                }
-            }
+    private func observeSettings(_ state: inout State) -> Effect<Action> {
+        if let newDsl: SwiftDSL = userDefaults.rawRepresentable(forKey: SettingsKey.HtmlToSwift.dsl) {
+            state.dsl = newDsl
         }
+        if let newComponent: HtmlOutputComponent =
+            userDefaults
+            .rawRepresentable(forKey: SettingsKey.HtmlToSwift.component)
+        {
+            state.component = newComponent
+        }
+        return .none
     }
 
     private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
-        switch action {
-        case \.$dsl:
-            userDefaults.set(state.dsl, forKey: SettingsKey.HtmlToSwift.dsl)
-            return .none
-        case \.$component:
-            userDefaults.set(state.component, forKey: SettingsKey.HtmlToSwift.component)
-            return .none
-        default:
-            return .none
-        }
+        // Store preferences whenever bindings change
+        userDefaults.set(state.dsl, forKey: SettingsKey.HtmlToSwift.dsl)
+        userDefaults.set(state.component, forKey: SettingsKey.HtmlToSwift.component)
+        return .none
     }
 }
 

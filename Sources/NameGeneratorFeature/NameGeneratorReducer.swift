@@ -12,6 +12,7 @@ public enum GenerationType {
 
 public struct NameGeneratorReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var generationType: GenerationType
         var prefixSuffix: NameGeneratorPrefixSuffixReducer.State
