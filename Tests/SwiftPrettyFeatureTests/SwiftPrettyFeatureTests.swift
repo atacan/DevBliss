@@ -18,7 +18,7 @@ final class SwiftPrettyFeatureTests: XCTestCase {
         }
 
         // user changed the text field
-        await store.send(.lockwoodConfig(.binding(.set(\.$text, config)))) {
+        await store.send(.lockwoodConfig(.binding(.set(\.text, config)))) {
             $0.lockwoodConfig.text = config
         }
 

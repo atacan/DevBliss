@@ -44,7 +44,8 @@ struct URLDropDelegate: DropDelegate {
     }
 }
 
-public struct InputEditorDropReducer: Reducer {
+@Reducer
+public struct InputEditorDropReducer {
     @ObservableState
     public struct State: Equatable {
         var isDropInProgress: Bool
