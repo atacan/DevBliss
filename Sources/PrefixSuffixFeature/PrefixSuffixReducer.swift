@@ -10,7 +10,7 @@ public struct PrefixSuffixReducer: Reducer {
     public init() {}
     public struct State: Equatable {
         public var inputOutput: InputOutputEditorsReducer.State
-        @BindingState public var configuration: PrefixSuffixConfig
+        public var configuration: PrefixSuffixConfig
         var isConversionRequestInFlight = false
 
         public init(

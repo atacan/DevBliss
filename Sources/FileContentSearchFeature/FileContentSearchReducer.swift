@@ -11,8 +11,8 @@
     public struct FileContentSearchReducer: Reducer {
         public init() {}
         public struct State: Equatable {
-            @BindingState var searchOptions: SearchOptions
-            @BindingState var selectedFiles = Set<FoundFile.ID>()
+            var searchOptions: SearchOptions
+            var selectedFiles = Set<FoundFile.ID>()
             var foundFiles: IdentifiedArrayOf<FoundFile>
             var output: OutputEditorReducer.State
             var isSearching: Bool = false

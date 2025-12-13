@@ -45,9 +45,10 @@ struct URLDropDelegate: DropDelegate {
 }
 
 public struct InputEditorDropReducer: Reducer {
+    @ObservableState
     public struct State: Equatable {
-        @BindingState var isDropInProgress: Bool
-        @BindingState var droppedUrls: [URL]
+        var isDropInProgress: Bool
+        var droppedUrls: [URL]
         var droppedText: String
 
         public init(droppedUrls: [URL] = [], droppedText: String = "", isDropInProgress: Bool = false) {
@@ -93,15 +94,9 @@ public struct InputEditorDropReducer: Reducer {
 }
 
 struct InputEditorDropView: View {
-    let store: StoreOf<InputEditorDropReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputEditorDropReducer>
+    @Perception.Bindable var store: StoreOf<InputEditorDropReducer>
 
     @State var phase: CGFloat = 0
-
-    init(store: StoreOf<InputEditorDropReducer>) {
-        self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
-    }
 
     var body: some View {
         RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -116,7 +111,7 @@ struct InputEditorDropView: View {
                 )
             )
             .padding(4)
-            .foregroundStyle(viewStore.isDropInProgress ? Color.accentColor : Color.clear)
+            .foregroundStyle(store.isDropInProgress ? Color.accentColor : Color.clear)
             .animation(
                 Animation.linear(duration: 2)
                     .repeatForever(autoreverses: false),
@@ -128,10 +123,10 @@ struct InputEditorDropView: View {
             .onDrop(
                 of: [UTType.text],
                 delegate: URLDropDelegate(
-                    urls: viewStore.binding(\.$droppedUrls),
-                    isDropInProgress: viewStore.binding(\.$isDropInProgress),
-                    actionDropEntered: { viewStore.send(.dropEntered) },
-                    actionDropExited: { viewStore.send(.dropExited) }
+                    urls: $store.droppedUrls,
+                    isDropInProgress: $store.isDropInProgress,
+                    actionDropEntered: { store.send(.dropEntered) },
+                    actionDropExited: { store.send(.dropExited) }
                 )
             )
     }

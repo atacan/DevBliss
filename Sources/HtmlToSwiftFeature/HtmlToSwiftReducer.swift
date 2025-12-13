@@ -12,8 +12,8 @@ public struct HtmlToSwiftReducer: Reducer {
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
-        @BindingState var dsl: SwiftDSL = .binaryBirds
-        @BindingState var component: HtmlOutputComponent = .fullHtml
+        var dsl: SwiftDSL = .binaryBirds
+        var component: HtmlOutputComponent = .fullHtml
 
         public init(
             inputOutput: InputOutputEditorsReducer.State = .init(),

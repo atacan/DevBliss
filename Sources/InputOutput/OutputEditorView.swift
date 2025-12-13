@@ -7,10 +7,11 @@ import SwiftUI
 
 public struct OutputEditorReducer: Reducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
-        @BindingState public var text: String
+        public var text: String
         var outputControls: OutputControlsReducer.State
-        @BindingState var isActivitySheetPresented: Bool = false
+        var isActivitySheetPresented: Bool = false
 
         public init(text: String = "", outputControls: OutputControlsReducer.State = .init()) {
             self.text = text
@@ -74,8 +75,7 @@ extension OutputEditorReducer.State {
 }
 
 public struct OutputEditorView: View {
-    let store: StoreOf<OutputEditorReducer>
-    @ObservedObject var viewStore: ViewStoreOf<OutputEditorReducer>
+    @Perception.Bindable var store: StoreOf<OutputEditorReducer>
 
     let title: String
     let copyButtonTitle: String
@@ -88,7 +88,6 @@ public struct OutputEditorView: View {
         saveAsButtonTitle: String = "Save As…"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store, observe: { $0 })
         self.title = title
         self.copyButtonTitle = copyButtonTitle
         self.saveAsButtonTitle = saveAsButtonTitle
@@ -102,8 +101,8 @@ public struct OutputEditorView: View {
                 Spacer()
             }
             MyPlainTextEditor(
-                text: viewStore.binding(\.$text),
-                isActivitySheetPresented: viewStore.binding(\.$isActivitySheetPresented)
+                text: $store.text,
+                isActivitySheetPresented: $store.isActivitySheetPresented
             )
         }
         .overlay(

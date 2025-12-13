@@ -6,8 +6,8 @@ import UUIDGeneratorClient
 public struct UUIDGeneratorReducer: Reducer {
     public init() {}
     public struct State: Equatable {
-        @BindingState var count: Int
-        @BindingState var textCase: TextCase
+        var count: Int
+        var textCase: TextCase
         var output: OutputEditorReducer.State
         var isGenerating: Bool = false
 
