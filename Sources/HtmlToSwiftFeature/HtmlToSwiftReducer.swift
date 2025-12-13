@@ -100,8 +100,10 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
                     }
                 }
                 group.addTask {
-                    if let newComponent: HtmlOutputComponent = userDefaults
-                        .rawRepresentable(forKey: SettingsKey.HtmlToSwift.component) {
+                    if let newComponent: HtmlOutputComponent =
+                        userDefaults
+                        .rawRepresentable(forKey: SettingsKey.HtmlToSwift.component)
+                    {
                         await send(.binding(.set(\.$component, newComponent)))
                     }
                 }
@@ -153,7 +155,7 @@ public struct HtmlToSwiftView: View {
                                 .tag(dsl)
                         }
                     }
-                } // <-VStack
+                }  // <-VStack
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
                     Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
                     Picker(
@@ -167,7 +169,7 @@ public struct HtmlToSwiftView: View {
                     }
                 }
                 Spacer()
-            } // <-HStack
+            }  // <-HStack
             .frame(maxWidth: 450)
             .labelsHidden()
 
@@ -255,8 +257,8 @@ struct HtmlToSwiftReducer_Previews: PreviewProvider {
                 )
             }
             #if os(macOS)
-            .windowStyle(.titleBar)
-            .windowToolbarStyle(.unified(showsTitle: true))
+                .windowStyle(.titleBar)
+                .windowToolbarStyle(.unified(showsTitle: true))
             #endif
         }
     }

@@ -147,13 +147,15 @@ struct InputOutputToolbarSplitItems: View {
             .disabled(hide.side != nil)
             .help(
                 layout
-                    .isHorizontal ? NSLocalizedString("Vertical split", bundle: Bundle.module, comment: "") :
-                    NSLocalizedString("Horizontal split", bundle: Bundle.module, comment: "")
+                    .isHorizontal
+                    ? NSLocalizedString("Vertical split", bundle: Bundle.module, comment: "")
+                    : NSLocalizedString("Horizontal split", bundle: Bundle.module, comment: "")
             )
             .accessibilityLabel(
                 layout
-                    .isHorizontal ? NSLocalizedString("vertical split", bundle: Bundle.module, comment: "") :
-                    NSLocalizedString("horizontal split", bundle: Bundle.module, comment: "")
+                    .isHorizontal
+                    ? NSLocalizedString("vertical split", bundle: Bundle.module, comment: "")
+                    : NSLocalizedString("horizontal split", bundle: Bundle.module, comment: "")
             )
             .accessibilityHint(
                 layout
@@ -176,7 +178,8 @@ struct InputOutputToolbarSplitItems: View {
                         //                                hide.toggle()
                         if hide.side == nil {
                             hide.hide(.primary)
-                        } else {
+                        }
+                        else {
                             hide.toggle()
                         }
                     }
@@ -188,7 +191,8 @@ struct InputOutputToolbarSplitItems: View {
                             .isHorizontal
                             ? Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left")
                             : Image(systemName: "dock.arrow.up.rectangle")
-                    } else {
+                    }
+                    else {
                         layout
                             .isHorizontal
                             ? Image(systemName: "rectangle.righthalf.inset.filled.arrow.right")
@@ -199,14 +203,18 @@ struct InputOutputToolbarSplitItems: View {
             .keyboardShortcut(KeyEquivalent("l"), modifiers: [.command, .option])
             .help(
                 hide
-                    .side == nil ? NSLocalizedString("Hide input editor", bundle: Bundle.module, comment: "") :
-                    NSLocalizedString("Show input editor", bundle: Bundle.module, comment: "")
+                    .side == nil
+                    ? NSLocalizedString("Hide input editor", bundle: Bundle.module, comment: "")
+                    : NSLocalizedString("Show input editor", bundle: Bundle.module, comment: "")
             )
-            .accessibilityLabel(hide.side == nil ? NSLocalizedString(
-                "Hide input editor",
-                bundle: Bundle.module,
-                comment: ""
-            ) : NSLocalizedString("Show input editor", bundle: Bundle.module, comment: ""))
+            .accessibilityLabel(
+                hide.side == nil
+                    ? NSLocalizedString(
+                        "Hide input editor",
+                        bundle: Bundle.module,
+                        comment: ""
+                    ) : NSLocalizedString("Show input editor", bundle: Bundle.module, comment: "")
+            )
         }
     }
 }

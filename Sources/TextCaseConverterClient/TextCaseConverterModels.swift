@@ -44,10 +44,10 @@ public enum WordGroupCase: String, CaseIterable, Identifiable {
             return Pascal.self
         case .title:
             return Title.self
-            //    case .sentence:
-            //        return Sentence.self
-            //        default:
-            //            return Snake.self
+        //    case .sentence:
+        //        return Sentence.self
+        //        default:
+        //            return Snake.self
         }
     }
 }
@@ -96,7 +96,8 @@ extension TextStyle {
                         options: [],
                         range: range,
                         withTemplate: "$1\(sep)$2"
-                    ) {
+                    )
+                {
                     output = outputInter
                 }
             }
@@ -174,7 +175,7 @@ struct Camel: TextStyle {
     static var separator = ""
     static var splitSeparator =
         WordCaseSplitSeparator
-            .regex(["([A-Z]+)([A-Z][a-z]|[0-9])", "([a-z])([A-Z]|[0-9])", "([0-9])([A-Z])"])
+        .regex(["([A-Z]+)([A-Z][a-z]|[0-9])", "([a-z])([A-Z]|[0-9])", "([0-9])([A-Z])"])
     static var firstWordCase = WordCase.lowercase
     static var restWordCase = WordCase.capital
     var content: String
@@ -194,7 +195,7 @@ struct Pascal: TextStyle {
     static var separator = ""
     static var splitSeparator =
         WordCaseSplitSeparator
-            .regex(["([A-Z]+)([A-Z][a-z]|[0-9])", "([a-z])([A-Z]|[0-9])", "([0-9])([A-Z])"])
+        .regex(["([A-Z]+)([A-Z][a-z]|[0-9])", "([a-z])([A-Z]|[0-9])", "([0-9])([A-Z])"])
     static var firstWordCase = WordCase.capital
     static var restWordCase = WordCase.capital
     var content: String

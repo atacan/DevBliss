@@ -14,7 +14,7 @@ extension TextCaseConverterClient: DependencyKey {
                         targetCase.textStyleType
                             .init(
                                 components:
-                                sourceCase.textStyleType
+                                    sourceCase.textStyleType
                                     .init(content: String(wordGroup).trimmingCharacters(in: .whitespaces))
                                     .split()
                             )

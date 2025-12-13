@@ -117,7 +117,7 @@ public struct InputEditorView: View {
                     viewStore.send(.pasteButtonTouched)
                 } label: {
                     Image(systemName: "doc.on.clipboard.fill")
-                } // <-Button
+                }  // <-Button
                 .foregroundColor(
                     viewStore.pasteButtonAnimating
                         ? ThemeColor.Text.success
@@ -166,8 +166,8 @@ struct InputView_Previews: PreviewProvider {
                 )
             }
             #if os(macOS)
-            .windowStyle(.titleBar)
-            .windowToolbarStyle(.unified(showsTitle: true))
+                .windowStyle(.titleBar)
+                .windowToolbarStyle(.unified(showsTitle: true))
             #endif
         }
     }

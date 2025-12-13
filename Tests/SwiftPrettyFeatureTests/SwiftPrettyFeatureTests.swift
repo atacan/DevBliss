@@ -1,7 +1,7 @@
 import ComposableArchitecture
+import SharedModels
 import XCTest
 
-import SharedModels
 @testable import SwiftPrettyFeature
 
 @MainActor

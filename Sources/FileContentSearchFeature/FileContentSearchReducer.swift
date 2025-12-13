@@ -121,7 +121,7 @@
 
         private func selectedFilesChanged(_ state: inout State) -> EffectTask<Action> {
             guard state.selectedFiles.count == 1,
-                  let file = state.foundFiles[id: state.selectedFiles.first!]
+                let file = state.foundFiles[id: state.selectedFiles.first!]
             else {
                 state.isReadingFile = false
                 return .cancel(id: CancelID.readFileRequest)
@@ -152,7 +152,7 @@
         }
 
         @State private var sortOrder = [
-            KeyPathComparator(\FoundFile.modifiedTime, order: .reverse),
+            KeyPathComparator(\FoundFile.modifiedTime, order: .reverse)
         ]
 
         public var body: some View {
@@ -182,7 +182,7 @@
                     .onChange(of: sortOrder) { newValue in
                         viewStore.send(.tableSortOrderChanged(newValue))
                     }
-                } // <-VStack
+                }  // <-VStack
                 OutputEditorView(
                     store: store.scope(
                         state: \.output,
@@ -207,7 +207,7 @@
                         .onSubmit {
                             viewStore.send(.directorySelectionButtonTouched)
                         }
-                    } // <-HStack
+                    }  // <-HStack
 
                     HStack {
                         HStack(alignment: .center) {
@@ -220,7 +220,7 @@
                             }
                             .keyboardShortcut(.init("o"), modifiers: [.command])
                             .help(NSLocalizedString("Choose directory (Cmd+O)", bundle: Bundle.module, comment: ""))
-                        } // <-HStack
+                        }  // <-HStack
                         .onTapGesture {
                             viewStore.send(.directorySelectionButtonTouched)
                         }
@@ -229,7 +229,7 @@
                                 .textSelection(.enabled)
                                 .padding(4)
                                 .frame(minWidth: 30)
-                        } // <-ScrollView
+                        }  // <-ScrollView
                         .overlay(
                             RoundedRectangle(cornerRadius: 5)
                                 .stroke(Color(nsColor: .systemGray), lineWidth: 1)
@@ -273,7 +273,7 @@
                     viewStore.send(.searchButtonTouched)
                 } label: {
                     Text(NSLocalizedString("Search", bundle: Bundle.module, comment: ""))
-                } // <-Button
+                }  // <-Button
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help(NSLocalizedString("Start searching (Cmd+Return)", bundle: Bundle.module, comment: ""))
                 .overlay(viewStore.isSearching ? ProgressView() : nil)
@@ -299,7 +299,7 @@
                                 lineNumbers: [23, 34, 43],
                                 modifiedTime: Date(timeIntervalSince1970: 12300),
                                 gitUsername: "atacan"
-                            ),
+                            )
                         ]
                     ),
                     reducer: FileContentSearchReducer()
@@ -323,8 +323,8 @@
                     )
                 }
                 #if os(macOS)
-                .windowStyle(.titleBar)
-                .windowToolbarStyle(.unified(showsTitle: true))
+                    .windowStyle(.titleBar)
+                    .windowToolbarStyle(.unified(showsTitle: true))
                 #endif
             }
         }

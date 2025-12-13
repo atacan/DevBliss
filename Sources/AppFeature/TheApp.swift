@@ -7,7 +7,7 @@ struct AppContentView: View {
             store: Store(
                 initialState: .init(),
                 reducer: AppReducer()
-//                    ._printChanges()
+                    //                    ._printChanges()
             )
         )
     }
@@ -20,8 +20,8 @@ public struct TheApp: App {
             AppContentView()
         }
         #if os(macOS)
-        .windowStyle(.titleBar)
-        .windowToolbarStyle(.unified(showsTitle: true))
+            .windowStyle(.titleBar)
+            .windowToolbarStyle(.unified(showsTitle: true))
         #endif
     }
 }

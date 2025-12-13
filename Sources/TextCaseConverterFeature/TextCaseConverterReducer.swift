@@ -103,20 +103,26 @@ public struct TextCaseConverterReducer: ReducerProtocol {
         .run { send in
             await withTaskGroup(of: Void.self) { group in
                 group.addTask {
-                    if let newSourceCase: WordGroupCase = userDefaults
-                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.sourceCase) {
+                    if let newSourceCase: WordGroupCase =
+                        userDefaults
+                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.sourceCase)
+                    {
                         await send(.binding(.set(\.$sourceCase, newSourceCase)))
                     }
                 }
                 group.addTask {
-                    if let newTargetCase: WordGroupCase = userDefaults
-                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.targetCase) {
+                    if let newTargetCase: WordGroupCase =
+                        userDefaults
+                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.targetCase)
+                    {
                         await send(.binding(.set(\.$targetCase, newTargetCase)))
                     }
                 }
                 group.addTask {
-                    if let newTextSeperator: WordGroupSeperator = userDefaults
-                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.textSeperator) {
+                    if let newTextSeperator: WordGroupSeperator =
+                        userDefaults
+                        .rawRepresentable(forKey: SettingsKey.TextCaseConverter.textSeperator)
+                    {
                         await send(.binding(.set(\.$textSeperator, newTextSeperator)))
                     }
                 }
@@ -174,11 +180,14 @@ public struct TextCaseConverterView: View {
                 }
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
                     Text(NSLocalizedString("", bundle: Bundle.module, comment: ""))
-                    Button(action: {
-                        viewStore.send(.switchCasesButtonTouched)
-                    }, label: {
-                        Image(systemName: "arrow.left.arrow.right")
-                    })
+                    Button(
+                        action: {
+                            viewStore.send(.switchCasesButtonTouched)
+                        },
+                        label: {
+                            Image(systemName: "arrow.left.arrow.right")
+                        }
+                    )
                 }
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
                     Text(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
@@ -205,7 +214,7 @@ public struct TextCaseConverterView: View {
                     }
                 }
                 Spacer()
-            } // <-HStack
+            }  // <-HStack
             .frame(maxWidth: 550)
             .labelsHidden()
 

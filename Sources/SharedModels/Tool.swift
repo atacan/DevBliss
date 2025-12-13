@@ -65,9 +65,9 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return false
         case .fileContentSearch:
             #if os(macOS)
-            return true
+                return true
             #else
-            return false
+                return false
             #endif
         default:
             return true
@@ -80,7 +80,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
         if idx == all.startIndex {
             let lastIndex = all.index(all.endIndex, offsetBy: -1)
             return all[lastIndex]
-        } else {
+        }
+        else {
             all.formIndex(&idx, offsetBy: -1)
             return all[idx]
         }

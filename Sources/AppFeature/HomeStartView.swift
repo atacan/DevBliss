@@ -8,7 +8,7 @@ struct HomeStartView: View {
                 Image(systemName: "sidebar.squares.left")
                 Text(NSLocalizedString("Navigation", bundle: Bundle.module, comment: ""))
                 Spacer()
-            } // <-HStack
+            }  // <-HStack
             .font(.title)
             .padding()
 
@@ -36,7 +36,7 @@ struct HomeStartView: View {
                 Image(systemName: "hammer")
                 Text(NSLocalizedString("Tool Usage", bundle: Bundle.module, comment: ""))
                 Spacer()
-            } // <-HStack
+            }  // <-HStack
             .font(.title)
             .padding()
 
@@ -66,7 +66,7 @@ struct HomeStartView: View {
                     Text(NSLocalizedString("Paste to Input", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
-            } // <-VStack
+            }  // <-VStack
             .font(.title2)
 
             HStack(alignment: .center) {
@@ -74,7 +74,7 @@ struct HomeStartView: View {
                 Image(systemName: "square.split.diagonal")
                 Text(NSLocalizedString("Layout", bundle: Bundle.module, comment: ""))
                 Spacer()
-            } // <-HStack
+            }  // <-HStack
             .font(.title)
             .padding()
 
@@ -94,7 +94,7 @@ struct HomeStartView: View {
                     Text(NSLocalizedString("Toggle input editor", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
-            } // <-VStack
+            }  // <-VStack
             .font(.title2)
         }
         .frame(maxWidth: 400)
