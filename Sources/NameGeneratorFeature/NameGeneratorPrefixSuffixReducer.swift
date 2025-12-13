@@ -218,7 +218,6 @@ public struct NameGeneratorPrefixSuffixView: View {
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
             }  // <-HStack
-            // OutputEditorView(store: store.scope(state: \.output, action: /NameGeneratorPrefixSuffixReducer.Action.output))
         }
     }
 }
