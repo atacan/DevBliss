@@ -12,6 +12,7 @@ public struct HtmlToSwiftReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
+        @Shared(.htmlToSwiftIO) var storage = ToolIOStorage()
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var dsl: SwiftDSL = .binaryBirds
@@ -31,8 +32,25 @@ public struct HtmlToSwiftReducer {
             self.inputOutput = inputOutput
         }
 
+        public init() {
+            // Explicitly initialize storage first
+            let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .htmlToSwiftIO)
+            self._storage = sharedStorage
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: sharedStorage.input,
+                outputText: sharedStorage.output
+            )
+            // Config (dsl, component) loaded via observeSettings action
+        }
+
         public init(input: String, output: String = "") {
-            self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
+            // Explicitly initialize storage with provided values
+            let sharedStorage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .htmlToSwiftIO)
+            self._storage = sharedStorage
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: sharedStorage.input,
+                outputText: sharedStorage.output
+            )
         }
 
         public var outputText: String {
