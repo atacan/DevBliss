@@ -6,8 +6,10 @@ import JsonPrettyClient
 import SharedModels
 import SwiftUI
 
-public struct JsonPrettyReducer: ReducerProtocol {
+@Reducer
+public struct JsonPrettyReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
@@ -35,7 +37,8 @@ public struct JsonPrettyReducer: ReducerProtocol {
     @Dependency(\.jsonPretty) var jsonPretty
     private enum CancelID { case conversionRequest }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
+        BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
             case .binding:
@@ -69,26 +72,24 @@ public struct JsonPrettyReducer: ReducerProtocol {
             }
         }
 
-        Scope(state: \.inputOutput, action: /Action.inputOutput) {
+        Scope(state: \.inputOutput, action: \.inputOutput) {
             InputOutputAttributedEditorsReducer()
         }
     }
 }
 
 public struct JsonPrettyView: View {
-    let store: StoreOf<JsonPrettyReducer>
-    @ObservedObject var viewStore: ViewStoreOf<JsonPrettyReducer>
+    @Perception.Bindable var store: StoreOf<JsonPrettyReducer>
 
     public init(store: StoreOf<JsonPrettyReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {
         VStack {
-            Button(action: { viewStore.send(.convertButtonTouched) }) {
+            Button(action: { store.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Format", bundle: Bundle.module, comment: ""))
-                    .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
+                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Format code (Cmd+Return)", bundle: Bundle.module, comment: ""))
@@ -107,6 +108,6 @@ public struct JsonPrettyView: View {
 // preview
 struct JsonPrettyReducer_Previews: PreviewProvider {
     static var previews: some View {
-        JsonPrettyView(store: .init(initialState: .init(), reducer: JsonPrettyReducer()))
+        JsonPrettyView(store: .init(initialState: .init()) { JsonPrettyReducer() })
     }
 }

@@ -8,13 +8,15 @@ import SplitView
 import SwiftPrettyClient
 import SwiftUI
 
-public struct SwiftPrettyReducer: ReducerProtocol {
+@Reducer
+public struct SwiftPrettyReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var lockwoodConfig: InputEditorReducer.State
-        @BindingState var useLockwood: Bool
+        var useLockwood: Bool
 
         public init(
             inputOutput: InputOutputEditorsReducer.State = .init(),
@@ -61,13 +63,13 @@ public struct SwiftPrettyReducer: ReducerProtocol {
     @Dependency(\.swiftPretty) var swiftPretty
     private enum CancelID { case conversionRequest }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
             case .binding:
                 return .none
-            case .convertButtonTouched:
+            case .convertButtonTouched: 
                 state.isConversionRequestInFlight = true
                 return
                     .run { [config = state.lockwoodConfig.text, input = state.inputOutput.input] send in
@@ -100,11 +102,11 @@ public struct SwiftPrettyReducer: ReducerProtocol {
             }
         }
 
-        Scope(state: \.inputOutput, action: /Action.inputOutput) {
+        Scope(state: \.inputOutput, action: \.inputOutput) {
             InputOutputEditorsReducer()
         }
 
-        Scope(state: \.lockwoodConfig, action: /Action.lockwoodConfig) {
+        Scope(state: \.lockwoodConfig, action: \.lockwoodConfig) {
             InputEditorReducer()
         }
     }
@@ -114,7 +116,7 @@ public struct SwiftPrettyReducer: ReducerProtocol {
     // private func setPreferences(
     //     for action: BindingAction<InputEditorReducer.State>,
     //     from state: State
-    // ) -> EffectTask<Action> {
+    // ) -> Effect<Action> {
     //     switch action {
     //     case \.$text:
     //         // userDefaults.set(state.lockwoodConfig.text, forKey: SettingsKey.SwiftPretty.lockwoodConfig)
@@ -129,21 +131,19 @@ public struct SwiftPrettyReducer: ReducerProtocol {
 }
 
 public struct SwiftPrettyView: View {
-    let store: StoreOf<SwiftPrettyReducer>
-    @ObservedObject var viewStore: ViewStoreOf<SwiftPrettyReducer>
+    @Perception.Bindable var store: StoreOf<SwiftPrettyReducer>
 
     @State var configIsExpanded = true
 
     public init(store: StoreOf<SwiftPrettyReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {
         VSplit {
             VStack {
                 // DisclosureGroup("Configuration", isExpanded: $configIsExpanded) {
-                //     Toggle("Use Lockwood", isOn: viewStore.binding(\.$useLockwood))
+                //     Toggle("Use Lockwood", isOn: store.binding(\.$useLockwood))
                 //         .toggleStyle(.automatic)
                 //         .frame(width: .nan)
                 lockwoodEditor
@@ -151,9 +151,9 @@ public struct SwiftPrettyView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 // }
 
-                Button(action: { viewStore.send(.convertButtonTouched) }) {
+                Button(action: { store.send(.convertButtonTouched) }) {
                     Text(NSLocalizedString("Format", bundle: Bundle.module, comment: ""))
-                        .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
+                        .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
                 }
                 .padding(.bottom)
                 .keyboardShortcut(.return, modifiers: [.command])
@@ -185,7 +185,7 @@ public struct SwiftPrettyView: View {
 // preview
 struct SwiftPrettyReducer_Previews: PreviewProvider {
     static var previews: some View {
-        SwiftPrettyView(store: .init(initialState: .init(), reducer: SwiftPrettyReducer()))
+        SwiftPrettyView(store: .init(initialState: .init()) { SwiftPrettyReducer() })
     }
 }
 
@@ -276,18 +276,17 @@ public let blissConfigLockwood = """
     """
 
 #if DEBUG
-    public struct SwiftPrettyApp: App {
-        public init() {}
-
-        public var body: some Scene {
-            WindowGroup {
-                SwiftPrettyView(
-                    store: Store(
-                        initialState: .init(),
-                        reducer: SwiftPrettyReducer()
-                            ._printChanges()
-                    )
-                )
+     public struct SwiftPrettyApp: App {
+         public init() {}
+ 
+         public var body: some Scene {
+             WindowGroup {
+                 SwiftPrettyView(
+                     store: Store(initialState: .init()) {
+                         SwiftPrettyReducer()
+                             ._printChanges()
+                     }
+                 )
             }
             #if os(macOS)
                 .windowStyle(.titleBar)

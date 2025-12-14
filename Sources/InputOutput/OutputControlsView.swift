@@ -4,11 +4,13 @@ import ComposableArchitecture
 import SharedModels
 import SwiftUI
 
-public struct OutputControlsReducer: ReducerProtocol {
+@Reducer
+public struct OutputControlsReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var copyButtonAnimating: Bool = false
-        @BindingState var isOtherToolsPopoverVisible = false
+        var isOtherToolsPopoverVisible = false
 
         public init() {}
     }
@@ -22,7 +24,7 @@ public struct OutputControlsReducer: ReducerProtocol {
         case copyEnded
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -48,22 +50,21 @@ public struct OutputControlsReducer: ReducerProtocol {
 }
 
 struct OutputControlsView: View {
-    let store: StoreOf<OutputControlsReducer>
-    @ObservedObject var viewStore: ViewStoreOf<OutputControlsReducer>
+    @Perception.Bindable var store: StoreOf<OutputControlsReducer>
 
     let copyButtonTitle: String
     let saveAsButtonTitle: String
 
     public init(
         store: StoreOf<OutputControlsReducer> = .init(
-            initialState: .init(),
-            reducer: OutputControlsReducer()
-        ),
+            initialState: .init()
+        ) {
+            OutputControlsReducer()
+        },
         copyButtonTitle: String = "Copy",
         saveAsButtonTitle: String = "Save As..."
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
         self.copyButtonTitle = copyButtonTitle
         self.saveAsButtonTitle = saveAsButtonTitle
     }
@@ -71,11 +72,11 @@ struct OutputControlsView: View {
     var body: some View {
         HStack {
             Button {
-                viewStore.send(.copyButtonTouched)
+                store.send(.copyButtonTouched)
             } label: {
                 Image(systemName: "doc.on.clipboard")
                     .foregroundColor(
-                        viewStore.copyButtonAnimating
+                        store.copyButtonAnimating
                             ? ThemeColor.Text.success
                             : ThemeColor.Text.controlText
                     )
@@ -86,7 +87,7 @@ struct OutputControlsView: View {
             .accessibilityLabel(NSLocalizedString("Copy to clipboard", bundle: Bundle.module, comment: ""))
 
             Button {
-                viewStore.send(.saveAsButtonTouched)
+                store.send(.saveAsButtonTouched)
             } label: {
                 Image(systemName: "opticaldiscdrive")
             }  // <-Button
@@ -97,7 +98,7 @@ struct OutputControlsView: View {
             .accessibilityLabel(NSLocalizedString("Save to disk", bundle: Bundle.module, comment: ""))
 
             Button {
-                viewStore.send(.moveToOtherToolButtonTouched)
+                store.send(.moveToOtherToolButtonTouched)
             } label: {
                 Image(systemName: "wand.and.rays.inverse")
             }  // <-Button
@@ -111,7 +112,7 @@ struct OutputControlsView: View {
                 )
             )
             .accessibilityLabel(NSLocalizedString("Input it to the other tools", bundle: Bundle.module, comment: ""))
-            .popover(isPresented: viewStore.binding(\.$isOtherToolsPopoverVisible)) {
+            .popover(isPresented: $store.isOtherToolsPopoverVisible) {
                 VStack(alignment: .leading) {
                     #if os(macOS)
                         popContent
@@ -119,7 +120,7 @@ struct OutputControlsView: View {
                         HStack(alignment: .center) {
                             Spacer()
                             Button(action: {
-                                viewStore.send(.binding(.set(\.$isOtherToolsPopoverVisible, false)))
+                                store.isOtherToolsPopoverVisible = false
                             }) {
                                 Image(systemName: "xmark.circle")
                                     .opacity(0.8)
@@ -162,7 +163,7 @@ struct OutputControlsView: View {
             .padding(.bottom)
             ForEach(Tool.allCases.filter(\.isInputtable)) { tool in
                 Button(action: {
-                    viewStore.send(.otherToolSelected(tool))
+                    store.send(.otherToolSelected(tool))
                 }) {
                     Text(tool.name)
                         .frame(maxWidth: .infinity, alignment: .leading)

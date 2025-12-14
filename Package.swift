@@ -41,16 +41,16 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.49.1"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "0.1.0"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.23.1"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.10.0"),
         .package(url: "https://github.com/stevengharris/SplitView", from: "3.1.0"),
         .package(url: "https://github.com/atacan/html-swift", branch: "main"),
         .package(url: "https://github.com/nkristek/Highlight.git", branch: "master"),
         .package(url: "https://github.com/atacan/MacSwiftUI", branch: "main"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.51.0"),
-        .package(url: "https://github.com/atacan/TCAEnchancements", from: "0.49.1"),
+        .package(url: "https://github.com/atacan/TCAEnchancements", from: "1.0.0"),
         .package(url: "https://github.com/atacan/PillPickerView", branch: "develop"),
-        .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", from: "0.1.0"),
+        .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", branch: "xcode26"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.

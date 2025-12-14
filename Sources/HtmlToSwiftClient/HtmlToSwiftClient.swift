@@ -38,7 +38,7 @@ extension DependencyValues {
 
 extension HtmlToSwiftClient: TestDependencyKey {
     public static var testValue: HtmlToSwiftClient = Self(
-        binaryBirds: XCTUnimplemented("\(Self.self).binaryBirds"),
-        pointfreeco: XCTUnimplemented("\(Self.self).pointFree")
+        binaryBirds: unimplemented("\(Self.self).binaryBirds"),
+        pointfreeco: unimplemented("\(Self.self).pointFree")
     )
 }

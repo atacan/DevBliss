@@ -4,8 +4,10 @@ import ComposableArchitecture
 import SplitView
 import SwiftUI
 
-public struct InputAttributedOutputAttributedEditorsReducer: ReducerProtocol {
+@Reducer
+public struct InputAttributedOutputAttributedEditorsReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         public var input: InputAttributedEditorReducer.State
         public var output: OutputAttributedEditorReducer.State
@@ -25,7 +27,7 @@ public struct InputAttributedOutputAttributedEditorsReducer: ReducerProtocol {
         case output(OutputAttributedEditorReducer.Action)
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -38,19 +40,18 @@ public struct InputAttributedOutputAttributedEditorsReducer: ReducerProtocol {
             }
         }
 
-        Scope(state: \.input, action: /Action.input) {
+        Scope(state: \.input, action: \.input) {
             InputAttributedEditorReducer()
         }
 
-        Scope(state: \.output, action: /Action.output) {
+        Scope(state: \.output, action: \.output) {
             OutputAttributedEditorReducer()
         }
     }
 }
 
 public struct InputAttributedOutputAttributedEditorsView: View {
-    let store: StoreOf<InputAttributedOutputAttributedEditorsReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputAttributedOutputAttributedEditorsReducer>
+    @Perception.Bindable var store: StoreOf<InputAttributedOutputAttributedEditorsReducer>
 
     let inputEditorTitle: String
     let outputEditorTitle: String
@@ -67,7 +68,6 @@ public struct InputAttributedOutputAttributedEditorsView: View {
         outputEditorTitle: String
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
         self.inputEditorTitle = inputEditorTitle
         self.outputEditorTitle = outputEditorTitle
     }
@@ -110,9 +110,10 @@ struct InputAttributedOutputAttributedEditorsView_Previews: PreviewProvider {
     static var previews: some View {
         InputAttributedOutputAttributedEditorsView(
             store: Store(
-                initialState: .init(),
-                reducer: InputAttributedOutputAttributedEditorsReducer()
-            ),
+                initialState: .init()
+            ) {
+                InputAttributedOutputAttributedEditorsReducer()
+            },
             inputEditorTitle: "Input",
             outputEditorTitle: "Output"
         )

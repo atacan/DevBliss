@@ -10,10 +10,12 @@ public enum GenerationType {
     case probabilistic
 }
 
-public struct NameGeneratorReducer: ReducerProtocol {
+@Reducer
+public struct NameGeneratorReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
-        @BindingState var generationType: GenerationType
+        var generationType: GenerationType
         var prefixSuffix: NameGeneratorPrefixSuffixReducer.State
         var alternatingVowelsConsonants: NameGeneratorAlternatingReducer.State
         var probabilistic: NameGeneratorProbabilisticReducer.State
@@ -46,7 +48,7 @@ public struct NameGeneratorReducer: ReducerProtocol {
         case output(OutputEditorReducer.Action)
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -80,37 +82,33 @@ public struct NameGeneratorReducer: ReducerProtocol {
                 return .none
             }
         }
-        Scope(state: \.prefixSuffix, action: /Action.prefixSuffix) {
+        Scope(state: \.prefixSuffix, action: \.prefixSuffix) {
             NameGeneratorPrefixSuffixReducer()
         }
-        Scope(state: \.alternatingVowelsConsonants, action: /Action.alternatingVowelsConsonants) {
+        Scope(state: \.alternatingVowelsConsonants, action: \.alternatingVowelsConsonants) {
             NameGeneratorAlternatingReducer()
         }
-        Scope(state: \.probabilistic, action: /Action.probabilistic) {
+        Scope(state: \.probabilistic, action: \.probabilistic) {
             NameGeneratorProbabilisticReducer()
         }
-        Scope(state: \.output, action: /Action.output) {
+        Scope(state: \.output, action: \.output) {
             OutputEditorReducer()
         }
     }
 }
 
 public struct NameGeneratorView: View {
-    let store: StoreOf<NameGeneratorReducer>
-    @ObservedObject var viewStore: ViewStoreOf<NameGeneratorReducer>
+    @Perception.Bindable var store: StoreOf<NameGeneratorReducer>
 
     public init(store: StoreOf<NameGeneratorReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {
         VStack {
             Picker(
                 "Generation Type",
-                selection: viewStore.binding(
-                    \.$generationType
-                )
+                selection: $store.generationType
             ) {
                 Text(NSLocalizedString("Prefix Suffix", bundle: Bundle.module, comment: ""))
                     .tag(GenerationType.prefixSuffix)
@@ -124,7 +122,7 @@ public struct NameGeneratorView: View {
 
             VSplit {
                 Group {
-                    switch viewStore.generationType {
+                    switch store.generationType {
                     case .prefixSuffix:
                         NameGeneratorPrefixSuffixView(
                             store: store.scope(
@@ -168,7 +166,9 @@ public struct NameGeneratorView: View {
     struct NameGeneratorView_Previews: PreviewProvider {
         static var previews: some View {
             NameGeneratorView(
-                store: Store(initialState: .init(), reducer: NameGeneratorReducer())
+               store: Store(initialState: .init()) {
+                   NameGeneratorReducer()
+               }
             )
         }
     }

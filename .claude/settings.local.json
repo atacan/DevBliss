@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(swift:*)",
+      "Bash(swift build:*)",
+      "Bash(swift test:*)",
+      "Bash(bd:*)",
+      "Bash(bd ready:*)",
+      "Bash(bd sync:*)",
+      "Bash(bd update:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(tree:*)",
+      "WebSearch",
+      "WebFetch(domain:swiftpackageindex.com)",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}

@@ -8,11 +8,13 @@
     import SwiftUI
     import TCAEnchance
 
-    public struct FileContentSearchReducer: ReducerProtocol {
+    @Reducer
+    public struct FileContentSearchReducer {
         public init() {}
+    @ObservableState
         public struct State: Equatable {
-            @BindingState var searchOptions: SearchOptions
-            @BindingState var selectedFiles = Set<FoundFile.ID>()
+            var searchOptions: SearchOptions
+            var selectedFiles = Set<FoundFile.ID>()
             var foundFiles: IdentifiedArrayOf<FoundFile>
             var output: OutputEditorReducer.State
             var isSearching: Bool = false
@@ -56,15 +58,10 @@
 
         //        private enum ReadFileCancelID { case readFileRequest }
 
-        public var body: some ReducerProtocol<State, Action> {
+        public var body: some Reducer<State, Action> {
             BindingReducer()
             Reduce<State, Action> { state, action in
                 switch action {
-                case .binding(\.$selectedFiles):
-                    return .merge(
-                        .cancel(id: CancelID.readFileRequest),
-                        selectedFilesChanged(&state)
-                    )
                 case .binding:
                     return .none
                 case .directorySelectionButtonTouched:
@@ -114,12 +111,12 @@
                 selectedFilesChanged(&state)
             }
 
-            Scope(state: \.output, action: /Action.output) {
+            Scope(state: \.output, action: \.output) {
                 OutputEditorReducer()
             }
         }
 
-        private func selectedFilesChanged(_ state: inout State) -> EffectTask<Action> {
+        private func selectedFilesChanged(_ state: inout State) -> Effect<Action> {
             guard state.selectedFiles.count == 1,
                 let file = state.foundFiles[id: state.selectedFiles.first!]
             else {
@@ -143,12 +140,10 @@
     }
 
     public struct FileContentSearchView: View {
-        let store: Store<FileContentSearchReducer.State, FileContentSearchReducer.Action>
-        @ObservedObject var viewStore: ViewStore<FileContentSearchReducer.State, FileContentSearchReducer.Action>
+        @Perception.Bindable var store: Store<FileContentSearchReducer.State, FileContentSearchReducer.Action>
 
         public init(store: StoreOf<FileContentSearchReducer>) {
             self.store = store
-            self.viewStore = ViewStore(store)
         }
 
         @State private var sortOrder = [
@@ -160,7 +155,7 @@
                 VStack(alignment: .center) {
                     inputView
 
-                    Table(viewStore.foundFiles, selection: viewStore.binding(\.$selectedFiles), sortOrder: $sortOrder) {
+                    Table(store.foundFiles, selection: $store.selectedFiles, sortOrder: $sortOrder) {
                         TableColumn(
                             NSLocalizedString("File Path", bundle: Bundle.module, comment: ""),
                             value: \.fileURL.absoluteString
@@ -180,7 +175,7 @@
                         .width(min: nil, ideal: 100, max: nil)
                     }
                     .onChange(of: sortOrder) { newValue in
-                        viewStore.send(.tableSortOrderChanged(newValue))
+                        store.send(.tableSortOrderChanged(newValue))
                     }
                 }  // <-VStack
                 OutputEditorView(
@@ -190,7 +185,7 @@
                     ),
                     title: NSLocalizedString("File Content", bundle: Bundle.module, comment: "")
                 )
-                .overlay(viewStore.isReadingFile ? ProgressView() : nil)
+                .overlay(store.isReadingFile ? ProgressView() : nil)
             }
         }
 
@@ -202,10 +197,10 @@
 
                         TextField(
                             NSLocalizedString("term to search inside the file...", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$searchOptions.term)
+                            text: $store.searchOptions.term
                         )
                         .onSubmit {
-                            viewStore.send(.directorySelectionButtonTouched)
+                            store.send(.directorySelectionButtonTouched)
                         }
                     }  // <-HStack
 
@@ -214,7 +209,7 @@
                             Text(NSLocalizedString("Directory", bundle: Bundle.module, comment: ""))
 
                             Button {
-                                viewStore.send(.directorySelectionButtonTouched)
+                                store.send(.directorySelectionButtonTouched)
                             } label: {
                                 Image(systemName: "folder.fill")
                             }
@@ -222,10 +217,10 @@
                             .help(NSLocalizedString("Choose directory (Cmd+O)", bundle: Bundle.module, comment: ""))
                         }  // <-HStack
                         .onTapGesture {
-                            viewStore.send(.directorySelectionButtonTouched)
+                            store.send(.directorySelectionButtonTouched)
                         }
                         ScrollView(.horizontal, showsIndicators: false) {
-                            Text(viewStore.searchOptions.folder)
+                            Text(store.searchOptions.folder)
                                 .textSelection(.enabled)
                                 .padding(4)
                                 .frame(minWidth: 30)
@@ -239,19 +234,19 @@
 
                     Toggle(
                         NSLocalizedString("Search also hidden files and folders", bundle: Bundle.module, comment: ""),
-                        isOn: viewStore.binding(\.$searchOptions.searchHiddenFiles)
+                        isOn: $store.searchOptions.searchHiddenFiles
                     )
                     .toggleStyle(.checkbox)
 
                     Toggle(
                         NSLocalizedString("Search in sub-directories", bundle: Bundle.module, comment: ""),
-                        isOn: viewStore.binding(\.$searchOptions.searchInsideSubdirectories)
+                        isOn: $store.searchOptions.searchInsideSubdirectories
                     )
                     .toggleStyle(.checkbox)
 
                     Toggle(
                         NSLocalizedString("Search in packaged files", bundle: Bundle.module, comment: ""),
-                        isOn: viewStore.binding(\.$searchOptions.searchInsidePackages)
+                        isOn: $store.searchOptions.searchInsidePackages
                     )
                     .toggleStyle(.checkbox)
                 }
@@ -259,24 +254,24 @@
 
                 // Toggle(
                 //     "Case Sensitive",
-                //     isOn: viewStore.binding(\.$searchOptions.caseSensitive)
+                //     isOn: store.binding(\.$searchOptions.caseSensitive)
                 // )
                 // .toggleStyle(.checkbox)
 
                 // TextField(
                 //     "File Extensions",
-                //     text: viewStore.binding(\.$searchOptions.fileExtensions)
+                //     text: store.binding(\.$searchOptions.fileExtensions)
                 // )
                 // .textFieldStyle(RoundedBorderTextFieldStyle())
 
                 Button {
-                    viewStore.send(.searchButtonTouched)
+                    store.send(.searchButtonTouched)
                 } label: {
                     Text(NSLocalizedString("Search", bundle: Bundle.module, comment: ""))
                 }  // <-Button
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help(NSLocalizedString("Start searching (Cmd+Return)", bundle: Bundle.module, comment: ""))
-                .overlay(viewStore.isSearching ? ProgressView() : nil)
+                .overlay(store.isSearching ? ProgressView() : nil)
                 .padding(.bottom, 2)
             }
         }
@@ -293,17 +288,20 @@
                             searchHiddenFiles: false
                         ),
                         output: .init(text: "Something inside\nthis file is very important", outputControls: .init()),
-                        foundFiles: [
-                            FoundFile(
-                                fileURL: URL(string: "Users/atacan/amazement/secret.swift")!,
-                                lineNumbers: [23, 34, 43],
-                                modifiedTime: Date(timeIntervalSince1970: 12300),
-                                gitUsername: "atacan"
-                            )
-                        ]
-                    ),
-                    reducer: FileContentSearchReducer()
-                )
+                        foundFiles: IdentifiedArrayOf(
+                            uniqueElements: [
+                                FoundFile(
+                                    fileURL: URL(string: "Users/atacan/amazement/secret.swift")!,
+                                    lineNumbers: [23, 34, 43],
+                                    modifiedTime: Date(timeIntervalSince1970: 12300),
+                                    gitUsername: "atacan"
+                                )
+                            ]
+                        )
+                    )
+                ) {
+                    FileContentSearchReducer()
+                }
             )
         }
     }
@@ -316,10 +314,11 @@
                 WindowGroup {
                     FileContentSearchView(
                         store: Store(
-                            initialState: .init(searchOptions: SearchOptions(searchTerm: "import")),
-                            reducer: FileContentSearchReducer()
+                            initialState: .init(searchOptions: SearchOptions(searchTerm: "import"))
+                        ) {
+                            FileContentSearchReducer()
                                 ._printChanges()
-                        )
+                        }
                     )
                 }
                 #if os(macOS)
@@ -334,11 +333,12 @@
 #else
     import ComposableArchitecture
 
-    public struct FileContentSearchReducer: ReducerProtocol {
+    public struct FileContentSearchReducer: Reducer {
         public init() {}
+    @ObservableState
         public struct State: Equatable { public init() {} }
         public enum Action: Equatable {}
-        public var body: some ReducerProtocol<State, Action> {
+        public var body: some Reducer<State, Action> {
             EmptyReducer()
         }
     }

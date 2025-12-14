@@ -3,10 +3,12 @@ import ClipboardClient
 import ComposableArchitecture
 import SwiftUI
 
-public struct InputEditorReducer: ReducerProtocol {
+@Reducer
+public struct InputEditorReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
-        @BindingState public var text: String
+        public var text: String
         var pasteButtonAnimating: Bool = false
         var inputEditorDrop: InputEditorDropReducer.State
 
@@ -30,9 +32,12 @@ public struct InputEditorReducer: ReducerProtocol {
     @Dependency(\.mainQueue) var mainQueue
     @Dependency(\.clipboard) var clipboard
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
-        Reduce<State, Action> { state, action in
+        Scope(state: \.inputEditorDrop, action: \.inputEditorDrop) {
+            InputEditorDropReducer()
+        }
+        Reduce<State, Action> { state, action -> Effect<Action> in
             switch action {
             case .binding:
                 return .none
@@ -41,9 +46,9 @@ public struct InputEditorReducer: ReducerProtocol {
                 if let clip = clipboard.getString() {
                     state.text = clip
                 }
-                return .task {
+                return .run { send in
                     try await mainQueue.sleep(for: .milliseconds(200))
-                    return .pasteButtonAnimationEnded
+                    await send(.pasteButtonAnimationEnded)
                 }
             // case .saveAsButtonTouched:
             // return .none
@@ -56,32 +61,30 @@ public struct InputEditorReducer: ReducerProtocol {
             case .inputEditorDrop:
                 return .none
             case let .append(text):
-                return .send(.binding(.set(\.$text, state.text.appending(text))))
+                state.text.append(text)
+                return .none
             case let .prepend(text):
-                return .send(.binding(.set(\.$text, text + state.text)))
+                state.text = text + state.text
+                return .none
             }
-        }
-        Scope(state: \.inputEditorDrop, action: /Action.inputEditorDrop) {
-            InputEditorDropReducer()
         }
     }
 }
 
 extension InputEditorReducer.State {
-    public mutating func updateText(_ newText: String) -> EffectTask<InputEditorReducer.Action> {
+    public mutating func updateText(_ newText: String) -> Effect<InputEditorReducer.Action> {
         text = newText
         return .none
     }
 
-    public mutating func updateText(_ newText: NSAttributedString) -> EffectTask<InputEditorReducer.Action> {
+    public mutating func updateText(_ newText: NSAttributedString) -> Effect<InputEditorReducer.Action> {
         text = newText.string
         return .none
     }
 }
 
 public struct InputEditorView: View {
-    let store: StoreOf<InputEditorReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputEditorReducer>
+    @Perception.Bindable var store: StoreOf<InputEditorReducer>
 
     let title: String
     let pasteButtonTitle: String
@@ -92,7 +95,6 @@ public struct InputEditorView: View {
         pasteButtonTitle: String = "Paste"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
         self.title = title
         self.pasteButtonTitle = pasteButtonTitle
     }
@@ -104,7 +106,7 @@ public struct InputEditorView: View {
                 Text(title)
                 Spacer()
             }
-            MyPlainTextEditor(text: viewStore.binding(\.$text), isActivitySheetPresented: .constant(false))
+            MyPlainTextEditor(text: $store.text, isActivitySheetPresented: .constant(false))
                 .overlay(content: {
                     InputEditorDropView(
                         store: store.scope(state: \.inputEditorDrop, action: InputEditorReducer.Action.inputEditorDrop)
@@ -114,12 +116,12 @@ public struct InputEditorView: View {
         .overlay(
             HStack {
                 Button {
-                    viewStore.send(.pasteButtonTouched)
+                    store.send(.pasteButtonTouched)
                 } label: {
                     Image(systemName: "doc.on.clipboard.fill")
                 }  // <-Button
                 .foregroundColor(
-                    viewStore.pasteButtonAnimating
+                    store.pasteButtonAnimating
                         ? ThemeColor.Text.success
                         : ThemeColor.Text.controlText
                 )
@@ -142,9 +144,10 @@ struct InputView_Previews: PreviewProvider {
             store: Store(
                 initialState: InputEditorReducer.State(
                     inputEditorDrop: .init(isDropInProgress: true)
-                ),
-                reducer: InputEditorReducer()
-            )
+                )
+            ) {
+                InputEditorReducer()
+            }
         )
         .padding()
     }
@@ -159,10 +162,11 @@ struct InputView_Previews: PreviewProvider {
                     store: Store(
                         initialState: .init(
                             inputEditorDrop: .init(isDropInProgress: false)
-                        ),
-                        reducer: InputEditorReducer()
+                        )
+                    ) {
+                        InputEditorReducer()
                             ._printChanges()
-                    )
+                    }
                 )
             }
             #if os(macOS)

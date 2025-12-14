@@ -4,8 +4,10 @@ import ComposableArchitecture
 import SplitView
 import SwiftUI
 
-public struct InputAttributedTwoOutputAttributedEditorsReducer: ReducerProtocol {
+@Reducer
+public struct InputAttributedTwoOutputAttributedEditorsReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         public var input: InputAttributedEditorReducer.State
         public var output: OutputAttributedEditorReducer.State
@@ -29,7 +31,7 @@ public struct InputAttributedTwoOutputAttributedEditorsReducer: ReducerProtocol 
         case outputSecond(OutputAttributedEditorReducer.Action)
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -44,23 +46,22 @@ public struct InputAttributedTwoOutputAttributedEditorsReducer: ReducerProtocol 
             }
         }
 
-        Scope(state: \.input, action: /Action.input) {
+        Scope(state: \.input, action: \.input) {
             InputAttributedEditorReducer()
         }
 
-        Scope(state: \.output, action: /Action.output) {
+        Scope(state: \.output, action: \.output) {
             OutputAttributedEditorReducer()
         }
 
-        Scope(state: \.outputSecond, action: /Action.outputSecond) {
+        Scope(state: \.outputSecond, action: \.outputSecond) {
             OutputAttributedEditorReducer()
         }
     }
 }
 
 public struct InputAttributedTwoOutputAttributedEditorsView: View {
-    let store: StoreOf<InputAttributedTwoOutputAttributedEditorsReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputAttributedTwoOutputAttributedEditorsReducer>
+    @Perception.Bindable var store: StoreOf<InputAttributedTwoOutputAttributedEditorsReducer>
 
     let inputEditorTitle: String
     let outputEditorTitle: String
@@ -79,7 +80,6 @@ public struct InputAttributedTwoOutputAttributedEditorsView: View {
         outputSecondEditorTitle: String
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
         self.inputEditorTitle = inputEditorTitle
         self.outputEditorTitle = outputEditorTitle
         self.outputSecondEditorTitle = outputSecondEditorTitle
@@ -143,14 +143,13 @@ public struct InputAttributedTwoOutputAttributedEditorsView: View {
 
 struct InputAttributedTwoOutputAttributedEditorsView_Previews: PreviewProvider {
     static var previews: some View {
-        InputAttributedTwoOutputAttributedEditorsView(
-            store: Store(
-                initialState: .init(),
-                reducer: InputAttributedTwoOutputAttributedEditorsReducer()
-            ),
-            inputEditorTitle: "Input",
-            outputEditorTitle: "Output",
-            outputSecondEditorTitle: "Output Secondary"
-        )
+       InputAttributedTwoOutputAttributedEditorsView(
+           store: Store(initialState: .init()) {
+               InputAttributedTwoOutputAttributedEditorsReducer()
+           },
+           inputEditorTitle: "Input",
+           outputEditorTitle: "Output",
+           outputSecondEditorTitle: "Output Secondary"
+       )
     }
 }

@@ -3,15 +3,17 @@ import InputOutput
 import NameGeneratorClient
 import SwiftUI
 
-public struct NameGeneratorAlternatingReducer: ReducerProtocol {
+@Reducer
+public struct NameGeneratorAlternatingReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
-        @BindingState var vowelsInput: String
-        @BindingState var consonantsInput: String
-        @BindingState var inputSeparator: String
-        @BindingState var minLength: Int
-        @BindingState var maxLength: Int
-        @BindingState var numberOfNames: Int
+        var vowelsInput: String
+        var consonantsInput: String
+        var inputSeparator: String
+        var minLength: Int
+        var maxLength: Int
+        var numberOfNames: Int
         var isGenerating: Bool = false
 
         public init(
@@ -50,7 +52,7 @@ public struct NameGeneratorAlternatingReducer: ReducerProtocol {
     @Dependency(\.nameGenerator) var nameGenerator
     private enum CancelID { case generationRequest }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -92,12 +94,10 @@ public struct NameGeneratorAlternatingReducer: ReducerProtocol {
 }
 
 public struct NameGeneratorAlternatingView: View {
-    let store: StoreOf<NameGeneratorAlternatingReducer>
-    @ObservedObject var viewStore: ViewStoreOf<NameGeneratorAlternatingReducer>
+    @Perception.Bindable var store: StoreOf<NameGeneratorAlternatingReducer>
 
     public init(store: StoreOf<NameGeneratorAlternatingReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {
@@ -107,17 +107,17 @@ public struct NameGeneratorAlternatingView: View {
                     Text(NSLocalizedString("Vowels", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$vowelsInput)
+                        text: $store.vowelsInput
                     )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
-                }  // <-VStack
-                VStack(alignment: .leading) {
-                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
-                    TextField(
-                        NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$inputSeparator)
-                    )
+                    }  // <-VStack
+                    VStack(alignment: .leading) {
+                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
+                     TextField(
+                         NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
+                         text: $store.inputSeparator
+                     )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 60)
@@ -125,20 +125,20 @@ public struct NameGeneratorAlternatingView: View {
             }
             HStack {
                 VStack(alignment: .leading) {
-                    Text(NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""))
-                    TextField(
-                        NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$consonantsInput)
-                    )
-                    .font(.monospaced(.title3)())
-                    .textFieldStyle(.roundedBorder)
-                }
-                VStack(alignment: .leading) {
-                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
-                    TextField(
-                        NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        text: viewStore.binding(\.$inputSeparator)
-                    )
+                        Text(NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""))
+                        TextField(
+                            NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
+                            text: $store.consonantsInput
+                        )
+                        .font(.monospaced(.title3)())
+                        .textFieldStyle(.roundedBorder)
+                    }
+                    VStack(alignment: .leading) {
+                        Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
+                        TextField(
+                            NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
+                            text: $store.inputSeparator
+                        )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 60)
@@ -148,7 +148,7 @@ public struct NameGeneratorAlternatingView: View {
             HStack {
                 VStack {
                     Text(NSLocalizedString("Min. length", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: viewStore.binding(\.$minLength), range: 1 ... 15)
+                    IntegerTextField(value: $store.minLength, range: 1 ... 15)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -160,7 +160,7 @@ public struct NameGeneratorAlternatingView: View {
                 )
                 .accessibilityValue(
                     NSLocalizedString(
-                        "\(viewStore.minLength)",
+                        "\(store.minLength)",
                         bundle: Bundle.module,
                         comment: "value of a numeric input value for voice-over"
                     )
@@ -168,7 +168,7 @@ public struct NameGeneratorAlternatingView: View {
 
                 VStack {
                     Text(NSLocalizedString("Max. length", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: viewStore.binding(\.$maxLength), range: 1 ... 15)
+                    IntegerTextField(value: $store.maxLength, range: 1 ... 15)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -180,7 +180,7 @@ public struct NameGeneratorAlternatingView: View {
                 )
                 .accessibilityValue(
                     NSLocalizedString(
-                        "\(viewStore.maxLength)",
+                        "\(store.maxLength)",
                         bundle: Bundle.module,
                         comment: "value of a numeric input value for voice-over"
                     )
@@ -188,7 +188,7 @@ public struct NameGeneratorAlternatingView: View {
 
                 VStack {
                     Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: viewStore.binding(\.$numberOfNames), range: 1 ... 200)
+                    IntegerTextField(value: $store.numberOfNames, range: 1 ... 200)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -205,13 +205,13 @@ public struct NameGeneratorAlternatingView: View {
                             bundle: Bundle.module,
                             comment: "value of a numeric input value for voice-over"
                         ),
-                        viewStore.numberOfNames
+                        store.numberOfNames
                     )
                 )
             }
 
             Button(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
-                viewStore.send(.generateButtonTouched)
+                store.send(.generateButtonTouched)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
@@ -228,10 +228,9 @@ public struct NameGeneratorAlternatingView: View {
 
         static var previews: some View {
             NameGeneratorAlternatingView(
-                store: Store(
-                    initialState: .init(),
-                    reducer: NameGeneratorAlternatingReducer()
-                )
+                store: Store(initialState: .init()) {
+                    NameGeneratorAlternatingReducer()
+                }
             )
         }
     }

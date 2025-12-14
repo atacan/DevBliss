@@ -4,11 +4,10 @@ import SwiftUI
 struct AppContentView: View {
     var body: some View {
         AppView(
-            store: Store(
-                initialState: .init(),
-                reducer: AppReducer()
+            store: Store(initialState: .init()) {
+                AppReducer()
                     //                    ._printChanges()
-            )
+            }
         )
     }
 }

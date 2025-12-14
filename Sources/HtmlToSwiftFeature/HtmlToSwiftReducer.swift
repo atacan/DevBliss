@@ -7,13 +7,15 @@ import InputOutput
 import SharedModels
 import SwiftUI
 
-public struct HtmlToSwiftReducer: ReducerProtocol {
+@Reducer
+public struct HtmlToSwiftReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
-        @BindingState var dsl: SwiftDSL = .binaryBirds
-        @BindingState var component: HtmlOutputComponent = .fullHtml
+        var dsl: SwiftDSL = .binaryBirds
+        var component: HtmlOutputComponent = .fullHtml
 
         public init(
             inputOutput: InputOutputEditorsReducer.State = .init(),
@@ -50,12 +52,12 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
     private enum CancelID { case conversionRequest }
     @Dependency(\.userDefaults) var userDefaults
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
             case .observeSettings:
-                return observeSettings()
+                return observeSettings(&state)
             case let .binding(action):
                 return setPreferences(for: action, from: state)
             case .convertButtonTouched:
@@ -86,52 +88,37 @@ public struct HtmlToSwiftReducer: ReducerProtocol {
             }
         }
 
-        Scope(state: \.inputOutput, action: /Action.inputOutput) {
+        Scope(state: \.inputOutput, action: \.inputOutput) {
             InputOutputEditorsReducer()
         }
     }
 
-    private func observeSettings() -> EffectTask<Action> {
-        .run { send in
-            await withTaskGroup(of: Void.self) { group in
-                group.addTask {
-                    if let newDsl: SwiftDSL = userDefaults.rawRepresentable(forKey: SettingsKey.HtmlToSwift.dsl) {
-                        await send(.binding(.set(\.$dsl, newDsl)))
-                    }
-                }
-                group.addTask {
-                    if let newComponent: HtmlOutputComponent =
-                        userDefaults
-                        .rawRepresentable(forKey: SettingsKey.HtmlToSwift.component)
-                    {
-                        await send(.binding(.set(\.$component, newComponent)))
-                    }
-                }
-            }
+    private func observeSettings(_ state: inout State) -> Effect<Action> {
+        if let newDsl: SwiftDSL = userDefaults.rawRepresentable(forKey: SettingsKey.HtmlToSwift.dsl) {
+            state.dsl = newDsl
         }
+        if let newComponent: HtmlOutputComponent =
+            userDefaults
+            .rawRepresentable(forKey: SettingsKey.HtmlToSwift.component)
+        {
+            state.component = newComponent
+        }
+        return .none
     }
 
-    private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
-        switch action {
-        case \.$dsl:
-            userDefaults.set(state.dsl, forKey: SettingsKey.HtmlToSwift.dsl)
-            return .none
-        case \.$component:
-            userDefaults.set(state.component, forKey: SettingsKey.HtmlToSwift.component)
-            return .none
-        default:
-            return .none
-        }
+    private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
+        // Store preferences whenever bindings change
+        userDefaults.set(state.dsl, forKey: SettingsKey.HtmlToSwift.dsl)
+        userDefaults.set(state.component, forKey: SettingsKey.HtmlToSwift.component)
+        return .none
     }
 }
 
 public struct HtmlToSwiftView: View {
-    let store: StoreOf<HtmlToSwiftReducer>
-    @ObservedObject var viewStore: ViewStoreOf<HtmlToSwiftReducer>
+    @Perception.Bindable var store: StoreOf<HtmlToSwiftReducer>
 
     public init(store: StoreOf<HtmlToSwiftReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
     }
 
     #if os(iOS)
@@ -145,37 +132,37 @@ public struct HtmlToSwiftView: View {
             HStack(alignment: .center) {
                 Spacer()
                 VStack(alignment: .center, spacing: pickerTitleSpace) {
-                    Text(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
-                        selection: viewStore.binding(\.$dsl)
-                    ) {
-                        ForEach(SwiftDSL.allCases) { dsl in
-                            Text(dslLibraryName(for: dsl))
-                                .tag(dsl)
-                        }
-                    }
-                }  // <-VStack
-                VStack(alignment: .center, spacing: pickerTitleSpace) {
-                    Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
-                        selection: viewStore.binding(\.$component)
-                    ) {
-                        ForEach(HtmlOutputComponent.allCases) { component in
-                            Text(outputComponentPickerName(for: component))
-                                .tag(component)
-                        }
-                    }
-                }
+                     Text(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
+                     Picker(
+                         NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
+                         selection: $store.dsl
+                     ) {
+                         ForEach(SwiftDSL.allCases) { dsl in
+                             Text(dslLibraryName(for: dsl))
+                                 .tag(dsl)
+                         }
+                     }
+                 }  // <-VStack
+                 VStack(alignment: .center, spacing: pickerTitleSpace) {
+                     Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
+                     Picker(
+                         NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
+                         selection: $store.component
+                     ) {
+                         ForEach(HtmlOutputComponent.allCases) { component in
+                             Text(outputComponentPickerName(for: component))
+                                 .tag(component)
+                         }
+                     }
+                 }
                 Spacer()
             }  // <-HStack
             .frame(maxWidth: 450)
             .labelsHidden()
 
-            Button(action: { viewStore.send(.convertButtonTouched) }) {
+            Button(action: { store.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
-                    .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
+                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Convert code (Cmd+Return)", bundle: Bundle.module, comment: ""))
@@ -190,7 +177,7 @@ public struct HtmlToSwiftView: View {
             )
         }
         .onAppear {
-            viewStore.send(.observeSettings)
+            store.send(.observeSettings)
         }
     }
 
@@ -238,7 +225,7 @@ public struct HtmlToSwiftView: View {
 // preview
 struct HtmlToSwiftReducer_Previews: PreviewProvider {
     static var previews: some View {
-        HtmlToSwiftView(store: .init(initialState: .init(), reducer: HtmlToSwiftReducer()))
+        HtmlToSwiftView(store: .init(initialState: .init()) { HtmlToSwiftReducer() })
     }
 }
 
@@ -250,10 +237,11 @@ struct HtmlToSwiftReducer_Previews: PreviewProvider {
             WindowGroup {
                 HtmlToSwiftView(
                     store: Store(
-                        initialState: .init(),
-                        reducer: HtmlToSwiftReducer()
+                        initialState: .init()
+                    ) {
+                        HtmlToSwiftReducer()
                             ._printChanges()
-                    )
+                    }
                 )
             }
             #if os(macOS)

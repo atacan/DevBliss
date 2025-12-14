@@ -11,18 +11,20 @@ import SwiftUI
 import TextCaseConverterFeature
 import UUIDGeneratorFeature
 
-public struct AppReducer: ReducerProtocol {
+@Reducer
+public struct AppReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
-        @PresentationState var htmlToSwift: HtmlToSwiftReducer.State?
-        @PresentationState var jsonPretty: JsonPrettyReducer.State?
-        @PresentationState var textCaseConverter: TextCaseConverterReducer.State?
-        @PresentationState var uuidGenerator: UUIDGeneratorReducer.State?
-        @PresentationState public var prefixSuffix: PrefixSuffixReducer.State?
-        @PresentationState var regexMatches: RegexMatchesReducer.State?
-        @PresentationState var swiftPrettyLockwood: SwiftPrettyReducer.State?
-        @PresentationState var fileContentSearch: FileContentSearchReducer.State?
-        @PresentationState var nameGenerator: NameGeneratorReducer.State?
+        @Presents var htmlToSwift: HtmlToSwiftReducer.State?
+        @Presents var jsonPretty: JsonPrettyReducer.State?
+        @Presents var textCaseConverter: TextCaseConverterReducer.State?
+        @Presents var uuidGenerator: UUIDGeneratorReducer.State?
+        @Presents public var prefixSuffix: PrefixSuffixReducer.State?
+        @Presents var regexMatches: RegexMatchesReducer.State?
+        @Presents var swiftPrettyLockwood: SwiftPrettyReducer.State?
+        @Presents var fileContentSearch: FileContentSearchReducer.State?
+        @Presents var nameGenerator: NameGeneratorReducer.State?
         var currentTool: Tool? = nil
 
         public init(
@@ -63,7 +65,7 @@ public struct AppReducer: ReducerProtocol {
         case previousToolButtonTouched
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         Reduce<State, Action> { state, action in
             switch action {
             case let .htmlToSwift(
@@ -167,31 +169,31 @@ public struct AppReducer: ReducerProtocol {
                 return .none
             }
         }
-        .ifLet(\.$htmlToSwift, action: /Action.htmlToSwift) {
+        .ifLet(\.$htmlToSwift, action: \.htmlToSwift) {
             HtmlToSwiftReducer()
         }
-        .ifLet(\.$jsonPretty, action: /Action.jsonPretty) {
+        .ifLet(\.$jsonPretty, action: \.jsonPretty) {
             JsonPrettyReducer()
         }
-        .ifLet(\.$textCaseConverter, action: /Action.textCaseConverter) {
+        .ifLet(\.$textCaseConverter, action: \.textCaseConverter) {
             TextCaseConverterReducer()
         }
-        .ifLet(\.$uuidGenerator, action: /Action.uuidGenerator) {
+        .ifLet(\.$uuidGenerator, action: \.uuidGenerator) {
             UUIDGeneratorReducer()
         }
-        .ifLet(\.$prefixSuffix, action: /Action.prefixSuffix) {
+        .ifLet(\.$prefixSuffix, action: \.prefixSuffix) {
             PrefixSuffixReducer()
         }
-        .ifLet(\.$regexMatches, action: /Action.regexMatches) {
+        .ifLet(\.$regexMatches, action: \.regexMatches) {
             RegexMatchesReducer()
         }
-        .ifLet(\.$swiftPrettyLockwood, action: /Action.swiftPrettyLockwood) {
+        .ifLet(\.$swiftPrettyLockwood, action: \.swiftPrettyLockwood) {
             SwiftPrettyReducer()
         }
-        .ifLet(\.$fileContentSearch, action: /Action.fileContentSearch) {
+        .ifLet(\.$fileContentSearch, action: \.fileContentSearch) {
             FileContentSearchReducer()
         }
-        .ifLet(\.$nameGenerator, action: /Action.nameGenerator) {
+        .ifLet(\.$nameGenerator, action: \.nameGenerator) {
             NameGeneratorReducer()
         }
     }
@@ -221,6 +223,18 @@ public struct AppReducer: ReducerProtocol {
     }
 
     private func handleNavigation(tool: Tool, state: inout State) {
+        // Clear all tool states first to ensure only one presentation is active
+        state.htmlToSwift = nil
+        state.jsonPretty = nil
+        state.textCaseConverter = nil
+        state.uuidGenerator = nil
+        state.prefixSuffix = nil
+        state.regexMatches = nil
+        state.swiftPrettyLockwood = nil
+        state.fileContentSearch = nil
+        state.nameGenerator = nil
+
+        // Set current tool and initialize its state
         state.currentTool = tool
         switch tool {
         case .htmlToSwift:
@@ -267,10 +281,8 @@ public struct AppReducer: ReducerProtocol {
 
 public struct AppView: View {
     let store: StoreOf<AppReducer>
-    @ObservedObject var viewStore: ViewStoreOf<AppReducer>
     public init(store: StoreOf<AppReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {
@@ -284,9 +296,9 @@ public struct AppView: View {
                     )
                 ) {
                     NavigationLinkStore(
-                        store.scope(state: \.$htmlToSwift, action: { .htmlToSwift($0) })
+                        store.scope(state: \.$htmlToSwift, action: \.htmlToSwift)
                     ) {
-                        viewStore.send(.navigationLinkTouched(.htmlToSwift))
+                        store.send(.navigationLinkTouched(.htmlToSwift))
                     } destination: { store in
                         HtmlToSwiftView(store: store)
                             .navigationTitle(
@@ -329,9 +341,9 @@ public struct AppView: View {
                     .keyboardShortcut(KeyEquivalent("1"))
 
                     NavigationLinkStore(
-                        store.scope(state: \.$textCaseConverter, action: { .textCaseConverter($0) })
+                        store.scope(state: \.$textCaseConverter, action: \.textCaseConverter)
                     ) {
-                        viewStore.send(.navigationLinkTouched(.textCaseConverter))
+                        store.send(.navigationLinkTouched(.textCaseConverter))
                     } destination: { store in
                         TextCaseConverterView(store: store)
                             .navigationTitle(
@@ -367,9 +379,9 @@ public struct AppView: View {
                     .keyboardShortcut(KeyEquivalent("2"))
 
                     NavigationLinkStore(
-                        store.scope(state: \.$prefixSuffix, action: { .prefixSuffix($0) })
+                        store.scope(state: \.$prefixSuffix, action: \.prefixSuffix)
                     ) {
-                        viewStore.send(.navigationLinkTouched(.prefixSuffix))
+                        store.send(.navigationLinkTouched(.prefixSuffix))
                     } destination: { store in
                         PrefixSuffixView(store: store)
                             .navigationTitle(
@@ -397,9 +409,9 @@ public struct AppView: View {
                     .keyboardShortcut(KeyEquivalent("3"))
 
                     NavigationLinkStore(
-                        store.scope(state: \.$regexMatches, action: { .regexMatches($0) })
+                        store.scope(state: \.$regexMatches, action: \.regexMatches)
                     ) {
-                        viewStore.send(.navigationLinkTouched(.regexMatches))
+                        store.send(.navigationLinkTouched(.regexMatches))
                     } destination: { store in
                         RegexMatchesView(store: store)
                             .navigationTitle(
@@ -444,9 +456,9 @@ public struct AppView: View {
                     )
                 ) {
                     NavigationLinkStore(
-                        store.scope(state: \.$jsonPretty, action: { .jsonPretty($0) })
+                        store.scope(state: \.$jsonPretty, action: \.jsonPretty)
                     ) {
-                        viewStore.send(.navigationLinkTouched(.jsonPretty))
+                        store.send(.navigationLinkTouched(.jsonPretty))
                     } destination: { store in
                         JsonPrettyView(store: store)
                             .navigationTitle(
@@ -479,9 +491,9 @@ public struct AppView: View {
                     .keyboardShortcut(KeyEquivalent("5"))
 
                     NavigationLinkStore(
-                        store.scope(state: \.$swiftPrettyLockwood, action: { .swiftPrettyLockwood($0) })
+                        store.scope(state: \.$swiftPrettyLockwood, action: \.swiftPrettyLockwood)
                     ) {
-                        viewStore.send(.navigationLinkTouched(.swiftPrettyLockwood))
+                        store.send(.navigationLinkTouched(.swiftPrettyLockwood))
                     } destination: { store in
                         SwiftPrettyView(store: store)
                             .navigationTitle(
@@ -519,9 +531,9 @@ public struct AppView: View {
                         )
                     ) {
                         NavigationLinkStore(
-                            store.scope(state: \.$fileContentSearch, action: { .fileContentSearch($0) })
+                            store.scope(state: \.$fileContentSearch, action: \.fileContentSearch)
                         ) {
-                            viewStore.send(.navigationLinkTouched(.fileContentSearch))
+                            store.send(.navigationLinkTouched(.fileContentSearch))
                         } destination: { store in
                             FileContentSearchView(store: store)
                                 .navigationTitle(
@@ -560,7 +572,7 @@ public struct AppView: View {
                     // NavigationLinkStore(
                     //     store.scope(state: \.$uuidGenerator, action: { .uuidGenerator($0) })
                     // ) {
-                    //     viewStore.send(.navigationLinkTouched(.uuidGenerator))
+                    //     store.send(.navigationLinkTouched(.uuidGenerator))
                     // } destination: { store in
                     //     UUIDGeneratorView(store: store)
                     //     .navigationTitle(NSLocalizedString("Generate UUIDs", bundle: Bundle.module, comment:
@@ -574,9 +586,9 @@ public struct AppView: View {
                     // }
 
                     NavigationLinkStore(
-                        store.scope(state: \.$nameGenerator, action: { .nameGenerator($0) })
+                        store.scope(state: \.$nameGenerator, action: \.nameGenerator)
                     ) {
-                        viewStore.send(.navigationLinkTouched(.nameGenerator))
+                        store.send(.navigationLinkTouched(.nameGenerator))
                     } destination: { store in
                         NameGeneratorView(store: store)
                             .navigationTitle(
@@ -597,7 +609,7 @@ public struct AppView: View {
                 }
                 .overlay {
                     Button {
-                        viewStore.send(.nextToolButtonTouched)
+                        store.send(.nextToolButtonTouched)
                     } label: {
                         EmptyView()
                     }  // <-Button
@@ -605,7 +617,7 @@ public struct AppView: View {
                     .keyboardShortcut(.tab, modifiers: .control)
 
                     Button {
-                        viewStore.send(.previousToolButtonTouched)
+                        store.send(.previousToolButtonTouched)
                     } label: {
                         EmptyView()
                     }
@@ -645,10 +657,9 @@ public struct AppView: View {
 struct AppView_Previews: PreviewProvider {
     static var previews: some View {
         AppView(
-            store: .init(
-                initialState: AppReducer.State(),
-                reducer: AppReducer()
-            )
+            store: Store(initialState: AppReducer.State()) {
+                AppReducer()
+            }
         )
     }
 }

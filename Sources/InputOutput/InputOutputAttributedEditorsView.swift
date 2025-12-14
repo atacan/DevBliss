@@ -4,8 +4,10 @@ import ComposableArchitecture
 import SplitView
 import SwiftUI
 
-public struct InputOutputAttributedEditorsReducer: ReducerProtocol {
+@Reducer
+public struct InputOutputAttributedEditorsReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         public var input: InputEditorReducer.State
         public var output: OutputAttributedEditorReducer.State
@@ -22,7 +24,7 @@ public struct InputOutputAttributedEditorsReducer: ReducerProtocol {
         case output(OutputAttributedEditorReducer.Action)
     }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -35,19 +37,18 @@ public struct InputOutputAttributedEditorsReducer: ReducerProtocol {
             }
         }
 
-        Scope(state: \.input, action: /Action.input) {
+        Scope(state: \.input, action: \.input) {
             InputEditorReducer()
         }
 
-        Scope(state: \.output, action: /Action.output) {
+        Scope(state: \.output, action: \.output) {
             OutputAttributedEditorReducer()
         }
     }
 }
 
 public struct InputOutputAttributedEditorsView: View {
-    let store: StoreOf<InputOutputAttributedEditorsReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputOutputAttributedEditorsReducer>
+    @Perception.Bindable var store: StoreOf<InputOutputAttributedEditorsReducer>
 
     let inputEditorTitle: String
     let outputEditorTitle: String
@@ -68,7 +69,6 @@ public struct InputOutputAttributedEditorsView: View {
         keyForLayout: String = "inputOutputSplitLayout"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
         self.fraction = FractionHolder.usingUserDefaults(0.5, key: keyForFraction)
         self.layout = LayoutHolder.usingUserDefaults(.horizontal, key: keyForLayout)
 
@@ -116,9 +116,10 @@ struct InputOutputAttributedEditorsView_Previews: PreviewProvider {
     static var previews: some View {
         InputOutputAttributedEditorsView(
             store: Store(
-                initialState: .init(),
-                reducer: InputOutputAttributedEditorsReducer()
-            ),
+                initialState: .init()
+            ) {
+                InputOutputAttributedEditorsReducer()
+            },
             inputEditorTitle: "Input",
             outputEditorTitle: "Output"
         )

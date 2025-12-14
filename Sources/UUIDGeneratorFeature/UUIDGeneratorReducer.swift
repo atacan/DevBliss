@@ -3,11 +3,13 @@ import InputOutput
 import SwiftUI
 import UUIDGeneratorClient
 
-public struct UUIDGeneratorReducer: ReducerProtocol {
+@Reducer
+public struct UUIDGeneratorReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
-        @BindingState var count: Int
-        @BindingState var textCase: TextCase
+        var count: Int
+        var textCase: TextCase
         var output: OutputEditorReducer.State
         var isGenerating: Bool = false
 
@@ -36,7 +38,7 @@ public struct UUIDGeneratorReducer: ReducerProtocol {
     @Dependency(\.uuidGenerator) var uuidGenerator
     private enum CancelID { case generationRequest }
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -68,47 +70,45 @@ public struct UUIDGeneratorReducer: ReducerProtocol {
                 return .none
             }
         }
-        Scope(state: \.output, action: /Action.output) {
+        Scope(state: \.output, action: \.output) {
             OutputEditorReducer()
         }
     }
 }
 
 public struct UUIDGeneratorView: View {
-    let store: Store<UUIDGeneratorReducer.State, UUIDGeneratorReducer.Action>
-    @ObservedObject var viewStore: ViewStore<UUIDGeneratorReducer.State, UUIDGeneratorReducer.Action>
+    @Perception.Bindable var store: Store<UUIDGeneratorReducer.State, UUIDGeneratorReducer.Action>
 
     public init(store: StoreOf<UUIDGeneratorReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {
         VStack(alignment: .center) {
             //            HStack {
-            //                //            TextField("How many?", value: viewStore.binding(\.$count), formatter:
+            //                //            TextField("How many?", value: store.binding(\.$count), formatter:
             //                /NumberFormatter())
             //                //                .textFieldStyle(RoundedBorderTextFieldStyle())
             //                //                .frame(maxWidth: 100)
-            //                //            Stepper("", value: viewStore.binding(\.$count), in: 1...1_000_000)
-            //                Stepper(value: viewStore.binding(\.$count), in: 1 ... 1000) {
+            //                //            Stepper("", value: store.binding(\.$count), in: 1...1_000_000)
+            //                Stepper(value: store.binding(\.$count), in: 1 ... 1000) {
             //                    //                Text("sdfkjds")
-            //                    TextField("How many?", value: viewStore.binding(\.$count), formatter:
+            //                    TextField("How many?", value: store.binding(\.$count), formatter:
             //                    NumberFormatter())
             //                        .textFieldStyle(RoundedBorderTextFieldStyle())
             //                }
             //                .frame(maxWidth: 250)
             //            }
             HStack {
-                IntegerTextField(value: viewStore.binding(\.$count), range: 1 ... 1_000_000)
-                Picker("", selection: viewStore.binding(\.$textCase)) {
+                IntegerTextField(value: $store.count, range: 1 ... 1_000_000)
+                Picker("", selection: $store.textCase) {
                     Text(NSLocalizedString("lowercase", bundle: Bundle.module, comment: "")).tag(TextCase.lower)
                     Text(NSLocalizedString("UPPERCASE", bundle: Bundle.module, comment: "")).tag(TextCase.upper)
                 }
             }
             .frame(maxWidth: 250)
             Button {
-                viewStore.send(.generateButtonTouched)
+                store.send(.generateButtonTouched)
             } label: {
                 Text(NSLocalizedString("Generate", bundle: Bundle.module, comment: ""))
             }  // <-Button
@@ -127,9 +127,10 @@ struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
         UUIDGeneratorView(
             store: Store(
-                initialState: UUIDGeneratorReducer.State(),
-                reducer: UUIDGeneratorReducer()
-            )
+                initialState: UUIDGeneratorReducer.State()
+            ) {
+                UUIDGeneratorReducer()
+            }
         )
     }
 }

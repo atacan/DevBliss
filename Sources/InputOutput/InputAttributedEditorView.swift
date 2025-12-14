@@ -7,16 +7,18 @@ import SwiftUI
     import MacSwiftUI
 #endif
 
-public struct InputAttributedEditorReducer: ReducerProtocol {
+@Reducer
+public struct InputAttributedEditorReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
-        @BindingState public var text: NSMutableAttributedString
+        public var text: NSMutableAttributedString
         var pasteButtonAnimating: Bool = false
         var inputEditorDrop: InputEditorDropReducer.State
 
         public init(
             text: NSMutableAttributedString = .init(),
-            b inputEditorDrop: InputEditorDropReducer.State = .init()
+            inputEditorDrop: InputEditorDropReducer.State = .init()
         ) {
             self.text = text
             self.inputEditorDrop = inputEditorDrop
@@ -33,7 +35,7 @@ public struct InputAttributedEditorReducer: ReducerProtocol {
     @Dependency(\.mainQueue) var mainQueue
     @Dependency(\.clipboard) var clipboard
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
 
         Reduce<State, Action> { state, action in
@@ -45,9 +47,9 @@ public struct InputAttributedEditorReducer: ReducerProtocol {
                 if let clip = clipboard.getString() {
                     _ = state.updateText(clip)
                 }
-                return .task {
+                return .run { send in
                     try await mainQueue.sleep(for: .milliseconds(200))
-                    return .pasteButtonAnimationEnded
+                    await send(.pasteButtonAnimationEnded)
                 }
             case .pasteButtonAnimationEnded:
                 state.pasteButtonAnimating = false
@@ -58,14 +60,14 @@ public struct InputAttributedEditorReducer: ReducerProtocol {
                 return .none
             }
         }
-        Scope(state: \.inputEditorDrop, action: /Action.inputEditorDrop) {
+        Scope(state: \.inputEditorDrop, action: \.inputEditorDrop) {
             InputEditorDropReducer()
         }
     }
 }
 
 extension InputAttributedEditorReducer.State {
-    public mutating func updateText(_ newText: String) -> EffectTask<InputAttributedEditorReducer.Action> {
+    public mutating func updateText(_ newText: String) -> Effect<InputAttributedEditorReducer.Action> {
         text = .init(attributedString: regularAttributedString(newText))
         return .none
     }
@@ -73,13 +75,13 @@ extension InputAttributedEditorReducer.State {
     public mutating func updateText(
         _ newText: NSMutableAttributedString
     )
-        -> EffectTask<InputAttributedEditorReducer.Action>
+        -> Effect<InputAttributedEditorReducer.Action>
     {
         text = newText
         return .none
     }
 
-    public mutating func updateText(_ newText: NSAttributedString) -> EffectTask<InputAttributedEditorReducer.Action> {
+    public mutating func updateText(_ newText: NSAttributedString) -> Effect<InputAttributedEditorReducer.Action> {
         text = .init(attributedString: newText)
         return .none
     }
@@ -94,8 +96,7 @@ extension InputAttributedEditorReducer.State {
 }
 
 public struct InputAttributedEditorView: View {
-    let store: StoreOf<InputAttributedEditorReducer>
-    @ObservedObject var viewStore: ViewStoreOf<InputAttributedEditorReducer>
+    @Perception.Bindable var store: StoreOf<InputAttributedEditorReducer>
 
     let title: String
     let pasteButtonTitle: String
@@ -106,7 +107,6 @@ public struct InputAttributedEditorView: View {
         pasteButtonTitle: String = "Paste"
     ) {
         self.store = store
-        self.viewStore = ViewStore(store)
         self.title = title
         self.pasteButtonTitle = pasteButtonTitle
     }
@@ -120,7 +120,7 @@ public struct InputAttributedEditorView: View {
                 Spacer()
             }
             #if os(macOS)
-                MacEditorView(text: viewStore.binding(\.$text), hasHorizontalScroll: false)
+                MacEditorView(text: $store.text, hasHorizontalScroll: false)
                     .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
                     .overlay(content: {
                         InputEditorDropView(
@@ -132,11 +132,11 @@ public struct InputAttributedEditorView: View {
                     })
             #elseif os(iOS)
                 //                ScrollView {
-                //                    Text(AttributedString(viewStore.text))
+                //                    Text(AttributedString(store.text))
                 //                        .font(.monospaced(.body)())
                 //                        .textSelection(.enabled)
                 TextEditor(
-                    text: viewStore.binding(
+                    text: store.binding(
                         get: { state in
                             state.text.string
                         },
@@ -170,12 +170,12 @@ public struct InputAttributedEditorView: View {
         .overlay(
             HStack {
                 Button {
-                    viewStore.send(.pasteButtonTouched)
+                    store.send(.pasteButtonTouched)
                 } label: {
                     Image(systemName: "doc.on.clipboard.fill")
                 }  // <-Button
                 .foregroundColor(
-                    viewStore.pasteButtonAnimating
+                    store.pasteButtonAnimating
                         ? ThemeColor.Text.success
                         : ThemeColor.Text.controlText
                 )
@@ -196,9 +196,10 @@ struct InputAttributedEditorView_Previews: PreviewProvider {
     static var previews: some View {
         InputAttributedEditorView(
             store: Store(
-                initialState: InputAttributedEditorReducer.State(),
-                reducer: InputAttributedEditorReducer()
-            )
+                initialState: InputAttributedEditorReducer.State()
+            ) {
+                InputAttributedEditorReducer()
+            }
         )
     }
 }

@@ -49,7 +49,7 @@
             run: { _ in CLIOutput(text: "") }
         )
         public static var testValue: CommandLineClient = Self(
-            run: XCTUnimplemented("\(Self.self).run")
+            run: unimplemented("\(Self.self).run")
         )
     }
 #endif

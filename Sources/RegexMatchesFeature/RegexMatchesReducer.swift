@@ -6,11 +6,13 @@ import InputOutput
 import RegexMatchesClient
 import SwiftUI
 
-public struct RegexMatchesReducer: ReducerProtocol {
+@Reducer
+public struct RegexMatchesReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         var inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State
-        @BindingState public var regexPattern: String
+        public var regexPattern: String
         var isConversionRequestInFlight = false
 
         public init(
@@ -57,13 +59,13 @@ public struct RegexMatchesReducer: ReducerProtocol {
     private enum CancelID { case conversionRequest }
     @Dependency(\.userDefaults) var userDefaults
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
 
         Reduce<State, Action> { state, action in
             switch action {
             case .observeSettings:
-                return observeSettings()
+                        return observeSettings(&state)
             case let .binding(action):
                 return setPreferences(for: action, from: state)
             case .convertButtonTouched:
@@ -104,48 +106,36 @@ public struct RegexMatchesReducer: ReducerProtocol {
             }
         }
 
-        Scope(state: \.inputOutput, action: /Action.inputOutput) {
+        Scope(state: \.inputOutput, action: \.inputOutput) {
             InputAttributedTwoOutputAttributedEditorsReducer()
         }
     }
 
-    private func observeSettings() -> EffectTask<Action> {
-        .run { send in
-            await withTaskGroup(of: Void.self) { group in
-                group.addTask {
-                    if let newRegexPattern = userDefaults.string(forKey: SettingsKey.regexPattern.rawValue) {
-                        await send(.binding(.set(\.$regexPattern, newRegexPattern)))
-                    }
-                }
-            }
+    private func observeSettings(_ state: inout State) -> Effect<Action> {
+        if let newRegexPattern = userDefaults.string(forKey: SettingsKey.regexPattern.rawValue) {
+            state.regexPattern = newRegexPattern
         }
+        return .none
     }
 
-    private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
-        switch action {
-        case \.$regexPattern:
-            userDefaults.set(state.regexPattern, forKey: SettingsKey.regexPattern.rawValue)
-            return .none
-        default:
-            return .none
-        }
+    private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
+        userDefaults.set(state.regexPattern, forKey: SettingsKey.regexPattern.rawValue)
+        return .none
     }
 }
 
 public struct RegexMatchesView: View {
-    let store: StoreOf<RegexMatchesReducer>
-    @ObservedObject var viewStore: ViewStoreOf<RegexMatchesReducer>
+    @Perception.Bindable var store: StoreOf<RegexMatchesReducer>
 
     public init(store: StoreOf<RegexMatchesReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {
         VStack {
             TextField(
                 NSLocalizedString("Regex pattern", bundle: Bundle.module, comment: ""),
-                text: viewStore.binding(\.$regexPattern)
+                text: $store.regexPattern
             )
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .font(.monospaced(.body)())
@@ -154,9 +144,9 @@ public struct RegexMatchesView: View {
                 .textInputAutocapitalization(.never)
             #endif
             .padding()
-            Button(action: { viewStore.send(.convertButtonTouched) }) {
+            Button(action: { store.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Extract", bundle: Bundle.module, comment: ""))
-                    .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
+                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Extract matches (Cmd+Return)", bundle: Bundle.module, comment: ""))
@@ -169,7 +159,7 @@ public struct RegexMatchesView: View {
             )
         }
         .onAppear {
-            viewStore.send(.observeSettings)
+            store.send(.observeSettings)
         }
     }
 }
@@ -177,7 +167,7 @@ public struct RegexMatchesView: View {
 // preview
 struct RegexMatchesReducer_Previews: PreviewProvider {
     static var previews: some View {
-        RegexMatchesView(store: .init(initialState: .init(), reducer: RegexMatchesReducer()))
+        RegexMatchesView(store: .init(initialState: .init()) { RegexMatchesReducer() })
     }
 }
 
@@ -193,10 +183,11 @@ enum SettingsKey: String {
             WindowGroup {
                 RegexMatchesView(
                     store: Store(
-                        initialState: .init(),
-                        reducer: RegexMatchesReducer()
+                        initialState: .init()
+                    ) {
+                        RegexMatchesReducer()
                             ._printChanges()
-                    )
+                    }
                 )
             }
             #if os(macOS)

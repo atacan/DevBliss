@@ -6,11 +6,13 @@ import PrefixSuffixClient
 import SharedModels
 import SwiftUI
 
-public struct PrefixSuffixReducer: ReducerProtocol {
+@Reducer
+public struct PrefixSuffixReducer {
     public init() {}
+    @ObservableState
     public struct State: Equatable {
         public var inputOutput: InputOutputEditorsReducer.State
-        @BindingState public var configuration: PrefixSuffixConfig
+        public var configuration: PrefixSuffixConfig
         var isConversionRequestInFlight = false
 
         public init(
@@ -67,7 +69,7 @@ public struct PrefixSuffixReducer: ReducerProtocol {
     @Dependency(\.userDefaults) var userDefaults
     @Dependency(\.mainQueue) var mainQueue
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
@@ -101,43 +103,25 @@ public struct PrefixSuffixReducer: ReducerProtocol {
             }
         }
 
-        Scope(state: \.inputOutput, action: /Action.inputOutput) {
+        Scope(state: \.inputOutput, action: \.inputOutput) {
             InputOutputEditorsReducer()
         }
     }
 
-    private func setPreferences(for action: BindingAction<State>, from state: State) -> EffectTask<Action> {
-        switch action {
-        case \.$configuration.prefixReplace:
-            userDefaults.set(state.configuration.prefixReplace, forKey: SettingsKey.PrefixSuffix.prefixReplace)
-            return .none
-        case \.$configuration.prefixReplaceWith:
-            userDefaults.set(state.configuration.prefixReplaceWith, forKey: SettingsKey.PrefixSuffix.prefixReplaceWith)
-            return .none
-        case \.$configuration.prefixAdd:
-            userDefaults.set(state.configuration.prefixAdd, forKey: SettingsKey.PrefixSuffix.prefixAdd)
-            return .none
-        case \.$configuration.suffixReplace:
-            userDefaults.set(state.configuration.suffixReplace, forKey: SettingsKey.PrefixSuffix.suffixReplace)
-            return .none
-        case \.$configuration.suffixReplaceWith:
-            userDefaults.set(state.configuration.suffixReplaceWith, forKey: SettingsKey.PrefixSuffix.suffixReplaceWith)
-            return .none
-        case \.$configuration.suffixAdd:
-            userDefaults.set(state.configuration.suffixAdd, forKey: SettingsKey.PrefixSuffix.suffixAdd)
-            return .none
-        case \.$configuration.trimWhiteSpace:
-            userDefaults.set(state.configuration.trimWhiteSpace, forKey: SettingsKey.PrefixSuffix.trimWhiteSpace)
-            return .none
-        default:
-            return .none
-        }
+    private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
+        userDefaults.set(state.configuration.prefixReplace, forKey: SettingsKey.PrefixSuffix.prefixReplace)
+        userDefaults.set(state.configuration.prefixReplaceWith, forKey: SettingsKey.PrefixSuffix.prefixReplaceWith)
+        userDefaults.set(state.configuration.prefixAdd, forKey: SettingsKey.PrefixSuffix.prefixAdd)
+        userDefaults.set(state.configuration.suffixReplace, forKey: SettingsKey.PrefixSuffix.suffixReplace)
+        userDefaults.set(state.configuration.suffixReplaceWith, forKey: SettingsKey.PrefixSuffix.suffixReplaceWith)
+        userDefaults.set(state.configuration.suffixAdd, forKey: SettingsKey.PrefixSuffix.suffixAdd)
+        userDefaults.set(state.configuration.trimWhiteSpace, forKey: SettingsKey.PrefixSuffix.trimWhiteSpace)
+        return .none
     }
 }
 
 public struct PrefixSuffixView: View {
-    let store: StoreOf<PrefixSuffixReducer>
-    @ObservedObject var viewStore: ViewStoreOf<PrefixSuffixReducer>
+    @Perception.Bindable var store: StoreOf<PrefixSuffixReducer>
 
     @FocusState private var focusedField: Field?
     enum Field: Int, Hashable {
@@ -151,7 +135,6 @@ public struct PrefixSuffixView: View {
 
     public init(store: StoreOf<PrefixSuffixReducer>) {
         self.store = store
-        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {
@@ -170,7 +153,7 @@ public struct PrefixSuffixView: View {
                     Group {
                         TextField(
                             NSLocalizedString("Replace prefix", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.prefixReplace)
+                            text: $store.configuration.prefixReplace
                         )
                         .focused($focusedField, equals: .prefixReplace)
                         .onSubmit { focusNextField($focusedField) }
@@ -178,7 +161,7 @@ public struct PrefixSuffixView: View {
 
                         TextField(
                             NSLocalizedString("with", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.prefixReplaceWith)
+                            text: $store.configuration.prefixReplaceWith
                         )
                         .focused($focusedField, equals: .prefixReplaceWith)
                         .onSubmit { focusNextField($focusedField) }
@@ -192,7 +175,7 @@ public struct PrefixSuffixView: View {
 
                         TextField(
                             NSLocalizedString("Then add Prefix", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.prefixAdd)
+                            text: $store.configuration.prefixAdd
                         )
                         .focused($focusedField, equals: .prefixAdd)
                         .onSubmit { focusNextField($focusedField) }
@@ -218,32 +201,32 @@ public struct PrefixSuffixView: View {
                         )
                     )
                     Group {
-                        TextField(
-                            NSLocalizedString("Replace suffix", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.suffixReplace)
-                        )
-                        .focused($focusedField, equals: .suffixReplace)
-                        .onSubmit { focusNextField($focusedField) }
-                        .help(NSLocalizedString("Replace suffix if available", bundle: Bundle.module, comment: ""))
+                         TextField(
+                             NSLocalizedString("Replace suffix", bundle: Bundle.module, comment: ""),
+                             text: $store.configuration.suffixReplace
+                         )
+                         .focused($focusedField, equals: .suffixReplace)
+                         .onSubmit { focusNextField($focusedField) }
+                         .help(NSLocalizedString("Replace suffix if available", bundle: Bundle.module, comment: ""))
 
-                        TextField(
-                            NSLocalizedString("with", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.suffixReplaceWith)
-                        )
-                        .focused($focusedField, equals: .suffixReplaceWith)
-                        .onSubmit { focusNextField($focusedField) }
-                        .help(
-                            NSLocalizedString(
-                                "the suffix written previously will be replaced with this",
-                                bundle: Bundle.module,
-                                comment: ""
-                            )
-                        )
+                         TextField(
+                             NSLocalizedString("with", bundle: Bundle.module, comment: ""),
+                             text: $store.configuration.suffixReplaceWith
+                         )
+                         .focused($focusedField, equals: .suffixReplaceWith)
+                         .onSubmit { focusNextField($focusedField) }
+                         .help(
+                             NSLocalizedString(
+                                 "the suffix written previously will be replaced with this",
+                                 bundle: Bundle.module,
+                                 comment: ""
+                             )
+                         )
 
-                        TextField(
-                            NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""),
-                            text: viewStore.binding(\.$configuration.suffixAdd)
-                        )
+                         TextField(
+                             NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""),
+                             text: $store.configuration.suffixAdd
+                         )
                         .focused($focusedField, equals: .suffixAdd)
                         .onSubmit { focusNextField($focusedField) }
                         .help(NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""))
@@ -266,9 +249,9 @@ public struct PrefixSuffixView: View {
             #endif
             .frame(maxWidth: 850)
 
-            Button(action: { viewStore.send(.convertButtonTouched) }) {
+            Button(action: { store.send(.convertButtonTouched) }) {
                 Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
-                    .overlay(viewStore.isConversionRequestInFlight ? ProgressView() : nil)
+                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Convert (Cmd+Return)", bundle: Bundle.module, comment: ""))
@@ -291,7 +274,7 @@ public struct PrefixSuffixView: View {
 // preview
 struct PrefixSuffixReducer_Previews: PreviewProvider {
     static var previews: some View {
-        PrefixSuffixView(store: .init(initialState: .init(), reducer: PrefixSuffixReducer()))
+        PrefixSuffixView(store: .init(initialState: .init()) { PrefixSuffixReducer() })
     }
 }
 
