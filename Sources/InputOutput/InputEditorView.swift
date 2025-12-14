@@ -8,12 +8,19 @@ public struct InputEditorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        public var text: String
+        @Shared public var text: String
         var pasteButtonAnimating: Bool = false
         var inputEditorDrop: InputEditorDropReducer.State
 
+        // New initializer accepting Shared<String>
+        public init(text: Shared<String>, inputEditorDrop: InputEditorDropReducer.State = .init()) {
+            self._text = text
+            self.inputEditorDrop = inputEditorDrop
+        }
+
+        // Convenience initializer for non-persisted use (previews, tests)
         public init(text: String = "", inputEditorDrop: InputEditorDropReducer.State = .init()) {
-            self.text = text
+            self._text = Shared(value: text)
             self.inputEditorDrop = inputEditorDrop
         }
     }
@@ -44,7 +51,7 @@ public struct InputEditorReducer {
             case .pasteButtonTouched:
                 state.pasteButtonAnimating = true
                 if let clip = clipboard.getString() {
-                    state.text = clip
+                    state.$text.withLock { $0 = clip }
                 }
                 return .run { send in
                     try await mainQueue.sleep(for: .milliseconds(200))
@@ -56,15 +63,15 @@ public struct InputEditorReducer {
                 state.pasteButtonAnimating = false
                 return .none
             case let .inputEditorDrop(.droppedFileContent(content)):
-                state.text = content
+                state.$text.withLock { $0 = content }
                 return .none
             case .inputEditorDrop:
                 return .none
             case let .append(text):
-                state.text.append(text)
+                state.$text.withLock { $0.append(text) }
                 return .none
             case let .prepend(text):
-                state.text = text + state.text
+                state.$text.withLock { $0 = text + $0 }
                 return .none
             }
         }
@@ -73,12 +80,12 @@ public struct InputEditorReducer {
 
 extension InputEditorReducer.State {
     public mutating func updateText(_ newText: String) -> Effect<InputEditorReducer.Action> {
-        text = newText
+        $text.withLock { $0 = newText }
         return .none
     }
 
     public mutating func updateText(_ newText: NSAttributedString) -> Effect<InputEditorReducer.Action> {
-        text = newText.string
+        $text.withLock { $0 = newText.string }
         return .none
     }
 }

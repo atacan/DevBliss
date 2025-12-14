@@ -12,14 +12,24 @@ public struct InputAttributedEditorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        public var text: NSMutableAttributedString
+        @Shared public var rawText: String  // Persisted
+        public var text: NSMutableAttributedString  // Display (not persisted directly)
         var pasteButtonAnimating: Bool = false
         var inputEditorDrop: InputEditorDropReducer.State
 
+        // New initializer for persistence
+        public init(rawText: Shared<String>, inputEditorDrop: InputEditorDropReducer.State = .init()) {
+            self._rawText = rawText
+            self.text = NSMutableAttributedString(attributedString: regularAttributedString(rawText.wrappedValue))
+            self.inputEditorDrop = inputEditorDrop
+        }
+
+        // Convenience initializer
         public init(
             text: NSMutableAttributedString = .init(),
             inputEditorDrop: InputEditorDropReducer.State = .init()
         ) {
+            self._rawText = Shared(value: text.string)
             self.text = text
             self.inputEditorDrop = inputEditorDrop
         }
@@ -40,6 +50,9 @@ public struct InputAttributedEditorReducer {
 
         Reduce<State, Action> { state, action in
             switch action {
+            case .binding(\.text):
+                state.$rawText.withLock { $0 = state.text.string }
+                return .none
             case .binding:
                 return .none
             case .pasteButtonTouched:

@@ -10,12 +10,17 @@ public struct OutputEditorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        public var text: String
+        @Shared public var text: String
         var outputControls: OutputControlsReducer.State
         var isActivitySheetPresented: Bool = false
 
+        public init(text: Shared<String>, outputControls: OutputControlsReducer.State = .init()) {
+            self._text = text
+            self.outputControls = outputControls
+        }
+
         public init(text: String = "", outputControls: OutputControlsReducer.State = .init()) {
-            self.text = text
+            self._text = Shared(value: text)
             self.outputControls = outputControls
         }
     }
@@ -65,12 +70,12 @@ public struct OutputEditorReducer {
 
 extension OutputEditorReducer.State {
     public mutating func updateText(_ newText: String) -> Effect<OutputEditorReducer.Action> {
-        text = newText
+        $text.withLock { $0 = newText }
         return .none
     }
 
     public mutating func updateText(_ newText: NSAttributedString) -> Effect<OutputEditorReducer.Action> {
-        text = newText.string
+        $text.withLock { $0 = newText.string }
         return .none
     }
 }
