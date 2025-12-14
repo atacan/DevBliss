@@ -13,11 +13,21 @@ public struct OutputAttributedEditorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        public var text: NSMutableAttributedString
+        @Shared public var rawText: String  // Persisted
+        public var text: NSMutableAttributedString  // Display (not persisted directly)
         var outputControls: OutputControlsReducer.State
         var isActivitySheetPresented: Bool = false
 
+        // New initializer for persistence
+        public init(rawText: Shared<String>, outputControls: OutputControlsReducer.State = .init()) {
+            self._rawText = rawText
+            self.text = NSMutableAttributedString(string: rawText.wrappedValue)
+            self.outputControls = outputControls
+        }
+
+        // Convenience initializer
         public init(text: NSMutableAttributedString = .init(), outputControls: OutputControlsReducer.State = .init()) {
+            self._rawText = Shared(value: text.string)
             self.text = text
             self.outputControls = outputControls
         }
@@ -69,6 +79,7 @@ public struct OutputAttributedEditorReducer {
 extension OutputAttributedEditorReducer.State {
     public mutating func updateText(_ newText: String) -> Effect<OutputAttributedEditorReducer.Action> {
         text = .init(attributedString: regularAttributedString(newText))
+        $rawText.withLock { $0 = newText }
         return .none
     }
 
@@ -78,11 +89,13 @@ extension OutputAttributedEditorReducer.State {
         -> Effect<OutputAttributedEditorReducer.Action>
     {
         text = newText
+        $rawText.withLock { $0 = newText.string }
         return .none
     }
 
     public mutating func updateText(_ newText: NSAttributedString) -> Effect<OutputAttributedEditorReducer.Action> {
         text = .init(attributedString: newText)
+        $rawText.withLock { $0 = newText.string }
         return .none
     }
 }

@@ -11,15 +11,27 @@ public struct JsonPrettyReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
+        @Shared(.jsonPrettyIO) var storage = ToolIOStorage()
         var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
 
-        public init(inputOutput: InputOutputAttributedEditorsReducer.State = .init()) {
-            self.inputOutput = inputOutput
+        public init() {
+            // Initialize inputOutput with default, then update to use shared references
+            let storage = Shared<ToolIOStorage>.init(wrappedValue: ToolIOStorage(), .jsonPrettyIO)
+            self._storage = storage
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
+                inputText: storage.input,
+                outputRawText: storage.output
+            )
         }
 
         public init(input: String, output: String = "") {
-            self.inputOutput = .init(input: .init(text: input), output: .init(text: .init(string: output)))
+            let storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .jsonPrettyIO)
+            self._storage = storage
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
+                inputText: storage.input,
+                outputRawText: storage.output
+            )
         }
 
         public var outputText: String {

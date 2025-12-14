@@ -282,7 +282,9 @@ let package = Package(
         ),
         .target(
             name: "SharedModels",
-            dependencies: [],
+            dependencies: [
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
             resources: [.process("Resources")]
         ),
 
