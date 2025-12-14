@@ -1,6 +1,4 @@
 import ComposableArchitecture
-import Dependencies
-import DependenciesAdditions
 import InputOutput
 import SharedModels
 import SwiftUI
@@ -13,24 +11,17 @@ public struct TextCaseConverterReducer {
     public struct State: Equatable {
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
-        public var sourceCase: WordGroupCase
-        public var targetCase: WordGroupCase
-        public var textSeperator: WordGroupSeperator
+        @Shared(.appStorage(SettingsKey.TextCaseConverter.sourceCase)) public var sourceCase: WordGroupCase = .kebab
+        @Shared(.appStorage(SettingsKey.TextCaseConverter.targetCase)) public var targetCase: WordGroupCase = .snake
+        @Shared(.appStorage(SettingsKey.TextCaseConverter.textSeperator)) public var textSeperator: WordGroupSeperator = .newLine
 
         public init(
-            inputOutput: InputOutputEditorsReducer.State = .init(),
-            sourceCase: WordGroupCase = .kebab,
-            targetCase: WordGroupCase = .snake,
-            textSeperator: WordGroupSeperator = .newLine
+            inputOutput: InputOutputEditorsReducer.State = .init()
         ) {
             self.inputOutput = inputOutput
-            self.sourceCase = sourceCase
-            self.targetCase = targetCase
-            self.textSeperator = textSeperator
         }
 
         public init(input: String, output: String = "") {
-            self.init()
             self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
         }
 
@@ -40,7 +31,6 @@ public struct TextCaseConverterReducer {
     }
 
     public enum Action: BindableAction, Equatable {
-        case observeSettings
         case binding(BindingAction<State>)
         case convertButtonTouched
         case switchCasesButtonTouched
@@ -50,18 +40,18 @@ public struct TextCaseConverterReducer {
 
     @Dependency(\.textCaseConverter) var textCaseConverter
     private enum CancelID { case conversionRequest }
-    @Dependency(\.userDefaults) var userDefaults
 
     public var body: some Reducer<State, Action> {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
-            case .observeSettings:
-                return observeSettings(&state)
-            case let .binding(action):
-                return setPreferences(for: action, from: state)
+            case .binding:
+                return .none
             case .switchCasesButtonTouched:
-                (state.sourceCase, state.targetCase) = (state.targetCase, state.sourceCase)
+                let oldSource = state.sourceCase
+                let oldTarget = state.targetCase
+                state.$sourceCase.withLock { $0 = oldTarget }
+                state.$targetCase.withLock { $0 = oldSource }
                 return .none
             case .convertButtonTouched:
                 state.isConversionRequestInFlight = true
@@ -99,35 +89,6 @@ public struct TextCaseConverterReducer {
         Scope(state: \.inputOutput, action: \.inputOutput) {
             InputOutputEditorsReducer()
         }
-    }
-
-    private func observeSettings(_ state: inout State) -> Effect<Action> {
-        if let newSourceCase: WordGroupCase =
-            userDefaults
-            .rawRepresentable(forKey: SettingsKey.TextCaseConverter.sourceCase)
-        {
-            state.sourceCase = newSourceCase
-        }
-        if let newTargetCase: WordGroupCase =
-            userDefaults
-            .rawRepresentable(forKey: SettingsKey.TextCaseConverter.targetCase)
-        {
-            state.targetCase = newTargetCase
-        }
-        if let newTextSeperator: WordGroupSeperator =
-            userDefaults
-            .rawRepresentable(forKey: SettingsKey.TextCaseConverter.textSeperator)
-        {
-            state.textSeperator = newTextSeperator
-        }
-        return .none
-    }
-
-    private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
-        userDefaults.set(state.sourceCase, forKey: SettingsKey.TextCaseConverter.sourceCase)
-        userDefaults.set(state.targetCase, forKey: SettingsKey.TextCaseConverter.targetCase)
-        userDefaults.set(state.textSeperator, forKey: SettingsKey.TextCaseConverter.textSeperator)
-        return .none
     }
 }
 
@@ -214,9 +175,6 @@ public struct TextCaseConverterView: View {
                 keyForFraction: SettingsKey.TextCaseConverter.splitViewFraction,
                 keyForLayout: SettingsKey.TextCaseConverter.splitViewLayout
             )
-        }
-        .onAppear {
-            store.send(.observeSettings)
         }
     }
 }
