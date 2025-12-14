@@ -13,38 +13,35 @@ public struct SwiftPrettyReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
+        @Shared(.swiftPrettyIO) var storage = ToolIOStorage()
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var lockwoodConfig: InputEditorReducer.State
         var useLockwood: Bool
 
         public init(
-            inputOutput: InputOutputEditorsReducer.State = .init(),
             lockwoodConfig: InputEditorReducer.State = .init(text: blissConfigLockwood),
             useLockwood: Bool = true
         ) {
-            // @Dependency(\.userDefaults) var userDefaults
-            // let config: InputEditorReducer.State = with(lockwoodConfig) {
-            // .init(
-            //         text: userDefaults.string(forKey: SettingsKey.SwiftPretty.lockwoodConfig) ?? $0.text
-            //         text: String(data: userDefaults.data(forKey: SettingsKey.SwiftPretty.lockwoodConfig), encoding: .utf8) ?? $0.text
-            // text: UserDefaults.standard.string(forKey: SettingsKey.SwiftPretty.lockwoodConfig) ?? $0.text
-            // )
-            // }
-            // let config: InputEditorReducer.State = {
-            //     if let data = userDefaults.data(forKey: SettingsKey.SwiftPretty.lockwoodConfig),
-            //        let text = String(data: data, encoding: .utf8) {
-            //         return .init(text: text)
-            //     } else{return lockwoodConfig}
-            // }()
+            // Create Shared projections from the persisted key
+            let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .swiftPrettyIO)
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: sharedStorage.input,
+                outputText: sharedStorage.output
+            )
             self.lockwoodConfig = lockwoodConfig
-            self.inputOutput = inputOutput
             self.useLockwood = useLockwood
         }
 
         public init(input: String, output: String = "") {
-            let inputOutput = InputOutputEditorsReducer.State(input: .init(text: input), output: .init(text: output))
-            self.init(inputOutput: inputOutput)
+            // For "Move to other tool" - set storage with provided values
+            let sharedStorage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .swiftPrettyIO)
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: sharedStorage.input,
+                outputText: sharedStorage.output
+            )
+            self.lockwoodConfig = .init(text: blissConfigLockwood)
+            self.useLockwood = true
         }
 
         public var outputText: String {
