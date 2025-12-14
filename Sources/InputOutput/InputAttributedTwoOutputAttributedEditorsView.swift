@@ -13,6 +13,18 @@ public struct InputAttributedTwoOutputAttributedEditorsReducer {
         public var output: OutputAttributedEditorReducer.State
         public var outputSecond: OutputAttributedEditorReducer.State
 
+        // New initializer for persistence
+        public init(
+            inputRawText: Shared<String>,
+            outputRawText: Shared<String>,
+            outputSecondRawText: Shared<String>
+        ) {
+            self.input = InputAttributedEditorReducer.State(rawText: inputRawText)
+            self.output = OutputAttributedEditorReducer.State(rawText: outputRawText)
+            self.outputSecond = OutputAttributedEditorReducer.State(rawText: outputSecondRawText)
+        }
+
+        // Convenience for non-persisted use
         public init(
             input: InputAttributedEditorReducer.State = .init(),
             output: OutputAttributedEditorReducer.State = .init(),
