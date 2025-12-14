@@ -4,6 +4,7 @@ import Dependencies
 import DependenciesAdditions
 import InputOutput
 import RegexMatchesClient
+import SharedModels
 import SwiftUI
 
 @Reducer
@@ -11,31 +12,34 @@ public struct RegexMatchesReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
+        @Shared(.regexMatchesIO) var storage = ToolIOStorageDoubleOutput()
         var inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State
         public var regexPattern: String
         var isConversionRequestInFlight = false
 
-        public init(
-            inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State = .init(),
-            regexPattern: String = ""
-        ) {
-            self.inputOutput = inputOutput
-            self.regexPattern = regexPattern
+        public init() {
+            let storage = Shared(wrappedValue: ToolIOStorageDoubleOutput(), .regexMatchesIO)
+            self._storage = storage
+            self.inputOutput = InputAttributedTwoOutputAttributedEditorsReducer.State(
+                inputRawText: storage.input,
+                outputRawText: storage.output,
+                outputSecondRawText: storage.outputSecond
+            )
+            self.regexPattern = ""
         }
 
         public init(input: String, output: String = "") {
-            let attributedInput = NSMutableAttributedString(
-                string: input,
-                attributes: [
-                    .foregroundColor: ThemeColor.Text.systemText,
-                    .font: ThemeFont.monospaceSytem,
-                ]
+            let storage = Shared(
+                wrappedValue: ToolIOStorageDoubleOutput(input: input, output: output, outputSecond: ""),
+                .regexMatchesIO
             )
-            self.inputOutput = .init(
-                input: .init(text: attributedInput),
-                output: .init(text: .init(string: output))
+            self._storage = storage
+            self.inputOutput = InputAttributedTwoOutputAttributedEditorsReducer.State(
+                inputRawText: storage.input,
+                outputRawText: storage.output,
+                outputSecondRawText: storage.outputSecond
             )
-            self.regexPattern = .init()
+            self.regexPattern = ""
         }
 
         public var outputText: String {
