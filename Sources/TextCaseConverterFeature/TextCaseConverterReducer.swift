@@ -9,20 +9,28 @@ public struct TextCaseConverterReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
+        @Shared(.textCaseConverterIO) var storage = ToolIOStorage()
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         @Shared(.appStorage(SettingsKey.TextCaseConverter.sourceCase)) public var sourceCase: WordGroupCase = .kebab
         @Shared(.appStorage(SettingsKey.TextCaseConverter.targetCase)) public var targetCase: WordGroupCase = .snake
         @Shared(.appStorage(SettingsKey.TextCaseConverter.textSeperator)) public var textSeperator: WordGroupSeperator = .newLine
 
-        public init(
-            inputOutput: InputOutputEditorsReducer.State = .init()
-        ) {
-            self.inputOutput = inputOutput
+        public init() {
+            // Derive shared refs from storage - changes auto-persist!
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: _storage.projectedValue.input,
+                outputText: _storage.projectedValue.output
+            )
         }
 
         public init(input: String, output: String = "") {
-            self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
+            // For "Move to other tool" - set storage first, then derive
+            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .textCaseConverterIO)
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: _storage.projectedValue.input,
+                outputText: _storage.projectedValue.output
+            )
         }
 
         public var outputText: String {
