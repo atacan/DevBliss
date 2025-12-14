@@ -11,6 +11,7 @@ public struct PrefixSuffixReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
+        @Shared(.prefixSuffixIO) var storage = ToolIOStorage()
         public var inputOutput: InputOutputEditorsReducer.State
         public var configuration: PrefixSuffixConfig
         var isConversionRequestInFlight = false
@@ -19,9 +20,19 @@ public struct PrefixSuffixReducer {
             inputOutput: InputOutputEditorsReducer.State = .init(),
             configuration: PrefixSuffixConfig = .init()
         ) {
-            @Dependency(\.userDefaults) var userDefaults
-            self.inputOutput = inputOutput
+            // Initialize inputOutput using derived shared refs from storage
+            // We must create Shared projections from the persisted key, not from $storage
+            let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .prefixSuffixIO)
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: sharedStorage.input,
+                outputText: sharedStorage.output
+            )
 
+            // Initialize other properties
+            self.isConversionRequestInFlight = false
+
+            // Load config from UserDefaults
+            @Dependency(\.userDefaults) var userDefaults
             let config: PrefixSuffixConfig = with(configuration) {
                 .init(
                     prefixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplace)
@@ -43,13 +54,36 @@ public struct PrefixSuffixReducer {
                         .trimWhiteSpace
                 )
             }
-
             self.configuration = config
         }
 
         public init(input: String, output: String = "") {
-            let inputOutput = InputOutputEditorsReducer.State(input: .init(text: input), output: .init(text: output))
-            self.init(inputOutput: inputOutput)
+            // Initialize @Shared storage with provided values
+            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .prefixSuffixIO)
+
+            // Initialize inputOutput using derived shared refs
+            // Create a new Shared reference from the same key to get projections
+            let sharedStorage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .prefixSuffixIO)
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: sharedStorage.input,
+                outputText: sharedStorage.output
+            )
+
+            // Initialize other properties
+            self.isConversionRequestInFlight = false
+
+            // Load config from UserDefaults
+            @Dependency(\.userDefaults) var userDefaults
+            let config = PrefixSuffixConfig(
+                prefixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplace) ?? "",
+                prefixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplaceWith) ?? "",
+                prefixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixAdd) ?? "",
+                suffixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplace) ?? "",
+                suffixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplaceWith) ?? "",
+                suffixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixAdd) ?? "",
+                trimWhiteSpace: userDefaults.bool(forKey: SettingsKey.PrefixSuffix.trimWhiteSpace) ?? true
+            )
+            self.configuration = config
         }
 
         public var outputText: String {
