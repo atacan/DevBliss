@@ -223,6 +223,18 @@ public struct AppReducer {
     }
 
     private func handleNavigation(tool: Tool, state: inout State) {
+        // Clear all tool states first to ensure only one presentation is active
+        state.htmlToSwift = nil
+        state.jsonPretty = nil
+        state.textCaseConverter = nil
+        state.uuidGenerator = nil
+        state.prefixSuffix = nil
+        state.regexMatches = nil
+        state.swiftPrettyLockwood = nil
+        state.fileContentSearch = nil
+        state.nameGenerator = nil
+
+        // Set current tool and initialize its state
         state.currentTool = tool
         switch tool {
         case .htmlToSwift:
