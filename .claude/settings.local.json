@@ -13,7 +13,10 @@
       "Bash(tree:*)",
       "WebSearch",
       "WebFetch(domain:swiftpackageindex.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(grep:*)",
+      "WebFetch(domain:www.pointfree.co)"
     ]
   }
 }
