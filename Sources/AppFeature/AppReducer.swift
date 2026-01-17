@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import FileContentSearchFeature
 import HtmlToSwiftFeature
+import HtmlToMarkdownFeature
 import JsonPrettyFeature
 import NameGeneratorFeature
 import PrefixSuffixFeature
@@ -17,6 +18,7 @@ public struct AppReducer {
     @ObservableState
     public struct State: Equatable {
         @Presents var htmlToSwift: HtmlToSwiftReducer.State?
+        @Presents var htmlToMarkdown: HtmlToMarkdownReducer.State?
         @Presents var jsonPretty: JsonPrettyReducer.State?
         @Presents var textCaseConverter: TextCaseConverterReducer.State?
         @Presents var uuidGenerator: UUIDGeneratorReducer.State?
@@ -29,6 +31,7 @@ public struct AppReducer {
 
         public init(
             htmlToSwift: HtmlToSwiftReducer.State? = nil,
+            htmlToMarkdown: HtmlToMarkdownReducer.State? = nil,
             jsonPretty: JsonPrettyReducer.State? = nil,
             textCaseConverter: TextCaseConverterReducer.State? = nil,
             uuidGenerator: UUIDGeneratorReducer.State? = nil,
@@ -39,6 +42,7 @@ public struct AppReducer {
             nameGenerator: NameGeneratorReducer.State? = nil
         ) {
             self.htmlToSwift = htmlToSwift
+            self.htmlToMarkdown = htmlToMarkdown
             self.jsonPretty = jsonPretty
             self.textCaseConverter = textCaseConverter
             self.uuidGenerator = uuidGenerator
@@ -52,6 +56,7 @@ public struct AppReducer {
 
     public enum Action: Equatable {
         case htmlToSwift(PresentationAction<HtmlToSwiftReducer.Action>)
+        case htmlToMarkdown(PresentationAction<HtmlToMarkdownReducer.Action>)
         case jsonPretty(PresentationAction<JsonPrettyReducer.Action>)
         case textCaseConverter(PresentationAction<TextCaseConverterReducer.Action>)
         case uuidGenerator(PresentationAction<UUIDGeneratorReducer.Action>)
@@ -72,6 +77,11 @@ public struct AppReducer {
                 .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
             ):
                 handleOtherTool(thisToolOutput: state.htmlToSwift?.outputText, otherTool: otherTool, state: &state)
+                return .none
+            case let .htmlToMarkdown(
+                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
+            ):
+                handleOtherTool(thisToolOutput: state.htmlToMarkdown?.outputText, otherTool: otherTool, state: &state)
                 return .none
             case let .jsonPretty(
                 .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
@@ -151,6 +161,8 @@ public struct AppReducer {
 
             case .htmlToSwift:
                 return .none
+            case .htmlToMarkdown:
+                return .none
             case .jsonPretty:
                 return .none
             case .textCaseConverter:
@@ -171,6 +183,9 @@ public struct AppReducer {
         }
         .ifLet(\.$htmlToSwift, action: \.htmlToSwift) {
             HtmlToSwiftReducer()
+        }
+        .ifLet(\.$htmlToMarkdown, action: \.htmlToMarkdown) {
+            HtmlToMarkdownReducer()
         }
         .ifLet(\.$jsonPretty, action: \.jsonPretty) {
             JsonPrettyReducer()
@@ -203,6 +218,8 @@ public struct AppReducer {
         switch otherTool {
         case .htmlToSwift:
             state.htmlToSwift = HtmlToSwiftReducer.State(input: thisToolOutput ?? "")
+        case .htmlToMarkdown:
+            state.htmlToMarkdown = HtmlToMarkdownReducer.State(input: thisToolOutput ?? "")
         case .jsonPretty:
             state.jsonPretty = JsonPrettyReducer.State(input: thisToolOutput ?? "")
         case .textCaseConverter:
@@ -225,6 +242,7 @@ public struct AppReducer {
     private func handleNavigation(tool: Tool, state: inout State) {
         // Clear all tool states first to ensure only one presentation is active
         state.htmlToSwift = nil
+        state.htmlToMarkdown = nil
         state.jsonPretty = nil
         state.textCaseConverter = nil
         state.uuidGenerator = nil
@@ -239,6 +257,8 @@ public struct AppReducer {
         switch tool {
         case .htmlToSwift:
             state.htmlToSwift = .init()
+        case .htmlToMarkdown:
+            state.htmlToMarkdown = .init()
         case .jsonPretty:
             state.jsonPretty = .init()
         case .textCaseConverter:
@@ -341,6 +361,35 @@ public struct AppView: View {
                     .keyboardShortcut(KeyEquivalent("1"))
 
                     NavigationLinkStore(
+                        store.scope(state: \.$htmlToMarkdown, action: \.htmlToMarkdown)
+                    ) {
+                        store.send(.navigationLinkTouched(.htmlToMarkdown))
+                    } destination: { store in
+                        HtmlToMarkdownView(store: store)
+                            .navigationTitle("Convert HTML to Markdown")
+                            .padding(.top)
+                    } label: {
+                        Label(
+                            title: {
+                                Text("HTML to Markdown")
+                            },
+                            icon: {
+                                ZStack(alignment: .leading) {
+                                    Text("M↓")
+                                        .font(.monospaced(Font.system(size: 14))())
+                                        .fontWeight(.medium)
+                                        .offset(CGSize(width: 5, height: 0))
+                                    Text("<>")
+                                        .font(.monospaced(Font.system(size: 14))())
+                                        .fontWeight(.thin)
+                                        .offset(CGSize(width: 0, height: -7))
+                                }
+                            }
+                        )
+                    }
+                    .keyboardShortcut(KeyEquivalent("2"))
+
+                    NavigationLinkStore(
                         store.scope(state: \.$textCaseConverter, action: \.textCaseConverter)
                     ) {
                         store.send(.navigationLinkTouched(.textCaseConverter))
@@ -376,7 +425,7 @@ public struct AppView: View {
                             }
                         )
                     }
-                    .keyboardShortcut(KeyEquivalent("2"))
+                    .keyboardShortcut(KeyEquivalent("3"))
 
                     NavigationLinkStore(
                         store.scope(state: \.$prefixSuffix, action: \.prefixSuffix)
@@ -406,7 +455,7 @@ public struct AppView: View {
                             icon: { Image(systemName: "arrow.right.and.line.vertical.and.arrow.left") }
                         )
                     }
-                    .keyboardShortcut(KeyEquivalent("3"))
+                    .keyboardShortcut(KeyEquivalent("4"))
 
                     NavigationLinkStore(
                         store.scope(state: \.$regexMatches, action: \.regexMatches)
@@ -445,8 +494,8 @@ public struct AppView: View {
                             }
                         )
                     }
+                    .keyboardShortcut(KeyEquivalent("5"))
                 }
-                .keyboardShortcut(KeyEquivalent("4"))
 
                 Section(
                     NSLocalizedString(
@@ -488,7 +537,7 @@ public struct AppView: View {
                             }
                         )
                     }
-                    .keyboardShortcut(KeyEquivalent("5"))
+                    .keyboardShortcut(KeyEquivalent("6"))
 
                     NavigationLinkStore(
                         store.scope(state: \.$swiftPrettyLockwood, action: \.swiftPrettyLockwood)
@@ -518,7 +567,7 @@ public struct AppView: View {
                             icon: { Image(systemName: "swift") }
                         )
                     }
-                    .keyboardShortcut(KeyEquivalent("6"))
+                    .keyboardShortcut(KeyEquivalent("7"))
                 }
 
                 #if os(macOS)
@@ -558,7 +607,7 @@ public struct AppView: View {
                                 icon: { Image(systemName: "doc.text.magnifyingglass") }
                             )
                         }
-                        .keyboardShortcut(KeyEquivalent("7"))
+                        .keyboardShortcut(KeyEquivalent("8"))
                     }
                 #endif
 
@@ -605,7 +654,7 @@ public struct AppView: View {
                             icon: { Image(systemName: "person") }
                         )
                     }
-                    .keyboardShortcut(KeyEquivalent("8"))
+                    .keyboardShortcut(KeyEquivalent("9"))
                 }
                 .overlay {
                     Button {

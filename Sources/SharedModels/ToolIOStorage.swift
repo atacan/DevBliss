@@ -45,6 +45,7 @@ extension SharedReaderKey where Self == FileStorageKey<ToolIOStorage> {
     public static var textCaseConverterIO: Self { .fileStorage(.toolStorage("textCaseConverter")) }
     public static var prefixSuffixIO: Self { .fileStorage(.toolStorage("prefixSuffix")) }
     public static var htmlToSwiftIO: Self { .fileStorage(.toolStorage("htmlToSwift")) }
+    public static var htmlToMarkdownIO: Self { .fileStorage(.toolStorage("htmlToMarkdown")) }
     public static var swiftPrettyIO: Self { .fileStorage(.toolStorage("swiftPretty")) }
     public static var jsonPrettyIO: Self { .fileStorage(.toolStorage("jsonPretty")) }
 }

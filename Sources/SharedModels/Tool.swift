@@ -2,6 +2,7 @@ import Foundation
 
 public enum Tool: Int, CaseIterable, Identifiable {
     case htmlToSwift
+    case htmlToMarkdown
     case textCaseConverter
     case prefixSuffix
     case regexMatches
@@ -17,6 +18,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
         switch self {
         case .htmlToSwift:
             return NSLocalizedString("HTML to Swift", bundle: Bundle.module, comment: "")
+        case .htmlToMarkdown:
+            return NSLocalizedString("HTML to Markdown", bundle: Bundle.module, comment: "")
         case .jsonPretty:
             return NSLocalizedString("JSON Formatter", bundle: Bundle.module, comment: "")
         case .textCaseConverter:
@@ -39,6 +42,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
     public var isInputtable: Bool {
         switch self {
         case .htmlToSwift:
+            return true
+        case .htmlToMarkdown:
             return true
         case .jsonPretty:
             return true
@@ -133,5 +138,10 @@ public enum SettingsKey {
         public static var lockwoodConfig = "SwiftPretty_lockwoodConfig"
         public static var splitViewFraction = "SwiftPretty_splitViewFraction"
         public static var splitViewLayout = "SwiftPretty_splitViewLayout"
+    }
+
+    public enum HtmlToMarkdown {
+        public static var splitViewFraction = "HtmlToMarkdown_splitViewFraction"
+        public static var splitViewLayout = "HtmlToMarkdown_splitViewLayout"
     }
 }

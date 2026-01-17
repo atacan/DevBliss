@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "demark",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/steipete/demark",
+      "state" : {
+        "branch" : "main",
+        "revision" : "50f6934fb01804c3cf31a7ea2c497838ed4c9598"
+      }
+    },
+    {
       "identity" : "highlight",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nkristek/Highlight.git",
