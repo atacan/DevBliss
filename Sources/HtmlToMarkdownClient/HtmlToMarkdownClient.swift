@@ -1,5 +1,5 @@
-import Dependencies
 import Demark
+import Dependencies
 import Foundation
 
 public struct HtmlToMarkdownClient: Sendable {
@@ -30,19 +30,22 @@ extension ConversionEngine: @retroactive Codable {}
 extension DemarkHeadingStyle: @retroactive Codable {}
 extension DemarkCodeBlockStyle: @retroactive Codable {}
 
-extension HtmlToMarkdownClient: DependencyKey {
-    public static let liveValue = Self(
-        convert: { @MainActor html, config in
-            let demark = Demark()
-            let options = DemarkOptions(
-                engine: config.engine,
-                headingStyle: config.headingStyle,
-                bulletListMarker: config.bulletListMarker,
-                codeBlockStyle: config.codeBlockStyle
-            )
-            return try await demark.convertToMarkdown(html, options: options)
-        }
-    )
+extension HtmlToMarkdownClient: @MainActor DependencyKey {
+    @MainActor 
+    public static let liveValue = {
+        let demark = Demark()
+        return Self(
+            convert: { @MainActor html, config in
+                let options = DemarkOptions(
+                    engine: config.engine,
+                    headingStyle: config.headingStyle,
+                    bulletListMarker: config.bulletListMarker,
+                    codeBlockStyle: config.codeBlockStyle
+                )
+                return try await demark.convertToMarkdown(html, options: options)
+            }
+        )
+    }()
 }
 
 extension DependencyValues {
