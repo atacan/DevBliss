@@ -17,7 +17,7 @@ final class HtmlToSwiftFeatureTests: XCTestCase {
         }
 
         await store.receive(.conversionResponse(.success("Binary Birds"))) {
-            $0.inputOutput.output.text = "Binary Birds"
+            $0.inputOutput.output.$text.withLock { $0 = "Binary Birds" }
             $0.isConversionRequestInFlight = false
         }
     }
