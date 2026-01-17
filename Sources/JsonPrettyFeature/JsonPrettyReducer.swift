@@ -11,7 +11,7 @@ public struct JsonPrettyReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        @Shared(.jsonPrettyIO) var storage = ToolIOStorage()
+        @Shared(.jsonPrettyIO) public var storage = ToolIOStorage()
         var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
 

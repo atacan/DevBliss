@@ -9,7 +9,7 @@ public struct TextCaseConverterReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        @Shared(.textCaseConverterIO) var storage = ToolIOStorage()
+        @Shared(.textCaseConverterIO) public var storage = ToolIOStorage()
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         @Shared(.appStorage(SettingsKey.TextCaseConverter.sourceCase)) public var sourceCase: WordGroupCase = .kebab

@@ -12,7 +12,7 @@ public struct HtmlToSwiftReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        @Shared(.htmlToSwiftIO) var storage = ToolIOStorage()
+        @Shared(.htmlToSwiftIO) public var storage = ToolIOStorage()
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var dsl: SwiftDSL = .binaryBirds

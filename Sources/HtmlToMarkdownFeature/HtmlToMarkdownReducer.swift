@@ -29,7 +29,7 @@ public struct HtmlToMarkdownReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.htmlToMarkdownIO) var storage = ToolIOStorage()
+        @Shared(.htmlToMarkdownIO) public var storage = ToolIOStorage()
         @Shared(.htmlToMarkdownConfig) public var configuration = HtmlToMarkdownConfig()
         public var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false

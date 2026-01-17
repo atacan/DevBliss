@@ -13,7 +13,7 @@ public struct SwiftPrettyReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        @Shared(.swiftPrettyIO) var storage = ToolIOStorage()
+        @Shared(.swiftPrettyIO) public var storage = ToolIOStorage()
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var lockwoodConfig: InputEditorReducer.State
