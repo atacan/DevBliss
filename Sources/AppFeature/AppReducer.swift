@@ -10,6 +10,7 @@ import SharedModels
 import SwiftPrettyFeature
 import SwiftUI
 import TextCaseConverterFeature
+import UrlToMarkdownFeature
 
 // MARK: - Destination Reducer Enum
 
@@ -17,6 +18,7 @@ import TextCaseConverterFeature
 public enum Destination {
     case htmlToSwift(HtmlToSwiftReducer)
     case htmlToMarkdown(HtmlToMarkdownReducer)
+    case urlToMarkdown(UrlToMarkdownReducer)
     case jsonPretty(JsonPrettyReducer)
     case textCaseConverter(TextCaseConverterReducer)
     case prefixSuffix(PrefixSuffixReducer)
@@ -43,6 +45,7 @@ public struct AppReducer {
             switch destination {
             case .htmlToSwift: return .htmlToSwift
             case .htmlToMarkdown: return .htmlToMarkdown
+            case .urlToMarkdown: return .urlToMarkdown
             case .jsonPretty: return .jsonPretty
             case .textCaseConverter: return .textCaseConverter
             case .prefixSuffix: return .prefixSuffix
@@ -115,6 +118,11 @@ public struct AppReducer {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
+        case let .urlToMarkdown(.output(.outputControls(.otherToolSelected(tool)))):
+            if case .urlToMarkdown(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
         case let .jsonPretty(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
             if case .jsonPretty(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
@@ -181,6 +189,8 @@ public struct AppReducer {
             if case .htmlToMarkdown(let s) = state.destination {
                 s.$storage.withLock { $0.input = outputText }
             }
+        case .urlToMarkdown:
+            state.destination = .urlToMarkdown(UrlToMarkdownReducer.State())
         case .jsonPretty:
             state.destination = .jsonPretty(JsonPrettyReducer.State())
             if case .jsonPretty(let s) = state.destination {
@@ -228,6 +238,8 @@ public struct AppReducer {
             state.destination = .htmlToSwift(HtmlToSwiftReducer.State())
         case .htmlToMarkdown:
             state.destination = .htmlToMarkdown(HtmlToMarkdownReducer.State())
+        case .urlToMarkdown:
+            state.destination = .urlToMarkdown(UrlToMarkdownReducer.State())
         case .jsonPretty:
             state.destination = .jsonPretty(JsonPrettyReducer.State())
         case .textCaseConverter:
@@ -329,15 +341,27 @@ public struct AppView: View {
                     }
                 }
 
-                toolRow(.textCaseConverter, label: "Text Case", shortcut: "3") {
+                toolRow(.urlToMarkdown, label: "URL to Markdown", shortcut: "3") {
+                    ZStack(alignment: .leading) {
+                        Text("M↓")
+                            .font(.monospaced(Font.system(size: 14))())
+                            .fontWeight(.medium)
+                            .offset(CGSize(width: 5, height: 0))
+                        Image(systemName: "link")
+                            .font(.system(size: 10))
+                            .offset(CGSize(width: 0, height: -7))
+                    }
+                }
+
+                toolRow(.textCaseConverter, label: "Text Case", shortcut: "4") {
                     Text("Aa")
                 }
 
-                toolRow(.prefixSuffix, label: "Prefix Suffix", shortcut: "4") {
+                toolRow(.prefixSuffix, label: "Prefix Suffix", shortcut: "5") {
                     Image(systemName: "arrow.right.and.line.vertical.and.arrow.left")
                 }
 
-                toolRow(.regexMatches, label: "Regex Matches", shortcut: "5") {
+                toolRow(.regexMatches, label: "Regex Matches", shortcut: "6") {
                     Text("(.*)")
                         .font(.monospaced(Font.system(size: 8))())
                 }
@@ -350,12 +374,12 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.jsonPretty, label: "Json", shortcut: "6") {
+                toolRow(.jsonPretty, label: "Json", shortcut: "7") {
                     Text("{.,}")
                         .font(.monospaced(Font.system(size: 8))())
                 }
 
-                toolRow(.swiftPrettyLockwood, label: "Swift", shortcut: "7") {
+                toolRow(.swiftPrettyLockwood, label: "Swift", shortcut: "8") {
                     Image(systemName: "swift")
                 }
             }
@@ -368,7 +392,7 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.fileContentSearch, label: "File Search", shortcut: "8") {
+                toolRow(.fileContentSearch, label: "File Search", shortcut: "9") {
                     Image(systemName: "doc.text.magnifyingglass")
                 }
             }
@@ -381,7 +405,7 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.nameGenerator, label: "Name", shortcut: "9") {
+                toolRow(.nameGenerator, label: "Name", shortcut: "0") {
                     Image(systemName: "person")
                 }
             }
@@ -449,6 +473,17 @@ public struct AppView: View {
                     .navigationTitle(
                         NSLocalizedString(
                             "Convert HTML to Markdown",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .urlToMarkdown(let childStore):
+                UrlToMarkdownView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Convert URL to Markdown",
                             bundle: Bundle.module,
                             comment: "navigation title"
                         )

@@ -25,6 +25,8 @@ let package = Package(
         .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
         .library(name: "HtmlToMarkdownClient", targets: ["HtmlToMarkdownClient"]),
         .library(name: "HtmlToMarkdownFeature", targets: ["HtmlToMarkdownFeature"]),
+        .library(name: "UrlToMarkdownClient", targets: ["UrlToMarkdownClient"]),
+        .library(name: "UrlToMarkdownFeature", targets: ["UrlToMarkdownFeature"]),
         .library(name: "JsonPrettyClient", targets: ["JsonPrettyClient"]),
         .library(name: "JsonPrettyFeature", targets: ["JsonPrettyFeature"]),
         .library(name: "NameGeneratorClient", targets: ["NameGeneratorClient"]),
@@ -53,7 +55,7 @@ let package = Package(
         .package(url: "https://github.com/atacan/TCAEnchancements", from: "1.0.0"),
         .package(url: "https://github.com/atacan/PillPickerView", branch: "develop"),
         .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", branch: "xcode26"),
-        .package(url: "https://github.com/steipete/demark", branch: "main"),
+        .package(url: "https://github.com/atacan/demark", branch: "convert-url"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -65,6 +67,7 @@ let package = Package(
                 "SharedModels",
                 "HtmlToSwiftFeature",
                 "HtmlToMarkdownFeature",
+                "UrlToMarkdownFeature",
                 "JsonPrettyFeature",
                 "TextCaseConverterFeature",
                 "UUIDGeneratorFeature",
@@ -166,6 +169,25 @@ let package = Package(
         .target(
             name: "HtmlToMarkdownFeature",
             dependencies: [
+                "HtmlToMarkdownClient",
+                "InputOutput",
+                "SharedModels",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
+            ]
+        ),
+        .target(
+            name: "UrlToMarkdownClient",
+            dependencies: [
+                "HtmlToMarkdownClient",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Demark", package: "demark"),
+            ]
+        ),
+        .target(
+            name: "UrlToMarkdownFeature",
+            dependencies: [
+                "UrlToMarkdownClient",
                 "HtmlToMarkdownClient",
                 "InputOutput",
                 "SharedModels",
