@@ -13,7 +13,7 @@ public struct RegexMatchesReducer {
     @ObservableState
     public struct State: Equatable {
         @Shared(.regexMatchesIO) public var storage = ToolIOStorageDoubleOutput()
-        var inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State
+        public var inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State
         public var regexPattern: String
         var isConversionRequestInFlight = false
 
