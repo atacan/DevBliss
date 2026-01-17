@@ -21,10 +21,10 @@
     {
       "identity" : "demark",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/steipete/demark",
+      "location" : "https://github.com/atacan/demark",
       "state" : {
-        "branch" : "main",
-        "revision" : "50f6934fb01804c3cf31a7ea2c497838ed4c9598"
+        "branch" : "convert-url",
+        "revision" : "2170b58362c6b362284754c275658fa57c86b911"
       }
     },
     {

@@ -3,6 +3,7 @@ import Foundation
 public enum Tool: Int, CaseIterable, Identifiable {
     case htmlToSwift
     case htmlToMarkdown
+    case urlToMarkdown
     case textCaseConverter
     case prefixSuffix
     case regexMatches
@@ -20,6 +21,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return NSLocalizedString("HTML to Swift", bundle: Bundle.module, comment: "")
         case .htmlToMarkdown:
             return NSLocalizedString("HTML to Markdown", bundle: Bundle.module, comment: "")
+        case .urlToMarkdown:
+            return NSLocalizedString("URL to Markdown", bundle: Bundle.module, comment: "")
         case .jsonPretty:
             return NSLocalizedString("JSON Formatter", bundle: Bundle.module, comment: "")
         case .textCaseConverter:
@@ -45,6 +48,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return true
         case .htmlToMarkdown:
             return true
+        case .urlToMarkdown:
+            return false
         case .jsonPretty:
             return true
         case .textCaseConverter:
