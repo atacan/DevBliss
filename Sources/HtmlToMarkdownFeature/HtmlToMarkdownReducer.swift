@@ -138,6 +138,7 @@ public struct HtmlToMarkdownView: View {
                         Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
                         Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
                     }
+                    .labelsHidden()
                     .pickerStyle(.segmented)
                     .frame(maxWidth: 400)
                     Spacer()
@@ -152,6 +153,7 @@ public struct HtmlToMarkdownView: View {
                         Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
                         Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
                     }
+                    .labelsHidden()
                     .pickerStyle(.segmented)
                     .frame(maxWidth: 400)
                     Spacer()
@@ -167,6 +169,7 @@ public struct HtmlToMarkdownView: View {
                         Text("Asterisk (*)").tag("*")
                         Text("Plus (+)").tag("+")
                     }
+                    .labelsHidden()
                     .pickerStyle(.segmented)
                     .frame(maxWidth: 400)
                     Spacer()
@@ -181,6 +184,7 @@ public struct HtmlToMarkdownView: View {
                         Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
                         Text("Indented").tag(DemarkCodeBlockStyle.indented)
                     }
+                    .labelsHidden()
                     .pickerStyle(.segmented)
                     .frame(maxWidth: 400)
                     Spacer()
