@@ -198,8 +198,11 @@ public struct AppReducer {
             }
         case .regexMatches:
             state.destination = .regexMatches(RegexMatchesReducer.State())
-            if case .regexMatches(let s) = state.destination {
+            if case .regexMatches(var s) = state.destination {
                 s.$storage.withLock { $0.input = outputText }
+                // Must also update the display text since it's a separate NSMutableAttributedString copy
+                _ = s.inputOutput.input.updateText(outputText)
+                state.destination = .regexMatches(s)
             }
         case .swiftPrettyLockwood:
             state.destination = .swiftPrettyLockwood(SwiftPrettyReducer.State())
