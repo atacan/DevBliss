@@ -77,7 +77,7 @@ public struct UUIDGeneratorReducer {
 }
 
 public struct UUIDGeneratorView: View {
-    @Perception.Bindable var store: Store<UUIDGeneratorReducer.State, UUIDGeneratorReducer.Action>
+    @Bindable var store: Store<UUIDGeneratorReducer.State, UUIDGeneratorReducer.Action>
 
     public init(store: StoreOf<UUIDGeneratorReducer>) {
         self.store = store

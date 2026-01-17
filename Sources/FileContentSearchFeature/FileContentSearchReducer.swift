@@ -140,7 +140,7 @@
     }
 
     public struct FileContentSearchView: View {
-        @Perception.Bindable var store: Store<FileContentSearchReducer.State, FileContentSearchReducer.Action>
+        @Bindable var store: Store<FileContentSearchReducer.State, FileContentSearchReducer.Action>
 
         public init(store: StoreOf<FileContentSearchReducer>) {
             self.store = store

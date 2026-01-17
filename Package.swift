@@ -1,4 +1,4 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -7,8 +7,8 @@ let package = Package(
     name: "DevBliss",
     defaultLocalization: "en",
     platforms: [
-        .macOS(.v12),
-        .iOS(.v15),
+        .macOS(.v14),
+        .iOS(.v16),
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
@@ -23,6 +23,8 @@ let package = Package(
         .library(name: "FilePanelsClient", targets: ["FilePanelsClient"]),
         .library(name: "HtmlToSwiftClient", targets: ["HtmlToSwiftClient"]),
         .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
+        .library(name: "HtmlToMarkdownClient", targets: ["HtmlToMarkdownClient"]),
+        .library(name: "HtmlToMarkdownFeature", targets: ["HtmlToMarkdownFeature"]),
         .library(name: "JsonPrettyClient", targets: ["JsonPrettyClient"]),
         .library(name: "JsonPrettyFeature", targets: ["JsonPrettyFeature"]),
         .library(name: "NameGeneratorClient", targets: ["NameGeneratorClient"]),
@@ -51,6 +53,7 @@ let package = Package(
         .package(url: "https://github.com/atacan/TCAEnchancements", from: "1.0.0"),
         .package(url: "https://github.com/atacan/PillPickerView", branch: "develop"),
         .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", branch: "xcode26"),
+        .package(url: "https://github.com/steipete/demark", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -61,6 +64,7 @@ let package = Package(
             dependencies: [
                 "SharedModels",
                 "HtmlToSwiftFeature",
+                "HtmlToMarkdownFeature",
                 "JsonPrettyFeature",
                 "TextCaseConverterFeature",
                 "UUIDGeneratorFeature",
@@ -150,6 +154,23 @@ let package = Package(
             name: "HtmlToSwiftFeatureTests",
             dependencies: [
                 "HtmlToSwiftFeature",
+            ]
+        ),
+        .target(
+            name: "HtmlToMarkdownClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Demark", package: "demark"),
+            ]
+        ),
+        .target(
+            name: "HtmlToMarkdownFeature",
+            dependencies: [
+                "HtmlToMarkdownClient",
+                "InputOutput",
+                "SharedModels",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
         ),
         .target(

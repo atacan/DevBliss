@@ -129,7 +129,7 @@ public struct RegexMatchesReducer {
 }
 
 public struct RegexMatchesView: View {
-    @Perception.Bindable var store: StoreOf<RegexMatchesReducer>
+    @Bindable var store: StoreOf<RegexMatchesReducer>
 
     public init(store: StoreOf<RegexMatchesReducer>) {
         self.store = store
