@@ -11,7 +11,7 @@ public struct PrefixSuffixReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        @Shared(.prefixSuffixIO) var storage = ToolIOStorage()
+        @Shared(.prefixSuffixIO) public var storage = ToolIOStorage()
         public var inputOutput: InputOutputEditorsReducer.State
         public var configuration: PrefixSuffixConfig
         var isConversionRequestInFlight = false

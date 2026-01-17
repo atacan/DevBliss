@@ -16,7 +16,8 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(grep:*)",
-      "WebFetch(domain:www.pointfree.co)"
+      "WebFetch(domain:www.pointfree.co)",
+      "Skill(tca-navigation)"
     ]
   }
 }

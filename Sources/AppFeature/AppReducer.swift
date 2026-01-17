@@ -10,62 +10,61 @@ import SharedModels
 import SwiftPrettyFeature
 import SwiftUI
 import TextCaseConverterFeature
-import UUIDGeneratorFeature
+
+// MARK: - Destination Reducer Enum
+
+@Reducer
+public enum Destination {
+    case htmlToSwift(HtmlToSwiftReducer)
+    case htmlToMarkdown(HtmlToMarkdownReducer)
+    case jsonPretty(JsonPrettyReducer)
+    case textCaseConverter(TextCaseConverterReducer)
+    case prefixSuffix(PrefixSuffixReducer)
+    case regexMatches(RegexMatchesReducer)
+    case swiftPrettyLockwood(SwiftPrettyReducer)
+    case nameGenerator(NameGeneratorReducer)
+    #if os(macOS)
+    case fileContentSearch(FileContentSearchReducer)
+    #endif
+}
+
+// MARK: - App Reducer
 
 @Reducer
 public struct AppReducer {
     public init() {}
-    @ObservableState
-    public struct State: Equatable {
-        @Presents var htmlToSwift: HtmlToSwiftReducer.State?
-        @Presents var htmlToMarkdown: HtmlToMarkdownReducer.State?
-        @Presents var jsonPretty: JsonPrettyReducer.State?
-        @Presents var textCaseConverter: TextCaseConverterReducer.State?
-        @Presents var uuidGenerator: UUIDGeneratorReducer.State?
-        @Presents public var prefixSuffix: PrefixSuffixReducer.State?
-        @Presents var regexMatches: RegexMatchesReducer.State?
-        @Presents var swiftPrettyLockwood: SwiftPrettyReducer.State?
-        @Presents var fileContentSearch: FileContentSearchReducer.State?
-        @Presents var nameGenerator: NameGeneratorReducer.State?
-        var currentTool: Tool? = nil
 
-        public init(
-            htmlToSwift: HtmlToSwiftReducer.State? = nil,
-            htmlToMarkdown: HtmlToMarkdownReducer.State? = nil,
-            jsonPretty: JsonPrettyReducer.State? = nil,
-            textCaseConverter: TextCaseConverterReducer.State? = nil,
-            uuidGenerator: UUIDGeneratorReducer.State? = nil,
-            prefixSuffix: PrefixSuffixReducer.State? = nil,
-            regexMatches: RegexMatchesReducer.State? = nil,
-            swiftPrettyLockwood: SwiftPrettyReducer.State? = nil,
-            fileContentSearch: FileContentSearchReducer.State? = nil,
-            nameGenerator: NameGeneratorReducer.State? = nil
-        ) {
-            self.htmlToSwift = htmlToSwift
-            self.htmlToMarkdown = htmlToMarkdown
-            self.jsonPretty = jsonPretty
-            self.textCaseConverter = textCaseConverter
-            self.uuidGenerator = uuidGenerator
-            self.prefixSuffix = prefixSuffix
-            self.regexMatches = regexMatches
-            self.swiftPrettyLockwood = swiftPrettyLockwood
-            self.fileContentSearch = fileContentSearch
-            self.nameGenerator = nameGenerator
+    @ObservableState
+    public struct State {
+        @Presents public var destination: Destination.State?
+
+        // Derive currentTool from destination instead of separate state
+        public var currentTool: Tool? {
+            switch destination {
+            case .htmlToSwift: return .htmlToSwift
+            case .htmlToMarkdown: return .htmlToMarkdown
+            case .jsonPretty: return .jsonPretty
+            case .textCaseConverter: return .textCaseConverter
+            case .prefixSuffix: return .prefixSuffix
+            case .regexMatches: return .regexMatches
+            case .swiftPrettyLockwood: return .swiftPrettyLockwood
+            case .nameGenerator: return .nameGenerator
+            #if os(macOS)
+            case .fileContentSearch: return .fileContentSearch
+            #endif
+            case .none: return nil
+            }
+        }
+
+        public init(destination: Destination.State? = nil) {
+            self.destination = destination
         }
     }
 
-    public enum Action: Equatable {
-        case htmlToSwift(PresentationAction<HtmlToSwiftReducer.Action>)
-        case htmlToMarkdown(PresentationAction<HtmlToMarkdownReducer.Action>)
-        case jsonPretty(PresentationAction<JsonPrettyReducer.Action>)
-        case textCaseConverter(PresentationAction<TextCaseConverterReducer.Action>)
-        case uuidGenerator(PresentationAction<UUIDGeneratorReducer.Action>)
-        case prefixSuffix(PresentationAction<PrefixSuffixReducer.Action>)
-        case regexMatches(PresentationAction<RegexMatchesReducer.Action>)
-        case swiftPrettyLockwood(PresentationAction<SwiftPrettyReducer.Action>)
-        case fileContentSearch(PresentationAction<FileContentSearchReducer.Action>)
-        case nameGenerator(PresentationAction<NameGeneratorReducer.Action>)
+    public enum Action {
+        case destination(PresentationAction<Destination.Action>)
         case navigationLinkTouched(Tool)
+        case setCurrentTool(Tool?)
         case nextToolButtonTouched
         case previousToolButtonTouched
     }
@@ -73,635 +72,472 @@ public struct AppReducer {
     public var body: some Reducer<State, Action> {
         Reduce<State, Action> { state, action in
             switch action {
-            case let .htmlToSwift(
-                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
-            ):
-                handleOtherTool(thisToolOutput: state.htmlToSwift?.outputText, otherTool: otherTool, state: &state)
-                return .none
-            case let .htmlToMarkdown(
-                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
-            ):
-                handleOtherTool(thisToolOutput: state.htmlToMarkdown?.outputText, otherTool: otherTool, state: &state)
-                return .none
-            case let .jsonPretty(
-                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
-            ):
-                handleOtherTool(thisToolOutput: state.jsonPretty?.outputText, otherTool: otherTool, state: &state)
-                return .none
-            case let .textCaseConverter(
-                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
-            ):
-                handleOtherTool(
-                    thisToolOutput: state.textCaseConverter?.outputText,
-                    otherTool: otherTool,
-                    state: &state
-                )
-                return .none
-            case let .uuidGenerator(
-                .presented(.output(.outputControls(.otherToolSelected(otherTool))))
-            ):
-                handleOtherTool(thisToolOutput: state.uuidGenerator?.outputText, otherTool: otherTool, state: &state)
-                return .none
-            case let .prefixSuffix(
-                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
-            ):
-                handleOtherTool(thisToolOutput: state.prefixSuffix?.outputText, otherTool: otherTool, state: &state)
-                return .none
-            case let .regexMatches(
-                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
-            ):
-                handleOtherTool(thisToolOutput: state.regexMatches?.outputText, otherTool: otherTool, state: &state)
-                return .none
-            case let .regexMatches(
-                .presented(.inputOutput(.outputSecond(.outputControls(.otherToolSelected(otherTool)))))
-            ):
-                handleOtherTool(
-                    thisToolOutput: state.regexMatches?.outputSecondText,
-                    otherTool: otherTool,
-                    state: &state
-                )
-                return .none
-            case let .swiftPrettyLockwood(
-                .presented(.inputOutput(.output(.outputControls(.otherToolSelected(otherTool)))))
-            ):
-                handleOtherTool(
-                    thisToolOutput: state.swiftPrettyLockwood?.outputText,
-                    otherTool: otherTool,
-                    state: &state
-                )
-                return .none
-            case let .nameGenerator(
-                .presented(.output(.outputControls(.otherToolSelected(otherTool))))
-            ):
-                handleOtherTool(thisToolOutput: state.nameGenerator?.outputText, otherTool: otherTool, state: &state)
-                return .none
-
-            #if os(macOS)
-                case let .fileContentSearch(
-                    .presented(.output(.outputControls(.otherToolSelected(otherTool))))
-                ):
-                    handleOtherTool(
-                        thisToolOutput: state.fileContentSearch?.outputText,
-                        otherTool: otherTool,
-                        state: &state
-                    )
-                    return .none
-            #endif
-
-            case .nextToolButtonTouched:
-                handleNextToolNavigation(state: &state)
-                return .none
-            case .previousToolButtonTouched:
-                handlePreviousToolNavigation(state: &state)
-                return .none
+            case let .destination(.presented(destinationAction)):
+                return handleDestinationAction(destinationAction, state: &state)
 
             case let .navigationLinkTouched(tool):
                 handleNavigation(tool: tool, state: &state)
                 return .none
 
-            case .htmlToSwift:
+            case let .setCurrentTool(tool):
+                if let tool = tool {
+                    handleNavigation(tool: tool, state: &state)
+                }
                 return .none
-            case .htmlToMarkdown:
+
+            case .nextToolButtonTouched:
+                handleNextToolNavigation(state: &state)
                 return .none
-            case .jsonPretty:
+
+            case .previousToolButtonTouched:
+                handlePreviousToolNavigation(state: &state)
                 return .none
-            case .textCaseConverter:
-                return .none
-            case .uuidGenerator:
-                return .none
-            case .prefixSuffix:
-                return .none
-            case .regexMatches:
-                return .none
-            case .swiftPrettyLockwood:
-                return .none
-            case .fileContentSearch:
-                return .none
-            case .nameGenerator:
+
+            case .destination:
                 return .none
             }
         }
-        .ifLet(\.$htmlToSwift, action: \.htmlToSwift) {
-            HtmlToSwiftReducer()
-        }
-        .ifLet(\.$htmlToMarkdown, action: \.htmlToMarkdown) {
-            HtmlToMarkdownReducer()
-        }
-        .ifLet(\.$jsonPretty, action: \.jsonPretty) {
-            JsonPrettyReducer()
-        }
-        .ifLet(\.$textCaseConverter, action: \.textCaseConverter) {
-            TextCaseConverterReducer()
-        }
-        .ifLet(\.$uuidGenerator, action: \.uuidGenerator) {
-            UUIDGeneratorReducer()
-        }
-        .ifLet(\.$prefixSuffix, action: \.prefixSuffix) {
-            PrefixSuffixReducer()
-        }
-        .ifLet(\.$regexMatches, action: \.regexMatches) {
-            RegexMatchesReducer()
-        }
-        .ifLet(\.$swiftPrettyLockwood, action: \.swiftPrettyLockwood) {
-            SwiftPrettyReducer()
-        }
-        .ifLet(\.$fileContentSearch, action: \.fileContentSearch) {
-            FileContentSearchReducer()
-        }
-        .ifLet(\.$nameGenerator, action: \.nameGenerator) {
-            NameGeneratorReducer()
-        }
+        .ifLet(\.$destination, action: \.destination)
     }
+
+    // MARK: - Destination Action Handling
+
+    private func handleDestinationAction(_ action: Destination.Action, state: inout State) -> Effect<Action> {
+        switch action {
+        // Standard tools with single output
+        case let .htmlToSwift(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .htmlToSwift(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .htmlToMarkdown(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .htmlToMarkdown(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .jsonPretty(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .jsonPretty(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .textCaseConverter(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .textCaseConverter(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .prefixSuffix(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .prefixSuffix(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .swiftPrettyLockwood(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .swiftPrettyLockwood(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        // RegexMatches has TWO outputs
+        case let .regexMatches(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .regexMatches(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .regexMatches(.inputOutput(.outputSecond(.outputControls(.otherToolSelected(tool))))):
+            if case .regexMatches(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputSecondText, otherTool: tool, state: &state)
+            }
+
+        // Generators (output-only tools)
+        case let .nameGenerator(.output(.outputControls(.otherToolSelected(tool)))):
+            if case .nameGenerator(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        #if os(macOS)
+        case let .fileContentSearch(.output(.outputControls(.otherToolSelected(tool)))):
+            if case .fileContentSearch(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+        #endif
+
+        default:
+            break
+        }
+        return .none
+    }
+
+    // MARK: - Other Tool Navigation (Output -> Input Transfer)
 
     private func handleOtherTool(thisToolOutput: String?, otherTool: Tool, state: inout State) {
-        state.currentTool = otherTool
+        let outputText = thisToolOutput ?? ""
+
         switch otherTool {
         case .htmlToSwift:
-            state.htmlToSwift = HtmlToSwiftReducer.State(input: thisToolOutput ?? "")
+            state.destination = .htmlToSwift(HtmlToSwiftReducer.State())
+            if case .htmlToSwift(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
         case .htmlToMarkdown:
-            state.htmlToMarkdown = HtmlToMarkdownReducer.State(input: thisToolOutput ?? "")
+            state.destination = .htmlToMarkdown(HtmlToMarkdownReducer.State())
+            if case .htmlToMarkdown(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
         case .jsonPretty:
-            state.jsonPretty = JsonPrettyReducer.State(input: thisToolOutput ?? "")
+            state.destination = .jsonPretty(JsonPrettyReducer.State())
+            if case .jsonPretty(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
         case .textCaseConverter:
-            state.textCaseConverter = TextCaseConverterReducer.State(input: thisToolOutput ?? "")
+            state.destination = .textCaseConverter(TextCaseConverterReducer.State())
+            if case .textCaseConverter(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
         case .prefixSuffix:
-            state.prefixSuffix = PrefixSuffixReducer.State(input: thisToolOutput ?? "")
+            state.destination = .prefixSuffix(PrefixSuffixReducer.State())
+            if case .prefixSuffix(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
         case .regexMatches:
-            state.regexMatches = RegexMatchesReducer.State(input: thisToolOutput ?? "")
-        case .uuidGenerator:
-            break
+            state.destination = .regexMatches(RegexMatchesReducer.State())
+            if case .regexMatches(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
         case .swiftPrettyLockwood:
-            state.swiftPrettyLockwood = SwiftPrettyReducer.State(input: thisToolOutput ?? "")
+            state.destination = .swiftPrettyLockwood(SwiftPrettyReducer.State())
+            if case .swiftPrettyLockwood(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .uuidGenerator:
+            break // Inactive tool
         case .fileContentSearch:
-            break
+            #if os(macOS)
+            state.destination = .fileContentSearch(FileContentSearchReducer.State())
+            #endif
         case .nameGenerator:
-            break
+            state.destination = .nameGenerator(NameGeneratorReducer.State())
         }
     }
 
-    private func handleNavigation(tool: Tool, state: inout State) {
-        // Clear all tool states first to ensure only one presentation is active
-        state.htmlToSwift = nil
-        state.htmlToMarkdown = nil
-        state.jsonPretty = nil
-        state.textCaseConverter = nil
-        state.uuidGenerator = nil
-        state.prefixSuffix = nil
-        state.regexMatches = nil
-        state.swiftPrettyLockwood = nil
-        state.fileContentSearch = nil
-        state.nameGenerator = nil
+    // MARK: - Navigation Helpers
 
-        // Set current tool and initialize its state
-        state.currentTool = tool
+    private func handleNavigation(tool: Tool, state: inout State) {
         switch tool {
         case .htmlToSwift:
-            state.htmlToSwift = .init()
+            state.destination = .htmlToSwift(HtmlToSwiftReducer.State())
         case .htmlToMarkdown:
-            state.htmlToMarkdown = .init()
+            state.destination = .htmlToMarkdown(HtmlToMarkdownReducer.State())
         case .jsonPretty:
-            state.jsonPretty = .init()
+            state.destination = .jsonPretty(JsonPrettyReducer.State())
         case .textCaseConverter:
-            state.textCaseConverter = .init()
-        case .uuidGenerator:
-            state.uuidGenerator = .init()
+            state.destination = .textCaseConverter(TextCaseConverterReducer.State())
         case .prefixSuffix:
-            state.prefixSuffix = .init()
+            state.destination = .prefixSuffix(PrefixSuffixReducer.State())
         case .regexMatches:
-            state.regexMatches = .init()
+            state.destination = .regexMatches(RegexMatchesReducer.State())
         case .swiftPrettyLockwood:
-            state.swiftPrettyLockwood = .init()
-        case .fileContentSearch:
-            state.fileContentSearch = .init()
+            state.destination = .swiftPrettyLockwood(SwiftPrettyReducer.State())
         case .nameGenerator:
-            state.nameGenerator = .init()
+            state.destination = .nameGenerator(NameGeneratorReducer.State())
+        #if os(macOS)
+        case .fileContentSearch:
+            state.destination = .fileContentSearch(FileContentSearchReducer.State())
+        #endif
+        case .uuidGenerator:
+            break // Inactive tool
         }
     }
 
     private func handleNextToolNavigation(state: inout State) {
-        // find the current tool
-        guard let currentTool = state.currentTool else {
-            return
-        }
-        // find the next tool
+        guard let currentTool = state.currentTool else { return }
         let nextTool = currentTool.next()
         handleNavigation(tool: nextTool, state: &state)
     }
 
     private func handlePreviousToolNavigation(state: inout State) {
-        // find the current tool
-        guard let currentTool = state.currentTool else {
-            return
-        }
-        // find the next tool
+        guard let currentTool = state.currentTool else { return }
         let previousTool = currentTool.previous()
         handleNavigation(tool: previousTool, state: &state)
     }
 }
 
+// MARK: - App View
+
 public struct AppView: View {
-    let store: StoreOf<AppReducer>
+    @Bindable var store: StoreOf<AppReducer>
+
     public init(store: StoreOf<AppReducer>) {
         self.store = store
     }
 
     public var body: some View {
-        NavigationView {
-            List {
-                Section(
-                    NSLocalizedString(
-                        "Converters",
-                        bundle: Bundle.module,
-                        comment: "sidebar section name for a group of tools"
-                    )
-                ) {
-                    NavigationLinkStore(
-                        store.scope(state: \.$htmlToSwift, action: \.htmlToSwift)
-                    ) {
-                        store.send(.navigationLinkTouched(.htmlToSwift))
-                    } destination: { store in
-                        HtmlToSwiftView(store: store)
-                            .navigationTitle(
-                                NSLocalizedString(
-                                    "Convert Html code to a DSL in Swift",
-                                    bundle: Bundle.module,
-                                    comment: "a navigationTitle"
-                                )
-                            )
-                            .padding(.top)
-                    } label: {
-                        Label(
-                            title: {
-                                Text(
-                                    NSLocalizedString(
-                                        "Html to Swift",
-                                        bundle: Bundle.module,
-                                        comment: "tool name on the sidebar"
-                                    )
-                                )
-                            },
-                            icon: {
-                                ZStack(alignment: .leading) {
-                                    Image(systemName: "swift")
-                                        .offset(CGSize(width: 5, height: 0))
-                                    Text(
-                                        NSLocalizedString(
-                                            "<>",
-                                            bundle: Bundle.module,
-                                            comment: "icon next to the tool name on the sidebar"
-                                        )
-                                    )
-                                    .font(.monospaced(Font.system(size: 14))())
-                                    .fontWeight(.thin)
-                                    .offset(CGSize(width: 0, height: -7))
-                                }  // <-ZStack
-                            }
-                        )
-                    }
-                    .keyboardShortcut(KeyEquivalent("1"))
+        NavigationSplitView {
+            sidebarContent
+        } detail: {
+            detailContent
+        }
+        #if os(macOS)
+        .toolbar {
+            ToolbarItem {
+                Button {
+                    NSApp.keyWindow?.firstResponder?
+                        .tryToPerform(#selector(NSSplitViewController.toggleSidebar(_:)), with: nil)
+                } label: {
+                    Label("Toggle sidebar", systemImage: "sidebar.left")
+                }
+                .keyboardShortcut("l", modifiers: [.command, .shift])
+                .help(NSLocalizedString("Toggle sidebar (Command+Shift+L)", bundle: Bundle.module, comment: ""))
+            }
+        }
+        #endif
+    }
 
-                    NavigationLinkStore(
-                        store.scope(state: \.$htmlToMarkdown, action: \.htmlToMarkdown)
-                    ) {
-                        store.send(.navigationLinkTouched(.htmlToMarkdown))
-                    } destination: { store in
-                        HtmlToMarkdownView(store: store)
-                            .navigationTitle("Convert HTML to Markdown")
-                            .padding(.top)
-                    } label: {
-                        Label(
-                            title: {
-                                Text("HTML to Markdown")
-                            },
-                            icon: {
-                                ZStack(alignment: .leading) {
-                                    Text("M↓")
-                                        .font(.monospaced(Font.system(size: 14))())
-                                        .fontWeight(.medium)
-                                        .offset(CGSize(width: 5, height: 0))
-                                    Text("<>")
-                                        .font(.monospaced(Font.system(size: 14))())
-                                        .fontWeight(.thin)
-                                        .offset(CGSize(width: 0, height: -7))
-                                }
-                            }
-                        )
-                    }
-                    .keyboardShortcut(KeyEquivalent("2"))
+    // MARK: - Sidebar
 
-                    NavigationLinkStore(
-                        store.scope(state: \.$textCaseConverter, action: \.textCaseConverter)
-                    ) {
-                        store.send(.navigationLinkTouched(.textCaseConverter))
-                    } destination: { store in
-                        TextCaseConverterView(store: store)
-                            .navigationTitle(
-                                NSLocalizedString(
-                                    "Convert case of list of words",
-                                    bundle: Bundle.module,
-                                    comment: "navigation title on top of the window"
-                                )
-                            )
-                            .padding(.top)
-                    } label: {
-                        Label(
-                            title: {
-                                Text(
-                                    NSLocalizedString(
-                                        "Text Case",
-                                        bundle: Bundle.module,
-                                        comment: "tool name on the sidebar"
-                                    )
-                                )
-                            },
-                            icon: {
-                                Text(
-                                    NSLocalizedString(
-                                        "Aa",
-                                        bundle: Bundle.module,
-                                        comment: "icon next to the tool name on the sidebar"
-                                    )
-                                )
-                            }
-                        )
+    @ViewBuilder
+    private var sidebarContent: some View {
+        List(selection: $store.currentTool.sending(\.setCurrentTool)) {
+            Section(
+                NSLocalizedString(
+                    "Converters",
+                    bundle: Bundle.module,
+                    comment: "sidebar section name for a group of tools"
+                )
+            ) {
+                toolRow(.htmlToSwift, label: "Html to Swift", shortcut: "1") {
+                    ZStack(alignment: .leading) {
+                        Image(systemName: "swift")
+                            .offset(CGSize(width: 5, height: 0))
+                        Text("<>")
+                            .font(.monospaced(Font.system(size: 14))())
+                            .fontWeight(.thin)
+                            .offset(CGSize(width: 0, height: -7))
                     }
-                    .keyboardShortcut(KeyEquivalent("3"))
-
-                    NavigationLinkStore(
-                        store.scope(state: \.$prefixSuffix, action: \.prefixSuffix)
-                    ) {
-                        store.send(.navigationLinkTouched(.prefixSuffix))
-                    } destination: { store in
-                        PrefixSuffixView(store: store)
-                            .navigationTitle(
-                                NSLocalizedString(
-                                    "Change prefix or suffix of each line",
-                                    bundle: Bundle.module,
-                                    comment: "navigation title on top of the window"
-                                )
-                            )
-                            .padding(.top)
-                    } label: {
-                        Label(
-                            title: {
-                                Text(
-                                    NSLocalizedString(
-                                        "Prefix Suffix",
-                                        bundle: Bundle.module,
-                                        comment: "tool name on the sidebar"
-                                    )
-                                )
-                            },
-                            icon: { Image(systemName: "arrow.right.and.line.vertical.and.arrow.left") }
-                        )
-                    }
-                    .keyboardShortcut(KeyEquivalent("4"))
-
-                    NavigationLinkStore(
-                        store.scope(state: \.$regexMatches, action: \.regexMatches)
-                    ) {
-                        store.send(.navigationLinkTouched(.regexMatches))
-                    } destination: { store in
-                        RegexMatchesView(store: store)
-                            .navigationTitle(
-                                NSLocalizedString(
-                                    "Regex Matches",
-                                    bundle: Bundle.module,
-                                    comment: "navigation title on top of the window"
-                                )
-                            )
-                            .padding(.top)
-                    } label: {
-                        Label(
-                            title: {
-                                Text(
-                                    NSLocalizedString(
-                                        "Regex Matches",
-                                        bundle: Bundle.module,
-                                        comment: "tool name on the sidebar"
-                                    )
-                                )
-                            },
-                            icon: {
-                                Text(
-                                    NSLocalizedString(
-                                        "(.*)",
-                                        bundle: Bundle.module,
-                                        comment: "icon next to the tool name on the sidebar"
-                                    )
-                                )
-                                .font(.monospaced(Font.system(size: 8))())
-                            }
-                        )
-                    }
-                    .keyboardShortcut(KeyEquivalent("5"))
                 }
 
-                Section(
-                    NSLocalizedString(
-                        "Formatters",
-                        bundle: Bundle.module,
-                        comment: "sidebar section name for a group of tools"
-                    )
-                ) {
-                    NavigationLinkStore(
-                        store.scope(state: \.$jsonPretty, action: \.jsonPretty)
-                    ) {
-                        store.send(.navigationLinkTouched(.jsonPretty))
-                    } destination: { store in
-                        JsonPrettyView(store: store)
-                            .navigationTitle(
-                                NSLocalizedString("Format and Highlight Json", bundle: Bundle.module, comment: "")
-                            )
-                            .padding(.top)
-                    } label: {
-                        Label(
-                            title: {
-                                Text(
-                                    NSLocalizedString(
-                                        "Json",
-                                        bundle: Bundle.module,
-                                        comment: "sidebar name for the tool"
-                                    )
-                                )
-                            },
-                            icon: {
-                                Text(
-                                    NSLocalizedString(
-                                        "{.,}",
-                                        bundle: Bundle.module,
-                                        comment: "icon next to the tool name on the sidebar"
-                                    )
-                                )
-                                .font(.monospaced(Font.system(size: 8))())
-                            }
-                        )
+                toolRow(.htmlToMarkdown, label: "HTML to Markdown", shortcut: "2") {
+                    ZStack(alignment: .leading) {
+                        Text("M↓")
+                            .font(.monospaced(Font.system(size: 14))())
+                            .fontWeight(.medium)
+                            .offset(CGSize(width: 5, height: 0))
+                        Text("<>")
+                            .font(.monospaced(Font.system(size: 14))())
+                            .fontWeight(.thin)
+                            .offset(CGSize(width: 0, height: -7))
                     }
-                    .keyboardShortcut(KeyEquivalent("6"))
-
-                    NavigationLinkStore(
-                        store.scope(state: \.$swiftPrettyLockwood, action: \.swiftPrettyLockwood)
-                    ) {
-                        store.send(.navigationLinkTouched(.swiftPrettyLockwood))
-                    } destination: { store in
-                        SwiftPrettyView(store: store)
-                            .navigationTitle(
-                                NSLocalizedString(
-                                    "Format Swift code",
-                                    bundle: Bundle.module,
-                                    comment: "navigation title on top of the window"
-                                )
-                            )
-                            .padding(.top)
-                    } label: {
-                        Label(
-                            title: {
-                                Text(
-                                    NSLocalizedString(
-                                        "Swift",
-                                        bundle: Bundle.module,
-                                        comment: "sidebar name for the tool"
-                                    )
-                                )
-                            },
-                            icon: { Image(systemName: "swift") }
-                        )
-                    }
-                    .keyboardShortcut(KeyEquivalent("7"))
                 }
 
-                #if os(macOS)
-
-                    Section(
-                        NSLocalizedString(
-                            "File",
-                            bundle: Bundle.module,
-                            comment: "sidebar section name for a group of tools"
-                        )
-                    ) {
-                        NavigationLinkStore(
-                            store.scope(state: \.$fileContentSearch, action: \.fileContentSearch)
-                        ) {
-                            store.send(.navigationLinkTouched(.fileContentSearch))
-                        } destination: { store in
-                            FileContentSearchView(store: store)
-                                .navigationTitle(
-                                    NSLocalizedString(
-                                        "Search inside files",
-                                        bundle: Bundle.module,
-                                        comment: "navigation title on top of the window"
-                                    )
-                                )
-                                .padding(.top)
-                        } label: {
-                            Label(
-                                title: {
-                                    Text(
-                                        NSLocalizedString(
-                                            "File Search",
-                                            bundle: Bundle.module,
-                                            comment: "tool name on the sidebar"
-                                        )
-                                    )
-                                },
-                                icon: { Image(systemName: "doc.text.magnifyingglass") }
-                            )
-                        }
-                        .keyboardShortcut(KeyEquivalent("8"))
-                    }
-                #endif
-
-                Section(
-                    NSLocalizedString(
-                        "Generators",
-                        bundle: Bundle.module,
-                        comment: "sidebar section name for a group of tools"
-                    )
-                ) {
-                    // NavigationLinkStore(
-                    //     store.scope(state: \.$uuidGenerator, action: { .uuidGenerator($0) })
-                    // ) {
-                    //     store.send(.navigationLinkTouched(.uuidGenerator))
-                    // } destination: { store in
-                    //     UUIDGeneratorView(store: store)
-                    //     .navigationTitle(NSLocalizedString("Generate UUIDs", bundle: Bundle.module, comment:
-                    //     "navigation title on top of the window"))
-                    //     .padding(.top)
-                    // } label: {
-                    //                             Label(
-                    //         title: { Text(NSLocalizedString("UUID", bundle: Bundle.module, comment: "icon next to the tool name on the sidebar")) },
-                    //         icon: { Image(systemName: "staroflife.circle") }
-                    //     )
-                    // }
-
-                    NavigationLinkStore(
-                        store.scope(state: \.$nameGenerator, action: \.nameGenerator)
-                    ) {
-                        store.send(.navigationLinkTouched(.nameGenerator))
-                    } destination: { store in
-                        NameGeneratorView(store: store)
-                            .navigationTitle(
-                                NSLocalizedString(
-                                    "Generate names or words",
-                                    bundle: Bundle.module,
-                                    comment: "navigation title on top of the window"
-                                )
-                            )
-                            .padding(.top)
-                    } label: {
-                        Label(
-                            title: { Text(NSLocalizedString("Name", bundle: Bundle.module, comment: "")) },
-                            icon: { Image(systemName: "person") }
-                        )
-                    }
-                    .keyboardShortcut(KeyEquivalent("9"))
+                toolRow(.textCaseConverter, label: "Text Case", shortcut: "3") {
+                    Text("Aa")
                 }
-                .overlay {
-                    Button {
-                        store.send(.nextToolButtonTouched)
-                    } label: {
-                        EmptyView()
-                    }  // <-Button
-                    .buttonStyle(.plain)
-                    .keyboardShortcut(.tab, modifiers: .control)
 
-                    Button {
-                        store.send(.previousToolButtonTouched)
-                    } label: {
-                        EmptyView()
-                    }
-                    .buttonStyle(.plain)
-                    .keyboardShortcut(.tab, modifiers: [.control, .option])
-                    //                .keyboardShortcut(.tab, modifiers: [.control, .shift]) // doesn't work! 😠
+                toolRow(.prefixSuffix, label: "Prefix Suffix", shortcut: "4") {
+                    Image(systemName: "arrow.right.and.line.vertical.and.arrow.left")
+                }
+
+                toolRow(.regexMatches, label: "Regex Matches", shortcut: "5") {
+                    Text("(.*)")
+                        .font(.monospaced(Font.system(size: 8))())
                 }
             }
-            .listStyle(.sidebar)
-            .frame(minWidth: 150)  // to keep the toggle-sidebar button above the sidebar
-            .accessibilityLabel(NSLocalizedString("Sidebar with the list of tools", bundle: Bundle.module, comment: ""))
-            #if os(macOS)
-                // it falls behind window toolbar and becomes unclickable
-                // .padding(.top)
-                .toolbar {
-                    ToolbarItem {
-                        Button {
-                            NSApp.keyWindow?.firstResponder?
-                            .tryToPerform(
-                                #selector(NSSplitViewController.toggleSidebar(_:)),
-                                with: nil
-                            )
-                        } label: {
-                            Label("Toggle sidebar", systemImage: "sidebar.left")
-                        }
-                        .keyboardShortcut("l", modifiers: [.command, .shift])
-                        .help(NSLocalizedString("Toggle sidebar (Command+Shift+L)", bundle: Bundle.module, comment: ""))
-                    }
+
+            Section(
+                NSLocalizedString(
+                    "Formatters",
+                    bundle: Bundle.module,
+                    comment: "sidebar section name for a group of tools"
+                )
+            ) {
+                toolRow(.jsonPretty, label: "Json", shortcut: "6") {
+                    Text("{.,}")
+                        .font(.monospaced(Font.system(size: 8))())
                 }
+
+                toolRow(.swiftPrettyLockwood, label: "Swift", shortcut: "7") {
+                    Image(systemName: "swift")
+                }
+            }
+
+            #if os(macOS)
+            Section(
+                NSLocalizedString(
+                    "File",
+                    bundle: Bundle.module,
+                    comment: "sidebar section name for a group of tools"
+                )
+            ) {
+                toolRow(.fileContentSearch, label: "File Search", shortcut: "8") {
+                    Image(systemName: "doc.text.magnifyingglass")
+                }
+            }
             #endif
 
+            Section(
+                NSLocalizedString(
+                    "Generators",
+                    bundle: Bundle.module,
+                    comment: "sidebar section name for a group of tools"
+                )
+            ) {
+                toolRow(.nameGenerator, label: "Name", shortcut: "9") {
+                    Image(systemName: "person")
+                }
+            }
+        }
+        .listStyle(.sidebar)
+        .frame(minWidth: 150)
+        .accessibilityLabel(NSLocalizedString("Sidebar with the list of tools", bundle: Bundle.module, comment: ""))
+        .overlay {
+            // Hidden buttons for keyboard navigation
+            Button {
+                store.send(.nextToolButtonTouched)
+            } label: {
+                EmptyView()
+            }
+            .buttonStyle(.plain)
+            .keyboardShortcut(.tab, modifiers: .control)
+
+            Button {
+                store.send(.previousToolButtonTouched)
+            } label: {
+                EmptyView()
+            }
+            .buttonStyle(.plain)
+            .keyboardShortcut(.tab, modifiers: [.control, .option])
+        }
+    }
+
+    // MARK: - Tool Row Helper
+
+    @ViewBuilder
+    private func toolRow<Icon: View>(
+        _ tool: Tool,
+        label: String,
+        shortcut: String,
+        @ViewBuilder icon: () -> Icon
+    ) -> some View {
+        Label {
+            Text(NSLocalizedString(label, bundle: Bundle.module, comment: "tool name on the sidebar"))
+        } icon: {
+            icon()
+        }
+        .tag(tool)
+        .keyboardShortcut(KeyEquivalent(Character(shortcut)))
+    }
+
+    // MARK: - Detail Content
+
+    @ViewBuilder
+    private var detailContent: some View {
+        if let store = store.scope(state: \.destination, action: \.destination.presented) {
+            switch store.case {
+            case .htmlToSwift(let childStore):
+                HtmlToSwiftView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Convert Html code to a DSL in Swift",
+                            bundle: Bundle.module,
+                            comment: "a navigationTitle"
+                        )
+                    )
+                    .padding(.top)
+
+            case .htmlToMarkdown(let childStore):
+                HtmlToMarkdownView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Convert HTML to Markdown",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .jsonPretty(let childStore):
+                JsonPrettyView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Format and Highlight Json",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .textCaseConverter(let childStore):
+                TextCaseConverterView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Convert case of list of words",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .prefixSuffix(let childStore):
+                PrefixSuffixView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Change prefix or suffix of each line",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .regexMatches(let childStore):
+                RegexMatchesView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Regex Matches",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .swiftPrettyLockwood(let childStore):
+                SwiftPrettyView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Format Swift code",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .nameGenerator(let childStore):
+                NameGeneratorView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Generate names or words",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            #if os(macOS)
+            case .fileContentSearch(let childStore):
+                FileContentSearchView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Search inside files",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+            #endif
+            }
+        } else {
             HomeStartView()
         }
     }
 }
+
+// MARK: - Preview
 
 struct AppView_Previews: PreviewProvider {
     static var previews: some View {
