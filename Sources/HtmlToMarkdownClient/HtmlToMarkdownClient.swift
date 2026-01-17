@@ -2,12 +2,11 @@ import Dependencies
 import Demark
 import Foundation
 
-@MainActor
-public struct HtmlToMarkdownClient {
-    public var convert: (String, HtmlToMarkdownConfig) async throws -> String
+public struct HtmlToMarkdownClient: Sendable {
+    public var convert: @MainActor @Sendable (String, HtmlToMarkdownConfig) async throws -> String
 }
 
-public struct HtmlToMarkdownConfig: Equatable, Sendable {
+public struct HtmlToMarkdownConfig: Equatable, Sendable, Codable {
     public var engine: ConversionEngine
     public var headingStyle: DemarkHeadingStyle
     public var bulletListMarker: String
@@ -26,10 +25,14 @@ public struct HtmlToMarkdownConfig: Equatable, Sendable {
     }
 }
 
+// Make Demark types Codable for persistence
+extension ConversionEngine: @retroactive Codable {}
+extension DemarkHeadingStyle: @retroactive Codable {}
+extension DemarkCodeBlockStyle: @retroactive Codable {}
+
 extension HtmlToMarkdownClient: DependencyKey {
-    @MainActor
     public static let liveValue = Self(
-        convert: { html, config in
+        convert: { @MainActor html, config in
             let demark = Demark()
             let options = DemarkOptions(
                 engine: config.engine,

@@ -7,6 +7,22 @@ import InputOutput
 import SharedModels
 import SwiftUI
 
+// MARK: - FileStorage Key for Configuration
+
+extension URL {
+    fileprivate static var htmlToMarkdownConfigStorage: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("ToolStorage")
+            .appendingPathComponent("htmlToMarkdownConfig.json")
+    }
+}
+
+extension SharedReaderKey where Self == FileStorageKey<HtmlToMarkdownConfig> {
+    public static var htmlToMarkdownConfig: Self {
+        .fileStorage(.htmlToMarkdownConfigStorage)
+    }
+}
+
 @Reducer
 public struct HtmlToMarkdownReducer {
     public init() {}
@@ -14,8 +30,8 @@ public struct HtmlToMarkdownReducer {
     @ObservableState
     public struct State: Equatable {
         @Shared(.htmlToMarkdownIO) var storage = ToolIOStorage()
+        @Shared(.htmlToMarkdownConfig) public var configuration = HtmlToMarkdownConfig()
         public var inputOutput: InputOutputEditorsReducer.State
-        public var configuration: HtmlToMarkdownConfig
         var isConversionRequestInFlight = false
 
         public init(
@@ -30,7 +46,7 @@ public struct HtmlToMarkdownReducer {
             )
 
             self.isConversionRequestInFlight = false
-            self.configuration = configuration
+            // Configuration is loaded from file storage automatically via @Shared
         }
 
         public init(input: String, output: String = "") {
@@ -45,7 +61,7 @@ public struct HtmlToMarkdownReducer {
             )
 
             self.isConversionRequestInFlight = false
-            self.configuration = .init()
+            // Configuration is loaded from file storage automatically via @Shared
         }
 
         public var outputText: String {
