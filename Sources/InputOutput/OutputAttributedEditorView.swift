@@ -121,13 +121,14 @@ public struct OutputAttributedEditorView: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading) {
-            //            ZStack(alignment: .trailingLastTextBaseline) {
+        VStack(spacing: 0) {
             HStack {
-                Spacer()
                 Text(title)
                 Spacer()
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+
             #if os(macOS)
                 MacEditorView(text: $store.text, hasHorizontalScroll: false)
                     .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
@@ -146,20 +147,18 @@ public struct OutputAttributedEditorView: View {
                         }
                 }
             #endif
+
+            EditorFooterBar {
+                Spacer()
+                OutputControlsView(
+                    store:
+                        store.scope(
+                            state: \.outputControls,
+                            action: OutputAttributedEditorReducer.Action.outputControls
+                        )
+                )
+            }
         }
-        .overlay(
-            OutputControlsView(
-                store:
-                    store
-                    .scope(
-                        state: \.outputControls,
-                        action: OutputAttributedEditorReducer.Action.outputControls
-                    )
-            )
-            .padding(),
-            //            } // <-ZStack
-            alignment: .topTrailing
-        )
     }
 }
 

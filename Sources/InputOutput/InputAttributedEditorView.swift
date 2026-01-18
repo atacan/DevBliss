@@ -125,13 +125,14 @@ public struct InputAttributedEditorView: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading) {
-            //            ZStack(alignment: .trailingLastTextBaseline) {
+        VStack(spacing: 0) {
             HStack {
-                Spacer()
                 Text(title)
                 Spacer()
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+
             #if os(macOS)
                 MacEditorView(text: $store.text, hasHorizontalScroll: false)
                     .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
@@ -144,10 +145,6 @@ public struct InputAttributedEditorView: View {
                         )
                     })
             #elseif os(iOS)
-                //                ScrollView {
-                //                    Text(AttributedString(store.text))
-                //                        .font(.monospaced(.body)())
-                //                        .textSelection(.enabled)
                 TextEditor(
                     text: store.binding(
                         get: { state in
@@ -177,30 +174,23 @@ public struct InputAttributedEditorView: View {
                         )
                     )
                 })
-            //                }
             #endif
-        }
-        .overlay(
-            HStack {
-                Button {
+
+            EditorFooterBar {
+                EditorFooterButton(
+                    pasteButtonTitle,
+                    systemImage: "doc.on.clipboard.fill",
+                    isAnimating: store.pasteButtonAnimating
+                ) {
                     store.send(.pasteButtonTouched)
-                } label: {
-                    Image(systemName: "doc.on.clipboard.fill")
-                }  // <-Button
-                .foregroundColor(
-                    store.pasteButtonAnimating
-                        ? ThemeColor.Text.success
-                        : ThemeColor.Text.controlText
-                )
-                .font(.footnote)
+                }
                 .keyboardShortcut("p", modifiers: [.command, .shift])
                 .help(NSLocalizedString("Paste from clipboard (Command+Shift+P)", bundle: Bundle.module, comment: ""))
                 .accessibilityLabel(NSLocalizedString("Paste from clipboard", bundle: Bundle.module, comment: ""))
-            }
-            .padding(),
 
-            alignment: .topLeading
-        )
+                Spacer()
+            }
+        }
     }
 }
 

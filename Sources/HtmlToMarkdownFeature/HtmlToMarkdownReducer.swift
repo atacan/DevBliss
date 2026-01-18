@@ -1,3 +1,4 @@
+import BlissTheme
 import ComposableArchitecture
 import Demark
 import Dependencies
@@ -127,81 +128,59 @@ public struct HtmlToMarkdownView: View {
     }
 
     public var body: some View {
-        VStack {
-            // Configuration UI above the text editors
-            VStack(spacing: 12) {
-                // Engine picker
-                HStack {
-                    Text("Engine:")
-                        .frame(width: 140, alignment: .trailing)
-                    Picker("Engine", selection: $store.configuration.engine) {
-                        Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
-                        Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(maxWidth: 400)
-                    Spacer()
-                }
-                .help("Choose conversion engine: Turndown for complex HTML, html-to-md for speed")
+        VStack(spacing: 0) {
+            // Configuration panel - collapsible secondary controls
+            ConfigurationSection("Conversion Options") {
+                Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                    // Row 1: Engine and Heading Style
+                    GridRow {
+                        ConfigLabel("Engine")
+                        Picker("Engine", selection: $store.configuration.engine) {
+                            Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
+                            Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
+                        }
+                        .blissMenuPicker(width: 180)
+                        .help("Turndown for complex HTML, html-to-md for speed")
 
-                // Heading style picker
-                HStack {
-                    Text("Heading Style:")
-                        .frame(width: 140, alignment: .trailing)
-                    Picker("Heading Style", selection: $store.configuration.headingStyle) {
-                        Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
-                        Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
+                        ConfigLabel("Heading Style")
+                        Picker("Heading Style", selection: $store.configuration.headingStyle) {
+                            Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
+                            Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
+                        }
+                        .blissMenuPicker(width: 160)
+                        .help("ATX uses # prefix, Setext uses underlines")
                     }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(maxWidth: 400)
-                    Spacer()
-                }
-                .help("ATX uses # prefix, Setext uses underlines")
 
-                // Bullet list marker picker
-                HStack {
-                    Text("Bullet Marker:")
-                        .frame(width: 140, alignment: .trailing)
-                    Picker("Bullet Marker", selection: $store.configuration.bulletListMarker) {
-                        Text("Dash (-)").tag("-")
-                        Text("Asterisk (*)").tag("*")
-                        Text("Plus (+)").tag("+")
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(maxWidth: 400)
-                    Spacer()
-                }
-                .help("Choose character for unordered list items")
+                    // Row 2: Bullet Marker and Code Block Style
+                    GridRow {
+                        ConfigLabel("Bullet Marker")
+                        Picker("Bullet Marker", selection: $store.configuration.bulletListMarker) {
+                            Text("Dash (-)").tag("-")
+                            Text("Asterisk (*)").tag("*")
+                            Text("Plus (+)").tag("+")
+                        }
+                        .blissMenuPicker(width: 180)
+                        .help("Character for unordered list items")
 
-                // Code block style picker
-                HStack {
-                    Text("Code Block Style:")
-                        .frame(width: 140, alignment: .trailing)
-                    Picker("Code Block Style", selection: $store.configuration.codeBlockStyle) {
-                        Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
-                        Text("Indented").tag(DemarkCodeBlockStyle.indented)
+                        ConfigLabel("Code Blocks")
+                        Picker("Code Block Style", selection: $store.configuration.codeBlockStyle) {
+                            Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
+                            Text("Indented").tag(DemarkCodeBlockStyle.indented)
+                        }
+                        .blissMenuPicker(width: 160)
+                        .help("Fenced uses triple backticks, Indented uses 4 spaces")
                     }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(maxWidth: 400)
-                    Spacer()
                 }
-                .help("Fenced uses triple backticks, Indented uses 4 spaces")
             }
-            .padding(.horizontal)
-            .padding(.top, 8)
-            .frame(maxWidth: 850)
 
-            Button(action: { store.send(.convertButtonTouched) }) {
-                Text("Convert")
-                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+            LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
+                store.send(.convertButtonTouched)
             }
             .keyboardShortcut(.return, modifiers: [.command])
-            .help("Convert HTML to Markdown (Cmd+Return)")
-            .padding(.top, 8)
+            .help("Convert HTML to Markdown (⌘ Return)")
+            .padding(.vertical, 8)
+
+            Divider()
 
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: HtmlToMarkdownReducer.Action.inputOutput),

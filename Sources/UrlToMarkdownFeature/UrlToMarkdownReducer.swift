@@ -1,3 +1,4 @@
+import BlissTheme
 import ComposableArchitecture
 import Demark
 import Dependencies
@@ -133,118 +134,95 @@ public struct UrlToMarkdownView: View {
     }
 
     public var body: some View {
-        VStack {
-            // URL input field
-            HStack {
-                Text("URL:")
-                    .frame(width: 50, alignment: .trailing)
+        VStack(spacing: 0) {
+            // Primary action area: URL input + Convert button
+            HStack(spacing: 12) {
                 TextField("Enter URL to convert", text: $store.urlInput)
-                    .textFieldStyle(.roundedBorder)
+                    .blissTextField()
                     .onSubmit {
                         store.send(.convertButtonTouched)
                     }
+
+                LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
+                    store.send(.convertButtonTouched)
+                }
+                .keyboardShortcut(.return, modifiers: [.command])
+                .help("Convert URL to Markdown (⌘ Return)")
+                .disabled(store.urlInput.isEmpty || store.isConversionRequestInFlight)
             }
-            .padding(.horizontal)
-            .padding(.top, 8)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
 
-            // Configuration UI
-            VStack(spacing: 12) {
-                // Engine picker
-                HStack {
-                    Text("Engine:")
-                        .frame(width: 140, alignment: .trailing)
-                    Picker("Engine", selection: $store.configuration.engine) {
-                        Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
-                        Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(maxWidth: 400)
-                    Spacer()
-                }
-                .help("Choose conversion engine: Turndown for complex HTML, html-to-md for speed")
-
-                // Heading style picker
-                HStack {
-                    Text("Heading Style:")
-                        .frame(width: 140, alignment: .trailing)
-                    Picker("Heading Style", selection: $store.configuration.headingStyle) {
-                        Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
-                        Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(maxWidth: 400)
-                    Spacer()
-                }
-                .help("ATX uses # prefix, Setext uses underlines")
-
-                // Bullet list marker picker
-                HStack {
-                    Text("Bullet Marker:")
-                        .frame(width: 140, alignment: .trailing)
-                    Picker("Bullet Marker", selection: $store.configuration.bulletListMarker) {
-                        Text("Dash (-)").tag("-")
-                        Text("Asterisk (*)").tag("*")
-                        Text("Plus (+)").tag("+")
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(maxWidth: 400)
-                    Spacer()
-                }
-                .help("Choose character for unordered list items")
-
-                // Code block style picker
-                HStack {
-                    Text("Code Block Style:")
-                        .frame(width: 140, alignment: .trailing)
-                    Picker("Code Block Style", selection: $store.configuration.codeBlockStyle) {
-                        Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
-                        Text("Indented").tag(DemarkCodeBlockStyle.indented)
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(maxWidth: 400)
-                    Spacer()
-                }
-                .help("Fenced uses triple backticks, Indented uses 4 spaces")
-
-                // Content selector
-                HStack {
-                    Text("Content Selector:")
-                        .frame(width: 140, alignment: .trailing)
-                    TextField("e.g., article, main, .content", text: $store.loadingConfiguration.contentSelector)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(maxWidth: 400)
-                    Spacer()
-                }
-                .help("CSS selector to extract specific content (leave empty for full page)")
-            }
-            .padding(.horizontal)
-            .padding(.top, 8)
-            .frame(maxWidth: 850)
-
+            // Error message
             if let errorMessage = store.errorMessage {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .padding(.horizontal)
+                ErrorMessageView(errorMessage)
             }
 
-            Button(action: { store.send(.convertButtonTouched) }) {
-                Text("Convert")
-                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+            // Configuration panel - collapsible secondary controls
+            ConfigurationSection("Conversion Options") {
+                configurationGrid
             }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Convert URL to Markdown (Cmd+Return)")
-            .disabled(store.urlInput.isEmpty || store.isConversionRequestInFlight)
-            .padding(.top, 8)
+
+            Divider()
+                .padding(.top, 4)
 
             OutputEditorView(
                 store: store.scope(state: \.output, action: \.output),
                 title: "Markdown Output"
             )
+        }
+    }
+
+    @ViewBuilder
+    private var configurationGrid: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            // Row 1: Engine and Heading Style
+            GridRow {
+                ConfigLabel("Engine")
+                Picker("Engine", selection: $store.configuration.engine) {
+                    Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
+                    Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
+                }
+                .blissMenuPicker(width: 180)
+                .help("Turndown for complex HTML, html-to-md for speed")
+
+                ConfigLabel("Heading Style")
+                Picker("Heading Style", selection: $store.configuration.headingStyle) {
+                    Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
+                    Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
+                }
+                .blissMenuPicker(width: 160)
+                .help("ATX uses # prefix, Setext uses underlines")
+            }
+
+            // Row 2: Bullet Marker and Code Block Style
+            GridRow {
+                ConfigLabel("Bullet Marker")
+                Picker("Bullet Marker", selection: $store.configuration.bulletListMarker) {
+                    Text("Dash (-)").tag("-")
+                    Text("Asterisk (*)").tag("*")
+                    Text("Plus (+)").tag("+")
+                }
+                .blissMenuPicker(width: 180)
+                .help("Character for unordered list items")
+
+                ConfigLabel("Code Blocks")
+                Picker("Code Block Style", selection: $store.configuration.codeBlockStyle) {
+                    Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
+                    Text("Indented").tag(DemarkCodeBlockStyle.indented)
+                }
+                .blissMenuPicker(width: 160)
+                .help("Fenced uses triple backticks, Indented uses 4 spaces")
+            }
+
+            // Row 3: Content Selector - aligned with grid columns above
+            GridRow {
+                ConfigLabel("Content Selector")
+                TextField("e.g., article, main, .content", text: $store.loadingConfiguration.contentSelector)
+                    .blissCompactTextField()
+                    .gridCellColumns(3)
+                    .help("CSS selector to extract specific content (leave empty for full page)")
+            }
         }
     }
 }
