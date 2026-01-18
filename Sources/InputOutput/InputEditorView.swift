@@ -107,40 +107,36 @@ public struct InputEditorView: View {
     }
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
-                Spacer()
                 Text(title)
                 Spacer()
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+
             MyPlainTextEditor(text: $store.text, isActivitySheetPresented: .constant(false))
                 .overlay(content: {
                     InputEditorDropView(
                         store: store.scope(state: \.inputEditorDrop, action: InputEditorReducer.Action.inputEditorDrop)
                     )
                 })
-        }
-        .overlay(
-            HStack {
-                Button {
+
+            EditorFooterBar {
+                EditorFooterButton(
+                    pasteButtonTitle,
+                    systemImage: "doc.on.clipboard.fill",
+                    isAnimating: store.pasteButtonAnimating
+                ) {
                     store.send(.pasteButtonTouched)
-                } label: {
-                    Image(systemName: "doc.on.clipboard.fill")
-                }  // <-Button
-                .foregroundColor(
-                    store.pasteButtonAnimating
-                        ? ThemeColor.Text.success
-                        : ThemeColor.Text.controlText
-                )
-                .font(.footnote)
+                }
                 .keyboardShortcut("p", modifiers: [.command, .shift])
                 .help(NSLocalizedString("Paste from clipboard (Command+Shift+P)", bundle: Bundle.module, comment: ""))
                 .accessibilityLabel(NSLocalizedString("Paste from clipboard", bundle: Bundle.module, comment: ""))
-            }
-            .padding(),
 
-            alignment: .topLeading
-        )
+                Spacer()
+            }
+        }
     }
 }
 

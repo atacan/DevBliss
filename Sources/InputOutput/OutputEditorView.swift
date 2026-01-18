@@ -100,29 +100,30 @@ public struct OutputEditorView: View {
     }
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
-                Spacer()
                 Text(title)
                 Spacer()
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+
             MyPlainTextEditor(
                 text: $store.text,
                 isActivitySheetPresented: $store.isActivitySheetPresented
             )
-        }
-        .overlay(
-            OutputControlsView(
-                store:
-                    store.scope(
-                        state: \.outputControls,
-                        action: OutputEditorReducer.Action.outputControls
-                    )
-            )
-            .padding(),
 
-            alignment: .topTrailing
-        )
+            EditorFooterBar {
+                Spacer()
+                OutputControlsView(
+                    store:
+                        store.scope(
+                            state: \.outputControls,
+                            action: OutputEditorReducer.Action.outputControls
+                        )
+                )
+            }
+        }
     }
 }
 
