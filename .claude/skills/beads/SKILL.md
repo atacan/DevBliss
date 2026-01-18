@@ -1,3 +1,8 @@
+---
+name: beads
+description: Use this when you want to create and view issues for beads. The user would mention epic, issue, what's ready etc.
+---
+
 # Agent Instructions for DevBliss
 
 ## Issue Tracking with bd (beads)
