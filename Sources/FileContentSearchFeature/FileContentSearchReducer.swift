@@ -1,4 +1,5 @@
 #if os(macOS)
+    import BlissTheme
     import ComposableArchitecture
     import FileContentSearchClient
     import FilePanelsClient
@@ -264,14 +265,14 @@
                 // )
                 // .textFieldStyle(RoundedBorderTextFieldStyle())
 
-                Button {
+                LoadingButton(
+                    NSLocalizedString("Search", bundle: Bundle.module, comment: ""),
+                    isLoading: store.isSearching
+                ) {
                     store.send(.searchButtonTouched)
-                } label: {
-                    Text(NSLocalizedString("Search", bundle: Bundle.module, comment: ""))
-                }  // <-Button
+                }
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help(NSLocalizedString("Start searching (Cmd+Return)", bundle: Bundle.module, comment: ""))
-                .overlay(store.isSearching ? ProgressView() : nil)
                 .padding(.bottom, 2)
             }
         }

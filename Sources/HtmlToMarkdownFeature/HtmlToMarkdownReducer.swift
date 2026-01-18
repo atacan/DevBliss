@@ -129,49 +129,49 @@ public struct HtmlToMarkdownView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Configuration panel - collapsible secondary controls
-            ConfigurationSection("Conversion Options") {
-                Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                    // Row 1: Engine and Heading Style
-                    GridRow {
-                        ConfigLabel("Engine")
-                        Picker("Engine", selection: $store.configuration.engine) {
-                            Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
-                            Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
-                        }
-                        .blissMenuPicker(width: 180)
-                        .help("Turndown for complex HTML, html-to-md for speed")
-
-                        ConfigLabel("Heading Style")
-                        Picker("Heading Style", selection: $store.configuration.headingStyle) {
-                            Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
-                            Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
-                        }
-                        .blissMenuPicker(width: 160)
-                        .help("ATX uses # prefix, Setext uses underlines")
+            // Configuration panel
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                // Row 1: Engine and Heading Style
+                GridRow {
+                    ConfigLabel("Engine")
+                    Picker("Engine", selection: $store.configuration.engine) {
+                        Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
+                        Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
                     }
+                    .blissMenuPicker(width: 180)
+                    .help("Turndown for complex HTML, html-to-md for speed")
 
-                    // Row 2: Bullet Marker and Code Block Style
-                    GridRow {
-                        ConfigLabel("Bullet Marker")
-                        Picker("Bullet Marker", selection: $store.configuration.bulletListMarker) {
-                            Text("Dash (-)").tag("-")
-                            Text("Asterisk (*)").tag("*")
-                            Text("Plus (+)").tag("+")
-                        }
-                        .blissMenuPicker(width: 180)
-                        .help("Character for unordered list items")
-
-                        ConfigLabel("Code Blocks")
-                        Picker("Code Block Style", selection: $store.configuration.codeBlockStyle) {
-                            Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
-                            Text("Indented").tag(DemarkCodeBlockStyle.indented)
-                        }
-                        .blissMenuPicker(width: 160)
-                        .help("Fenced uses triple backticks, Indented uses 4 spaces")
+                    ConfigLabel("Heading Style")
+                    Picker("Heading Style", selection: $store.configuration.headingStyle) {
+                        Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
+                        Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
                     }
+                    .blissMenuPicker(width: 160)
+                    .help("ATX uses # prefix, Setext uses underlines")
+                }
+
+                // Row 2: Bullet Marker and Code Block Style
+                GridRow {
+                    ConfigLabel("Bullet Marker")
+                    Picker("Bullet Marker", selection: $store.configuration.bulletListMarker) {
+                        Text("Dash (-)").tag("-")
+                        Text("Asterisk (*)").tag("*")
+                        Text("Plus (+)").tag("+")
+                    }
+                    .blissMenuPicker(width: 180)
+                    .help("Character for unordered list items")
+
+                    ConfigLabel("Code Blocks")
+                    Picker("Code Block Style", selection: $store.configuration.codeBlockStyle) {
+                        Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
+                        Text("Indented").tag(DemarkCodeBlockStyle.indented)
+                    }
+                    .blissMenuPicker(width: 160)
+                    .help("Fenced uses triple backticks, Indented uses 4 spaces")
                 }
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
 
             LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
                 store.send(.convertButtonTouched)

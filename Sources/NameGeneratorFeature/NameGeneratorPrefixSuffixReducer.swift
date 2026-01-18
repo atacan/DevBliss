@@ -1,3 +1,4 @@
+import BlissTheme
 import ComposableArchitecture
 import InputOutput
 import NameGeneratorClient
@@ -212,7 +213,10 @@ public struct NameGeneratorPrefixSuffixView: View {
                         comment: "value of a numeric input value for voice-over"
                     )
                 )
-                Button(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
+                LoadingButton(
+                    NSLocalizedString("Generate", bundle: Bundle.module, comment: ""),
+                    isLoading: store.isGenerating
+                ) {
                     store.send(.generateButtonTouched)
                 }
                 .keyboardShortcut(.return, modifiers: [.command])

@@ -136,24 +136,35 @@ public struct RegexMatchesView: View {
     }
 
     public var body: some View {
-        VStack {
-            TextField(
-                NSLocalizedString("Regex pattern", bundle: Bundle.module, comment: ""),
-                text: $store.regexPattern
-            )
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .font(.monospaced(.body)())
-            .autocorrectionDisabled()
-            #if os(iOS)
-                .textInputAutocapitalization(.never)
-            #endif
-            .padding()
-            Button(action: { store.send(.convertButtonTouched) }) {
-                Text(NSLocalizedString("Extract", bundle: Bundle.module, comment: ""))
-                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                TextField(
+                    NSLocalizedString("Regex pattern", bundle: Bundle.module, comment: ""),
+                    text: $store.regexPattern
+                )
+                .font(.monospaced(.body)())
+                .autocorrectionDisabled()
+                #if os(iOS)
+                    .textInputAutocapitalization(.never)
+                #endif
+                .blissTextField()
+                .onSubmit {
+                    store.send(.convertButtonTouched)
+                }
+
+                LoadingButton(
+                    NSLocalizedString("Extract", bundle: Bundle.module, comment: ""),
+                    isLoading: store.isConversionRequestInFlight
+                ) {
+                    store.send(.convertButtonTouched)
+                }
+                .keyboardShortcut(.return, modifiers: [.command])
+                .help(NSLocalizedString("Extract matches (⌘ Return)", bundle: Bundle.module, comment: ""))
             }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Extract matches (Cmd+Return)", bundle: Bundle.module, comment: ""))
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+
+            Divider()
 
             InputAttributedTwoOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: RegexMatchesReducer.Action.inputOutput),

@@ -148,9 +148,11 @@ public struct SwiftPrettyView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 // }
 
-                Button(action: { store.send(.convertButtonTouched) }) {
-                    Text(NSLocalizedString("Format", bundle: Bundle.module, comment: ""))
-                        .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+                LoadingButton(
+                    NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
+                    isLoading: store.isConversionRequestInFlight
+                ) {
+                    store.send(.convertButtonTouched)
                 }
                 .padding(.bottom)
                 .keyboardShortcut(.return, modifiers: [.command])

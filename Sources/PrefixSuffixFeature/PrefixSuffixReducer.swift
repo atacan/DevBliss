@@ -1,3 +1,4 @@
+import BlissTheme
 import ComposableArchitecture
 import Dependencies
 import DependenciesAdditions
@@ -283,9 +284,11 @@ public struct PrefixSuffixView: View {
             #endif
             .frame(maxWidth: 850)
 
-            Button(action: { store.send(.convertButtonTouched) }) {
-                Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
-                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+            LoadingButton(
+                NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
+                isLoading: store.isConversionRequestInFlight
+            ) {
+                store.send(.convertButtonTouched)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Convert (Cmd+Return)", bundle: Bundle.module, comment: ""))

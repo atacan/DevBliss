@@ -158,13 +158,12 @@ public struct UrlToMarkdownView: View {
                 ErrorMessageView(errorMessage)
             }
 
-            // Configuration panel - collapsible secondary controls
-            ConfigurationSection("Conversion Options") {
-                configurationGrid
-            }
+            // Configuration panel
+            configurationGrid
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
 
             Divider()
-                .padding(.top, 4)
 
             OutputEditorView(
                 store: store.scope(state: \.output, action: \.output),

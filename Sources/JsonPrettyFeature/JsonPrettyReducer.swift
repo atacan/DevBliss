@@ -98,13 +98,18 @@ public struct JsonPrettyView: View {
     }
 
     public var body: some View {
-        VStack {
-            Button(action: { store.send(.convertButtonTouched) }) {
-                Text(NSLocalizedString("Format", bundle: Bundle.module, comment: ""))
-                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+        VStack(spacing: 0) {
+            LoadingButton(
+                NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
+                isLoading: store.isConversionRequestInFlight
+            ) {
+                store.send(.convertButtonTouched)
             }
             .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Format code (Cmd+Return)", bundle: Bundle.module, comment: ""))
+            .help(NSLocalizedString("Format code (⌘ Return)", bundle: Bundle.module, comment: ""))
+            .padding(.vertical, 8)
+
+            Divider()
 
             InputOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: JsonPrettyReducer.Action.inputOutput),

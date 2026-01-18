@@ -1,3 +1,4 @@
+import BlissTheme
 import ComposableArchitecture
 import Dependencies
 import DependenciesAdditions
@@ -146,45 +147,48 @@ public struct HtmlToSwiftView: View {
     #endif
 
     public var body: some View {
-        VStack {
-            HStack(alignment: .center) {
-                Spacer()
-                VStack(alignment: .center, spacing: pickerTitleSpace) {
-                     Text(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
-                     Picker(
-                         NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
-                         selection: $store.dsl
-                     ) {
-                         ForEach(SwiftDSL.allCases) { dsl in
-                             Text(dslLibraryName(for: dsl))
-                                 .tag(dsl)
-                         }
-                     }
-                 }  // <-VStack
-                 VStack(alignment: .center, spacing: pickerTitleSpace) {
-                     Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
-                     Picker(
-                         NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
-                         selection: $store.component
-                     ) {
-                         ForEach(HtmlOutputComponent.allCases) { component in
-                             Text(outputComponentPickerName(for: component))
-                                 .tag(component)
-                         }
-                     }
-                 }
-                Spacer()
-            }  // <-HStack
-            .frame(maxWidth: 450)
-            .labelsHidden()
+        VStack(spacing: 0) {
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    ConfigLabel(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
+                    Picker(
+                        NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
+                        selection: $store.dsl
+                    ) {
+                        ForEach(SwiftDSL.allCases) { dsl in
+                            Text(dslLibraryName(for: dsl))
+                                .tag(dsl)
+                        }
+                    }
+                    .blissMenuPicker(width: 180)
 
-            Button(action: { store.send(.convertButtonTouched) }) {
-                Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
-                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+                    ConfigLabel(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
+                    Picker(
+                        NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
+                        selection: $store.component
+                    ) {
+                        ForEach(HtmlOutputComponent.allCases) { component in
+                            Text(outputComponentPickerName(for: component))
+                                .tag(component)
+                        }
+                    }
+                    .blissMenuPicker(width: 160)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            LoadingButton(
+                NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
+                isLoading: store.isConversionRequestInFlight
+            ) {
+                store.send(.convertButtonTouched)
             }
             .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Convert code (Cmd+Return)", bundle: Bundle.module, comment: ""))
-            .padding(.bottom, 2)
+            .help(NSLocalizedString("Convert code (⌘ Return)", bundle: Bundle.module, comment: ""))
+            .padding(.vertical, 8)
+
+            Divider()
 
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: HtmlToSwiftReducer.Action.inputOutput),
