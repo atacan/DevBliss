@@ -1,3 +1,4 @@
+import BlissTheme
 import ComposableArchitecture
 import InputOutput
 import NameGeneratorClient
@@ -263,16 +264,14 @@ public struct NameGeneratorProbabilisticView: View {
                     )
                 }
 
-                Button(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
+                LoadingButton(
+                    NSLocalizedString("Generate", bundle: Bundle.module, comment: ""),
+                    isLoading: store.isGenerating
+                ) {
                     store.send(.generateButtonTouched)
                 }
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
-                .overlay(
-                    store.isGenerating
-                        ? ProgressView()
-                        : nil
-                )
             }
         }
     }
