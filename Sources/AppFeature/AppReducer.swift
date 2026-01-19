@@ -1,3 +1,5 @@
+import Base64Feature
+import Base64ImageFeature
 import ComposableArchitecture
 import FileContentSearchFeature
 import HtmlToSwiftFeature
@@ -10,6 +12,8 @@ import SharedModels
 import SwiftPrettyFeature
 import SwiftUI
 import TextCaseConverterFeature
+import UnixTimeFeature
+import UrlEncodeFeature
 import UrlToMarkdownFeature
 
 // MARK: - Destination Reducer Enum
@@ -25,6 +29,10 @@ public enum Destination {
     case regexMatches(RegexMatchesReducer)
     case swiftPrettyLockwood(SwiftPrettyReducer)
     case nameGenerator(NameGeneratorReducer)
+    case base64(Base64Reducer)
+    case base64Image(Base64ImageReducer)
+    case unixTime(UnixTimeReducer)
+    case urlEncode(UrlEncodeReducer)
     #if os(macOS)
     case fileContentSearch(FileContentSearchReducer)
     #endif
@@ -52,6 +60,10 @@ public struct AppReducer {
             case .regexMatches: return .regexMatches
             case .swiftPrettyLockwood: return .swiftPrettyLockwood
             case .nameGenerator: return .nameGenerator
+            case .base64: return .base64
+            case .base64Image: return .base64Image
+            case .unixTime: return .unixTime
+            case .urlEncode: return .urlEncode
             #if os(macOS)
             case .fileContentSearch: return .fileContentSearch
             #endif
@@ -154,6 +166,11 @@ public struct AppReducer {
                 handleOtherTool(thisToolOutput: s.outputSecondText, otherTool: tool, state: &state)
             }
 
+        case let .base64(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .base64(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
         // Generators (output-only tools)
         case let .nameGenerator(.output(.outputControls(.otherToolSelected(tool)))):
             if case .nameGenerator(let s) = state.destination {
@@ -227,6 +244,29 @@ public struct AppReducer {
             #endif
         case .nameGenerator:
             state.destination = .nameGenerator(NameGeneratorReducer.State())
+        case .base64:
+            state.destination = .base64(Base64Reducer.State())
+            if case .base64(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .base64Image:
+            state.destination = .base64Image(Base64ImageReducer.State())
+            // Base64Image stores base64String in a different structure, pass it there
+            if case .base64Image(var s) = state.destination {
+                s.$storage.withLock { $0.base64String = outputText }
+                s.base64String = outputText
+                state.destination = .base64Image(s)
+            }
+        case .unixTime:
+            state.destination = .unixTime(UnixTimeReducer.State())
+            if case .unixTime(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .urlEncode:
+            state.destination = .urlEncode(UrlEncodeReducer.State())
+            if case .urlEncode(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
         }
     }
 
@@ -252,6 +292,14 @@ public struct AppReducer {
             state.destination = .swiftPrettyLockwood(SwiftPrettyReducer.State())
         case .nameGenerator:
             state.destination = .nameGenerator(NameGeneratorReducer.State())
+        case .base64:
+            state.destination = .base64(Base64Reducer.State())
+        case .base64Image:
+            state.destination = .base64Image(Base64ImageReducer.State())
+        case .unixTime:
+            state.destination = .unixTime(UnixTimeReducer.State())
+        case .urlEncode:
+            state.destination = .urlEncode(UrlEncodeReducer.State())
         #if os(macOS)
         case .fileContentSearch:
             state.destination = .fileContentSearch(FileContentSearchReducer.State())
@@ -364,6 +412,23 @@ public struct AppView: View {
                 toolRow(.regexMatches, label: "Regex Matches", shortcut: "6") {
                     Text("(.*)")
                         .font(.monospaced(Font.system(size: 8))())
+                }
+
+                toolRow(.base64, label: "Base64", shortcut: "b") {
+                    Text("B64")
+                        .font(.monospaced(Font.system(size: 10))())
+                }
+
+                toolRow(.base64Image, label: "Base64 Image", shortcut: "i") {
+                    Image(systemName: "photo")
+                }
+
+                toolRow(.unixTime, label: "Unix Time", shortcut: "u") {
+                    Image(systemName: "clock")
+                }
+
+                toolRow(.urlEncode, label: "URL Encode", shortcut: "e") {
+                    Image(systemName: "link")
                 }
             }
 
@@ -550,6 +615,50 @@ public struct AppView: View {
                     .navigationTitle(
                         NSLocalizedString(
                             "Generate names or words",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .base64(let childStore):
+                Base64View(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Base64 Encode / Decode",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .base64Image(let childStore):
+                Base64ImageView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Base64 Image Encode / Decode",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .unixTime(let childStore):
+                UnixTimeView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Unix Time Converter",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .urlEncode(let childStore):
+                UrlEncodeView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "URL Encode / Decode",
                             bundle: Bundle.module,
                             comment: "navigation title on top of the window"
                         )

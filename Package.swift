@@ -13,6 +13,10 @@ let package = Package(
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(name: "AppFeature", targets: ["AppFeature"]),
+        .library(name: "Base64Client", targets: ["Base64Client"]),
+        .library(name: "Base64Feature", targets: ["Base64Feature"]),
+        .library(name: "Base64ImageClient", targets: ["Base64ImageClient"]),
+        .library(name: "Base64ImageFeature", targets: ["Base64ImageFeature"]),
         .library(name: "BlissTheme", targets: ["BlissTheme"]),
         .library(name: "InputOutput", targets: ["InputOutput"]),
         .library(name: "ClipboardClient", targets: ["ClipboardClient"]),
@@ -40,6 +44,10 @@ let package = Package(
         .library(name: "SwiftPrettyFeature", targets: ["SwiftPrettyFeature"]),
         .library(name: "TextCaseConverterClient", targets: ["TextCaseConverterClient"]),
         .library(name: "TextCaseConverterFeature", targets: ["TextCaseConverterFeature"]),
+        .library(name: "UnixTimeClient", targets: ["UnixTimeClient"]),
+        .library(name: "UnixTimeFeature", targets: ["UnixTimeFeature"]),
+        .library(name: "UrlEncodeClient", targets: ["UrlEncodeClient"]),
+        .library(name: "UrlEncodeFeature", targets: ["UrlEncodeFeature"]),
         .library(name: "UUIDGeneratorClient", targets: ["UUIDGeneratorClient"]),
         .library(name: "UUIDGeneratorFeature", targets: ["UUIDGeneratorFeature"]),
     ],
@@ -65,6 +73,8 @@ let package = Package(
             name: "AppFeature",
             dependencies: [
                 "SharedModels",
+                "Base64Feature",
+                "Base64ImageFeature",
                 "HtmlToSwiftFeature",
                 "HtmlToMarkdownFeature",
                 "UrlToMarkdownFeature",
@@ -76,6 +86,38 @@ let package = Package(
                 "SwiftPrettyFeature",
                 "FileContentSearchFeature",
                 "NameGeneratorFeature",
+                "UnixTimeFeature",
+                "UrlEncodeFeature",
+            ]
+        ),
+        .target(
+            name: "Base64Client",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "Base64Feature",
+            dependencies: [
+                "Base64Client",
+                "InputOutput",
+                "SharedModels",
+            ]
+        ),
+        .target(
+            name: "Base64ImageClient",
+            dependencies: [
+                "SharedModels",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "Base64ImageFeature",
+            dependencies: [
+                "Base64ImageClient",
+                "BlissTheme",
+                "SharedModels",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
         .target(
@@ -308,6 +350,35 @@ let package = Package(
                 "InputOutput",
                 "SharedModels",
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
+            ]
+        ),
+        .target(
+            name: "UnixTimeClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "UnixTimeFeature",
+            dependencies: [
+                "UnixTimeClient",
+                "BlissTheme",
+                "SharedModels",
+            ]
+        ),
+        .target(
+            name: "UrlEncodeClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "UrlEncodeFeature",
+            dependencies: [
+                "UrlEncodeClient",
+                "BlissTheme",
+                "SharedModels",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
         .target(
