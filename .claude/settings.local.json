@@ -17,7 +17,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(grep:*)",
       "WebFetch(domain:www.pointfree.co)",
-      "Skill(tca-navigation)"
+      "Skill(tca-navigation)",
+      "Skill(beads)"
     ]
   }
 }

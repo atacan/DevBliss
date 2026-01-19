@@ -26,6 +26,31 @@ public struct ToolIOStorageDoubleOutput: Codable, Equatable {
     }
 }
 
+// For Base64Image which stores image data and Base64 string
+public struct Base64ImageStorage: Codable, Equatable {
+    public var base64String: String
+    public var imageData: Data?
+    public var outputFormat: Base64ImageOutputFormat
+
+    public init(
+        base64String: String = "",
+        imageData: Data? = nil,
+        outputFormat: Base64ImageOutputFormat = .dataURL
+    ) {
+        self.base64String = base64String
+        self.imageData = imageData
+        self.outputFormat = outputFormat
+    }
+}
+
+public enum Base64ImageOutputFormat: String, CaseIterable, Identifiable, Codable {
+    case rawString = "Raw String"
+    case dataURL = "Data URL"
+    case cssAttribute = "CSS Attribute"
+
+    public var id: Self { self }
+}
+
 // MARK: - URL Extensions
 
 extension URL {
@@ -49,8 +74,15 @@ extension SharedReaderKey where Self == FileStorageKey<ToolIOStorage> {
     public static var urlToMarkdownIO: Self { .fileStorage(.toolStorage("urlToMarkdown")) }
     public static var swiftPrettyIO: Self { .fileStorage(.toolStorage("swiftPretty")) }
     public static var jsonPrettyIO: Self { .fileStorage(.toolStorage("jsonPretty")) }
+    public static var base64IO: Self { .fileStorage(.toolStorage("base64")) }
+    public static var unixTimeIO: Self { .fileStorage(.toolStorage("unixTime")) }
+    public static var urlEncodeIO: Self { .fileStorage(.toolStorage("urlEncode")) }
 }
 
 extension SharedReaderKey where Self == FileStorageKey<ToolIOStorageDoubleOutput> {
     public static var regexMatchesIO: Self { .fileStorage(.toolStorage("regexMatches")) }
+}
+
+extension SharedReaderKey where Self == FileStorageKey<Base64ImageStorage> {
+    public static var base64ImageIO: Self { .fileStorage(.toolStorage("base64Image")) }
 }

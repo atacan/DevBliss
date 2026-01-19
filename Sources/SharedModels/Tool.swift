@@ -12,6 +12,10 @@ public enum Tool: Int, CaseIterable, Identifiable {
     case fileContentSearch
     case nameGenerator
     case uuidGenerator
+    case base64
+    case base64Image
+    case unixTime
+    case urlEncode
 
     public var id: Self { self }
 
@@ -39,6 +43,14 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return NSLocalizedString("File Content Search", bundle: Bundle.module, comment: "")
         case .nameGenerator:
             return NSLocalizedString("Name Generator", bundle: Bundle.module, comment: "")
+        case .base64:
+            return NSLocalizedString("Base64", bundle: Bundle.module, comment: "")
+        case .base64Image:
+            return NSLocalizedString("Base64 Image", bundle: Bundle.module, comment: "")
+        case .unixTime:
+            return NSLocalizedString("Unix Time", bundle: Bundle.module, comment: "")
+        case .urlEncode:
+            return NSLocalizedString("URL Encode", bundle: Bundle.module, comment: "")
         }
     }
 
@@ -66,6 +78,14 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return false
         case .nameGenerator:
             return false
+        case .base64:
+            return true
+        case .base64Image:
+            return true
+        case .unixTime:
+            return true
+        case .urlEncode:
+            return true
         }
     }
 
@@ -148,5 +168,24 @@ public enum SettingsKey {
     public enum HtmlToMarkdown {
         public static var splitViewFraction = "HtmlToMarkdown_splitViewFraction"
         public static var splitViewLayout = "HtmlToMarkdown_splitViewLayout"
+    }
+
+    public enum Base64 {
+        public static var mode = "Base64_mode"
+        public static var autoDetect = "Base64_autoDetect"
+        public static var autoRemoveDataURLPrefix = "Base64_autoRemoveDataURLPrefix"
+        public static var autoRemoveNullBytes = "Base64_autoRemoveNullBytes"
+        public static var splitViewFraction = "Base64_splitViewFraction"
+        public static var splitViewLayout = "Base64_splitViewLayout"
+    }
+
+    public enum UnixTime {
+        public static var splitViewFraction = "UnixTime_splitViewFraction"
+        public static var splitViewLayout = "UnixTime_splitViewLayout"
+    }
+
+    public enum Base64Image {
+        public static var splitViewFraction = "Base64Image_splitViewFraction"
+        public static var splitViewLayout = "Base64Image_splitViewLayout"
     }
 }
