@@ -8,6 +8,9 @@ public enum Tool: Int, CaseIterable, Identifiable {
     case prefixSuffix
     case regexMatches
     case jsonPretty
+    case htmlBeautify
+    case cssBeautify
+    case jsBeautify
     case swiftPrettyLockwood
     case fileContentSearch
     case nameGenerator
@@ -49,6 +52,12 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return NSLocalizedString("URL to Markdown", bundle: Bundle.module, comment: "")
         case .jsonPretty:
             return NSLocalizedString("JSON Formatter", bundle: Bundle.module, comment: "")
+        case .htmlBeautify:
+            return NSLocalizedString("HTML Beautify", bundle: Bundle.module, comment: "")
+        case .cssBeautify:
+            return NSLocalizedString("CSS Beautify", bundle: Bundle.module, comment: "")
+        case .jsBeautify:
+            return NSLocalizedString("JS Beautify", bundle: Bundle.module, comment: "")
         case .textCaseConverter:
             return NSLocalizedString("Text Case Converter", bundle: Bundle.module, comment: "")
         case .uuidGenerator:
@@ -123,6 +132,12 @@ public enum Tool: Int, CaseIterable, Identifiable {
         case .urlToMarkdown:
             return false
         case .jsonPretty:
+            return true
+        case .htmlBeautify:
+            return true
+        case .cssBeautify:
+            return true
+        case .jsBeautify:
             return true
         case .textCaseConverter:
             return true
@@ -241,6 +256,21 @@ public enum SettingsKey {
     public enum JsonPretty {
         public static var splitViewFraction = "JsonPretty_splitViewFraction"
         public static var splitViewLayout = "JsonPretty_splitViewLayout"
+    }
+
+    public enum HtmlBeautify {
+        public static var splitViewFraction = "HtmlBeautify_splitViewFraction"
+        public static var splitViewLayout = "HtmlBeautify_splitViewLayout"
+    }
+
+    public enum CssBeautify {
+        public static var splitViewFraction = "CssBeautify_splitViewFraction"
+        public static var splitViewLayout = "CssBeautify_splitViewLayout"
+    }
+
+    public enum JsBeautify {
+        public static var splitViewFraction = "JsBeautify_splitViewFraction"
+        public static var splitViewLayout = "JsBeautify_splitViewLayout"
     }
 
     public enum HtmlToSwift {

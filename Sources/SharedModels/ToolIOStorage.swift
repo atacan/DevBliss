@@ -76,6 +76,9 @@ extension SharedReaderKey where Self == FileStorageKey<ToolIOStorage> {
     public static var svgToCssIO: Self { .fileStorage(.toolStorage("svgToCss")) }
     public static var backslashEscapeIO: Self { .fileStorage(.toolStorage("backslashEscape")) }
     public static var xmlFormatIO: Self { .fileStorage(.toolStorage("xmlFormat")) }
+    public static var htmlBeautifyIO: Self { .fileStorage(.toolStorage("htmlBeautify")) }
+    public static var cssBeautifyIO: Self { .fileStorage(.toolStorage("cssBeautify")) }
+    public static var jsBeautifyIO: Self { .fileStorage(.toolStorage("jsBeautify")) }
     public static var lineSortDedupeIO: Self { .fileStorage(.toolStorage("lineSortDedupe")) }
     public static var asciiToHexIO: Self { .fileStorage(.toolStorage("asciiToHex")) }
     public static var hexToAsciiIO: Self { .fileStorage(.toolStorage("hexToAscii")) }

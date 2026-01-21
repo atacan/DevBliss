@@ -7,12 +7,15 @@ import ColorConverterFeature
 import ComposableArchitecture
 import FileContentSearchFeature
 import HashGeneratorFeature
+import HtmlBeautifyFeature
+import CssBeautifyFeature
 import HtmlToSwiftFeature
 import HtmlToMarkdownFeature
 import HtmlPreviewFeature
 import HexToAsciiFeature
 import JsonToYamlFeature
 import JsonPrettyFeature
+import JsBeautifyFeature
 import JwtDebuggerFeature
 import LineSortDedupeFeature
 import NameGeneratorFeature
@@ -44,6 +47,9 @@ public enum Destination {
     case htmlToMarkdown(HtmlToMarkdownReducer)
     case urlToMarkdown(UrlToMarkdownReducer)
     case jsonPretty(JsonPrettyReducer)
+    case htmlBeautify(HtmlBeautifyReducer)
+    case cssBeautify(CssBeautifyReducer)
+    case jsBeautify(JsBeautifyReducer)
     case textCaseConverter(TextCaseConverterReducer)
     case prefixSuffix(PrefixSuffixReducer)
     case lineSortDedupe(LineSortDedupeReducer)
@@ -95,6 +101,9 @@ public struct AppReducer {
             case .htmlToMarkdown: return .htmlToMarkdown
             case .urlToMarkdown: return .urlToMarkdown
             case .jsonPretty: return .jsonPretty
+            case .htmlBeautify: return .htmlBeautify
+            case .cssBeautify: return .cssBeautify
+            case .jsBeautify: return .jsBeautify
             case .textCaseConverter: return .textCaseConverter
             case .prefixSuffix: return .prefixSuffix
             case .lineSortDedupe: return .lineSortDedupe
@@ -197,6 +206,21 @@ public struct AppReducer {
 
         case let .jsonPretty(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
             if case .jsonPretty(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .htmlBeautify(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .htmlBeautify(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .cssBeautify(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .cssBeautify(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .jsBeautify(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .jsBeautify(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
@@ -351,6 +375,21 @@ public struct AppReducer {
         case .jsonPretty:
             state.destination = .jsonPretty(JsonPrettyReducer.State())
             if case .jsonPretty(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .htmlBeautify:
+            state.destination = .htmlBeautify(HtmlBeautifyReducer.State())
+            if case .htmlBeautify(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .cssBeautify:
+            state.destination = .cssBeautify(CssBeautifyReducer.State())
+            if case .cssBeautify(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .jsBeautify:
+            state.destination = .jsBeautify(JsBeautifyReducer.State())
+            if case .jsBeautify(let s) = state.destination {
                 s.$storage.withLock { $0.input = outputText }
             }
         case .textCaseConverter:
@@ -523,6 +562,12 @@ public struct AppReducer {
             state.destination = .urlToMarkdown(UrlToMarkdownReducer.State())
         case .jsonPretty:
             state.destination = .jsonPretty(JsonPrettyReducer.State())
+        case .htmlBeautify:
+            state.destination = .htmlBeautify(HtmlBeautifyReducer.State())
+        case .cssBeautify:
+            state.destination = .cssBeautify(CssBeautifyReducer.State())
+        case .jsBeautify:
+            state.destination = .jsBeautify(JsBeautifyReducer.State())
         case .textCaseConverter:
             state.destination = .textCaseConverter(TextCaseConverterReducer.State())
         case .prefixSuffix:
@@ -754,6 +799,21 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
+                toolRow(.htmlBeautify, label: "HTML Beautify", shortcut: "H") {
+                    Text("HTML")
+                        .font(.monospaced(Font.system(size: 8))())
+                }
+
+                toolRow(.cssBeautify, label: "CSS Beautify", shortcut: "C") {
+                    Text("CSS")
+                        .font(.monospaced(Font.system(size: 8))())
+                }
+
+                toolRow(.jsBeautify, label: "JS Beautify", shortcut: "J") {
+                    Text("JS")
+                        .font(.monospaced(Font.system(size: 10))())
+                }
+
                 toolRow(.jsonPretty, label: "Json", shortcut: "7") {
                     Text("{.,}")
                         .font(.monospaced(Font.system(size: 8))())
@@ -936,6 +996,39 @@ public struct AppView: View {
                     .navigationTitle(
                         NSLocalizedString(
                             "Format and Highlight Json",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .htmlBeautify(let childStore):
+                HtmlBeautifyView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "HTML Beautify / Minify",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .cssBeautify(let childStore):
+                CssBeautifyView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "CSS Beautify / Minify",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .jsBeautify(let childStore):
+                JsBeautifyView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "JS Beautify / Minify",
                             bundle: Bundle.module,
                             comment: "navigation title"
                         )

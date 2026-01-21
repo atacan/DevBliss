@@ -37,6 +37,12 @@ let package = Package(
         .library(name: "UrlParserFeature", targets: ["UrlParserFeature"]),
         .library(name: "JsonPrettyClient", targets: ["JsonPrettyClient"]),
         .library(name: "JsonPrettyFeature", targets: ["JsonPrettyFeature"]),
+        .library(name: "HtmlBeautifyClient", targets: ["HtmlBeautifyClient"]),
+        .library(name: "HtmlBeautifyFeature", targets: ["HtmlBeautifyFeature"]),
+        .library(name: "CssBeautifyClient", targets: ["CssBeautifyClient"]),
+        .library(name: "CssBeautifyFeature", targets: ["CssBeautifyFeature"]),
+        .library(name: "JsBeautifyClient", targets: ["JsBeautifyClient"]),
+        .library(name: "JsBeautifyFeature", targets: ["JsBeautifyFeature"]),
         .library(name: "LineSortDedupeClient", targets: ["LineSortDedupeClient"]),
         .library(name: "LineSortDedupeFeature", targets: ["LineSortDedupeFeature"]),
         .library(name: "AsciiToHexClient", targets: ["AsciiToHexClient"]),
@@ -95,6 +101,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.23.1"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.10.0"),
+        .package(path: "/Users/atacan/Developer/Repositories/JSBeautify"),
         .package(url: "https://github.com/stevengharris/SplitView", from: "3.1.0"),
         .package(url: "https://github.com/atacan/html-swift", branch: "main"),
         .package(url: "https://github.com/nkristek/Highlight.git", branch: "master"),
@@ -130,6 +137,9 @@ let package = Package(
                 "HtmlToMarkdownFeature",
                 "HtmlPreviewFeature",
                 "HexToAsciiFeature",
+                "HtmlBeautifyFeature",
+                "CssBeautifyFeature",
+                "JsBeautifyFeature",
                 "JsonToYamlFeature",
                 "UrlToMarkdownFeature",
                 "UrlParserFeature",
@@ -506,6 +516,54 @@ let package = Package(
                 "JsonPrettyClient",
                 "InputOutput",
                 "SharedModels",
+            ]
+        ),
+        .target(
+            name: "HtmlBeautifyClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "JSBeautify", package: "JSBeautify"),
+            ]
+        ),
+        .target(
+            name: "HtmlBeautifyFeature",
+            dependencies: [
+                "HtmlBeautifyClient",
+                "InputOutput",
+                "SharedModels",
+                "BlissTheme",
+            ]
+        ),
+        .target(
+            name: "CssBeautifyClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "JSBeautify", package: "JSBeautify"),
+            ]
+        ),
+        .target(
+            name: "CssBeautifyFeature",
+            dependencies: [
+                "CssBeautifyClient",
+                "InputOutput",
+                "SharedModels",
+                "BlissTheme",
+            ]
+        ),
+        .target(
+            name: "JsBeautifyClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "JSBeautify", package: "JSBeautify"),
+            ]
+        ),
+        .target(
+            name: "JsBeautifyFeature",
+            dependencies: [
+                "JsBeautifyClient",
+                "InputOutput",
+                "SharedModels",
+                "BlissTheme",
             ]
         ),
         .target(

@@ -47,9 +47,6 @@ These tools use well-maintained Swift packages:
 
 These tools use JavaScript libraries available as pre-built single files from CDNs:
 
-- **DevBliss-peg** - Markdown Preview Tool
-  - JS: `marked.min.js` (from CDN)
-
 - **DevBliss-7w1** - HTML Beautify/Minify Tool
   - JS: `beautify-html.min.js` (from CDN)
 
@@ -62,16 +59,27 @@ These tools use JavaScript libraries available as pre-built single files from CD
 - **DevBliss-6x1** - Text Diff Checker Tool
   - JS: `jsdiff.min.js` (from CDN)
 
+- **DevBliss-peg** - Markdown Preview Tool
+  - JS: `marked.min.js` (from CDN)
+
 ## 4. Complex Bundling Required (esbuild or webpack)
 
 These tools need JavaScript libraries that require bundling with esbuild:
 
 ### Moderate Complexity (esbuild):
-- **DevBliss-qss** - String Case Converter Tool
-  - npm: `change-case` → bundle with esbuild
 
 - **DevBliss-a9l** - HTML Entity Encode/Decode Tool
   - npm: `he` → bundle with esbuild
+
+- **DevBliss-2z9** - HTML to JSX Tool
+  - npm: `node-html-to-jsx` → bundle with esbuild
+
+- **DevBliss-1ax** - SQL Formatter Tool
+  - npm: `sql-formatter` → bundle with esbuild
+
+- **DevBliss-qss** - String Case Converter Tool
+  - npm: `change-case` → bundle with esbuild
+
 
 - **DevBliss-8r9** - Cron Job Parser Tool
   - npm: `cronstrue` + `cron-parser` → bundle with esbuild
@@ -84,12 +92,6 @@ These tools need JavaScript libraries that require bundling with esbuild:
 
 - **DevBliss-7bg** - Lorem Ipsum Generator Tool
   - npm: `lorem-ipsum` → bundle with esbuild
-
-- **DevBliss-2z9** - HTML to JSX Tool
-  - npm: `node-html-to-jsx` → bundle with esbuild
-
-- **DevBliss-1ax** - SQL Formatter Tool
-  - npm: `sql-formatter` → bundle with esbuild
 
 ### Very Complex (May require webpack or subprocess):
 - **DevBliss-qif** - JSON to Code Tool
