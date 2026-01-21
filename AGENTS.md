@@ -67,6 +67,10 @@ Storage files are in `~/Documents/ToolStorage/`.
 
 If you get "The compiler is unable to type-check this expression in reasonable time", comment out other tools in the reducer to isolate the issue.
 
+### Dependencies
+
+You can always look at .build/checkouts/ folder to see the code of dependencies we added to our Swift package. The code will be available there after `swift package resolve`. Looking at the code is better than trying to find files on GitHub.com
+
 ## Issue Tracking
 
 This project uses **bd (beads)** for task tracking. Key commands:

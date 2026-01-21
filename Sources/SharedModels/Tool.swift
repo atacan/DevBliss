@@ -12,10 +12,30 @@ public enum Tool: Int, CaseIterable, Identifiable {
     case fileContentSearch
     case nameGenerator
     case uuidGenerator
+    case lineSortDedupe
+    case asciiToHex
+    case hexToAscii
+    case colorConverter
+    case svgToCss
+    case backslashEscape
+    case xmlFormat
+    case randomStringGenerator
+    case hashGenerator
+    case stringInspector
+    case numberBaseConverter
+    case certificateDecoder
+    case qrCodeTool
+    case jsonToYaml
+    case yamlToJson
+    case uuidUlid
+    case urlParser
+    case regExpTester
+    case htmlPreview
     case base64
     case base64Image
     case unixTime
     case urlEncode
+    case jwtDebugger
 
     public var id: Self { self }
 
@@ -43,6 +63,44 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return NSLocalizedString("File Content Search", bundle: Bundle.module, comment: "")
         case .nameGenerator:
             return NSLocalizedString("Name Generator", bundle: Bundle.module, comment: "")
+        case .lineSortDedupe:
+            return NSLocalizedString("Line Sort/Dedupe", bundle: Bundle.module, comment: "")
+        case .asciiToHex:
+            return NSLocalizedString("ASCII to Hex", bundle: Bundle.module, comment: "")
+        case .hexToAscii:
+            return NSLocalizedString("Hex to ASCII", bundle: Bundle.module, comment: "")
+        case .colorConverter:
+            return NSLocalizedString("Color Converter", bundle: Bundle.module, comment: "")
+        case .svgToCss:
+            return NSLocalizedString("SVG to CSS", bundle: Bundle.module, comment: "")
+        case .backslashEscape:
+            return NSLocalizedString("Backslash Escape", bundle: Bundle.module, comment: "")
+        case .xmlFormat:
+            return NSLocalizedString("XML Formatter", bundle: Bundle.module, comment: "")
+        case .randomStringGenerator:
+            return NSLocalizedString("Random String", bundle: Bundle.module, comment: "")
+        case .hashGenerator:
+            return NSLocalizedString("Hash Generator", bundle: Bundle.module, comment: "")
+        case .stringInspector:
+            return NSLocalizedString("String Inspector", bundle: Bundle.module, comment: "")
+        case .numberBaseConverter:
+            return NSLocalizedString("Number Base Converter", bundle: Bundle.module, comment: "")
+        case .certificateDecoder:
+            return NSLocalizedString("Certificate Decoder", bundle: Bundle.module, comment: "")
+        case .qrCodeTool:
+            return NSLocalizedString("QR Code", bundle: Bundle.module, comment: "")
+        case .jsonToYaml:
+            return NSLocalizedString("JSON to YAML", bundle: Bundle.module, comment: "")
+        case .yamlToJson:
+            return NSLocalizedString("YAML to JSON", bundle: Bundle.module, comment: "")
+        case .uuidUlid:
+            return NSLocalizedString("UUID/ULID", bundle: Bundle.module, comment: "")
+        case .urlParser:
+            return NSLocalizedString("URL Parser", bundle: Bundle.module, comment: "")
+        case .regExpTester:
+            return NSLocalizedString("RegExp Tester", bundle: Bundle.module, comment: "")
+        case .htmlPreview:
+            return NSLocalizedString("HTML Preview", bundle: Bundle.module, comment: "")
         case .base64:
             return NSLocalizedString("Base64", bundle: Bundle.module, comment: "")
         case .base64Image:
@@ -51,6 +109,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return NSLocalizedString("Unix Time", bundle: Bundle.module, comment: "")
         case .urlEncode:
             return NSLocalizedString("URL Encode", bundle: Bundle.module, comment: "")
+        case .jwtDebugger:
+            return NSLocalizedString("JWT Debugger", bundle: Bundle.module, comment: "")
         }
     }
 
@@ -78,6 +138,44 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return false
         case .nameGenerator:
             return false
+        case .lineSortDedupe:
+            return true
+        case .asciiToHex:
+            return true
+        case .hexToAscii:
+            return true
+        case .colorConverter:
+            return true
+        case .svgToCss:
+            return true
+        case .backslashEscape:
+            return true
+        case .xmlFormat:
+            return true
+        case .randomStringGenerator:
+            return false
+        case .hashGenerator:
+            return true
+        case .stringInspector:
+            return true
+        case .numberBaseConverter:
+            return true
+        case .certificateDecoder:
+            return true
+        case .qrCodeTool:
+            return true
+        case .jsonToYaml:
+            return true
+        case .yamlToJson:
+            return true
+        case .uuidUlid:
+            return true
+        case .urlParser:
+            return true
+        case .regExpTester:
+            return true
+        case .htmlPreview:
+            return true
         case .base64:
             return true
         case .base64Image:
@@ -85,6 +183,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
         case .unixTime:
             return true
         case .urlEncode:
+            return true
+        case .jwtDebugger:
             return true
         }
     }
@@ -187,5 +287,85 @@ public enum SettingsKey {
     public enum Base64Image {
         public static var splitViewFraction = "Base64Image_splitViewFraction"
         public static var splitViewLayout = "Base64Image_splitViewLayout"
+    }
+
+    public enum LineSortDedupe {
+        public static var splitViewFraction = "LineSortDedupe_splitViewFraction"
+        public static var splitViewLayout = "LineSortDedupe_splitViewLayout"
+    }
+
+    public enum AsciiToHex {
+        public static var splitViewFraction = "AsciiToHex_splitViewFraction"
+        public static var splitViewLayout = "AsciiToHex_splitViewLayout"
+    }
+
+    public enum HexToAscii {
+        public static var splitViewFraction = "HexToAscii_splitViewFraction"
+        public static var splitViewLayout = "HexToAscii_splitViewLayout"
+    }
+
+    public enum ColorConverter {
+        public static var splitViewFraction = "ColorConverter_splitViewFraction"
+        public static var splitViewLayout = "ColorConverter_splitViewLayout"
+    }
+
+    public enum SvgToCss {
+        public static var splitViewFraction = "SvgToCss_splitViewFraction"
+        public static var splitViewLayout = "SvgToCss_splitViewLayout"
+    }
+
+    public enum BackslashEscape {
+        public static var splitViewFraction = "BackslashEscape_splitViewFraction"
+        public static var splitViewLayout = "BackslashEscape_splitViewLayout"
+    }
+
+    public enum XmlFormat {
+        public static var splitViewFraction = "XmlFormat_splitViewFraction"
+        public static var splitViewLayout = "XmlFormat_splitViewLayout"
+    }
+
+    public enum CertificateDecoder {
+        public static var splitViewFraction = "CertificateDecoder_splitViewFraction"
+        public static var splitViewLayout = "CertificateDecoder_splitViewLayout"
+    }
+
+    public enum QrCodeTool {
+        public static var splitViewFraction = "QrCodeTool_splitViewFraction"
+        public static var splitViewLayout = "QrCodeTool_splitViewLayout"
+    }
+
+    public enum JsonToYaml {
+        public static var splitViewFraction = "JsonToYaml_splitViewFraction"
+        public static var splitViewLayout = "JsonToYaml_splitViewLayout"
+    }
+
+    public enum YamlToJson {
+        public static var splitViewFraction = "YamlToJson_splitViewFraction"
+        public static var splitViewLayout = "YamlToJson_splitViewLayout"
+    }
+
+    public enum UuidUlid {
+        public static var splitViewFraction = "UuidUlid_splitViewFraction"
+        public static var splitViewLayout = "UuidUlid_splitViewLayout"
+    }
+
+    public enum HashGenerator {
+        public static var splitViewFraction = "HashGenerator_splitViewFraction"
+        public static var splitViewLayout = "HashGenerator_splitViewLayout"
+    }
+
+    public enum NumberBaseConverter {
+        public static var splitViewFraction = "NumberBaseConverter_splitViewFraction"
+        public static var splitViewLayout = "NumberBaseConverter_splitViewLayout"
+    }
+
+    public enum RegExpTester {
+        public static var splitViewFraction = "RegExpTester_splitViewFraction"
+        public static var splitViewLayout = "RegExpTester_splitViewLayout"
+    }
+
+    public enum HtmlPreview {
+        public static var splitViewFraction = "HtmlPreview_splitViewFraction"
+        public static var splitViewLayout = "HtmlPreview_splitViewLayout"
     }
 }

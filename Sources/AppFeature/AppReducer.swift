@@ -1,20 +1,40 @@
 import Base64Feature
 import Base64ImageFeature
+import AsciiToHexFeature
+import BackslashEscapeFeature
+import CertificateDecoderFeature
+import ColorConverterFeature
 import ComposableArchitecture
 import FileContentSearchFeature
+import HashGeneratorFeature
 import HtmlToSwiftFeature
 import HtmlToMarkdownFeature
+import HtmlPreviewFeature
+import HexToAsciiFeature
+import JsonToYamlFeature
 import JsonPrettyFeature
+import JwtDebuggerFeature
+import LineSortDedupeFeature
 import NameGeneratorFeature
+import NumberBaseConverterFeature
 import PrefixSuffixFeature
+import QrCodeToolFeature
 import RegexMatchesFeature
+import RegExpTesterFeature
+import RandomStringGeneratorFeature
 import SharedModels
+import SvgToCssFeature
 import SwiftPrettyFeature
 import SwiftUI
+import StringInspectorFeature
 import TextCaseConverterFeature
 import UnixTimeFeature
+import UuidUlidFeature
 import UrlEncodeFeature
+import UrlParserFeature
 import UrlToMarkdownFeature
+import XmlFormatFeature
+import YamlToJsonFeature
 
 // MARK: - Destination Reducer Enum
 
@@ -26,13 +46,33 @@ public enum Destination {
     case jsonPretty(JsonPrettyReducer)
     case textCaseConverter(TextCaseConverterReducer)
     case prefixSuffix(PrefixSuffixReducer)
+    case lineSortDedupe(LineSortDedupeReducer)
+    case asciiToHex(AsciiToHexReducer)
+    case hexToAscii(HexToAsciiReducer)
+    case colorConverter(ColorConverterReducer)
+    case svgToCss(SvgToCssReducer)
+    case backslashEscape(BackslashEscapeReducer)
+    case xmlFormat(XmlFormatReducer)
     case regexMatches(RegexMatchesReducer)
+    case regExpTester(RegExpTesterReducer)
     case swiftPrettyLockwood(SwiftPrettyReducer)
     case nameGenerator(NameGeneratorReducer)
+    case randomStringGenerator(RandomStringGeneratorReducer)
+    case hashGenerator(HashGeneratorReducer)
+    case stringInspector(StringInspectorReducer)
+    case numberBaseConverter(NumberBaseConverterReducer)
+    case certificateDecoder(CertificateDecoderReducer)
+    case qrCodeTool(QrCodeToolReducer)
+    case jsonToYaml(JsonToYamlReducer)
+    case yamlToJson(YamlToJsonReducer)
+    case uuidUlid(UuidUlidReducer)
+    case urlParser(UrlParserReducer)
+    case htmlPreview(HtmlPreviewReducer)
     case base64(Base64Reducer)
     case base64Image(Base64ImageReducer)
     case unixTime(UnixTimeReducer)
     case urlEncode(UrlEncodeReducer)
+    case jwtDebugger(JwtDebuggerReducer)
     #if os(macOS)
     case fileContentSearch(FileContentSearchReducer)
     #endif
@@ -57,13 +97,33 @@ public struct AppReducer {
             case .jsonPretty: return .jsonPretty
             case .textCaseConverter: return .textCaseConverter
             case .prefixSuffix: return .prefixSuffix
+            case .lineSortDedupe: return .lineSortDedupe
+            case .asciiToHex: return .asciiToHex
+            case .hexToAscii: return .hexToAscii
+            case .colorConverter: return .colorConverter
+            case .svgToCss: return .svgToCss
+            case .backslashEscape: return .backslashEscape
+            case .xmlFormat: return .xmlFormat
             case .regexMatches: return .regexMatches
+            case .regExpTester: return .regExpTester
             case .swiftPrettyLockwood: return .swiftPrettyLockwood
             case .nameGenerator: return .nameGenerator
+            case .randomStringGenerator: return .randomStringGenerator
+            case .hashGenerator: return .hashGenerator
+            case .stringInspector: return .stringInspector
+            case .numberBaseConverter: return .numberBaseConverter
+            case .certificateDecoder: return .certificateDecoder
+            case .qrCodeTool: return .qrCodeTool
+            case .jsonToYaml: return .jsonToYaml
+            case .yamlToJson: return .yamlToJson
+            case .uuidUlid: return .uuidUlid
+            case .urlParser: return .urlParser
+            case .htmlPreview: return .htmlPreview
             case .base64: return .base64
             case .base64Image: return .base64Image
             case .unixTime: return .unixTime
             case .urlEncode: return .urlEncode
+            case .jwtDebugger: return .jwtDebugger
             #if os(macOS)
             case .fileContentSearch: return .fileContentSearch
             #endif
@@ -150,6 +210,41 @@ public struct AppReducer {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
+        case let .lineSortDedupe(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .lineSortDedupe(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .asciiToHex(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .asciiToHex(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .hexToAscii(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .hexToAscii(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .colorConverter(.output(.outputControls(.otherToolSelected(tool)))):
+            if case .colorConverter(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .svgToCss(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .svgToCss(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .backslashEscape(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .backslashEscape(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .xmlFormat(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .xmlFormat(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
         case let .swiftPrettyLockwood(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
             if case .swiftPrettyLockwood(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
@@ -171,9 +266,54 @@ public struct AppReducer {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
+        case let .hashGenerator(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .hashGenerator(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .numberBaseConverter(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .numberBaseConverter(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .certificateDecoder(.output(.outputControls(.otherToolSelected(tool)))):
+            if case .certificateDecoder(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .qrCodeTool(.output(.outputControls(.otherToolSelected(tool)))):
+            if case .qrCodeTool(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .jsonToYaml(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .jsonToYaml(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .yamlToJson(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+            if case .yamlToJson(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .uuidUlid(.output(.outputControls(.otherToolSelected(tool)))):
+            if case .uuidUlid(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
         // Generators (output-only tools)
         case let .nameGenerator(.output(.outputControls(.otherToolSelected(tool)))):
             if case .nameGenerator(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .randomStringGenerator(.output(.outputControls(.otherToolSelected(tool)))):
+            if case .randomStringGenerator(let s) = state.destination {
+                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+            }
+
+        case let .regExpTester(.output(.outputControls(.otherToolSelected(tool)))):
+            if case .regExpTester(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
@@ -223,6 +363,41 @@ public struct AppReducer {
             if case .prefixSuffix(let s) = state.destination {
                 s.$storage.withLock { $0.input = outputText }
             }
+        case .lineSortDedupe:
+            state.destination = .lineSortDedupe(LineSortDedupeReducer.State())
+            if case .lineSortDedupe(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .asciiToHex:
+            state.destination = .asciiToHex(AsciiToHexReducer.State())
+            if case .asciiToHex(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .hexToAscii:
+            state.destination = .hexToAscii(HexToAsciiReducer.State())
+            if case .hexToAscii(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .colorConverter:
+            state.destination = .colorConverter(ColorConverterReducer.State())
+            if case .colorConverter(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .svgToCss:
+            state.destination = .svgToCss(SvgToCssReducer.State())
+            if case .svgToCss(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .backslashEscape:
+            state.destination = .backslashEscape(BackslashEscapeReducer.State())
+            if case .backslashEscape(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .xmlFormat:
+            state.destination = .xmlFormat(XmlFormatReducer.State())
+            if case .xmlFormat(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
         case .regexMatches:
             state.destination = .regexMatches(RegexMatchesReducer.State())
             if case .regexMatches(var s) = state.destination {
@@ -244,6 +419,65 @@ public struct AppReducer {
             #endif
         case .nameGenerator:
             state.destination = .nameGenerator(NameGeneratorReducer.State())
+        case .randomStringGenerator:
+            state.destination = .randomStringGenerator(RandomStringGeneratorReducer.State())
+        case .hashGenerator:
+            state.destination = .hashGenerator(HashGeneratorReducer.State())
+            if case .hashGenerator(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .stringInspector:
+            state.destination = .stringInspector(StringInspectorReducer.State())
+            if case .stringInspector(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .numberBaseConverter:
+            state.destination = .numberBaseConverter(NumberBaseConverterReducer.State())
+            if case .numberBaseConverter(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .certificateDecoder:
+            state.destination = .certificateDecoder(CertificateDecoderReducer.State())
+            if case .certificateDecoder(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .qrCodeTool:
+            state.destination = .qrCodeTool(QrCodeToolReducer.State())
+            if case .qrCodeTool(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .jsonToYaml:
+            state.destination = .jsonToYaml(JsonToYamlReducer.State())
+            if case .jsonToYaml(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .yamlToJson:
+            state.destination = .yamlToJson(YamlToJsonReducer.State())
+            if case .yamlToJson(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .uuidUlid:
+            state.destination = .uuidUlid(UuidUlidReducer.State())
+            if case .uuidUlid(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .urlParser:
+            state.destination = .urlParser(UrlParserReducer.State())
+            if case .urlParser(var s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+                s.input = outputText
+                state.destination = .urlParser(s)
+            }
+        case .regExpTester:
+            state.destination = .regExpTester(RegExpTesterReducer.State())
+            if case .regExpTester(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
+        case .htmlPreview:
+            state.destination = .htmlPreview(HtmlPreviewReducer.State())
+            if case .htmlPreview(let s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+            }
         case .base64:
             state.destination = .base64(Base64Reducer.State())
             if case .base64(let s) = state.destination {
@@ -267,6 +501,13 @@ public struct AppReducer {
             if case .urlEncode(let s) = state.destination {
                 s.$storage.withLock { $0.input = outputText }
             }
+        case .jwtDebugger:
+            state.destination = .jwtDebugger(JwtDebuggerReducer.State())
+            if case .jwtDebugger(var s) = state.destination {
+                s.$storage.withLock { $0.input = outputText }
+                _ = s.input.updateText(outputText)
+                state.destination = .jwtDebugger(s)
+            }
         }
     }
 
@@ -286,12 +527,50 @@ public struct AppReducer {
             state.destination = .textCaseConverter(TextCaseConverterReducer.State())
         case .prefixSuffix:
             state.destination = .prefixSuffix(PrefixSuffixReducer.State())
+        case .lineSortDedupe:
+            state.destination = .lineSortDedupe(LineSortDedupeReducer.State())
+        case .asciiToHex:
+            state.destination = .asciiToHex(AsciiToHexReducer.State())
+        case .hexToAscii:
+            state.destination = .hexToAscii(HexToAsciiReducer.State())
+        case .colorConverter:
+            state.destination = .colorConverter(ColorConverterReducer.State())
+        case .svgToCss:
+            state.destination = .svgToCss(SvgToCssReducer.State())
+        case .backslashEscape:
+            state.destination = .backslashEscape(BackslashEscapeReducer.State())
+        case .xmlFormat:
+            state.destination = .xmlFormat(XmlFormatReducer.State())
         case .regexMatches:
             state.destination = .regexMatches(RegexMatchesReducer.State())
+        case .regExpTester:
+            state.destination = .regExpTester(RegExpTesterReducer.State())
         case .swiftPrettyLockwood:
             state.destination = .swiftPrettyLockwood(SwiftPrettyReducer.State())
         case .nameGenerator:
             state.destination = .nameGenerator(NameGeneratorReducer.State())
+        case .randomStringGenerator:
+            state.destination = .randomStringGenerator(RandomStringGeneratorReducer.State())
+        case .hashGenerator:
+            state.destination = .hashGenerator(HashGeneratorReducer.State())
+        case .stringInspector:
+            state.destination = .stringInspector(StringInspectorReducer.State())
+        case .numberBaseConverter:
+            state.destination = .numberBaseConverter(NumberBaseConverterReducer.State())
+        case .certificateDecoder:
+            state.destination = .certificateDecoder(CertificateDecoderReducer.State())
+        case .qrCodeTool:
+            state.destination = .qrCodeTool(QrCodeToolReducer.State())
+        case .jsonToYaml:
+            state.destination = .jsonToYaml(JsonToYamlReducer.State())
+        case .yamlToJson:
+            state.destination = .yamlToJson(YamlToJsonReducer.State())
+        case .uuidUlid:
+            state.destination = .uuidUlid(UuidUlidReducer.State())
+        case .urlParser:
+            state.destination = .urlParser(UrlParserReducer.State())
+        case .htmlPreview:
+            state.destination = .htmlPreview(HtmlPreviewReducer.State())
         case .base64:
             state.destination = .base64(Base64Reducer.State())
         case .base64Image:
@@ -300,6 +579,8 @@ public struct AppReducer {
             state.destination = .unixTime(UnixTimeReducer.State())
         case .urlEncode:
             state.destination = .urlEncode(UrlEncodeReducer.State())
+        case .jwtDebugger:
+            state.destination = .jwtDebugger(JwtDebuggerReducer.State())
         #if os(macOS)
         case .fileContentSearch:
             state.destination = .fileContentSearch(FileContentSearchReducer.State())
@@ -409,9 +690,27 @@ public struct AppView: View {
                     Image(systemName: "arrow.right.and.line.vertical.and.arrow.left")
                 }
 
+                toolRow(.lineSortDedupe, label: "Line Sort/Dedupe", shortcut: "l") {
+                    Image(systemName: "arrow.up.arrow.down")
+                }
+
                 toolRow(.regexMatches, label: "Regex Matches", shortcut: "6") {
                     Text("(.*)")
                         .font(.monospaced(Font.system(size: 8))())
+                }
+
+                toolRow(.asciiToHex, label: "ASCII to Hex", shortcut: "a") {
+                    Text("0x")
+                        .font(.monospaced(Font.system(size: 10))())
+                }
+
+                toolRow(.hexToAscii, label: "Hex to ASCII", shortcut: "x") {
+                    Text("x→A")
+                        .font(.monospaced(Font.system(size: 8))())
+                }
+
+                toolRow(.colorConverter, label: "Color Converter", shortcut: "c") {
+                    Image(systemName: "paintpalette")
                 }
 
                 toolRow(.base64, label: "Base64", shortcut: "b") {
@@ -419,8 +718,20 @@ public struct AppView: View {
                         .font(.monospaced(Font.system(size: 10))())
                 }
 
+                toolRow(.hashGenerator, label: "Hash Generator", shortcut: "g") {
+                    Image(systemName: "lock.shield")
+                }
+
                 toolRow(.base64Image, label: "Base64 Image", shortcut: "i") {
                     Image(systemName: "photo")
+                }
+
+                toolRow(.numberBaseConverter, label: "Number Base", shortcut: "n") {
+                    Image(systemName: "number")
+                }
+
+                toolRow(.svgToCss, label: "SVG to CSS", shortcut: "z") {
+                    Image(systemName: "square.and.arrow.down")
                 }
 
                 toolRow(.unixTime, label: "Unix Time", shortcut: "u") {
@@ -429,6 +740,10 @@ public struct AppView: View {
 
                 toolRow(.urlEncode, label: "URL Encode", shortcut: "e") {
                     Image(systemName: "link")
+                }
+
+                toolRow(.jwtDebugger, label: "JWT Debugger", shortcut: "j") {
+                    Image(systemName: "signature")
                 }
             }
 
@@ -441,6 +756,16 @@ public struct AppView: View {
             ) {
                 toolRow(.jsonPretty, label: "Json", shortcut: "7") {
                     Text("{.,}")
+                        .font(.monospaced(Font.system(size: 8))())
+                }
+
+                toolRow(.jsonToYaml, label: "JSON to YAML", shortcut: "y") {
+                    Text("J→Y")
+                        .font(.monospaced(Font.system(size: 8))())
+                }
+
+                toolRow(.yamlToJson, label: "YAML to JSON", shortcut: "h") {
+                    Text("Y→J")
                         .font(.monospaced(Font.system(size: 8))())
                 }
 
@@ -472,6 +797,57 @@ public struct AppView: View {
             ) {
                 toolRow(.nameGenerator, label: "Name", shortcut: "0") {
                     Image(systemName: "person")
+                }
+
+                toolRow(.randomStringGenerator, label: "Random String", shortcut: "t") {
+                    Image(systemName: "shuffle")
+                }
+            }
+
+            Section(
+                NSLocalizedString(
+                    "Utilities",
+                    bundle: Bundle.module,
+                    comment: "sidebar section name for a group of tools"
+                )
+            ) {
+                toolRow(.stringInspector, label: "String Inspector", shortcut: "s") {
+                    Image(systemName: "text.magnifyingglass")
+                }
+
+                toolRow(.certificateDecoder, label: "Certificate Decoder", shortcut: "d") {
+                    Image(systemName: "shield.checkered")
+                }
+
+                toolRow(.qrCodeTool, label: "QR Code", shortcut: "q") {
+                    Image(systemName: "qrcode")
+                }
+
+                toolRow(.uuidUlid, label: "UUID/ULID", shortcut: "w") {
+                    Image(systemName: "number.circle")
+                }
+
+                toolRow(.urlParser, label: "URL Parser", shortcut: "p") {
+                    Image(systemName: "link.badge.plus")
+                }
+
+                toolRow(.regExpTester, label: "RegExp Tester", shortcut: "r") {
+                    Text(".*")
+                        .font(.monospaced(Font.system(size: 10))())
+                }
+
+                toolRow(.backslashEscape, label: "Backslash Escape", shortcut: "k") {
+                    Text("\\\\")
+                        .font(.monospaced(Font.system(size: 10))())
+                }
+
+                toolRow(.xmlFormat, label: "XML Formatter", shortcut: "m") {
+                    Text("</>")
+                        .font(.monospaced(Font.system(size: 8))())
+                }
+
+                toolRow(.htmlPreview, label: "HTML Preview", shortcut: "v") {
+                    Image(systemName: "safari")
                 }
             }
         }
@@ -588,6 +964,83 @@ public struct AppView: View {
                     )
                     .padding(.top)
 
+            case .lineSortDedupe(let childStore):
+                LineSortDedupeView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Sort and dedupe lines",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .asciiToHex(let childStore):
+                AsciiToHexView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Convert ASCII to Hex",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .hexToAscii(let childStore):
+                HexToAsciiView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Convert Hex to ASCII",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .colorConverter(let childStore):
+                ColorConverterView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Color Converter",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .svgToCss(let childStore):
+                SvgToCssView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Convert SVG to CSS",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .backslashEscape(let childStore):
+                BackslashEscapeView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Backslash Escape",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .xmlFormat(let childStore):
+                XmlFormatView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "XML Beautify / Minify",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
             case .regexMatches(let childStore):
                 RegexMatchesView(store: childStore)
                     .navigationTitle(
@@ -595,6 +1048,17 @@ public struct AppView: View {
                             "Regex Matches",
                             bundle: Bundle.module,
                             comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .regExpTester(let childStore):
+                RegExpTesterView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "RegExp Tester",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
                         )
                     )
                     .padding(.top)
@@ -621,6 +1085,17 @@ public struct AppView: View {
                     )
                     .padding(.top)
 
+            case .randomStringGenerator(let childStore):
+                RandomStringGeneratorView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Generate random strings",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
             case .base64(let childStore):
                 Base64View(store: childStore)
                     .navigationTitle(
@@ -632,6 +1107,17 @@ public struct AppView: View {
                     )
                     .padding(.top)
 
+            case .hashGenerator(let childStore):
+                HashGeneratorView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Hash Generator",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
             case .base64Image(let childStore):
                 Base64ImageView(store: childStore)
                     .navigationTitle(
@@ -639,6 +1125,83 @@ public struct AppView: View {
                             "Base64 Image Encode / Decode",
                             bundle: Bundle.module,
                             comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .stringInspector(let childStore):
+                StringInspectorView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "String Inspector",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .numberBaseConverter(let childStore):
+                NumberBaseConverterView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Number Base Converter",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .certificateDecoder(let childStore):
+                CertificateDecoderView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "Certificate Decoder",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .qrCodeTool(let childStore):
+                QrCodeToolView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "QR Code Generator/Reader",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .jsonToYaml(let childStore):
+                JsonToYamlView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "JSON to YAML",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .yamlToJson(let childStore):
+                YamlToJsonView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "YAML to JSON",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .uuidUlid(let childStore):
+                UuidUlidView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "UUID/ULID Generator/Decoder",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
                         )
                     )
                     .padding(.top)
@@ -661,6 +1224,39 @@ public struct AppView: View {
                             "URL Encode / Decode",
                             bundle: Bundle.module,
                             comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .urlParser(let childStore):
+                UrlParserView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "URL Parser",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
+                        )
+                    )
+                    .padding(.top)
+
+            case .jwtDebugger(let childStore):
+                JwtDebuggerView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "JWT Debugger",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .htmlPreview(let childStore):
+                HtmlPreviewView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "HTML Preview",
+                            bundle: Bundle.module,
+                            comment: "navigation title"
                         )
                     )
                     .padding(.top)
