@@ -67,6 +67,25 @@ extension URL {
 // MARK: - FileStorage Keys
 
 extension SharedReaderKey where Self == FileStorageKey<ToolIOStorage> {
+    public static var certificateDecoderIO: Self { .fileStorage(.toolStorage("certificateDecoder")) }
+    public static var qrCodeToolIO: Self { .fileStorage(.toolStorage("qrCodeTool")) }
+    public static var jsonToYamlIO: Self { .fileStorage(.toolStorage("jsonToYaml")) }
+    public static var yamlToJsonIO: Self { .fileStorage(.toolStorage("yamlToJson")) }
+    public static var uuidUlidIO: Self { .fileStorage(.toolStorage("uuidUlid")) }
+    public static var colorConverterIO: Self { .fileStorage(.toolStorage("colorConverter")) }
+    public static var svgToCssIO: Self { .fileStorage(.toolStorage("svgToCss")) }
+    public static var backslashEscapeIO: Self { .fileStorage(.toolStorage("backslashEscape")) }
+    public static var xmlFormatIO: Self { .fileStorage(.toolStorage("xmlFormat")) }
+    public static var lineSortDedupeIO: Self { .fileStorage(.toolStorage("lineSortDedupe")) }
+    public static var asciiToHexIO: Self { .fileStorage(.toolStorage("asciiToHex")) }
+    public static var hexToAsciiIO: Self { .fileStorage(.toolStorage("hexToAscii")) }
+    public static var randomStringGeneratorIO: Self { .fileStorage(.toolStorage("randomStringGenerator")) }
+    public static var hashGeneratorIO: Self { .fileStorage(.toolStorage("hashGenerator")) }
+    public static var stringInspectorIO: Self { .fileStorage(.toolStorage("stringInspector")) }
+    public static var numberBaseConverterIO: Self { .fileStorage(.toolStorage("numberBaseConverter")) }
+    public static var urlParserIO: Self { .fileStorage(.toolStorage("urlParser")) }
+    public static var regExpTesterIO: Self { .fileStorage(.toolStorage("regExpTester")) }
+    public static var htmlPreviewIO: Self { .fileStorage(.toolStorage("htmlPreview")) }
     public static var textCaseConverterIO: Self { .fileStorage(.toolStorage("textCaseConverter")) }
     public static var prefixSuffixIO: Self { .fileStorage(.toolStorage("prefixSuffix")) }
     public static var htmlToSwiftIO: Self { .fileStorage(.toolStorage("htmlToSwift")) }
@@ -77,6 +96,7 @@ extension SharedReaderKey where Self == FileStorageKey<ToolIOStorage> {
     public static var base64IO: Self { .fileStorage(.toolStorage("base64")) }
     public static var unixTimeIO: Self { .fileStorage(.toolStorage("unixTime")) }
     public static var urlEncodeIO: Self { .fileStorage(.toolStorage("urlEncode")) }
+    public static var jwtDebuggerIO: Self { .fileStorage(.toolStorage("jwtDebugger")) }
 }
 
 extension SharedReaderKey where Self == FileStorageKey<ToolIOStorageDoubleOutput> {
