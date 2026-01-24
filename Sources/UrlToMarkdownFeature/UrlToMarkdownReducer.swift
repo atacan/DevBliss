@@ -5,6 +5,7 @@ import Dependencies
 import DependenciesAdditions
 import HtmlToMarkdownClient
 import InputOutput
+import MarkdownUI
 import SharedModels
 import SwiftUI
 import UrlToMarkdownClient
@@ -49,6 +50,7 @@ public struct UrlToMarkdownReducer {
         public var output: OutputEditorReducer.State
         var isConversionRequestInFlight = false
         var errorMessage: String?
+        var showMarkdownPreview = false
 
         // URL input is derived from storage.input for persistence
         public var urlInput: String {
@@ -165,10 +167,43 @@ public struct UrlToMarkdownView: View {
 
             Divider()
 
-            OutputEditorView(
-                store: store.scope(state: \.output, action: \.output),
-                title: "Markdown Output"
-            )
+            // Output area with preview toggle
+            VStack(spacing: 0) {
+                // Header with title and preview toggle
+                HStack {
+                    Text("Markdown Output")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+
+                    Spacer()
+
+                    Toggle("Preview", isOn: $store.showMarkdownPreview)
+                        .toggleStyle(.switch)
+                        .controlSize(.small)
+                        .help("Toggle between raw markdown and rendered preview")
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(Color(nsColor: .controlBackgroundColor))
+
+                Divider()
+
+                // Content: either preview or raw editor
+                if store.showMarkdownPreview {
+                    ScrollView {
+                        Markdown(store.outputText)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(nsColor: .textBackgroundColor))
+                } else {
+                    OutputEditorView(
+                        store: store.scope(state: \.output, action: \.output),
+                        title: ""
+                    )
+                }
+            }
         }
     }
 

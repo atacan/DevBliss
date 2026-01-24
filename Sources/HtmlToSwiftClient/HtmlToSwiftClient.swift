@@ -4,6 +4,12 @@ import HtmlSwift
 import SwiftHighlight
 import XCTestDynamicOverlay
 
+#if canImport(AppKit)
+import AppKit
+#elseif canImport(UIKit)
+import UIKit
+#endif
+
 public struct HtmlToSwiftClient {
     public var binaryBirds: @Sendable (String, HtmlOutputComponent) async throws -> String
     public var pointfreeco: @Sendable (String, HtmlOutputComponent) async throws -> String
@@ -35,9 +41,33 @@ extension HtmlToSwiftClient: DependencyKey {
                 await highlighter.registerSwift()
                 let renderer = NSAttributedStringRenderer(theme: .dark)
                 let result = await highlighter.highlight(code, language: "swift", renderer: renderer)
-                return result.value
+
+                // Apply default foreground color for text without highlighting (for dark mode visibility)
+                let mutableResult = NSMutableAttributedString(attributedString: result.value)
+                applyDefaultForegroundColor(to: mutableResult)
+                return mutableResult
             }
         )
+    }
+}
+
+/// Applies a default foreground color to text that doesn't have one set.
+/// Uses system label color which adapts to light/dark mode automatically.
+private func applyDefaultForegroundColor(to attributedString: NSMutableAttributedString) {
+    let fullRange = NSRange(location: 0, length: attributedString.length)
+
+    // Use system label color which is black in light mode, white in dark mode
+    #if canImport(AppKit)
+    let defaultColor = NSColor.labelColor
+    #elseif canImport(UIKit)
+    let defaultColor = UIColor.label
+    #endif
+
+    // Enumerate through the string and add foreground color where missing
+    attributedString.enumerateAttribute(.foregroundColor, in: fullRange, options: []) { value, range, _ in
+        if value == nil {
+            attributedString.addAttribute(.foregroundColor, value: defaultColor, range: range)
+        }
     }
 }
 
