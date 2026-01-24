@@ -109,8 +109,6 @@ public struct RandomStringGeneratorView: View {
                         Text("\(store.length)")
                             .frame(width: 50, alignment: .leading)
                     }
-
-                    Spacer()
                 }
 
                 GridRow {
