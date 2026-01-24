@@ -161,7 +161,7 @@ public struct UrlToMarkdownView: View {
             // Configuration panel
             configurationGrid
                 .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+                .padding(.vertical, 10)
 
             Divider()
 
@@ -174,49 +174,62 @@ public struct UrlToMarkdownView: View {
 
     @ViewBuilder
     private var configurationGrid: some View {
-        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+        let labelWidth: CGFloat = 120
+
+        Grid(horizontalSpacing: 18, verticalSpacing: 12) {
             // Row 1: Engine and Heading Style
             GridRow {
                 ConfigLabel("Engine")
+                    .frame(width: labelWidth, alignment: .trailing)
                 Picker("Engine", selection: $store.configuration.engine) {
                     Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
                     Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
                 }
                 .blissMenuPicker(width: 180)
+                .controlSize(.small)
                 .help("Turndown for complex HTML, html-to-md for speed")
 
                 ConfigLabel("Heading Style")
+                    .frame(width: labelWidth, alignment: .trailing)
                 Picker("Heading Style", selection: $store.configuration.headingStyle) {
                     Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
                     Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
                 }
                 .blissMenuPicker(width: 160)
+                .controlSize(.small)
                 .help("ATX uses # prefix, Setext uses underlines")
             }
 
             // Row 2: Bullet Marker and Code Block Style
             GridRow {
                 ConfigLabel("Bullet Marker")
+                    .frame(width: labelWidth, alignment: .trailing)
                 Picker("Bullet Marker", selection: $store.configuration.bulletListMarker) {
-                    Text("Dash (-)").tag("-")
-                    Text("Asterisk (*)").tag("*")
-                    Text("Plus (+)").tag("+")
+                    Text("-").tag("-")
+                    Text("*").tag("*")
+                    Text("+").tag("+")
                 }
-                .blissMenuPicker(width: 180)
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .frame(width: 180, alignment: .leading)
+                .controlSize(.small)
                 .help("Character for unordered list items")
 
                 ConfigLabel("Code Blocks")
+                    .frame(width: labelWidth, alignment: .trailing)
                 Picker("Code Block Style", selection: $store.configuration.codeBlockStyle) {
                     Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
                     Text("Indented").tag(DemarkCodeBlockStyle.indented)
                 }
                 .blissMenuPicker(width: 160)
+                .controlSize(.small)
                 .help("Fenced uses triple backticks, Indented uses 4 spaces")
             }
 
             // Row 3: Content Selector - aligned with grid columns above
             GridRow {
                 ConfigLabel("Content Selector")
+                    .frame(width: labelWidth, alignment: .trailing)
                 TextField("e.g., article, main, .content", text: $store.loadingConfiguration.contentSelector)
                     .blissCompactTextField()
                     .gridCellColumns(3)

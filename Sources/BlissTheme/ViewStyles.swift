@@ -7,6 +7,7 @@ public extension View {
     func blissPrimaryButton() -> some View {
         self
             .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.roundedRectangle(radius: 10))
             .controlSize(.large)
     }
 }
@@ -24,9 +25,9 @@ public extension View {
             #else
             .background(Color(uiColor: .secondarySystemBackground))
             #endif
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             .overlay(
-                RoundedRectangle(cornerRadius: 6)
+                RoundedRectangle(cornerRadius: 10)
                     #if os(macOS)
                     .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
                     #else
@@ -45,9 +46,9 @@ public extension View {
             #else
             .background(Color(uiColor: .secondarySystemBackground))
             #endif
-            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
-                RoundedRectangle(cornerRadius: 4)
+                RoundedRectangle(cornerRadius: 8)
                     #if os(macOS)
                     .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
                     #else
