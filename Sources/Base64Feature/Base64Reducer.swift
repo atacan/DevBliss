@@ -115,7 +115,7 @@ public struct Base64View: View {
     public var body: some View {
         VStack(spacing: 0) {
             // Mode selection and options
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            Grid(horizontalSpacing: 12, verticalSpacing: 4) {
                 GridRow {
                     ConfigLabel("Mode")
                     Picker("Mode", selection: $store.mode) {
@@ -124,6 +124,7 @@ public struct Base64View: View {
                                 .tag(mode)
                         }
                     }
+                    .labelsHidden()
                     .pickerStyle(.segmented)
                     .frame(width: 160)
 

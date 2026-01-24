@@ -97,20 +97,18 @@ public struct BackslashEscapeView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel("Mode")
-                    Picker("Mode", selection: $store.mode) {
-                        ForEach(BackslashEscapeMode.allCases) { mode in
-                            Text(mode.rawValue)
-                                .tag(mode)
-                        }
+            HStack(spacing: 12) {
+                ConfigLabel("Mode")
+                Picker("Mode", selection: $store.mode) {
+                    ForEach(BackslashEscapeMode.allCases) { mode in
+                        Text(mode.rawValue)
+                            .tag(mode)
                     }
-                    .pickerStyle(.segmented)
-                    .frame(width: 200)
-
-                    Spacer()
                 }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+                .frame(width: 200)
+                .help("Escape adds backslashes, Unescape removes them")
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)

@@ -369,7 +369,7 @@ public struct Base64ImageView: View {
         VStack(spacing: 12) {
             // Header
             HStack {
-                Text("Image Preview")
+                Text("Image")
                     .font(.headline)
 
                 Spacer()
@@ -382,6 +382,27 @@ public struct Base64ImageView: View {
             }
             .padding(.horizontal, 12)
             .padding(.top, 12)
+            
+            HStack(spacing: 12) {
+                Button {
+                    store.send(.loadFileButtonTapped)
+                } label: {
+                    Label("Load File…", systemImage: "folder")
+                }
+                
+                Button {
+                    store.send(.pasteImageFromClipboardTapped)
+                } label: {
+                    Label("Paste", systemImage: "clipboard")
+                }
+                
+                Button {
+                    store.send(.clearImageTapped)
+                } label: {
+                    Label("Clear", systemImage: "xmark")
+                }
+                .disabled(!store.hasImage)
+            }
 
             // Image preview area
             ZStack {
@@ -436,27 +457,6 @@ public struct Base64ImageView: View {
 
             // Action buttons
             HStack(spacing: 12) {
-                Button {
-                    store.send(.loadFileButtonTapped)
-                } label: {
-                    Label("Load File...", systemImage: "folder")
-                }
-
-                Button {
-                    store.send(.pasteImageFromClipboardTapped)
-                } label: {
-                    Label("Paste", systemImage: "clipboard")
-                }
-
-                Spacer()
-
-                Button {
-                    store.send(.clearImageTapped)
-                } label: {
-                    Label("Clear", systemImage: "xmark")
-                }
-                .disabled(!store.hasImage)
-
                 Button {
                     store.send(.saveImageTapped)
                 } label: {
