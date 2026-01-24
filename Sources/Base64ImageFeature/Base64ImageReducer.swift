@@ -305,7 +305,7 @@ public struct Base64ImageView: View {
 
     @ViewBuilder
     private var stringSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 8) {
             // Header with output format picker
             HStack {
                 Text("Base64 String")
@@ -321,11 +321,12 @@ public struct Base64ImageView: View {
                         Text(format.rawValue).tag(format)
                     }
                 }
+                .labelsHidden()
                 .pickerStyle(.segmented)
                 .frame(maxWidth: 280)
             }
             .padding(.horizontal, 12)
-            .padding(.top, 12)
+            .padding(.top, 8)
 
             // Text editor for Base64
             TextEditor(text: Binding(
@@ -366,43 +367,37 @@ public struct Base64ImageView: View {
 
     @ViewBuilder
     private var imageSection: some View {
-        VStack(spacing: 12) {
-            // Header
+        VStack(spacing: 8) {
+            // Header with buttons
             HStack {
                 Text("Image")
                     .font(.headline)
 
                 Spacer()
 
-                if let info = store.imageInfo {
-                    Text("\(info.dimensionsString) - \(info.formattedSize)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                HStack(spacing: 8) {
+                    Button {
+                        store.send(.loadFileButtonTapped)
+                    } label: {
+                        Label("Load File…", systemImage: "folder")
+                    }
+
+                    Button {
+                        store.send(.pasteImageFromClipboardTapped)
+                    } label: {
+                        Label("Paste", systemImage: "clipboard")
+                    }
+
+                    Button {
+                        store.send(.clearImageTapped)
+                    } label: {
+                        Label("Clear", systemImage: "xmark")
+                    }
+                    .disabled(!store.hasImage)
                 }
             }
             .padding(.horizontal, 12)
-            .padding(.top, 12)
-            
-            HStack(spacing: 12) {
-                Button {
-                    store.send(.loadFileButtonTapped)
-                } label: {
-                    Label("Load File…", systemImage: "folder")
-                }
-                
-                Button {
-                    store.send(.pasteImageFromClipboardTapped)
-                } label: {
-                    Label("Paste", systemImage: "clipboard")
-                }
-                
-                Button {
-                    store.send(.clearImageTapped)
-                } label: {
-                    Label("Clear", systemImage: "xmark")
-                }
-                .disabled(!store.hasImage)
-            }
+            .padding(.top, 8)
 
             // Image preview area
             ZStack {
@@ -473,6 +468,13 @@ public struct Base64ImageView: View {
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
+            
+            // Image info
+            if let info = store.imageInfo {
+                Text("\(info.dimensionsString) - \(info.formattedSize)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }
