@@ -82,14 +82,13 @@ public struct HtmlPreviewView: View {
         VStack(spacing: 0) {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-                    ConfigLabel("Options")
+//                    ConfigLabel("Options")
                     Toggle("Enable JavaScript", isOn: $store.enableJavaScript)
                         .toggleStyle(.checkbox)
                     Toggle("Allow link navigation", isOn: $store.allowLinkNavigation)
                         .toggleStyle(.checkbox)
                     Toggle("Allow network", isOn: $store.allowNetwork)
                         .toggleStyle(.checkbox)
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)
