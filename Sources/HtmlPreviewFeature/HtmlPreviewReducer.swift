@@ -100,10 +100,8 @@ public struct HtmlPreviewView: View {
                 }
 
                 LoadingButton("Reload", isLoading: false) {
-                    webViewStore.reload()
+                    webViewStore.reload(html: store.input.text)
                 }
-
-                Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 8)
@@ -177,8 +175,8 @@ struct HtmlPreviewWebViewSettings: Equatable {
 final class HtmlPreviewWebViewStore: ObservableObject {
     fileprivate var webView: WKWebView?
 
-    func reload() {
-        webView?.reload()
+    func reload(html: String) {
+        webView?.loadHTMLString(html, baseURL: nil)
     }
 }
 
