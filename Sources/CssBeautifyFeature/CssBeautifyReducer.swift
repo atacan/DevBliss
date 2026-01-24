@@ -97,23 +97,22 @@ public struct CssBeautifyView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel("Mode")
-                    Picker("Mode", selection: $store.mode) {
-                        ForEach(CssBeautifyMode.allCases) { mode in
-                            Text(mode.rawValue)
-                                .tag(mode)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 200)
-
-                    Spacer()
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+//            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+//                GridRow {
+//                    ConfigLabel("Mode")
+//                    Picker("Mode", selection: $store.mode) {
+//                        ForEach(CssBeautifyMode.allCases) { mode in
+//                            Text(mode.rawValue)
+//                                .tag(mode)
+//                        }
+//                    }
+//                    .labelsHidden()
+//                    .pickerStyle(.segmented)
+//                    .frame(width: 200)
+//                }
+//            }
+//            .padding(.horizontal, 16)
+//            .padding(.vertical, 8)
 
             LoadingButton(store.mode == .beautify ? "Beautify" : "Minify", isLoading: store.isConversionRequestInFlight) {
                 store.send(.convertButtonTouched)

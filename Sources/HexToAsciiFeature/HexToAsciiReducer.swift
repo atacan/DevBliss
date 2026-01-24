@@ -103,11 +103,10 @@ public struct HexToAsciiView: View {
         VStack(spacing: 0) {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-                    ConfigLabel("Options")
+//                    ConfigLabel("Options")
                     Toggle("Allow separators", isOn: $store.allowSeparators)
                         .toggleStyle(.checkbox)
                         .help("Allow spaces, commas, colons, and 0x prefixes")
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)

@@ -115,10 +115,9 @@ public struct HashGeneratorView: View {
         VStack(spacing: 0) {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-                    ConfigLabel("Format")
+//                    ConfigLabel("Format")
                     Toggle("Uppercase", isOn: $store.uppercase)
                         .toggleStyle(.checkbox)
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)

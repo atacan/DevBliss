@@ -111,13 +111,12 @@ public struct CertificateDecoderView: View {
     public var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
+                
                 LoadingButton("Decode", isLoading: false) {
                     store.send(.decodeButtonTouched)
                 }
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help("Decode (⌘ Return)")
-
-                Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
@@ -156,7 +155,7 @@ public struct CertificateDecoderView: View {
                 }
             } else {
                 Spacer()
-                Text("Paste a PEM or base64 DER certificate and click Decode")
+                Text("Paste a PEM or base64 DER certificate to the input editor")
                     .foregroundColor(.secondary)
                 Spacer()
             }
