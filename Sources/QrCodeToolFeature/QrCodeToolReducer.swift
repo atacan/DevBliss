@@ -162,21 +162,22 @@ public struct QrCodeToolView: View {
                             Text(mode.rawValue).tag(mode)
                         }
                     }
+                    .labelsHidden()
                     .pickerStyle(.segmented)
                     .frame(width: 200)
 
                     if store.mode == .generate {
+                        ConfigLabel("Correction")
                         Picker("Correction", selection: $store.errorCorrection) {
                             ForEach(QrCodeErrorCorrection.allCases) { option in
                                 Text(option.rawValue).tag(option)
                             }
                         }
                         .blissMenuPicker(width: 140)
-
+                        
+                        ConfigLabel("Size")
                         Stepper("Size \(store.dimension)", value: $store.dimension, in: 128...1024, step: 64)
                     }
-
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)

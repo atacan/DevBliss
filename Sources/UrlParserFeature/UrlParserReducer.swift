@@ -100,11 +100,10 @@ public struct UrlParserView: View {
 
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-                    ConfigLabel("Options")
+//                    ConfigLabel("Options")
                     Toggle("Auto-detect", isOn: $store.autoDetect)
                         .toggleStyle(.checkbox)
                         .help("Automatically parse when URL includes multiple query items")
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)

@@ -99,17 +99,16 @@ public struct XmlFormatView: View {
         VStack(spacing: 0) {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-                    ConfigLabel("Mode")
+//                    ConfigLabel("Mode")
                     Picker("Mode", selection: $store.mode) {
                         ForEach(XmlFormatMode.allCases) { mode in
                             Text(mode.rawValue)
                                 .tag(mode)
                         }
                     }
+                    .labelsHidden()
                     .pickerStyle(.segmented)
                     .frame(width: 200)
-
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)
