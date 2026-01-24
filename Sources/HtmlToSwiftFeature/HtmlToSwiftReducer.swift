@@ -2,6 +2,7 @@ import BlissTheme
 import ComposableArchitecture
 import Dependencies
 import DependenciesAdditions
+import Foundation
 import HtmlSwift
 import HtmlToSwiftClient
 import InputOutput
@@ -14,13 +15,13 @@ public struct HtmlToSwiftReducer {
     @ObservableState
     public struct State: Equatable {
         @Shared(.htmlToSwiftIO) public var storage = ToolIOStorage()
-        var inputOutput: InputOutputEditorsReducer.State
+        var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
         var dsl: SwiftDSL = .binaryBirds
         var component: HtmlOutputComponent = .fullHtml
 
         public init(
-            inputOutput: InputOutputEditorsReducer.State = .init(),
+            inputOutput: InputOutputAttributedEditorsReducer.State = .init(),
             dsl: SwiftDSL = .binaryBirds,
             component: HtmlOutputComponent = .fullHtml
         ) {
@@ -29,7 +30,7 @@ public struct HtmlToSwiftReducer {
             self.component = component
         }
 
-        public init(inputOutput: InputOutputEditorsReducer.State = .init()) {
+        public init(inputOutput: InputOutputAttributedEditorsReducer.State = .init()) {
             self.inputOutput = inputOutput
         }
 
@@ -37,9 +38,9 @@ public struct HtmlToSwiftReducer {
             // Explicitly initialize storage first
             let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .htmlToSwiftIO)
             self._storage = sharedStorage
-            self.inputOutput = InputOutputEditorsReducer.State(
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
                 inputText: sharedStorage.input,
-                outputText: sharedStorage.output
+                outputRawText: sharedStorage.output
             )
             // Config (dsl, component) loaded via observeSettings action
         }
@@ -48,14 +49,14 @@ public struct HtmlToSwiftReducer {
             // Explicitly initialize storage with provided values
             let sharedStorage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .htmlToSwiftIO)
             self._storage = sharedStorage
-            self.inputOutput = InputOutputEditorsReducer.State(
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
                 inputText: sharedStorage.input,
-                outputText: sharedStorage.output
+                outputRawText: sharedStorage.output
             )
         }
 
         public var outputText: String {
-            inputOutput.output.text
+            inputOutput.output.text.string
         }
     }
 
@@ -63,8 +64,8 @@ public struct HtmlToSwiftReducer {
         case observeSettings
         case binding(BindingAction<State>)
         case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+        case conversionResponse(TaskResult<NSAttributedString>)
+        case inputOutput(InputOutputAttributedEditorsReducer.Action)
     }
 
     @Dependency(\.htmlToSwift) var htmlToSwift
@@ -86,21 +87,24 @@ public struct HtmlToSwiftReducer {
                         await send(
                             .conversionResponse(
                                 TaskResult {
-                                    try await htmlToSwift.convert(input.text, for: dsl, output: component)
+                                    // First convert HTML to Swift
+                                    let swiftCode = try await htmlToSwift.convert(input.text, for: dsl, output: component)
+                                    // Then highlight the Swift code
+                                    let highlighted = await htmlToSwift.highlightSwift(swiftCode)
+                                    return highlighted
                                 }
                             )
                         )
                     }
                     .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
 
-            case let .conversionResponse(.success(swiftCode)):
+            case let .conversionResponse(.success(highlightedCode)):
                 state.isConversionRequestInFlight = false
-                // https://github.com/pointfreeco/swift-composable-architecture/discussions/1952#discussioncomment-5167956
-                return state.inputOutput.output.updateText(swiftCode)
+                return state.inputOutput.output.updateText(highlightedCode)
                     .map { Action.inputOutput(.output($0)) }
             case let .conversionResponse(.failure(error)):
                 state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
+                return state.inputOutput.output.updateText(errorAttributedString(error.localizedDescription))
                     .map { Action.inputOutput(.output($0)) }
             case .inputOutput:
                 return .none
@@ -108,7 +112,7 @@ public struct HtmlToSwiftReducer {
         }
 
         Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
+            InputOutputAttributedEditorsReducer()
         }
     }
 
@@ -190,7 +194,7 @@ public struct HtmlToSwiftView: View {
 
             Divider()
 
-            InputOutputEditorsView(
+            InputOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: HtmlToSwiftReducer.Action.inputOutput),
                 inputEditorTitle: "Html",
                 outputEditorTitle: "Swift",

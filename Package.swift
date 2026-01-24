@@ -117,6 +117,7 @@ let package = Package(
         .package(url: "https://github.com/dagronf/QRCode", from: "11.0.0"),
         .package(url: "https://github.com/jpsim/Yams", from: "6.0.1"),
         .package(url: "https://github.com/yaslab/ULID.swift", from: "1.2.0"),
+        .package(path: "/Users/atacan/Developer/Repositories/swift-highlight/"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -419,6 +420,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "HtmlSwift", package: "html-swift"),
+                .product(name: "SwiftHighlight", package: "swift-highlight"),
             ]
         ),
         .target(
