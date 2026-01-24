@@ -121,8 +121,6 @@ public struct NumberBaseConverterView: View {
                         }
                     }
                     .blissMenuPicker(width: 140)
-
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)

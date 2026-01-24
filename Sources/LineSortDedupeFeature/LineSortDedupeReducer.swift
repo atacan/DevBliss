@@ -137,8 +137,6 @@ public struct LineSortDedupeView: View {
 
                     Toggle("Remove empty lines", isOn: $store.removeEmptyLines)
                         .toggleStyle(.checkbox)
-
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)

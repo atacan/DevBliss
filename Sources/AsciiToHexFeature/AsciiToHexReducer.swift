@@ -104,7 +104,7 @@ public struct AsciiToHexView: View {
         VStack(spacing: 0) {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-                    ConfigLabel("Format")
+                    ConfigLabel("Separator")
 
                     Picker("Separator", selection: $store.separator) {
                         ForEach(HexSeparator.allCases) { separator in
@@ -117,7 +117,7 @@ public struct AsciiToHexView: View {
                     Toggle("Uppercase", isOn: $store.uppercase)
                         .toggleStyle(.checkbox)
 
-                    Spacer()
+//                    Spacer()
                 }
             }
             .padding(.horizontal, 16)

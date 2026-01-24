@@ -117,7 +117,7 @@ public struct Base64View: View {
             // Mode selection and options
             Grid(horizontalSpacing: 12, verticalSpacing: 4) {
                 GridRow {
-                    ConfigLabel("Mode")
+//                    ConfigLabel("Mode")
                     Picker("Mode", selection: $store.mode) {
                         ForEach(Base64Mode.allCases) { mode in
                             Text(mode.rawValue)
@@ -127,12 +127,10 @@ public struct Base64View: View {
                     .labelsHidden()
                     .pickerStyle(.segmented)
                     .frame(width: 160)
-
-                    Spacer()
                 }
 
                 GridRow {
-                    ConfigLabel("Options")
+//                    ConfigLabel("Options")
                     HStack(spacing: 16) {
                         Toggle("Auto-detect", isOn: $store.autoDetect)
                             .help("Automatically detect if input is Base64 and switch mode")

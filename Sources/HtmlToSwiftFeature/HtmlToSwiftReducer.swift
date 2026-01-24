@@ -8,6 +8,7 @@ import HtmlToSwiftClient
 import InputOutput
 import SharedModels
 import SwiftUI
+import SyntaxHighlightClient
 
 @Reducer
 public struct HtmlToSwiftReducer {
@@ -69,6 +70,7 @@ public struct HtmlToSwiftReducer {
     }
 
     @Dependency(\.htmlToSwift) var htmlToSwift
+    @Dependency(\.syntaxHighlight) var syntaxHighlight
     private enum CancelID { case conversionRequest }
     @Dependency(\.userDefaults) var userDefaults
 
@@ -90,7 +92,7 @@ public struct HtmlToSwiftReducer {
                                     // First convert HTML to Swift
                                     let swiftCode = try await htmlToSwift.convert(input.text, for: dsl, output: component)
                                     // Then highlight the Swift code
-                                    let highlighted = await htmlToSwift.highlightSwift(swiftCode)
+                                    let highlighted = await syntaxHighlight.highlightSwift(swiftCode)
                                     return highlighted
                                 }
                             )

@@ -104,14 +104,12 @@ public struct SvgToCssView: View {
         VStack(spacing: 0) {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-                    ConfigLabel("Options")
+//                    ConfigLabel("Options")
                     Toggle("Include data: prefix", isOn: $store.includeDataPrefix)
                         .toggleStyle(.checkbox)
 
                     Toggle("Wrap in CSS", isOn: $store.wrapWithCss)
                         .toggleStyle(.checkbox)
-
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)

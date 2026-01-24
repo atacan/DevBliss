@@ -98,6 +98,7 @@ public struct HtmlPreviewView: View {
                 LoadingButton("Open in Browser", isLoading: false) {
                     openInBrowser(store.input.text)
                 }
+                .buttonStyle(.bordered)
 
                 LoadingButton("Reload", isLoading: false) {
                     webViewStore.reload(html: store.input.text)

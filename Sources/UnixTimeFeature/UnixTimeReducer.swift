@@ -172,6 +172,7 @@ public struct UnixTimeView: View {
                                 .tag(mode)
                         }
                     }
+                    .labelsHidden()
                     .pickerStyle(.segmented)
                     .frame(width: 200)
 

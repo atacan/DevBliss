@@ -86,6 +86,7 @@ let package = Package(
         .library(name: "SharedModels", targets: ["SharedModels"]),
         .library(name: "SwiftPrettyClient", targets: ["SwiftPrettyClient"]),
         .library(name: "SwiftPrettyFeature", targets: ["SwiftPrettyFeature"]),
+        .library(name: "SyntaxHighlightClient", targets: ["SyntaxHighlightClient"]),
         .library(name: "TextCaseConverterClient", targets: ["TextCaseConverterClient"]),
         .library(name: "TextCaseConverterFeature", targets: ["TextCaseConverterFeature"]),
         .library(name: "UnixTimeClient", targets: ["UnixTimeClient"]),
@@ -323,6 +324,7 @@ let package = Package(
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
+                "SyntaxHighlightClient",
             ]
         ),
         .target(
@@ -417,11 +419,17 @@ let package = Package(
             ]
         ),
         .target(
+            name: "SyntaxHighlightClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "SwiftHighlight", package: "swift-highlight"),
+            ]
+        ),
+        .target(
             name: "HtmlToSwiftClient",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "HtmlSwift", package: "html-swift"),
-                .product(name: "SwiftHighlight", package: "swift-highlight"),
             ]
         ),
         .target(
@@ -430,6 +438,7 @@ let package = Package(
                 "HtmlToSwiftClient",
                 "InputOutput",
                 "SharedModels",
+                "SyntaxHighlightClient",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
@@ -453,8 +462,10 @@ let package = Package(
                 "HtmlToMarkdownClient",
                 "InputOutput",
                 "SharedModels",
+                "SyntaxHighlightClient",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
+                .product(name: "MarkdownUI", package: "swift-markdown-ui"),
             ]
         ),
         .target(
@@ -502,6 +513,7 @@ let package = Package(
                 "HtmlToMarkdownClient",
                 "InputOutput",
                 "SharedModels",
+                "SyntaxHighlightClient",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
                 .product(name: "MarkdownUI", package: "swift-markdown-ui"),

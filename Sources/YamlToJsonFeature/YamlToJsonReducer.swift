@@ -101,16 +101,16 @@ public struct YamlToJsonView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel("Options")
-                    Toggle("Pretty printed", isOn: $store.prettyPrinted)
-                        .toggleStyle(.checkbox)
-                    Spacer()
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+//            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+//                GridRow {
+//                    ConfigLabel("Options")
+//                    Toggle("Pretty printed", isOn: $store.prettyPrinted)
+//                        .toggleStyle(.checkbox)
+//                    Spacer()
+//                }
+//            }
+//            .padding(.horizontal, 16)
+//            .padding(.vertical, 8)
 
             LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
                 store.send(.convertButtonTouched)

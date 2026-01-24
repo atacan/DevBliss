@@ -134,8 +134,6 @@ public struct ColorConverterView: View {
 
                     Toggle("Include alpha", isOn: $store.includeAlpha)
                         .toggleStyle(.checkbox)
-
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)

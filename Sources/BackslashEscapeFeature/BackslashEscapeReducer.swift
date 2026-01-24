@@ -98,7 +98,7 @@ public struct BackslashEscapeView: View {
     public var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                ConfigLabel("Mode")
+//                ConfigLabel("Mode")
                 Picker("Mode", selection: $store.mode) {
                     ForEach(BackslashEscapeMode.allCases) { mode in
                         Text(mode.rawValue)

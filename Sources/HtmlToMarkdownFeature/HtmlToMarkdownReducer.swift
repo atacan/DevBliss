@@ -3,10 +3,14 @@ import ComposableArchitecture
 import Demark
 import Dependencies
 import DependenciesAdditions
+import Foundation
 import HtmlToMarkdownClient
 import InputOutput
+import MarkdownUI
 import SharedModels
+import SplitView
 import SwiftUI
+import SyntaxHighlightClient
 
 // MARK: - FileStorage Key for Configuration
 
@@ -32,18 +36,19 @@ public struct HtmlToMarkdownReducer {
     public struct State: Equatable {
         @Shared(.htmlToMarkdownIO) public var storage = ToolIOStorage()
         @Shared(.htmlToMarkdownConfig) public var configuration = HtmlToMarkdownConfig()
-        public var inputOutput: InputOutputEditorsReducer.State
+        public var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
+        var showMarkdownPreview = false
 
         public init(
-            inputOutput: InputOutputEditorsReducer.State = .init(),
+            inputOutput: InputOutputAttributedEditorsReducer.State = .init(),
             configuration: HtmlToMarkdownConfig = .init()
         ) {
             // Initialize inputOutput using derived shared refs from storage
             let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .htmlToMarkdownIO)
-            self.inputOutput = InputOutputEditorsReducer.State(
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
                 inputText: sharedStorage.input,
-                outputText: sharedStorage.output
+                outputRawText: sharedStorage.output
             )
 
             self.isConversionRequestInFlight = false
@@ -56,9 +61,9 @@ public struct HtmlToMarkdownReducer {
 
             // Initialize inputOutput using derived shared refs
             let sharedStorage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .htmlToMarkdownIO)
-            self.inputOutput = InputOutputEditorsReducer.State(
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
                 inputText: sharedStorage.input,
-                outputText: sharedStorage.output
+                outputRawText: sharedStorage.output
             )
 
             self.isConversionRequestInFlight = false
@@ -66,18 +71,19 @@ public struct HtmlToMarkdownReducer {
         }
 
         public var outputText: String {
-            inputOutput.output.text
+            inputOutput.output.text.string
         }
     }
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+        case conversionResponse(TaskResult<NSAttributedString>)
+        case inputOutput(InputOutputAttributedEditorsReducer.Action)
     }
 
     @Dependency(\.htmlToMarkdown) var htmlToMarkdown
+    @Dependency(\.syntaxHighlight) var syntaxHighlight
     private enum CancelID { case conversionRequest }
     @Dependency(\.mainQueue) var mainQueue
 
@@ -94,20 +100,22 @@ public struct HtmlToMarkdownReducer {
                         await send(
                             .conversionResponse(
                                 TaskResult {
-                                    try await htmlToMarkdown.convert(input, config)
+                                    let markdown = try await htmlToMarkdown.convert(input, config)
+                                    let highlighted = await syntaxHighlight.highlightMarkdown(markdown)
+                                    return highlighted
                                 }
                             )
                         )
                     }
                     .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
 
-            case let .conversionResponse(.success(result)):
+            case let .conversionResponse(.success(highlighted)):
                 state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
+                return state.inputOutput.output.updateText(highlighted)
                     .map { Action.inputOutput(.output($0)) }
             case let .conversionResponse(.failure(error)):
                 state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
+                return state.inputOutput.output.updateText(errorAttributedString(error.localizedDescription))
                     .map { Action.inputOutput(.output($0)) }
             case .inputOutput:
                 return .none
@@ -115,7 +123,7 @@ public struct HtmlToMarkdownReducer {
         }
 
         Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
+            InputOutputAttributedEditorsReducer()
         }
     }
 }
@@ -172,24 +180,99 @@ public struct HtmlToMarkdownView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
-
+            
+            
             LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
                 store.send(.convertButtonTouched)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help("Convert HTML to Markdown (⌘ Return)")
+
+            HStack(spacing: 12) {
+
+                Spacer()
+
+                Toggle("Preview", isOn: $store.showMarkdownPreview)
+                    .toggleStyle(.switch)
+                    .controlSize(.small)
+                    .help("Toggle between raw markdown and rendered preview")
+            }
+            .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
             Divider()
 
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: HtmlToMarkdownReducer.Action.inputOutput),
-                inputEditorTitle: "HTML Input",
-                outputEditorTitle: "Markdown Output",
-                keyForFraction: SettingsKey.HtmlToMarkdown.splitViewFraction,
-                keyForLayout: SettingsKey.HtmlToMarkdown.splitViewLayout
-            )
+            if store.showMarkdownPreview {
+                markdownPreviewSplitView
+            } else {
+                InputOutputAttributedEditorsView(
+                    store: store.scope(state: \.inputOutput, action: \.inputOutput),
+                    inputEditorTitle: "HTML Input",
+                    outputEditorTitle: "Markdown Output",
+                    keyForFraction: SettingsKey.HtmlToMarkdown.splitViewFraction,
+                    keyForLayout: SettingsKey.HtmlToMarkdown.splitViewLayout
+                )
+            }
         }
+    }
+
+    @ViewBuilder
+    private var markdownPreviewSplitView: some View {
+        let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.HtmlToMarkdown.splitViewFraction)
+        let layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.HtmlToMarkdown.splitViewLayout)
+        let hide = SideHolder()
+
+        Split(
+            primary: {
+                // Input side
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("HTML Input")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color(nsColor: .controlBackgroundColor))
+
+                    Divider()
+
+                    InputEditorView(
+                        store: store.scope(state: \.inputOutput.input, action: \.inputOutput.input),
+                        title: ""
+                    )
+                }
+            },
+            secondary: {
+                // Output side with markdown preview
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("Markdown Preview")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color(nsColor: .controlBackgroundColor))
+
+                    Divider()
+
+                    ScrollView {
+                        Markdown(store.outputText)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(nsColor: .textBackgroundColor))
+                }
+            }
+        )
+        .fraction(fraction)
+        .layout(layout)
+        .hide(hide)
+        .styling(visibleThickness: 2)
     }
 }
 

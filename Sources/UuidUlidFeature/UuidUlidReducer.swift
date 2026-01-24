@@ -167,19 +167,19 @@ public struct UuidUlidView: View {
                     .frame(width: 200)
 
                     if store.mode == .generate {
+                        ConfigLabel("Type")
                         Picker("Type", selection: $store.type) {
                             ForEach(UuidUlidType.allCases) { type in
                                 Text(type.rawValue).tag(type)
                             }
                         }
+                        .labelsHidden()
                         .blissMenuPicker(width: 120)
 
                         Stepper("Count \(store.count)", value: $store.count, in: 1...100)
                         Toggle("Lowercase", isOn: $store.lowercase)
-                            .toggleStyle(.checkbox)
+                             .toggleStyle(.checkbox)
                     }
-
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)

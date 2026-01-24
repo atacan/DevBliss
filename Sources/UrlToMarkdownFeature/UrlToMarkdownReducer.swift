@@ -3,11 +3,13 @@ import ComposableArchitecture
 import Demark
 import Dependencies
 import DependenciesAdditions
+import Foundation
 import HtmlToMarkdownClient
 import InputOutput
 import MarkdownUI
 import SharedModels
 import SwiftUI
+import SyntaxHighlightClient
 import UrlToMarkdownClient
 
 // MARK: - FileStorage Keys for Configuration
@@ -47,7 +49,7 @@ public struct UrlToMarkdownReducer {
         @Shared(.urlToMarkdownIO) public var storage = ToolIOStorage()
         @Shared(.urlToMarkdownConfig) public var configuration = HtmlToMarkdownConfig()
         @Shared(.urlLoadingConfig) public var loadingConfiguration = UrlLoadingConfig()
-        public var output: OutputEditorReducer.State
+        public var output: OutputAttributedEditorReducer.State
         var isConversionRequestInFlight = false
         var errorMessage: String?
         var showMarkdownPreview = false
@@ -63,23 +65,24 @@ public struct UrlToMarkdownReducer {
             loadingConfiguration: UrlLoadingConfig = .init()
         ) {
             let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .urlToMarkdownIO)
-            self.output = OutputEditorReducer.State(text: sharedStorage.output)
+            self.output = OutputAttributedEditorReducer.State(rawText: sharedStorage.output)
             self.isConversionRequestInFlight = false
         }
 
         public var outputText: String {
-            output.text
+            output.text.string
         }
     }
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case output(OutputEditorReducer.Action)
+        case conversionResponse(TaskResult<NSAttributedString>)
+        case output(OutputAttributedEditorReducer.Action)
     }
 
     @Dependency(\.urlToMarkdown) var urlToMarkdown
+    @Dependency(\.syntaxHighlight) var syntaxHighlight
     private enum CancelID { case conversionRequest }
     @Dependency(\.mainQueue) var mainQueue
 
@@ -101,21 +104,23 @@ public struct UrlToMarkdownReducer {
                         await send(
                             .conversionResponse(
                                 TaskResult {
-                                    try await urlToMarkdown.convert(url, config, loadingConfig)
+                                    let markdown = try await urlToMarkdown.convert(url, config, loadingConfig)
+                                    let highlighted = await syntaxHighlight.highlightMarkdown(markdown)
+                                    return highlighted
                                 }
                             )
                         )
                     }
                     .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
 
-            case let .conversionResponse(.success(result)):
+            case let .conversionResponse(.success(highlighted)):
                 state.isConversionRequestInFlight = false
-                return state.output.updateText(result)
+                return state.output.updateText(highlighted)
                     .map { Action.output($0) }
             case let .conversionResponse(.failure(error)):
                 state.isConversionRequestInFlight = false
                 state.errorMessage = error.localizedDescription
-                return state.output.updateText(error.localizedDescription)
+                return state.output.updateText(errorAttributedString(error.localizedDescription))
                     .map { Action.output($0) }
             case .output:
                 return .none
@@ -123,7 +128,7 @@ public struct UrlToMarkdownReducer {
         }
 
         Scope(state: \.output, action: \.output) {
-            OutputEditorReducer()
+            OutputAttributedEditorReducer()
         }
     }
 }
@@ -198,7 +203,7 @@ public struct UrlToMarkdownView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color(nsColor: .textBackgroundColor))
                 } else {
-                    OutputEditorView(
+                    OutputAttributedEditorView(
                         store: store.scope(state: \.output, action: \.output),
                         title: ""
                     )

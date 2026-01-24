@@ -1,9 +1,11 @@
 import BlissTheme
 import ComposableArchitecture
+import Foundation
 import InputOutput
 import JsonToYamlClient
 import SharedModels
 import SwiftUI
+import SyntaxHighlightClient
 
 @Reducer
 public struct JsonToYamlReducer {
@@ -12,22 +14,22 @@ public struct JsonToYamlReducer {
     @ObservableState
     public struct State: Equatable {
         @Shared(.jsonToYamlIO) public var storage = ToolIOStorage()
-        var inputOutput: InputOutputEditorsReducer.State
+        var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
         var sortKeys: Bool = false
 
         public init() {
-            self.inputOutput = InputOutputEditorsReducer.State(
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
                 inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                outputRawText: _storage.projectedValue.output
             )
         }
 
         public init(input: String, output: String = "") {
             self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .jsonToYamlIO)
-            self.inputOutput = InputOutputEditorsReducer.State(
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
                 inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                outputRawText: _storage.projectedValue.output
             )
         }
 
@@ -36,18 +38,19 @@ public struct JsonToYamlReducer {
         }
 
         public var outputText: String {
-            inputOutput.output.text
+            inputOutput.output.text.string
         }
     }
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+        case conversionResponse(TaskResult<NSAttributedString>)
+        case inputOutput(InputOutputAttributedEditorsReducer.Action)
     }
 
     @Dependency(\.jsonToYaml) var jsonToYaml
+    @Dependency(\.syntaxHighlight) var syntaxHighlight
     private enum CancelID { case conversionRequest }
 
     public var body: some Reducer<State, Action> {
@@ -60,25 +63,27 @@ public struct JsonToYamlReducer {
                 state.isConversionRequestInFlight = true
                 let input = state.inputOutput.input.text
                 let config = state.config
-                return .run { [jsonToYaml] send in
+                return .run { [jsonToYaml, syntaxHighlight] send in
                     await send(
                         .conversionResponse(
                             TaskResult {
-                                try await jsonToYaml.convert(input, config)
+                                let yaml = try await jsonToYaml.convert(input, config)
+                                let highlighted = await syntaxHighlight.highlightYaml(yaml)
+                                return highlighted
                             }
                         )
                     )
                 }
                 .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
 
-            case let .conversionResponse(.success(result)):
+            case let .conversionResponse(.success(highlighted)):
                 state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
+                return state.inputOutput.output.updateText(highlighted)
                     .map { Action.inputOutput(.output($0)) }
 
             case let .conversionResponse(.failure(error)):
                 state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
+                return state.inputOutput.output.updateText(errorAttributedString(error.localizedDescription))
                     .map { Action.inputOutput(.output($0)) }
 
             case .inputOutput:
@@ -87,7 +92,7 @@ public struct JsonToYamlReducer {
         }
 
         Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
+            InputOutputAttributedEditorsReducer()
         }
     }
 }
@@ -101,16 +106,16 @@ public struct JsonToYamlView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel("Options")
-                    Toggle("Sort keys", isOn: $store.sortKeys)
-                        .toggleStyle(.checkbox)
-                    Spacer()
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+//            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+//                GridRow {
+//                    ConfigLabel("Options")
+//                    Toggle("Sort keys", isOn: $store.sortKeys)
+//                        .toggleStyle(.checkbox)
+//                    Spacer()
+//                }
+//            }
+//            .padding(.horizontal, 16)
+//            .padding(.vertical, 8)
 
             LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
                 store.send(.convertButtonTouched)
@@ -121,7 +126,7 @@ public struct JsonToYamlView: View {
 
             Divider()
 
-            InputOutputEditorsView(
+            InputOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: \.inputOutput),
                 inputEditorTitle: "JSON",
                 outputEditorTitle: "YAML",
