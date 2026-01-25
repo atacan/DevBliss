@@ -10,12 +10,17 @@ public struct OutputEditorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        public var text: String
+        @Shared public var text: String
         var outputControls: OutputControlsReducer.State
         var isActivitySheetPresented: Bool = false
 
+        public init(text: Shared<String>, outputControls: OutputControlsReducer.State = .init()) {
+            self._text = text
+            self.outputControls = outputControls
+        }
+
         public init(text: String = "", outputControls: OutputControlsReducer.State = .init()) {
-            self.text = text
+            self._text = Shared(value: text)
             self.outputControls = outputControls
         }
     }
@@ -65,18 +70,18 @@ public struct OutputEditorReducer {
 
 extension OutputEditorReducer.State {
     public mutating func updateText(_ newText: String) -> Effect<OutputEditorReducer.Action> {
-        text = newText
+        $text.withLock { $0 = newText }
         return .none
     }
 
     public mutating func updateText(_ newText: NSAttributedString) -> Effect<OutputEditorReducer.Action> {
-        text = newText.string
+        $text.withLock { $0 = newText.string }
         return .none
     }
 }
 
 public struct OutputEditorView: View {
-    @Perception.Bindable var store: StoreOf<OutputEditorReducer>
+    @Bindable var store: StoreOf<OutputEditorReducer>
 
     let title: String
     let copyButtonTitle: String
@@ -95,29 +100,30 @@ public struct OutputEditorView: View {
     }
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
-                Spacer()
                 Text(title)
                 Spacer()
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+
             MyPlainTextEditor(
                 text: $store.text,
                 isActivitySheetPresented: $store.isActivitySheetPresented
             )
-        }
-        .overlay(
-            OutputControlsView(
-                store:
-                    store.scope(
-                        state: \.outputControls,
-                        action: OutputEditorReducer.Action.outputControls
-                    )
-            )
-            .padding(),
 
-            alignment: .topTrailing
-        )
+            EditorFooterBar {
+                Spacer()
+                OutputControlsView(
+                    store:
+                        store.scope(
+                            state: \.outputControls,
+                            action: OutputEditorReducer.Action.outputControls
+                        )
+                )
+            }
+        }
     }
 }
 

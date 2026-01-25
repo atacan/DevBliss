@@ -12,6 +12,13 @@ public struct InputOutputEditorsReducer {
         public var input: InputEditorReducer.State
         public var output: OutputEditorReducer.State
 
+        // New initializer accepting Shared references
+        public init(inputText: Shared<String>, outputText: Shared<String>) {
+            self.input = InputEditorReducer.State(text: inputText)
+            self.output = OutputEditorReducer.State(text: outputText)
+        }
+
+        // Convenience for non-persisted use
         public init(input: InputEditorReducer.State = .init(), output: OutputEditorReducer.State = .init()) {
             self.input = input
             self.output = output
@@ -48,7 +55,7 @@ public struct InputOutputEditorsReducer {
 }
 
 public struct InputOutputEditorsView: View {
-    @Perception.Bindable var store: StoreOf<InputOutputEditorsReducer>
+    @Bindable var store: StoreOf<InputOutputEditorsReducer>
 
     let inputEditorTitle: String
     let outputEditorTitle: String

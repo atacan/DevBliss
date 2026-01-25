@@ -1,4 +1,5 @@
 #if os(macOS)
+    import BlissTheme
     import ComposableArchitecture
     import FileContentSearchClient
     import FilePanelsClient
@@ -140,7 +141,7 @@
     }
 
     public struct FileContentSearchView: View {
-        @Perception.Bindable var store: Store<FileContentSearchReducer.State, FileContentSearchReducer.Action>
+        @Bindable var store: Store<FileContentSearchReducer.State, FileContentSearchReducer.Action>
 
         public init(store: StoreOf<FileContentSearchReducer>) {
             self.store = store
@@ -227,7 +228,7 @@
                         }  // <-ScrollView
                         .overlay(
                             RoundedRectangle(cornerRadius: 5)
-                                .stroke(Color(nsColor: .systemGray), lineWidth: 1)
+                                .stroke(ThemeColor.Background.systemGray, lineWidth: 1)
                         )
                     }
                     .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -236,19 +237,25 @@
                         NSLocalizedString("Search also hidden files and folders", bundle: Bundle.module, comment: ""),
                         isOn: $store.searchOptions.searchHiddenFiles
                     )
+                    #if os(macOS)
                     .toggleStyle(.checkbox)
+                    #endif
 
                     Toggle(
                         NSLocalizedString("Search in sub-directories", bundle: Bundle.module, comment: ""),
                         isOn: $store.searchOptions.searchInsideSubdirectories
                     )
+                    #if os(macOS)
                     .toggleStyle(.checkbox)
+                    #endif
 
                     Toggle(
                         NSLocalizedString("Search in packaged files", bundle: Bundle.module, comment: ""),
                         isOn: $store.searchOptions.searchInsidePackages
                     )
+                    #if os(macOS)
                     .toggleStyle(.checkbox)
+                    #endif
                 }
                 .frame(maxWidth: 450)
 
@@ -256,7 +263,9 @@
                 //     "Case Sensitive",
                 //     isOn: store.binding(\.$searchOptions.caseSensitive)
                 // )
+                #if os(macOS)
                 // .toggleStyle(.checkbox)
+                #endif
 
                 // TextField(
                 //     "File Extensions",
@@ -264,14 +273,14 @@
                 // )
                 // .textFieldStyle(RoundedBorderTextFieldStyle())
 
-                Button {
+                LoadingButton(
+                    NSLocalizedString("Search", bundle: Bundle.module, comment: ""),
+                    isLoading: store.isSearching
+                ) {
                     store.send(.searchButtonTouched)
-                } label: {
-                    Text(NSLocalizedString("Search", bundle: Bundle.module, comment: ""))
-                }  // <-Button
+                }
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help(NSLocalizedString("Start searching (Cmd+Return)", bundle: Bundle.module, comment: ""))
-                .overlay(store.isSearching ? ProgressView() : nil)
                 .padding(.bottom, 2)
             }
         }

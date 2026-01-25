@@ -1,3 +1,4 @@
+import BlissTheme
 import ComposableArchitecture
 import InputOutput
 import NameGeneratorClient
@@ -94,7 +95,7 @@ public struct NameGeneratorAlternatingReducer {
 }
 
 public struct NameGeneratorAlternatingView: View {
-    @Perception.Bindable var store: StoreOf<NameGeneratorAlternatingReducer>
+    @Bindable var store: StoreOf<NameGeneratorAlternatingReducer>
 
     public init(store: StoreOf<NameGeneratorAlternatingReducer>) {
         self.store = store
@@ -210,7 +211,10 @@ public struct NameGeneratorAlternatingView: View {
                 )
             }
 
-            Button(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
+            LoadingButton(
+                NSLocalizedString("Generate", bundle: Bundle.module, comment: ""),
+                isLoading: store.isGenerating
+            ) {
                 store.send(.generateButtonTouched)
             }
             .keyboardShortcut(.return, modifiers: [.command])

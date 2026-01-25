@@ -8,12 +8,19 @@ public struct InputEditorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        public var text: String
+        @Shared public var text: String
         var pasteButtonAnimating: Bool = false
         var inputEditorDrop: InputEditorDropReducer.State
 
+        // New initializer accepting Shared<String>
+        public init(text: Shared<String>, inputEditorDrop: InputEditorDropReducer.State = .init()) {
+            self._text = text
+            self.inputEditorDrop = inputEditorDrop
+        }
+
+        // Convenience initializer for non-persisted use (previews, tests)
         public init(text: String = "", inputEditorDrop: InputEditorDropReducer.State = .init()) {
-            self.text = text
+            self._text = Shared(value: text)
             self.inputEditorDrop = inputEditorDrop
         }
     }
@@ -44,7 +51,7 @@ public struct InputEditorReducer {
             case .pasteButtonTouched:
                 state.pasteButtonAnimating = true
                 if let clip = clipboard.getString() {
-                    state.text = clip
+                    state.$text.withLock { $0 = clip }
                 }
                 return .run { send in
                     try await mainQueue.sleep(for: .milliseconds(200))
@@ -56,15 +63,15 @@ public struct InputEditorReducer {
                 state.pasteButtonAnimating = false
                 return .none
             case let .inputEditorDrop(.droppedFileContent(content)):
-                state.text = content
+                state.$text.withLock { $0 = content }
                 return .none
             case .inputEditorDrop:
                 return .none
             case let .append(text):
-                state.text.append(text)
+                state.$text.withLock { $0.append(text) }
                 return .none
             case let .prepend(text):
-                state.text = text + state.text
+                state.$text.withLock { $0 = text + $0 }
                 return .none
             }
         }
@@ -73,18 +80,18 @@ public struct InputEditorReducer {
 
 extension InputEditorReducer.State {
     public mutating func updateText(_ newText: String) -> Effect<InputEditorReducer.Action> {
-        text = newText
+        $text.withLock { $0 = newText }
         return .none
     }
 
     public mutating func updateText(_ newText: NSAttributedString) -> Effect<InputEditorReducer.Action> {
-        text = newText.string
+        $text.withLock { $0 = newText.string }
         return .none
     }
 }
 
 public struct InputEditorView: View {
-    @Perception.Bindable var store: StoreOf<InputEditorReducer>
+    @Bindable var store: StoreOf<InputEditorReducer>
 
     let title: String
     let pasteButtonTitle: String
@@ -100,40 +107,36 @@ public struct InputEditorView: View {
     }
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
-                Spacer()
                 Text(title)
                 Spacer()
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+
             MyPlainTextEditor(text: $store.text, isActivitySheetPresented: .constant(false))
                 .overlay(content: {
                     InputEditorDropView(
                         store: store.scope(state: \.inputEditorDrop, action: InputEditorReducer.Action.inputEditorDrop)
                     )
                 })
-        }
-        .overlay(
-            HStack {
-                Button {
+
+            EditorFooterBar {
+                EditorFooterButton(
+                    pasteButtonTitle,
+                    systemImage: "doc.on.clipboard.fill",
+                    isAnimating: store.pasteButtonAnimating
+                ) {
                     store.send(.pasteButtonTouched)
-                } label: {
-                    Image(systemName: "doc.on.clipboard.fill")
-                }  // <-Button
-                .foregroundColor(
-                    store.pasteButtonAnimating
-                        ? ThemeColor.Text.success
-                        : ThemeColor.Text.controlText
-                )
-                .font(.footnote)
+                }
                 .keyboardShortcut("p", modifiers: [.command, .shift])
                 .help(NSLocalizedString("Paste from clipboard (Command+Shift+P)", bundle: Bundle.module, comment: ""))
                 .accessibilityLabel(NSLocalizedString("Paste from clipboard", bundle: Bundle.module, comment: ""))
-            }
-            .padding(),
 
-            alignment: .topLeading
-        )
+                Spacer()
+            }
+        }
     }
 }
 

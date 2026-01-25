@@ -1,3 +1,4 @@
+import BlissTheme
 import ComposableArchitecture
 import InputOutput
 import SharedModels
@@ -9,24 +10,34 @@ public struct TextCaseConverterReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
+        @Shared(.toolInput("textCaseConverter")) public var inputText = ""
+        @Shared(.toolOutput("textCaseConverter")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         @Shared(.appStorage(SettingsKey.TextCaseConverter.sourceCase)) public var sourceCase: WordGroupCase = .kebab
         @Shared(.appStorage(SettingsKey.TextCaseConverter.targetCase)) public var targetCase: WordGroupCase = .snake
         @Shared(.appStorage(SettingsKey.TextCaseConverter.textSeperator)) public var textSeperator: WordGroupSeperator = .newLine
 
-        public init(
-            inputOutput: InputOutputEditorsReducer.State = .init()
-        ) {
-            self.inputOutput = inputOutput
+        public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("textCaseConverter"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("textCaseConverter"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
+            )
         }
 
         public init(input: String, output: String = "") {
-            self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
+            let inputText = Shared(wrappedValue: input, .toolInput("textCaseConverter"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("textCaseConverter"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
+            )
         }
     }
 
@@ -93,7 +104,7 @@ public struct TextCaseConverterReducer {
 }
 
 public struct TextCaseConverterView: View {
-    @Perception.Bindable var store: StoreOf<TextCaseConverterReducer>
+    @Bindable var store: StoreOf<TextCaseConverterReducer>
 
     #if os(iOS)
         private let pickerTitleSpace: CGFloat = 0
@@ -106,11 +117,10 @@ public struct TextCaseConverterView: View {
     }
 
     public var body: some View {
-        VStack {
-            HStack(alignment: .center) {
-                Spacer()
-                VStack(alignment: .center, spacing: pickerTitleSpace) {
-                    Text(NSLocalizedString("From", bundle: Bundle.module, comment: ""))
+        VStack(spacing: 0) {
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    ConfigLabel(NSLocalizedString("From", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("From", bundle: Bundle.module, comment: ""),
                         selection: $store.sourceCase
@@ -120,21 +130,23 @@ public struct TextCaseConverterView: View {
                                 .tag(sourceCase)
                         }
                     }
+                    .blissMenuPicker(width: 140)
+
+                    ConfigLabel(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
+                    Picker(
+                        NSLocalizedString("To", bundle: Bundle.module, comment: ""),
+                        selection: $store.targetCase
+                    ) {
+                        ForEach(WordGroupCase.allCases) { targetCase in
+                            Text(targetCase.rawValue)
+                                .tag(targetCase)
+                        }
                     }
-                    VStack(alignment: .center, spacing: pickerTitleSpace) {
-                     Text(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
-                     Picker(
-                         NSLocalizedString("To", bundle: Bundle.module, comment: ""),
-                         selection: $store.targetCase
-                     ) {
-                         ForEach(WordGroupCase.allCases) { targetCase in
-                             Text(targetCase.rawValue)
-                                 .tag(targetCase)
-                         }
-                     }
-                    }
-                VStack(alignment: .center, spacing: pickerTitleSpace) {
-                    Text(NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""))
+                    .blissMenuPicker(width: 140)
+                }
+
+                GridRow {
+                    ConfigLabel(NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""))
                     Picker(
                         NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""),
                         selection: $store.textSeperator
@@ -144,29 +156,35 @@ public struct TextCaseConverterView: View {
                                 .tag(seperator)
                         }
                     }
+                    .blissMenuPicker(width: 140)
+                    .gridCellColumns(3)
                 }
-                Spacer()
             }
-            .frame(maxWidth: 600)
-            .labelsHidden()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
 
-            HStack {
+            HStack(spacing: 12) {
                 Button {
                     store.send(.switchCasesButtonTouched)
                 } label: {
-                    Image(systemName: "arrow.left.and.right")
+                    Label(NSLocalizedString("Switch Cases", bundle: Bundle.module, comment: ""), systemImage: "arrow.left.and.right")
                 }
+                .buttonStyle(.bordered)
                 .keyboardShortcut("w", modifiers: [.command, .shift])
-                .help(NSLocalizedString("Switch source and target cases (Cmd+Shift+W)", bundle: Bundle.module, comment: ""))
+                .help(NSLocalizedString("Switch source and target cases (⌘⇧W)", bundle: Bundle.module, comment: ""))
 
-                Button(action: { store.send(.convertButtonTouched) }) {
-                    Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
-                        .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+                LoadingButton(
+                    NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
+                    isLoading: store.isConversionRequestInFlight
+                ) {
+                    store.send(.convertButtonTouched)
                 }
                 .keyboardShortcut(.return, modifiers: [.command])
-                .help(NSLocalizedString("Convert code (Cmd+Return)", bundle: Bundle.module, comment: ""))
-                .padding(.bottom, 2)
+                .help(NSLocalizedString("Convert code (⌘ Return)", bundle: Bundle.module, comment: ""))
             }
+            .padding(.vertical, 8)
+
+            Divider()
 
             InputOutputEditorsView(
                 store: store.scope(state: \.inputOutput, action: TextCaseConverterReducer.Action.inputOutput),

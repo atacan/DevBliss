@@ -95,7 +95,7 @@ public struct InputEditorDropReducer {
 }
 
 struct InputEditorDropView: View {
-    @Perception.Bindable var store: StoreOf<InputEditorDropReducer>
+    @Bindable var store: StoreOf<InputEditorDropReducer>
 
     @State var phase: CGFloat = 0
 

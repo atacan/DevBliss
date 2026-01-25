@@ -1,42 +1,76 @@
+import BlissTheme
 import ComposableArchitecture
 import Dependencies
 import DependenciesAdditions
+import Foundation
 import HtmlSwift
 import HtmlToSwiftClient
 import InputOutput
 import SharedModels
 import SwiftUI
+import SyntaxHighlightClient
 
 @Reducer
 public struct HtmlToSwiftReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        var inputOutput: InputOutputEditorsReducer.State
+        @Shared(.toolInput("htmlToSwift")) public var inputText = ""
+        @Shared(.toolOutput("htmlToSwift")) public var outputText = ""
+        var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
         var dsl: SwiftDSL = .binaryBirds
         var component: HtmlOutputComponent = .fullHtml
 
         public init(
-            inputOutput: InputOutputEditorsReducer.State = .init(),
+            inputOutput: InputOutputAttributedEditorsReducer.State = .init(),
             dsl: SwiftDSL = .binaryBirds,
             component: HtmlOutputComponent = .fullHtml
         ) {
-            self.inputOutput = inputOutput
+            let inputText = Shared(wrappedValue: "", .toolInput("htmlToSwift"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("htmlToSwift"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
+            )
             self.dsl = dsl
             self.component = component
         }
 
-        public init(inputOutput: InputOutputEditorsReducer.State = .init()) {
-            self.inputOutput = inputOutput
+        public init(inputOutput: InputOutputAttributedEditorsReducer.State = .init()) {
+            let inputText = Shared(wrappedValue: "", .toolInput("htmlToSwift"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("htmlToSwift"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
+            )
+        }
+
+        public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("htmlToSwift"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("htmlToSwift"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
+            )
+            // Config (dsl, component) loaded via observeSettings action
         }
 
         public init(input: String, output: String = "") {
-            self.inputOutput = .init(input: .init(text: input), output: .init(text: output))
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
+            let inputText = Shared(wrappedValue: input, .toolInput("htmlToSwift"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("htmlToSwift"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
+            )
         }
     }
 
@@ -44,11 +78,12 @@ public struct HtmlToSwiftReducer {
         case observeSettings
         case binding(BindingAction<State>)
         case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+        case conversionResponse(TaskResult<NSAttributedString>)
+        case inputOutput(InputOutputAttributedEditorsReducer.Action)
     }
 
     @Dependency(\.htmlToSwift) var htmlToSwift
+    @Dependency(\.syntaxHighlight) var syntaxHighlight
     private enum CancelID { case conversionRequest }
     @Dependency(\.userDefaults) var userDefaults
 
@@ -67,21 +102,24 @@ public struct HtmlToSwiftReducer {
                         await send(
                             .conversionResponse(
                                 TaskResult {
-                                    try await htmlToSwift.convert(input.text, for: dsl, output: component)
+                                    // First convert HTML to Swift
+                                    let swiftCode = try await htmlToSwift.convert(input.text, for: dsl, output: component)
+                                    // Then highlight the Swift code
+                                    let highlighted = await syntaxHighlight.highlightSwift(swiftCode)
+                                    return highlighted
                                 }
                             )
                         )
                     }
                     .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
 
-            case let .conversionResponse(.success(swiftCode)):
+            case let .conversionResponse(.success(highlightedCode)):
                 state.isConversionRequestInFlight = false
-                // https://github.com/pointfreeco/swift-composable-architecture/discussions/1952#discussioncomment-5167956
-                return state.inputOutput.output.updateText(swiftCode)
+                return state.inputOutput.output.updateText(highlightedCode)
                     .map { Action.inputOutput(.output($0)) }
             case let .conversionResponse(.failure(error)):
                 state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
+                return state.inputOutput.output.updateText(errorAttributedString(error.localizedDescription))
                     .map { Action.inputOutput(.output($0)) }
             case .inputOutput:
                 return .none
@@ -89,7 +127,7 @@ public struct HtmlToSwiftReducer {
         }
 
         Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
+            InputOutputAttributedEditorsReducer()
         }
     }
 
@@ -115,7 +153,7 @@ public struct HtmlToSwiftReducer {
 }
 
 public struct HtmlToSwiftView: View {
-    @Perception.Bindable var store: StoreOf<HtmlToSwiftReducer>
+    @Bindable var store: StoreOf<HtmlToSwiftReducer>
 
     public init(store: StoreOf<HtmlToSwiftReducer>) {
         self.store = store
@@ -128,47 +166,50 @@ public struct HtmlToSwiftView: View {
     #endif
 
     public var body: some View {
-        VStack {
-            HStack(alignment: .center) {
-                Spacer()
-                VStack(alignment: .center, spacing: pickerTitleSpace) {
-                     Text(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
-                     Picker(
-                         NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
-                         selection: $store.dsl
-                     ) {
-                         ForEach(SwiftDSL.allCases) { dsl in
-                             Text(dslLibraryName(for: dsl))
-                                 .tag(dsl)
-                         }
-                     }
-                 }  // <-VStack
-                 VStack(alignment: .center, spacing: pickerTitleSpace) {
-                     Text(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
-                     Picker(
-                         NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
-                         selection: $store.component
-                     ) {
-                         ForEach(HtmlOutputComponent.allCases) { component in
-                             Text(outputComponentPickerName(for: component))
-                                 .tag(component)
-                         }
-                     }
-                 }
-                Spacer()
-            }  // <-HStack
-            .frame(maxWidth: 450)
-            .labelsHidden()
+        VStack(spacing: 0) {
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    ConfigLabel(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
+                    Picker(
+                        NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
+                        selection: $store.dsl
+                    ) {
+                        ForEach(SwiftDSL.allCases) { dsl in
+                            Text(dslLibraryName(for: dsl))
+                                .tag(dsl)
+                        }
+                    }
+                    .blissMenuPicker(width: 180)
 
-            Button(action: { store.send(.convertButtonTouched) }) {
-                Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
-                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+                    ConfigLabel(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
+                    Picker(
+                        NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
+                        selection: $store.component
+                    ) {
+                        ForEach(HtmlOutputComponent.allCases) { component in
+                            Text(outputComponentPickerName(for: component))
+                                .tag(component)
+                        }
+                    }
+                    .blissMenuPicker(width: 160)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            LoadingButton(
+                NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
+                isLoading: store.isConversionRequestInFlight
+            ) {
+                store.send(.convertButtonTouched)
             }
             .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Convert code (Cmd+Return)", bundle: Bundle.module, comment: ""))
-            .padding(.bottom, 2)
+            .help(NSLocalizedString("Convert code (⌘ Return)", bundle: Bundle.module, comment: ""))
+            .padding(.vertical, 8)
 
-            InputOutputEditorsView(
+            Divider()
+
+            InputOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: HtmlToSwiftReducer.Action.inputOutput),
                 inputEditorTitle: "Html",
                 outputEditorTitle: "Swift",

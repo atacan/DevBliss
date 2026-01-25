@@ -4,6 +4,7 @@ import Dependencies
 import DependenciesAdditions
 import InputOutput
 import RegexMatchesClient
+import SharedModels
 import SwiftUI
 
 @Reducer
@@ -11,31 +12,42 @@ public struct RegexMatchesReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        var inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State
+        // Use different names to avoid collision with computed properties
+        @Shared(.toolInput("regexMatches")) public var storedInput = ""
+        @Shared(.toolOutput("regexMatches")) public var storedOutput = ""
+        @Shared(.toolOutputSecond("regexMatches")) public var storedOutputSecond = ""
+        public var inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State
         public var regexPattern: String
         var isConversionRequestInFlight = false
 
-        public init(
-            inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State = .init(),
-            regexPattern: String = ""
-        ) {
-            self.inputOutput = inputOutput
-            self.regexPattern = regexPattern
+        public init() {
+            let storedInput = Shared(wrappedValue: "", .toolInput("regexMatches"))
+            let storedOutput = Shared(wrappedValue: "", .toolOutput("regexMatches"))
+            let storedOutputSecond = Shared(wrappedValue: "", .toolOutputSecond("regexMatches"))
+            self._storedInput = storedInput
+            self._storedOutput = storedOutput
+            self._storedOutputSecond = storedOutputSecond
+            self.inputOutput = InputAttributedTwoOutputAttributedEditorsReducer.State(
+                inputRawText: storedInput.projectedValue,
+                outputRawText: storedOutput.projectedValue,
+                outputSecondRawText: storedOutputSecond.projectedValue
+            )
+            self.regexPattern = ""
         }
 
         public init(input: String, output: String = "") {
-            let attributedInput = NSMutableAttributedString(
-                string: input,
-                attributes: [
-                    .foregroundColor: ThemeColor.Text.systemText,
-                    .font: ThemeFont.monospaceSytem,
-                ]
+            let storedInput = Shared(wrappedValue: input, .toolInput("regexMatches"))
+            let storedOutput = Shared(wrappedValue: output, .toolOutput("regexMatches"))
+            let storedOutputSecond = Shared(wrappedValue: "", .toolOutputSecond("regexMatches"))
+            self._storedInput = storedInput
+            self._storedOutput = storedOutput
+            self._storedOutputSecond = storedOutputSecond
+            self.inputOutput = InputAttributedTwoOutputAttributedEditorsReducer.State(
+                inputRawText: storedInput.projectedValue,
+                outputRawText: storedOutput.projectedValue,
+                outputSecondRawText: storedOutputSecond.projectedValue
             )
-            self.inputOutput = .init(
-                input: .init(text: attributedInput),
-                output: .init(text: .init(string: output))
-            )
-            self.regexPattern = .init()
+            self.regexPattern = ""
         }
 
         public var outputText: String {
@@ -125,31 +137,42 @@ public struct RegexMatchesReducer {
 }
 
 public struct RegexMatchesView: View {
-    @Perception.Bindable var store: StoreOf<RegexMatchesReducer>
+    @Bindable var store: StoreOf<RegexMatchesReducer>
 
     public init(store: StoreOf<RegexMatchesReducer>) {
         self.store = store
     }
 
     public var body: some View {
-        VStack {
-            TextField(
-                NSLocalizedString("Regex pattern", bundle: Bundle.module, comment: ""),
-                text: $store.regexPattern
-            )
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .font(.monospaced(.body)())
-            .autocorrectionDisabled()
-            #if os(iOS)
-                .textInputAutocapitalization(.never)
-            #endif
-            .padding()
-            Button(action: { store.send(.convertButtonTouched) }) {
-                Text(NSLocalizedString("Extract", bundle: Bundle.module, comment: ""))
-                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                TextField(
+                    NSLocalizedString("Regex pattern", bundle: Bundle.module, comment: ""),
+                    text: $store.regexPattern
+                )
+                .font(.monospaced(.body)())
+                .autocorrectionDisabled()
+                #if os(iOS)
+                    .textInputAutocapitalization(.never)
+                #endif
+                .blissTextField()
+                .onSubmit {
+                    store.send(.convertButtonTouched)
+                }
+
+                LoadingButton(
+                    NSLocalizedString("Extract", bundle: Bundle.module, comment: ""),
+                    isLoading: store.isConversionRequestInFlight
+                ) {
+                    store.send(.convertButtonTouched)
+                }
+                .keyboardShortcut(.return, modifiers: [.command])
+                .help(NSLocalizedString("Extract matches (⌘ Return)", bundle: Bundle.module, comment: ""))
             }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Extract matches (Cmd+Return)", bundle: Bundle.module, comment: ""))
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+
+            Divider()
 
             InputAttributedTwoOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: RegexMatchesReducer.Action.inputOutput),

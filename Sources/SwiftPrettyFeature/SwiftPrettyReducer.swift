@@ -13,42 +13,40 @@ public struct SwiftPrettyReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
+        @Shared(.toolInput("swiftPretty")) public var inputText = ""
+        @Shared(.toolOutput("swiftPretty")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var lockwoodConfig: InputEditorReducer.State
         var useLockwood: Bool
 
         public init(
-            inputOutput: InputOutputEditorsReducer.State = .init(),
             lockwoodConfig: InputEditorReducer.State = .init(text: blissConfigLockwood),
             useLockwood: Bool = true
         ) {
-            // @Dependency(\.userDefaults) var userDefaults
-            // let config: InputEditorReducer.State = with(lockwoodConfig) {
-            // .init(
-            //         text: userDefaults.string(forKey: SettingsKey.SwiftPretty.lockwoodConfig) ?? $0.text
-            //         text: String(data: userDefaults.data(forKey: SettingsKey.SwiftPretty.lockwoodConfig), encoding: .utf8) ?? $0.text
-            // text: UserDefaults.standard.string(forKey: SettingsKey.SwiftPretty.lockwoodConfig) ?? $0.text
-            // )
-            // }
-            // let config: InputEditorReducer.State = {
-            //     if let data = userDefaults.data(forKey: SettingsKey.SwiftPretty.lockwoodConfig),
-            //        let text = String(data: data, encoding: .utf8) {
-            //         return .init(text: text)
-            //     } else{return lockwoodConfig}
-            // }()
+            let inputText = Shared(wrappedValue: "", .toolInput("swiftPretty"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("swiftPretty"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
+            )
             self.lockwoodConfig = lockwoodConfig
-            self.inputOutput = inputOutput
             self.useLockwood = useLockwood
         }
 
         public init(input: String, output: String = "") {
-            let inputOutput = InputOutputEditorsReducer.State(input: .init(text: input), output: .init(text: output))
-            self.init(inputOutput: inputOutput)
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
+            let inputText = Shared(wrappedValue: input, .toolInput("swiftPretty"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("swiftPretty"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
+            )
+            self.lockwoodConfig = .init(text: blissConfigLockwood)
+            self.useLockwood = true
         }
     }
 
@@ -131,7 +129,7 @@ public struct SwiftPrettyReducer {
 }
 
 public struct SwiftPrettyView: View {
-    @Perception.Bindable var store: StoreOf<SwiftPrettyReducer>
+    @Bindable var store: StoreOf<SwiftPrettyReducer>
 
     @State var configIsExpanded = true
 
@@ -151,9 +149,11 @@ public struct SwiftPrettyView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 // }
 
-                Button(action: { store.send(.convertButtonTouched) }) {
-                    Text(NSLocalizedString("Format", bundle: Bundle.module, comment: ""))
-                        .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+                LoadingButton(
+                    NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
+                    isLoading: store.isConversionRequestInFlight
+                ) {
+                    store.send(.convertButtonTouched)
                 }
                 .padding(.bottom)
                 .keyboardShortcut(.return, modifiers: [.command])

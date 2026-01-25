@@ -1,3 +1,4 @@
+import BlissTheme
 import ComposableArchitecture
 import Dependencies
 import DependenciesAdditions
@@ -11,6 +12,8 @@ public struct PrefixSuffixReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
+        @Shared(.toolInput("prefixSuffix")) public var inputText = ""
+        @Shared(.toolOutput("prefixSuffix")) public var outputText = ""
         public var inputOutput: InputOutputEditorsReducer.State
         public var configuration: PrefixSuffixConfig
         var isConversionRequestInFlight = false
@@ -19,9 +22,20 @@ public struct PrefixSuffixReducer {
             inputOutput: InputOutputEditorsReducer.State = .init(),
             configuration: PrefixSuffixConfig = .init()
         ) {
-            @Dependency(\.userDefaults) var userDefaults
-            self.inputOutput = inputOutput
+            let inputText = Shared(wrappedValue: "", .toolInput("prefixSuffix"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("prefixSuffix"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
+            )
 
+            // Initialize other properties
+            self.isConversionRequestInFlight = false
+
+            // Load config from UserDefaults
+            @Dependency(\.userDefaults) var userDefaults
             let config: PrefixSuffixConfig = with(configuration) {
                 .init(
                     prefixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplace)
@@ -43,17 +57,34 @@ public struct PrefixSuffixReducer {
                         .trimWhiteSpace
                 )
             }
-
             self.configuration = config
         }
 
         public init(input: String, output: String = "") {
-            let inputOutput = InputOutputEditorsReducer.State(input: .init(text: input), output: .init(text: output))
-            self.init(inputOutput: inputOutput)
-        }
+            let inputText = Shared(wrappedValue: input, .toolInput("prefixSuffix"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("prefixSuffix"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
+            )
 
-        public var outputText: String {
-            inputOutput.output.text
+            // Initialize other properties
+            self.isConversionRequestInFlight = false
+
+            // Load config from UserDefaults
+            @Dependency(\.userDefaults) var userDefaults
+            let config = PrefixSuffixConfig(
+                prefixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplace) ?? "",
+                prefixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplaceWith) ?? "",
+                prefixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixAdd) ?? "",
+                suffixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplace) ?? "",
+                suffixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplaceWith) ?? "",
+                suffixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixAdd) ?? "",
+                trimWhiteSpace: userDefaults.bool(forKey: SettingsKey.PrefixSuffix.trimWhiteSpace) ?? true
+            )
+            self.configuration = config
         }
     }
 
@@ -121,7 +152,7 @@ public struct PrefixSuffixReducer {
 }
 
 public struct PrefixSuffixView: View {
-    @Perception.Bindable var store: StoreOf<PrefixSuffixReducer>
+    @Bindable var store: StoreOf<PrefixSuffixReducer>
 
     @FocusState private var focusedField: Field?
     enum Field: Int, Hashable {
@@ -249,9 +280,11 @@ public struct PrefixSuffixView: View {
             #endif
             .frame(maxWidth: 850)
 
-            Button(action: { store.send(.convertButtonTouched) }) {
-                Text(NSLocalizedString("Convert", bundle: Bundle.module, comment: ""))
-                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+            LoadingButton(
+                NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
+                isLoading: store.isConversionRequestInFlight
+            ) {
+                store.send(.convertButtonTouched)
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Convert (Cmd+Return)", bundle: Bundle.module, comment: ""))

@@ -12,6 +12,13 @@ public struct InputOutputAttributedEditorsReducer {
         public var input: InputEditorReducer.State
         public var output: OutputAttributedEditorReducer.State
 
+        // New initializer for persistence
+        public init(inputText: Shared<String>, outputRawText: Shared<String>) {
+            self.input = InputEditorReducer.State(text: inputText)
+            self.output = OutputAttributedEditorReducer.State(rawText: outputRawText)
+        }
+
+        // Convenience for non-persisted use
         public init(input: InputEditorReducer.State = .init(), output: OutputAttributedEditorReducer.State = .init()) {
             self.input = input
             self.output = output
@@ -48,7 +55,7 @@ public struct InputOutputAttributedEditorsReducer {
 }
 
 public struct InputOutputAttributedEditorsView: View {
-    @Perception.Bindable var store: StoreOf<InputOutputAttributedEditorsReducer>
+    @Bindable var store: StoreOf<InputOutputAttributedEditorsReducer>
 
     let inputEditorTitle: String
     let outputEditorTitle: String

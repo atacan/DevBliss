@@ -1,193 +1,83 @@
-# Agent Instructions for DevBliss
+# CLAUDE.md
 
-## Issue Tracking with bd (beads)
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
-
-### Why bd?
-
-- Dependency-aware: Track blockers and relationships between issues
-- Git-friendly: Auto-syncs to JSONL for version control
-- Agent-optimized: JSON output, ready work detection, discovered-from links
-- Prevents duplicate tracking systems and confusion
-
-### Quick Start
-
-**Check for ready work:**
-```bash
-bd ready --json
-```
-
-**Create new issues:**
-```bash
-bd create "Issue title" -t bug|feature|task -p 0-4 --json
-bd create "Issue title" -p 1 --deps discovered-from:bd-123 --json
-bd create "Subtask" --parent <epic-id> --json  # Hierarchical subtask (gets ID like epic-id.1)
-```
-
-**Claim and update:**
-```bash
-bd update bd-42 --status in_progress --json
-bd update bd-42 --priority 1 --json
-```
-
-**Complete work:**
-```bash
-bd close bd-42 --reason "Completed" --json
-```
-
-### Issue Types
-
-- `bug` - Something broken
-- `feature` - New functionality
-- `task` - Work item (tests, docs, refactoring)
-- `epic` - Large feature with subtasks
-- `chore` - Maintenance (dependencies, tooling)
-
-### Priorities
-
-- `0` - Critical (security, data loss, broken builds)
-- `1` - High (major features, important bugs)
-- `2` - Medium (default, nice-to-have)
-- `3` - Low (polish, optimization)
-- `4` - Backlog (future ideas)
-
-### Workflow for AI Agents
-
-1. **Check ready work**: `bd ready` shows unblocked issues
-2. **Claim your task**: `bd update <id> --status in_progress`
-3. **Work on it**: Implement, test, document
-4. **Discover new work?** Create linked issue:
-   - `bd create "Found bug" -p 1 --deps discovered-from:<parent-id>`
-5. **Complete**: `bd close <id> --reason "Done"`
-6. **Commit together**: Always commit the `.beads/issues.jsonl` file together with the code changes so issue state stays in sync with code state
-
-### Auto-Sync
-
-bd automatically syncs with git:
-- Exports to `.beads/issues.jsonl` after changes (5s debounce)
-- Imports from JSONL when newer (e.g., after `git pull`)
-- No manual export/import needed!
-
-## Full Beads Documentation
-
-This project uses [Beads](https://github.com/steveyegge/beads) for issue tracking and task management. Before working on any tasks, read the following:
-
-### Quick Start with Beads
-
-When you start working, use the `bd` command instead of creating markdown files for task management:
+## Build Commands
 
 ```bash
-# Find ready work (issues with no blockers)
-bd ready --json | jq '.[0]'
+# Build the Swift package
+swift build
 
-# Create issues during work
-bd create "Issue description" -t bug -p 1 --json
+# Run tests
+swift test
 
-# Update status
-bd update <issue-id> --status in_progress
+# Run a specific test
+swift test --filter PrefixSuffixClientTests
 
-# Close completed work
-bd close <issue-id> --reason "Implemented"
+# Open the Xcode project (for full app development)
+open App/DevBliss.xcodeproj
 ```
 
-### Core Beads Workflow
+## Architecture
 
-1. **Check ready work first**: `bd ready` shows issues you can start immediately
-2. **Create issues for discovered work**: If you find bugs or TODOs, file them with `bd create`
-3. **Link related work**: Use `bd dep add` to connect issues
-4. **Update status**: Move issues through `open` → `in_progress` → `closed`
-5. **End session carefully**: Close completed work, file discovered issues, sync the database
+DevBliss is a macOS/iOS developer utility app built with **The Composable Architecture (TCA)** from Point-Free. The architecture follows a modular pattern inspired by [isowords](https://github.com/pointfreeco/isowords).
 
-### Key Commands
+### Module Structure
 
+Each tool follows a **Client + Feature** pattern:
+- **`*Client`**: Dependency wrapper around the core logic (e.g., `HtmlToMarkdownClient`)
+- **`*Feature`**: TCA Reducer + SwiftUI View (e.g., `HtmlToMarkdownFeature`)
+
+Key shared modules:
+- **`AppFeature`**: Main app reducer with navigation via `Destination` enum
+- **`SharedModels`**: `Tool` enum, `ToolIOStorage` for persistence
+- **`InputOutput`**: Reusable input/output editor components (`InputOutputEditorsReducer`, `OutputEditorReducer`)
+- **`BlissTheme`**: Shared UI components and view modifiers (`.blissTextField()`, `.blissMenuPicker()`, `LoadingButton`, `ConfigLabel`)
+
+### Navigation Pattern
+
+Tools are managed via a `@Reducer public enum Destination` in `AppReducer.swift`. Each tool case maps to its feature reducer. The `currentTool` computed property derives the active tool from the destination state.
+
+### Adding a New Tool
+
+1. Create `Sources/<ToolName>Client/<ToolName>Client.swift` with dependency conformance
+2. Create `Sources/<ToolName>Feature/<ToolName>Reducer.swift` with TCA reducer and view
+3. Add case to `Tool` enum in `SharedModels/Tool.swift` (include `name` and `isInputtable`)
+4. Add storage key in `SharedModels/ToolIOStorage.swift`
+5. Update `AppReducer.swift`:
+   - Add import
+   - Add `Destination` case
+   - Add `currentTool` mapping
+   - Add destination action handling for output controls
+   - Add `handleOtherTool` case
+   - Add `handleNavigation` case
+   - Add sidebar row and detail view
+6. Update `Package.swift` with library products and target definitions
+
+### Persistence
+
+Tool state persists via `@Shared` with `FileStorageKey`:
+```swift
+@Shared(.urlToMarkdownIO) public var storage = ToolIOStorage()
+```
+
+Storage files are in `~/Documents/ToolStorage/`.
+
+### Troubleshooting
+
+If you get "The compiler is unable to type-check this expression in reasonable time", comment out other tools in the reducer to isolate the issue.
+
+### Dependencies
+
+You can always look at .build/checkouts/ folder to see the code of dependencies we added to our Swift package. The code will be available there after `swift package resolve`. Looking at the code is better than trying to find files on GitHub.com
+
+## Issue Tracking
+
+This project uses **bd (beads)** for task tracking. Key commands:
 ```bash
-# Query
-bd ready              # Show ready work (no blockers)
-bd list               # Show all issues
-bd show <id>          # View issue details
-bd dep tree <id>      # See dependencies
-
-# Create/Update
-bd create "..."       # Create new issue
-bd update <id> --status in_progress  # Update status
-bd close <id>         # Close issue
-
-# Dependencies (blocks, related, parent-child, discovered-from)
-bd dep add <issue> <blocker> --type blocks  # Make blocker required
-bd dep add <issue> <parent> --type parent-child  # Hierarchical
-
-# Sync (automatic, but manual when needed)
-bd sync               # Force sync with git
+bd ready --json          # See unblocked issues
+bd create "Title" -t feature -p 2 --json
+bd update <id> --status in_progress --json
+bd close <id> --reason "Done" --json
+bd sync                  # Run at end of session
 ```
-
-### End-of-Session Protocol
-
-Before finishing your session:
-
-1. **File remaining work**: Create issues for any discovered bugs, TODOs, or follow-up tasks
-2. **Close completed issues**: Mark finished work as closed with `bd close`
-3. **Update in-progress**: Ensure active work shows correct status
-4. **Sync the database**: `bd sync` (or let auto-sync handle it after 5 seconds)
-5. **Commit and push**: Git push to sync beads database with the team
-
-### Issue Types & Priorities
-
-Use these when creating issues:
-
-- **Types**: `bug`, `feature`, `task`, `epic`, `chore`
-- **Priorities**: `0` (highest), `1`, `2` (default), `3`, `4` (lowest)
-- **Labels**: Use tags like `backend`, `swift`, `ui`, `tests`, etc.
-
-### Examples
-
-```bash
-# Create a bug
-bd create "Auth token validation fails on logout" -t bug -p 1 -l auth,critical
-
-# Create a feature
-bd create "Add dark mode support" -t feature -p 2 -l ui,frontend
-
-# Create a task with description
-bd create "Refactor authentication module" -t task -p 2 \
-  -d "Split into smaller, testable functions" -l backend,refactor
-
-# Link work: new-task depends on bug-fix
-bd dep add <new-issue-id> <bug-fix-id> --type blocks
-```
-
-### Discovering Work During Development
-
-When you find issues while working:
-
-```bash
-# Create discovered issue
-bd create "Potential memory leak in networking layer" -t bug -p 1
-
-# Link it back to current work
-bd dep add <discovered-id> <current-task-id> --type discovered-from
-```
-
-### Status Values
-
-- `open` - Ready to start or actively being worked
-- `in_progress` - Currently being developed
-- `closed` - Completed or resolved
-
-### More Help
-
-- Run `bd --help` for CLI reference
-- Run `bd quickstart` for interactive tutorial
-- See `.beads/README.md` for architecture overview
-- Check https://github.com/steveyegge/beads for full documentation
-
-### Integration with Development
-
-When implementing features:
-1. Check `bd ready` to understand current priorities
-2. Create sub-issues for discovered bugs during implementation
-3. Link them back with `bd dep add ... --type discovered-from`
-4. Close issues as you complete them
-5. At session end, ensure all work is tracked and synced
-
-The goal: your agent maintains perfect memory of project state across sessions and helps coordinate work across the team.

@@ -11,19 +11,31 @@ public struct JsonPrettyReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
+        @Shared(.toolInput("jsonPretty")) public var inputText = ""
+        @Shared(.toolOutput("jsonPretty")) public var outputText = ""
         var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
 
-        public init(inputOutput: InputOutputAttributedEditorsReducer.State = .init()) {
-            self.inputOutput = inputOutput
+        public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("jsonPretty"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("jsonPretty"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
+            )
         }
 
         public init(input: String, output: String = "") {
-            self.inputOutput = .init(input: .init(text: input), output: .init(text: .init(string: output)))
-        }
-
-        public var outputText: String {
-            inputOutput.output.text.string
+            let inputText = Shared(wrappedValue: input, .toolInput("jsonPretty"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("jsonPretty"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
+            )
         }
     }
 
@@ -79,20 +91,25 @@ public struct JsonPrettyReducer {
 }
 
 public struct JsonPrettyView: View {
-    @Perception.Bindable var store: StoreOf<JsonPrettyReducer>
+    @Bindable var store: StoreOf<JsonPrettyReducer>
 
     public init(store: StoreOf<JsonPrettyReducer>) {
         self.store = store
     }
 
     public var body: some View {
-        VStack {
-            Button(action: { store.send(.convertButtonTouched) }) {
-                Text(NSLocalizedString("Format", bundle: Bundle.module, comment: ""))
-                    .overlay(store.isConversionRequestInFlight ? ProgressView() : nil)
+        VStack(spacing: 0) {
+            LoadingButton(
+                NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
+                isLoading: store.isConversionRequestInFlight
+            ) {
+                store.send(.convertButtonTouched)
             }
             .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Format code (Cmd+Return)", bundle: Bundle.module, comment: ""))
+            .help(NSLocalizedString("Format code (⌘ Return)", bundle: Bundle.module, comment: ""))
+            .padding(.vertical, 8)
+
+            Divider()
 
             InputOutputAttributedEditorsView(
                 store: store.scope(state: \.inputOutput, action: JsonPrettyReducer.Action.inputOutput),

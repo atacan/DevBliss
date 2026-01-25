@@ -98,7 +98,7 @@ public struct NameGeneratorReducer {
 }
 
 public struct NameGeneratorView: View {
-    @Perception.Bindable var store: StoreOf<NameGeneratorReducer>
+    @Bindable var store: StoreOf<NameGeneratorReducer>
 
     public init(store: StoreOf<NameGeneratorReducer>) {
         self.store = store

@@ -1,0 +1,182 @@
+import BlissTheme
+import ComposableArchitecture
+import InputOutput
+import LineSortDedupeClient
+import SharedModels
+import SwiftUI
+
+@Reducer
+public struct LineSortDedupeReducer {
+    public init() {}
+
+    @ObservableState
+    public struct State: Equatable {
+        @Shared(.toolInput("lineSortDedupe")) public var inputText = ""
+        @Shared(.toolOutput("lineSortDedupe")) public var outputText = ""
+        var inputOutput: InputOutputEditorsReducer.State
+        var isConversionRequestInFlight = false
+        var sortOrder: LineSortOrder = .ascending
+        var removeDuplicates: Bool = true
+        var caseInsensitive: Bool = true
+        var trimWhitespace: Bool = true
+        var removeEmptyLines: Bool = true
+
+        public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("lineSortDedupe"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("lineSortDedupe"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
+            )
+        }
+
+        public init(input: String, output: String = "") {
+            let inputText = Shared(wrappedValue: input, .toolInput("lineSortDedupe"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("lineSortDedupe"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
+            )
+        }
+
+        var config: LineSortDedupeConfig {
+            LineSortDedupeConfig(
+                sortOrder: sortOrder,
+                removeDuplicates: removeDuplicates,
+                caseInsensitive: caseInsensitive,
+                trimWhitespace: trimWhitespace,
+                removeEmptyLines: removeEmptyLines
+            )
+        }
+    }
+
+    public enum Action: BindableAction, Equatable {
+        case binding(BindingAction<State>)
+        case convertButtonTouched
+        case conversionResponse(TaskResult<String>)
+        case inputOutput(InputOutputEditorsReducer.Action)
+    }
+
+    @Dependency(\.lineSortDedupe) var lineSortDedupe
+    private enum CancelID { case conversionRequest }
+
+    public var body: some Reducer<State, Action> {
+        BindingReducer()
+        Reduce<State, Action> { state, action in
+            switch action {
+            case .binding:
+                return .none
+            case .convertButtonTouched:
+                state.isConversionRequestInFlight = true
+                let input = state.inputOutput.input.text
+                let config = state.config
+                return .run { [lineSortDedupe] send in
+                    await send(
+                        .conversionResponse(
+                            TaskResult {
+                                try await lineSortDedupe.convert(input, config)
+                            }
+                        )
+                    )
+                }
+                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
+
+            case let .conversionResponse(.success(result)):
+                state.isConversionRequestInFlight = false
+                return state.inputOutput.output.updateText(result)
+                    .map { Action.inputOutput(.output($0)) }
+
+            case let .conversionResponse(.failure(error)):
+                state.isConversionRequestInFlight = false
+                return state.inputOutput.output.updateText(error.localizedDescription)
+                    .map { Action.inputOutput(.output($0)) }
+
+            case .inputOutput:
+                return .none
+            }
+        }
+
+        Scope(state: \.inputOutput, action: \.inputOutput) {
+            InputOutputEditorsReducer()
+        }
+    }
+}
+
+public struct LineSortDedupeView: View {
+    @Bindable var store: StoreOf<LineSortDedupeReducer>
+
+    public init(store: StoreOf<LineSortDedupeReducer>) {
+        self.store = store
+    }
+
+    public var body: some View {
+        VStack(spacing: 0) {
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    ConfigLabel("Sort by")
+                    Picker("Order", selection: $store.sortOrder) {
+                        ForEach(LineSortOrder.allCases) { order in
+                            Text(order.rawValue)
+                                .tag(order)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .frame(width: 200)
+
+                    Toggle("Case-insensitive", isOn: $store.caseInsensitive)
+                        #if os(macOS)
+                        .toggleStyle(.checkbox)
+                        #endif
+
+                    Toggle("Trim whitespace", isOn: $store.trimWhitespace)
+                        #if os(macOS)
+                        .toggleStyle(.checkbox)
+                        #endif
+                }
+
+                GridRow {
+                    ConfigLabel("Options")
+                    Toggle("Remove duplicates", isOn: $store.removeDuplicates)
+                        #if os(macOS)
+                        .toggleStyle(.checkbox)
+                        #endif
+
+                    Toggle("Remove empty lines", isOn: $store.removeEmptyLines)
+                        #if os(macOS)
+                        .toggleStyle(.checkbox)
+                        #endif
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            LoadingButton("Process", isLoading: store.isConversionRequestInFlight) {
+                store.send(.convertButtonTouched)
+            }
+            .keyboardShortcut(.return, modifiers: [.command])
+            .help("Process (⌘ Return)")
+            .padding(.vertical, 8)
+
+            Divider()
+
+            InputOutputEditorsView(
+                store: store.scope(state: \.inputOutput, action: \.inputOutput),
+                inputEditorTitle: "Input",
+                outputEditorTitle: "Output",
+                keyForFraction: SettingsKey.LineSortDedupe.splitViewFraction,
+                keyForLayout: SettingsKey.LineSortDedupe.splitViewLayout
+            )
+        }
+    }
+}
+
+struct LineSortDedupeView_Previews: PreviewProvider {
+    static var previews: some View {
+        LineSortDedupeView(store: .init(initialState: .init()) { LineSortDedupeReducer() })
+    }
+}

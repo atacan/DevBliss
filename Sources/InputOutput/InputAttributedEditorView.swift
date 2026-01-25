@@ -12,14 +12,24 @@ public struct InputAttributedEditorReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        public var text: NSMutableAttributedString
+        @Shared public var rawText: String  // Persisted
+        public var text: NSMutableAttributedString  // Display (not persisted directly)
         var pasteButtonAnimating: Bool = false
         var inputEditorDrop: InputEditorDropReducer.State
 
+        // New initializer for persistence
+        public init(rawText: Shared<String>, inputEditorDrop: InputEditorDropReducer.State = .init()) {
+            self._rawText = rawText
+            self.text = NSMutableAttributedString(attributedString: regularAttributedString(rawText.wrappedValue))
+            self.inputEditorDrop = inputEditorDrop
+        }
+
+        // Convenience initializer
         public init(
             text: NSMutableAttributedString = .init(),
             inputEditorDrop: InputEditorDropReducer.State = .init()
         ) {
+            self._rawText = Shared(value: text.string)
             self.text = text
             self.inputEditorDrop = inputEditorDrop
         }
@@ -40,6 +50,9 @@ public struct InputAttributedEditorReducer {
 
         Reduce<State, Action> { state, action in
             switch action {
+            case .binding(\.text):
+                state.$rawText.withLock { $0 = state.text.string }
+                return .none
             case .binding:
                 return .none
             case .pasteButtonTouched:
@@ -96,7 +109,7 @@ extension InputAttributedEditorReducer.State {
 }
 
 public struct InputAttributedEditorView: View {
-    @Perception.Bindable var store: StoreOf<InputAttributedEditorReducer>
+    @Bindable var store: StoreOf<InputAttributedEditorReducer>
 
     let title: String
     let pasteButtonTitle: String
@@ -112,13 +125,14 @@ public struct InputAttributedEditorView: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading) {
-            //            ZStack(alignment: .trailingLastTextBaseline) {
+        VStack(spacing: 0) {
             HStack {
-                Spacer()
                 Text(title)
                 Spacer()
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+
             #if os(macOS)
                 MacEditorView(text: $store.text, hasHorizontalScroll: false)
                     .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
@@ -131,17 +145,13 @@ public struct InputAttributedEditorView: View {
                         )
                     })
             #elseif os(iOS)
-                //                ScrollView {
-                //                    Text(AttributedString(store.text))
-                //                        .font(.monospaced(.body)())
-                //                        .textSelection(.enabled)
                 TextEditor(
-                    text: store.binding(
-                        get: { state in
-                            state.text.string
+                    text: Binding(
+                        get: {
+                            store.text.string
                         },
-                        send: { newValue in
-                            .binding(.set(\.$text, .init(string: newValue)))
+                        set: { newValue in
+                            store.send(.binding(.set(\.text, .init(string: newValue))))
                         }
                     )
                 )
@@ -164,30 +174,23 @@ public struct InputAttributedEditorView: View {
                         )
                     )
                 })
-            //                }
             #endif
-        }
-        .overlay(
-            HStack {
-                Button {
+
+            EditorFooterBar {
+                EditorFooterButton(
+                    pasteButtonTitle,
+                    systemImage: "doc.on.clipboard.fill",
+                    isAnimating: store.pasteButtonAnimating
+                ) {
                     store.send(.pasteButtonTouched)
-                } label: {
-                    Image(systemName: "doc.on.clipboard.fill")
-                }  // <-Button
-                .foregroundColor(
-                    store.pasteButtonAnimating
-                        ? ThemeColor.Text.success
-                        : ThemeColor.Text.controlText
-                )
-                .font(.footnote)
+                }
                 .keyboardShortcut("p", modifiers: [.command, .shift])
                 .help(NSLocalizedString("Paste from clipboard (Command+Shift+P)", bundle: Bundle.module, comment: ""))
                 .accessibilityLabel(NSLocalizedString("Paste from clipboard", bundle: Bundle.module, comment: ""))
-            }
-            .padding(),
 
-            alignment: .topLeading
-        )
+                Spacer()
+            }
+        }
     }
 }
 

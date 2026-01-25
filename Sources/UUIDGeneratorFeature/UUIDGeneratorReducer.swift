@@ -1,3 +1,4 @@
+import BlissTheme
 import ComposableArchitecture
 import InputOutput
 import SwiftUI
@@ -77,41 +78,37 @@ public struct UUIDGeneratorReducer {
 }
 
 public struct UUIDGeneratorView: View {
-    @Perception.Bindable var store: Store<UUIDGeneratorReducer.State, UUIDGeneratorReducer.Action>
+    @Bindable var store: Store<UUIDGeneratorReducer.State, UUIDGeneratorReducer.Action>
 
     public init(store: StoreOf<UUIDGeneratorReducer>) {
         self.store = store
     }
 
     public var body: some View {
-        VStack(alignment: .center) {
-            //            HStack {
-            //                //            TextField("How many?", value: store.binding(\.$count), formatter:
-            //                /NumberFormatter())
-            //                //                .textFieldStyle(RoundedBorderTextFieldStyle())
-            //                //                .frame(maxWidth: 100)
-            //                //            Stepper("", value: store.binding(\.$count), in: 1...1_000_000)
-            //                Stepper(value: store.binding(\.$count), in: 1 ... 1000) {
-            //                    //                Text("sdfkjds")
-            //                    TextField("How many?", value: store.binding(\.$count), formatter:
-            //                    NumberFormatter())
-            //                        .textFieldStyle(RoundedBorderTextFieldStyle())
-            //                }
-            //                .frame(maxWidth: 250)
-            //            }
-            HStack {
-                IntegerTextField(value: $store.count, range: 1 ... 1_000_000)
-                Picker("", selection: $store.textCase) {
-                    Text(NSLocalizedString("lowercase", bundle: Bundle.module, comment: "")).tag(TextCase.lower)
-                    Text(NSLocalizedString("UPPERCASE", bundle: Bundle.module, comment: "")).tag(TextCase.upper)
+        VStack(spacing: 0) {
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    ConfigLabel(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
+                    IntegerTextField(value: $store.count, range: 1 ... 1_000_000)
+                        .frame(width: 140)
+
+                    ConfigLabel(NSLocalizedString("Case", bundle: Bundle.module, comment: ""))
+                    Picker("", selection: $store.textCase) {
+                        Text(NSLocalizedString("lowercase", bundle: Bundle.module, comment: "")).tag(TextCase.lower)
+                        Text(NSLocalizedString("UPPERCASE", bundle: Bundle.module, comment: "")).tag(TextCase.upper)
+                    }
+                    .blissMenuPicker(width: 140)
                 }
             }
-            .frame(maxWidth: 250)
-            Button {
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            LoadingButton(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
                 store.send(.generateButtonTouched)
-            } label: {
-                Text(NSLocalizedString("Generate", bundle: Bundle.module, comment: ""))
-            }  // <-Button
+            }
+            .padding(.vertical, 8)
+
+            Divider()
 
             OutputEditorView(
                 store: store.scope(
@@ -119,7 +116,7 @@ public struct UUIDGeneratorView: View {
                     action: UUIDGeneratorReducer.Action.output
                 )
             )
-        }  // <-VStack
+        }
     }
 }
 
