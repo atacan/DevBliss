@@ -51,17 +51,74 @@ public enum Base64ImageOutputFormat: String, CaseIterable, Identifiable, Codable
     public var id: Self { self }
 }
 
+// Keep JSON for Base64Image metadata (binary + enum)
+public struct Base64ImageMeta: Codable, Equatable {
+    public var imageData: Data?
+    public var outputFormat: Base64ImageOutputFormat
+
+    public init(imageData: Data? = nil, outputFormat: Base64ImageOutputFormat = .dataURL) {
+        self.imageData = imageData
+        self.outputFormat = outputFormat
+    }
+}
+
 // MARK: - URL Extensions
 
 extension URL {
-    static var toolStorageDirectory: URL {
+    public static var toolStorageDirectory: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("ToolStorage")
     }
 
-    static func toolStorage(_ tool: String) -> URL {
+    public static func toolStorage(_ tool: String) -> URL {
         toolStorageDirectory.appendingPathComponent("\(tool).json")
     }
+
+    public static func plainTextStorage(_ tool: String, _ field: String) -> URL {
+        toolStorageDirectory.appendingPathComponent("\(tool)_\(field).txt")
+    }
+}
+
+// MARK: - Plain Text Storage Keys (Factory Pattern)
+
+extension SharedReaderKey where Self == FileStorageKey<String> {
+    public static func toolInput(_ tool: String) -> Self {
+        .fileStorage(
+            .plainTextStorage(tool, "input"),
+            decode: { data in String(decoding: data, as: UTF8.self) },
+            encode: { string in Data(string.utf8) }
+        )
+    }
+
+    public static func toolOutput(_ tool: String) -> Self {
+        .fileStorage(
+            .plainTextStorage(tool, "output"),
+            decode: { data in String(decoding: data, as: UTF8.self) },
+            encode: { string in Data(string.utf8) }
+        )
+    }
+
+    // For RegexMatches third output
+    public static func toolOutputSecond(_ tool: String) -> Self {
+        .fileStorage(
+            .plainTextStorage(tool, "outputSecond"),
+            decode: { data in String(decoding: data, as: UTF8.self) },
+            encode: { string in Data(string.utf8) }
+        )
+    }
+
+    // For Base64Image string storage
+    public static var base64ImageString: Self {
+        .fileStorage(
+            .plainTextStorage("base64Image", "string"),
+            decode: { data in String(decoding: data, as: UTF8.self) },
+            encode: { string in Data(string.utf8) }
+        )
+    }
+}
+
+extension SharedReaderKey where Self == FileStorageKey<Base64ImageMeta> {
+    public static var base64ImageMeta: Self { .fileStorage(.toolStorage("base64ImageMeta")) }
 }
 
 // MARK: - FileStorage Keys
@@ -108,4 +165,102 @@ extension SharedReaderKey where Self == FileStorageKey<ToolIOStorageDoubleOutput
 
 extension SharedReaderKey where Self == FileStorageKey<Base64ImageStorage> {
     public static var base64ImageIO: Self { .fileStorage(.toolStorage("base64Image")) }
+}
+
+// MARK: - Migration Helper
+
+public enum ToolStorageMigration {
+    public static func migrateIfNeeded(tool: String) {
+        let jsonURL = URL.toolStorage(tool)
+        let inputURL = URL.plainTextStorage(tool, "input")
+
+        // Skip if no old file or new file already exists
+        guard FileManager.default.fileExists(atPath: jsonURL.path),
+              !FileManager.default.fileExists(atPath: inputURL.path) else { return }
+
+        do {
+            let data = try Data(contentsOf: jsonURL)
+            let storage = try JSONDecoder().decode(ToolIOStorage.self, from: data)
+
+            // Create directory if needed
+            try FileManager.default.createDirectory(
+                at: URL.toolStorageDirectory,
+                withIntermediateDirectories: true
+            )
+
+            // Write new text files
+            try Data(storage.input.utf8).write(to: inputURL)
+            try Data(storage.output.utf8).write(to: URL.plainTextStorage(tool, "output"))
+        } catch {
+            // Log but don't crash - user just loses saved state
+        }
+    }
+
+    public static func migrateAllTools() {
+        let tools = [
+            "certificateDecoder", "qrCodeTool", "jsonToYaml", "yamlToJson",
+            "uuidUlid", "colorConverter", "svgToCss", "backslashEscape",
+            "xmlFormat", "htmlBeautify", "cssBeautify", "jsBeautify",
+            "lineSortDedupe", "asciiToHex", "hexToAscii", "randomStringGenerator",
+            "hashGenerator", "stringInspector", "numberBaseConverter", "urlParser",
+            "regExpTester", "htmlPreview", "textCaseConverter", "prefixSuffix",
+            "htmlToSwift", "htmlToMarkdown", "urlToMarkdown", "swiftPretty",
+            "jsonPretty", "base64", "unixTime", "urlEncode", "jwtDebugger"
+        ]
+        tools.forEach { migrateIfNeeded(tool: $0) }
+
+        // Special: RegexMatches (3 fields)
+        migrateRegexMatchesIfNeeded()
+
+        // Special: Base64Image
+        migrateBase64ImageIfNeeded()
+    }
+
+    private static func migrateRegexMatchesIfNeeded() {
+        let jsonURL = URL.toolStorage("regexMatches")
+        let inputURL = URL.plainTextStorage("regexMatches", "input")
+
+        guard FileManager.default.fileExists(atPath: jsonURL.path),
+              !FileManager.default.fileExists(atPath: inputURL.path) else { return }
+
+        do {
+            let data = try Data(contentsOf: jsonURL)
+            let storage = try JSONDecoder().decode(ToolIOStorageDoubleOutput.self, from: data)
+
+            try FileManager.default.createDirectory(
+                at: URL.toolStorageDirectory,
+                withIntermediateDirectories: true
+            )
+
+            try Data(storage.input.utf8).write(to: inputURL)
+            try Data(storage.output.utf8).write(to: URL.plainTextStorage("regexMatches", "output"))
+            try Data(storage.outputSecond.utf8).write(to: URL.plainTextStorage("regexMatches", "outputSecond"))
+        } catch {}
+    }
+
+    private static func migrateBase64ImageIfNeeded() {
+        let jsonURL = URL.toolStorage("base64Image")
+        let stringURL = URL.plainTextStorage("base64Image", "string")
+
+        guard FileManager.default.fileExists(atPath: jsonURL.path),
+              !FileManager.default.fileExists(atPath: stringURL.path) else { return }
+
+        do {
+            let data = try Data(contentsOf: jsonURL)
+            let storage = try JSONDecoder().decode(Base64ImageStorage.self, from: data)
+
+            try FileManager.default.createDirectory(
+                at: URL.toolStorageDirectory,
+                withIntermediateDirectories: true
+            )
+
+            // Write base64String to text file
+            try Data(storage.base64String.utf8).write(to: stringURL)
+
+            // Write meta to new JSON
+            let meta = Base64ImageMeta(imageData: storage.imageData, outputFormat: storage.outputFormat)
+            let metaData = try JSONEncoder().encode(meta)
+            try metaData.write(to: URL.toolStorage("base64ImageMeta"))
+        } catch {}
+    }
 }

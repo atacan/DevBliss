@@ -17,7 +17,8 @@ public struct ColorConverterReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.colorConverterIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("colorConverter")) public var inputText = ""
+        @Shared(.toolOutput("colorConverter")) public var outputText = ""
         var output: OutputEditorReducer.State
         var uppercaseHex: Bool = true
         var includeAlpha: Bool = false
@@ -25,21 +26,22 @@ public struct ColorConverterReducer {
         var errorMessage: String?
 
         public var input: String {
-            get { storage.input }
-            set { $storage.withLock { $0.input = newValue } }
+            get { inputText }
+            set { $inputText.withLock { $0 = newValue } }
         }
 
         public init() {
-            self.output = OutputEditorReducer.State(text: _storage.projectedValue.output)
+            let outputText = Shared(wrappedValue: "", .toolOutput("colorConverter"))
+            self._outputText = outputText
+            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .colorConverterIO)
-            self.output = OutputEditorReducer.State(text: _storage.projectedValue.output)
-        }
-
-        public var outputText: String {
-            output.text
+            let inputText = Shared(wrappedValue: input, .toolInput("colorConverter"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("colorConverter"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
         }
 
         var config: ColorConverterConfig {

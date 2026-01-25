@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import SharedModels
 import SwiftUI
 
 struct AppContentView: View {
@@ -13,7 +14,10 @@ struct AppContentView: View {
 }
 
 public struct TheApp: App {
-    public init() {}
+    public init() {
+        // Run migration FIRST, before any stores are created
+        ToolStorageMigration.migrateAllTools()
+    }
     public var body: some Scene {
         WindowGroup {
             AppContentView()

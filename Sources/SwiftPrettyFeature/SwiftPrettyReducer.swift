@@ -13,7 +13,8 @@ public struct SwiftPrettyReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        @Shared(.swiftPrettyIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("swiftPretty")) public var inputText = ""
+        @Shared(.toolOutput("swiftPretty")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var lockwoodConfig: InputEditorReducer.State
@@ -23,29 +24,29 @@ public struct SwiftPrettyReducer {
             lockwoodConfig: InputEditorReducer.State = .init(text: blissConfigLockwood),
             useLockwood: Bool = true
         ) {
-            // Create Shared projections from the persisted key
-            let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .swiftPrettyIO)
+            let inputText = Shared(wrappedValue: "", .toolInput("swiftPretty"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("swiftPretty"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: sharedStorage.input,
-                outputText: sharedStorage.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
             self.lockwoodConfig = lockwoodConfig
             self.useLockwood = useLockwood
         }
 
         public init(input: String, output: String = "") {
-            // For "Move to other tool" - set storage with provided values
-            let sharedStorage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .swiftPrettyIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("swiftPretty"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("swiftPretty"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: sharedStorage.input,
-                outputText: sharedStorage.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
             self.lockwoodConfig = .init(text: blissConfigLockwood)
             self.useLockwood = true
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 

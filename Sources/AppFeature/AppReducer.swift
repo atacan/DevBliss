@@ -363,84 +363,84 @@ public struct AppReducer {
         case .htmlToSwift:
             state.destination = .htmlToSwift(HtmlToSwiftReducer.State())
             if case .htmlToSwift(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .htmlToMarkdown:
             state.destination = .htmlToMarkdown(HtmlToMarkdownReducer.State())
             if case .htmlToMarkdown(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .urlToMarkdown:
             state.destination = .urlToMarkdown(UrlToMarkdownReducer.State())
         case .jsonPretty:
             state.destination = .jsonPretty(JsonPrettyReducer.State())
             if case .jsonPretty(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .htmlBeautify:
             state.destination = .htmlBeautify(HtmlBeautifyReducer.State())
             if case .htmlBeautify(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .cssBeautify:
             state.destination = .cssBeautify(CssBeautifyReducer.State())
             if case .cssBeautify(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .jsBeautify:
             state.destination = .jsBeautify(JsBeautifyReducer.State())
             if case .jsBeautify(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .textCaseConverter:
             state.destination = .textCaseConverter(TextCaseConverterReducer.State())
             if case .textCaseConverter(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .prefixSuffix:
             state.destination = .prefixSuffix(PrefixSuffixReducer.State())
             if case .prefixSuffix(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .lineSortDedupe:
             state.destination = .lineSortDedupe(LineSortDedupeReducer.State())
             if case .lineSortDedupe(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .asciiToHex:
             state.destination = .asciiToHex(AsciiToHexReducer.State())
             if case .asciiToHex(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .hexToAscii:
             state.destination = .hexToAscii(HexToAsciiReducer.State())
             if case .hexToAscii(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .colorConverter:
             state.destination = .colorConverter(ColorConverterReducer.State())
             if case .colorConverter(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .svgToCss:
             state.destination = .svgToCss(SvgToCssReducer.State())
             if case .svgToCss(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .backslashEscape:
             state.destination = .backslashEscape(BackslashEscapeReducer.State())
             if case .backslashEscape(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .xmlFormat:
             state.destination = .xmlFormat(XmlFormatReducer.State())
             if case .xmlFormat(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .regexMatches:
             state.destination = .regexMatches(RegexMatchesReducer.State())
             if case .regexMatches(var s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$storedInput.withLock { $0 = outputText }
                 // Must also update the display text since it's a separate NSMutableAttributedString copy
                 _ = s.inputOutput.input.updateText(outputText)
                 state.destination = .regexMatches(s)
@@ -448,7 +448,7 @@ public struct AppReducer {
         case .swiftPrettyLockwood:
             state.destination = .swiftPrettyLockwood(SwiftPrettyReducer.State())
             if case .swiftPrettyLockwood(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .uuidGenerator:
             break // Inactive tool
@@ -463,87 +463,87 @@ public struct AppReducer {
         case .hashGenerator:
             state.destination = .hashGenerator(HashGeneratorReducer.State())
             if case .hashGenerator(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .stringInspector:
             state.destination = .stringInspector(StringInspectorReducer.State())
             if case .stringInspector(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .numberBaseConverter:
             state.destination = .numberBaseConverter(NumberBaseConverterReducer.State())
             if case .numberBaseConverter(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .certificateDecoder:
             state.destination = .certificateDecoder(CertificateDecoderReducer.State())
             if case .certificateDecoder(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .qrCodeTool:
             state.destination = .qrCodeTool(QrCodeToolReducer.State())
             if case .qrCodeTool(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .jsonToYaml:
             state.destination = .jsonToYaml(JsonToYamlReducer.State())
             if case .jsonToYaml(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .yamlToJson:
             state.destination = .yamlToJson(YamlToJsonReducer.State())
             if case .yamlToJson(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .uuidUlid:
             state.destination = .uuidUlid(UuidUlidReducer.State())
             if case .uuidUlid(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .urlParser:
             state.destination = .urlParser(UrlParserReducer.State())
             if case .urlParser(var s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
                 s.input = outputText
                 state.destination = .urlParser(s)
             }
         case .regExpTester:
             state.destination = .regExpTester(RegExpTesterReducer.State())
             if case .regExpTester(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .htmlPreview:
             state.destination = .htmlPreview(HtmlPreviewReducer.State())
             if case .htmlPreview(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .base64:
             state.destination = .base64(Base64Reducer.State())
             if case .base64(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .base64Image:
             state.destination = .base64Image(Base64ImageReducer.State())
             // Base64Image stores base64String in a different structure, pass it there
             if case .base64Image(var s) = state.destination {
-                s.$storage.withLock { $0.base64String = outputText }
+                s.$base64StringStorage.withLock { $0 = outputText }
                 s.base64String = outputText
                 state.destination = .base64Image(s)
             }
         case .unixTime:
             state.destination = .unixTime(UnixTimeReducer.State())
             if case .unixTime(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .urlEncode:
             state.destination = .urlEncode(UrlEncodeReducer.State())
             if case .urlEncode(let s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
             }
         case .jwtDebugger:
             state.destination = .jwtDebugger(JwtDebuggerReducer.State())
             if case .jwtDebugger(var s) = state.destination {
-                s.$storage.withLock { $0.input = outputText }
+                s.$inputText.withLock { $0 = outputText }
                 _ = s.input.updateText(outputText)
                 state.destination = .jwtDebugger(s)
             }

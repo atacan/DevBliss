@@ -25,7 +25,8 @@ public struct UuidUlidReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.uuidUlidIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("uuidUlid")) public var inputText = ""
+        @Shared(.toolOutput("uuidUlid")) public var outputText = ""
         var input: InputEditorReducer.State
         var output: OutputEditorReducer.State
         var mode: Mode = .generate
@@ -37,18 +38,21 @@ public struct UuidUlidReducer {
         var isConversionRequestInFlight = false
 
         public init() {
-            self.input = InputEditorReducer.State(text: _storage.projectedValue.input)
-            self.output = OutputEditorReducer.State(text: _storage.projectedValue.output)
+            let inputText = Shared(wrappedValue: "", .toolInput("uuidUlid"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("uuidUlid"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.input = InputEditorReducer.State(text: inputText.projectedValue)
+            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
         }
 
         public init(inputText: String, outputText: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: inputText, output: outputText), .uuidUlidIO)
-            self.input = InputEditorReducer.State(text: _storage.projectedValue.input)
-            self.output = OutputEditorReducer.State(text: _storage.projectedValue.output)
-        }
-
-        public var outputText: String {
-            output.text
+            let input = Shared(wrappedValue: inputText, .toolInput("uuidUlid"))
+            let output = Shared(wrappedValue: outputText, .toolOutput("uuidUlid"))
+            self._inputText = input
+            self._outputText = output
+            self.input = InputEditorReducer.State(text: input.projectedValue)
+            self.output = OutputEditorReducer.State(text: output.projectedValue)
         }
     }
 

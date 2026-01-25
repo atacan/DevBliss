@@ -12,7 +12,8 @@ public struct RegExpTesterReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.regExpTesterIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("regExpTester")) public var inputText = ""
+        @Shared(.toolOutput("regExpTester")) public var outputText = ""
         var input: InputEditorReducer.State
         var output: OutputEditorReducer.State
         var pattern: String = ""
@@ -23,24 +24,27 @@ public struct RegExpTesterReducer {
         var errorMessage: String?
 
         public init() {
-            self.input = InputEditorReducer.State(text: _storage.projectedValue.input)
-            self.output = OutputEditorReducer.State(text: _storage.projectedValue.output)
+            let inputText = Shared(wrappedValue: "", .toolInput("regExpTester"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("regExpTester"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.input = InputEditorReducer.State(text: inputText.projectedValue)
+            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
         }
 
         public init(inputText: String, outputText: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: inputText, output: outputText), .regExpTesterIO)
-            self.input = InputEditorReducer.State(text: _storage.projectedValue.input)
-            self.output = OutputEditorReducer.State(text: _storage.projectedValue.output)
+            let input = Shared(wrappedValue: inputText, .toolInput("regExpTester"))
+            let output = Shared(wrappedValue: outputText, .toolOutput("regExpTester"))
+            self._inputText = input
+            self._outputText = output
+            self.input = InputEditorReducer.State(text: input.projectedValue)
+            self.output = OutputEditorReducer.State(text: output.projectedValue)
         }
 
         var selectedMatch: RegExpMatch? {
             guard !matches.isEmpty else { return nil }
             let index = min(max(selectedMatchIndex, 0), matches.count - 1)
             return matches[index]
-        }
-
-        public var outputText: String {
-            output.text
         }
     }
 

@@ -34,7 +34,8 @@ public struct HtmlToMarkdownReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.htmlToMarkdownIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("htmlToMarkdown")) public var inputText = ""
+        @Shared(.toolOutput("htmlToMarkdown")) public var outputText = ""
         @Shared(.htmlToMarkdownConfig) public var configuration = HtmlToMarkdownConfig()
         public var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
@@ -44,11 +45,13 @@ public struct HtmlToMarkdownReducer {
             inputOutput: InputOutputAttributedEditorsReducer.State = .init(),
             configuration: HtmlToMarkdownConfig = .init()
         ) {
-            // Initialize inputOutput using derived shared refs from storage
-            let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .htmlToMarkdownIO)
+            let inputText = Shared(wrappedValue: "", .toolInput("htmlToMarkdown"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("htmlToMarkdown"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: sharedStorage.input,
-                outputRawText: sharedStorage.output
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
             )
 
             self.isConversionRequestInFlight = false
@@ -56,22 +59,17 @@ public struct HtmlToMarkdownReducer {
         }
 
         public init(input: String, output: String = "") {
-            // Initialize @Shared storage with provided values
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .htmlToMarkdownIO)
-
-            // Initialize inputOutput using derived shared refs
-            let sharedStorage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .htmlToMarkdownIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("htmlToMarkdown"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("htmlToMarkdown"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: sharedStorage.input,
-                outputRawText: sharedStorage.output
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
             )
 
             self.isConversionRequestInFlight = false
             // Configuration is loaded from file storage automatically via @Shared
-        }
-
-        public var outputText: String {
-            inputOutput.output.text.string
         }
     }
 

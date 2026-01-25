@@ -10,7 +10,8 @@ public struct UrlEncodeReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.urlEncodeIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("urlEncode")) public var inputText = ""
+        @Shared(.toolOutput("urlEncode")) public var outputText = ""
         var direction: UrlEncodeDirection = .encode
         var encodeMode: UrlEncodeMode = .rfc3986
         var autoDetect: Bool = true
@@ -18,20 +19,17 @@ public struct UrlEncodeReducer {
         var result: String = ""
         var errorMessage: String?
 
-        // Input is derived from storage.input for persistence
+        // Input is derived from inputText for persistence
         public var input: String {
-            get { storage.input }
-            set { $storage.withLock { $0.input = newValue } }
+            get { inputText }
+            set { $inputText.withLock { $0 = newValue } }
         }
 
         public init() {}
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .urlEncodeIO)
-        }
-
-        public var outputText: String {
-            result
+            self._inputText = Shared(wrappedValue: input, .toolInput("urlEncode"))
+            self._outputText = Shared(wrappedValue: output, .toolOutput("urlEncode"))
         }
     }
 
@@ -79,12 +77,12 @@ public struct UrlEncodeReducer {
                 }
 
                 // Persist output
-                state.$storage.withLock { $0.output = state.result }
+                state.$outputText.withLock { $0 = state.result }
                 return .none
 
             case .useAsInputButtonTouched:
                 guard !state.result.isEmpty else { return .none }
-                state.$storage.withLock { $0.input = state.result }
+                state.$inputText.withLock { $0 = state.result }
                 state.result = ""
                 // Swap direction when using output as input
                 state.direction = state.direction == .encode ? .decode : .encode

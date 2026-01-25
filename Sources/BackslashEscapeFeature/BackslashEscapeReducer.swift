@@ -11,28 +11,32 @@ public struct BackslashEscapeReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.backslashEscapeIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("backslashEscape")) public var inputText = ""
+        @Shared(.toolOutput("backslashEscape")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var mode: BackslashEscapeMode = .escape
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("backslashEscape"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("backslashEscape"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .backslashEscapeIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("backslashEscape"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("backslashEscape"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 

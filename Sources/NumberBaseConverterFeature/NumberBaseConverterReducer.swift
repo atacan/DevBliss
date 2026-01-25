@@ -11,29 +11,33 @@ public struct NumberBaseConverterReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.numberBaseConverterIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("numberBaseConverter")) public var inputText = ""
+        @Shared(.toolOutput("numberBaseConverter")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var fromBase: NumberBase = .decimal
         var isConversionRequestInFlight = false
         var errorMessage: String?
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("numberBaseConverter"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("numberBaseConverter"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .numberBaseConverterIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("numberBaseConverter"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("numberBaseConverter"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 

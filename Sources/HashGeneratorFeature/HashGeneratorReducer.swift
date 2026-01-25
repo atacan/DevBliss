@@ -11,32 +11,36 @@ public struct HashGeneratorReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.hashGeneratorIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("hashGenerator")) public var inputText = ""
+        @Shared(.toolOutput("hashGenerator")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var uppercase: Bool = false
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("hashGenerator"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("hashGenerator"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .hashGeneratorIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("hashGenerator"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("hashGenerator"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         var config: HashGeneratorConfig {
             HashGeneratorConfig(uppercase: uppercase)
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 

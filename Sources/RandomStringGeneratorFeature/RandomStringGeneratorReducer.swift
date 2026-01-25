@@ -11,7 +11,8 @@ public struct RandomStringGeneratorReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.randomStringGeneratorIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("randomStringGenerator")) public var inputText = ""
+        @Shared(.toolOutput("randomStringGenerator")) public var outputText = ""
         var output: OutputEditorReducer.State
         var length: Int = 16
         var includeLowercase: Bool = true
@@ -21,12 +22,15 @@ public struct RandomStringGeneratorReducer {
         var errorMessage: String?
 
         public init() {
-            self.output = OutputEditorReducer.State(text: _storage.projectedValue.output)
+            let outputText = Shared(wrappedValue: "", .toolOutput("randomStringGenerator"))
+            self._outputText = outputText
+            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
         }
 
         public init(output: String) {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: "", output: output), .randomStringGeneratorIO)
-            self.output = OutputEditorReducer.State(text: _storage.projectedValue.output)
+            let outputText = Shared(wrappedValue: output, .toolOutput("randomStringGenerator"))
+            self._outputText = outputText
+            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
         }
 
         var config: RandomStringConfig {
@@ -36,10 +40,6 @@ public struct RandomStringGeneratorReducer {
                 includeDigits: includeDigits,
                 includeSymbols: includeSymbols
             )
-        }
-
-        public var outputText: String {
-            output.text
         }
     }
 

@@ -12,32 +12,40 @@ public struct RegexMatchesReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        @Shared(.regexMatchesIO) public var storage = ToolIOStorageDoubleOutput()
+        // Use different names to avoid collision with computed properties
+        @Shared(.toolInput("regexMatches")) public var storedInput = ""
+        @Shared(.toolOutput("regexMatches")) public var storedOutput = ""
+        @Shared(.toolOutputSecond("regexMatches")) public var storedOutputSecond = ""
         public var inputOutput: InputAttributedTwoOutputAttributedEditorsReducer.State
         public var regexPattern: String
         var isConversionRequestInFlight = false
 
         public init() {
-            let storage = Shared(wrappedValue: ToolIOStorageDoubleOutput(), .regexMatchesIO)
-            self._storage = storage
+            let storedInput = Shared(wrappedValue: "", .toolInput("regexMatches"))
+            let storedOutput = Shared(wrappedValue: "", .toolOutput("regexMatches"))
+            let storedOutputSecond = Shared(wrappedValue: "", .toolOutputSecond("regexMatches"))
+            self._storedInput = storedInput
+            self._storedOutput = storedOutput
+            self._storedOutputSecond = storedOutputSecond
             self.inputOutput = InputAttributedTwoOutputAttributedEditorsReducer.State(
-                inputRawText: storage.input,
-                outputRawText: storage.output,
-                outputSecondRawText: storage.outputSecond
+                inputRawText: storedInput.projectedValue,
+                outputRawText: storedOutput.projectedValue,
+                outputSecondRawText: storedOutputSecond.projectedValue
             )
             self.regexPattern = ""
         }
 
         public init(input: String, output: String = "") {
-            let storage = Shared(
-                wrappedValue: ToolIOStorageDoubleOutput(input: input, output: output, outputSecond: ""),
-                .regexMatchesIO
-            )
-            self._storage = storage
+            let storedInput = Shared(wrappedValue: input, .toolInput("regexMatches"))
+            let storedOutput = Shared(wrappedValue: output, .toolOutput("regexMatches"))
+            let storedOutputSecond = Shared(wrappedValue: "", .toolOutputSecond("regexMatches"))
+            self._storedInput = storedInput
+            self._storedOutput = storedOutput
+            self._storedOutputSecond = storedOutputSecond
             self.inputOutput = InputAttributedTwoOutputAttributedEditorsReducer.State(
-                inputRawText: storage.input,
-                outputRawText: storage.output,
-                outputSecondRawText: storage.outputSecond
+                inputRawText: storedInput.projectedValue,
+                outputRawText: storedOutput.projectedValue,
+                outputSecondRawText: storedOutputSecond.projectedValue
             )
             self.regexPattern = ""
         }

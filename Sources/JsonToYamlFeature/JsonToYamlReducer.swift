@@ -13,32 +13,36 @@ public struct JsonToYamlReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.jsonToYamlIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("jsonToYaml")) public var inputText = ""
+        @Shared(.toolOutput("jsonToYaml")) public var outputText = ""
         var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
         var sortKeys: Bool = false
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("jsonToYaml"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("jsonToYaml"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputRawText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .jsonToYamlIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("jsonToYaml"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("jsonToYaml"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputRawText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
             )
         }
 
         var config: JsonToYamlConfig {
             JsonToYamlConfig(sortKeys: sortKeys)
-        }
-
-        public var outputText: String {
-            inputOutput.output.text.string
         }
     }
 

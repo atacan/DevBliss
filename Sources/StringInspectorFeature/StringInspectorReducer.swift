@@ -11,20 +11,22 @@ public struct StringInspectorReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.stringInspectorIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("stringInspector")) public var inputText = ""
+        @Shared(.toolOutput("stringInspector")) public var outputText = ""
         var input: InputEditorReducer.State
         var result: StringInspectorResult
 
         public init() {
-            let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .stringInspectorIO)
-            self._storage = sharedStorage
-            self.input = InputEditorReducer.State(text: sharedStorage.input)
-            self.result = StringInspectorClient.liveValue.inspect(sharedStorage.wrappedValue.input)
+            let inputText = Shared(wrappedValue: "", .toolInput("stringInspector"))
+            self._inputText = inputText
+            self.input = InputEditorReducer.State(text: inputText.projectedValue)
+            self.result = StringInspectorClient.liveValue.inspect(inputText.wrappedValue)
         }
 
         public init(inputText: String) {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: inputText, output: ""), .stringInspectorIO)
-            self.input = InputEditorReducer.State(text: _storage.projectedValue.input)
+            let input = Shared(wrappedValue: inputText, .toolInput("stringInspector"))
+            self._inputText = input
+            self.input = InputEditorReducer.State(text: input.projectedValue)
             self.result = StringInspectorClient.liveValue.inspect(inputText)
         }
     }

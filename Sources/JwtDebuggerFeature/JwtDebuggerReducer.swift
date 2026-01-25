@@ -12,7 +12,8 @@ public struct JwtDebuggerReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.jwtDebuggerIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("jwtDebugger")) public var inputText = ""
+        @Shared(.toolOutput("jwtDebugger")) public var outputText = ""
         public var input: InputAttributedEditorReducer.State
         var autoDetect = true
         var secretKey = ""
@@ -21,15 +22,17 @@ public struct JwtDebuggerReducer {
         var errorMessage: String?
 
         public init() {
-            let storage = Shared(wrappedValue: ToolIOStorage(), .jwtDebuggerIO)
-            self._storage = storage
-            self.input = InputAttributedEditorReducer.State(rawText: storage.input)
+            let inputText = Shared(wrappedValue: "", .toolInput("jwtDebugger"))
+            self._inputText = inputText
+            self.input = InputAttributedEditorReducer.State(rawText: inputText.projectedValue)
         }
 
         public init(input: String, output: String = "") {
-            let storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .jwtDebuggerIO)
-            self._storage = storage
-            self.input = InputAttributedEditorReducer.State(rawText: storage.input)
+            let inputText = Shared(wrappedValue: input, .toolInput("jwtDebugger"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("jwtDebugger"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.input = InputAttributedEditorReducer.State(rawText: inputText.projectedValue)
         }
 
         var tokenText: String {

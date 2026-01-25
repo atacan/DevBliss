@@ -19,23 +19,27 @@ public struct HtmlPreviewReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.htmlPreviewIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("htmlPreview")) public var inputText = ""
+        @Shared(.toolOutput("htmlPreview")) public var outputText = ""
         var input: InputEditorReducer.State
         var enableJavaScript: Bool = true
         var allowLinkNavigation: Bool = true
         var allowNetwork: Bool = false
 
         public init() {
-            self.input = InputEditorReducer.State(text: _storage.projectedValue.input)
+            let inputText = Shared(wrappedValue: "", .toolInput("htmlPreview"))
+            self._inputText = inputText
+            self.input = InputEditorReducer.State(text: inputText.projectedValue)
         }
 
         public init(inputText: String) {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: inputText, output: ""), .htmlPreviewIO)
-            self.input = InputEditorReducer.State(text: _storage.projectedValue.input)
+            let input = Shared(wrappedValue: inputText, .toolInput("htmlPreview"))
+            self._inputText = input
+            self.input = InputEditorReducer.State(text: input.projectedValue)
         }
 
         public var normalizedHTML: String {
-            storage.input
+            inputText
         }
     }
 
@@ -55,7 +59,7 @@ public struct HtmlPreviewReducer {
             case .input:
                 let normalized = htmlPreview.normalize(state.input.text)
                 state.input.$text.withLock { $0 = normalized }
-                state.$storage.withLock { $0.input = normalized }
+                state.$inputText.withLock { $0 = normalized }
                 return .none
             }
         }

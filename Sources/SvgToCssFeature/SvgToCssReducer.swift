@@ -11,33 +11,37 @@ public struct SvgToCssReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.svgToCssIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("svgToCss")) public var inputText = ""
+        @Shared(.toolOutput("svgToCss")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var includeDataPrefix: Bool = true
         var wrapWithCss: Bool = true
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("svgToCss"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("svgToCss"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .svgToCssIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("svgToCss"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("svgToCss"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         var config: SvgToCssConfig {
             SvgToCssConfig(includeDataPrefix: includeDataPrefix, wrapWithCss: wrapWithCss)
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 
