@@ -46,7 +46,8 @@ public struct UrlToMarkdownReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.urlToMarkdownIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("urlToMarkdown")) public var inputText = ""
+        @Shared(.toolOutput("urlToMarkdown")) public var outputText = ""
         @Shared(.urlToMarkdownConfig) public var configuration = HtmlToMarkdownConfig()
         @Shared(.urlLoadingConfig) public var loadingConfiguration = UrlLoadingConfig()
         public var output: OutputAttributedEditorReducer.State
@@ -54,22 +55,23 @@ public struct UrlToMarkdownReducer {
         var errorMessage: String?
         var showMarkdownPreview = false
 
-        // URL input is derived from storage.input for persistence
+        // URL input is derived from inputText for persistence
         public var urlInput: String {
-            get { storage.input }
-            set { $storage.withLock { $0.input = newValue } }
+            get { inputText }
+            set { $inputText.withLock { $0 = newValue } }
         }
 
         public init(
             configuration: HtmlToMarkdownConfig = .init(),
             loadingConfiguration: UrlLoadingConfig = .init()
         ) {
-            let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .urlToMarkdownIO)
-            self.output = OutputAttributedEditorReducer.State(rawText: sharedStorage.output)
+            let outputText = Shared(wrappedValue: "", .toolOutput("urlToMarkdown"))
+            self._outputText = outputText
+            self.output = OutputAttributedEditorReducer.State(rawText: outputText.projectedValue)
             self.isConversionRequestInFlight = false
         }
 
-        public var outputText: String {
+        public var outputString: String {
             output.text.string
         }
     }
@@ -272,6 +274,7 @@ public struct UrlToMarkdownView: View {
                     .frame(width: labelWidth, alignment: .trailing)
                 TextField("e.g., article, main, .content", text: $store.loadingConfiguration.contentSelector)
                     .blissCompactTextField()
+//                    .frame(maxWidth: 200)
                     .gridCellColumns(3)
                     .help("CSS selector to extract specific content (leave empty for full page)")
             }

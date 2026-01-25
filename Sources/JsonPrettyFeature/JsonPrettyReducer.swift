@@ -11,31 +11,31 @@ public struct JsonPrettyReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        @Shared(.jsonPrettyIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("jsonPretty")) public var inputText = ""
+        @Shared(.toolOutput("jsonPretty")) public var outputText = ""
         var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
 
         public init() {
-            // Initialize inputOutput with default, then update to use shared references
-            let storage = Shared<ToolIOStorage>.init(wrappedValue: ToolIOStorage(), .jsonPrettyIO)
-            self._storage = storage
+            let inputText = Shared(wrappedValue: "", .toolInput("jsonPretty"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("jsonPretty"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: storage.input,
-                outputRawText: storage.output
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            let storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .jsonPrettyIO)
-            self._storage = storage
+            let inputText = Shared(wrappedValue: input, .toolInput("jsonPretty"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("jsonPretty"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: storage.input,
-                outputRawText: storage.output
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
             )
-        }
-
-        public var outputText: String {
-            inputOutput.output.text.string
         }
     }
 

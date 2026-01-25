@@ -11,32 +11,36 @@ public struct YamlToJsonReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.yamlToJsonIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("yamlToJson")) public var inputText = ""
+        @Shared(.toolOutput("yamlToJson")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var prettyPrinted: Bool = true
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("yamlToJson"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("yamlToJson"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .yamlToJsonIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("yamlToJson"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("yamlToJson"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         var config: YamlToJsonConfig {
             YamlToJsonConfig(prettyPrinted: prettyPrinted)
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 

@@ -11,7 +11,8 @@ public struct LineSortDedupeReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.lineSortDedupeIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("lineSortDedupe")) public var inputText = ""
+        @Shared(.toolOutput("lineSortDedupe")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var sortOrder: LineSortOrder = .ascending
@@ -21,17 +22,24 @@ public struct LineSortDedupeReducer {
         var removeEmptyLines: Bool = true
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("lineSortDedupe"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("lineSortDedupe"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .lineSortDedupeIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("lineSortDedupe"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("lineSortDedupe"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
@@ -43,10 +51,6 @@ public struct LineSortDedupeReducer {
                 trimWhitespace: trimWhitespace,
                 removeEmptyLines: removeEmptyLines
             )
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 
@@ -113,7 +117,7 @@ public struct LineSortDedupeView: View {
         VStack(spacing: 0) {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-                    ConfigLabel("Sort")
+                    ConfigLabel("Sort by")
                     Picker("Order", selection: $store.sortOrder) {
                         ForEach(LineSortOrder.allCases) { order in
                             Text(order.rawValue)
@@ -121,6 +125,7 @@ public struct LineSortDedupeView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .labelsHidden()
                     .frame(width: 200)
 
                     Toggle("Case-insensitive", isOn: $store.caseInsensitive)

@@ -17,7 +17,8 @@ public struct Base64ImageReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.base64ImageIO) public var storage = Base64ImageStorage()
+        @Shared(.base64ImageString) public var base64StringStorage = ""
+        @Shared(.base64ImageMeta) public var meta = Base64ImageMeta()
         public var base64String: String = ""
         public var imageData: Data?
         public var imageInfo: Base64ImageInfo?
@@ -26,11 +27,11 @@ public struct Base64ImageReducer {
         public var isProcessing: Bool = false
 
         public init() {
-            self.base64String = storage.base64String
-            if let data = storage.imageData {
+            self.base64String = base64StringStorage
+            if let data = meta.imageData {
                 self.imageData = data
             }
-            self.outputFormat = storage.outputFormat
+            self.outputFormat = meta.outputFormat
         }
 
         public var hasImage: Bool {
@@ -72,13 +73,13 @@ public struct Base64ImageReducer {
                 state.errorMessage = nil
 
                 // Save to storage
-                state.$storage.withLock { $0.base64String = newString }
+                state.$base64StringStorage.withLock { $0 = newString }
 
                 // If empty, clear everything
                 guard !newString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                     state.imageData = nil
                     state.imageInfo = nil
-                    state.$storage.withLock { $0.imageData = nil }
+                    state.$meta.withLock { $0.imageData = nil }
                     return .none
                 }
 
@@ -97,13 +98,13 @@ public struct Base64ImageReducer {
 
             case let .outputFormatChanged(format):
                 state.outputFormat = format
-                state.$storage.withLock { $0.outputFormat = format }
+                state.$meta.withLock { $0.outputFormat = format }
 
                 // Re-encode with new format if we have image data
                 if let imageData = state.imageData {
                     let encoded = base64Image.encodeToBase64(imageData, format)
                     state.base64String = encoded
-                    state.$storage.withLock { $0.base64String = encoded }
+                    state.$base64StringStorage.withLock { $0 = encoded }
                 }
                 return .none
 
@@ -156,10 +157,8 @@ public struct Base64ImageReducer {
                 state.imageInfo = nil
                 state.base64String = ""
                 state.errorMessage = nil
-                state.$storage.withLock {
-                    $0.imageData = nil
-                    $0.base64String = ""
-                }
+                state.$meta.withLock { $0.imageData = nil }
+                state.$base64StringStorage.withLock { $0 = "" }
                 return .none
 
             case .saveImageTapped:
@@ -237,10 +236,8 @@ public struct Base64ImageReducer {
                 state.base64String = encoded
 
                 // Save to storage
-                state.$storage.withLock {
-                    $0.imageData = data
-                    $0.base64String = encoded
-                }
+                state.$meta.withLock { $0.imageData = data }
+                state.$base64StringStorage.withLock { $0 = encoded }
                 return .none
 
             case let .decodeBase64Response(.success(data)):
@@ -248,7 +245,7 @@ public struct Base64ImageReducer {
                 state.imageData = data
                 state.imageInfo = base64Image.getImageInfo(data)
                 state.errorMessage = nil
-                state.$storage.withLock { $0.imageData = data }
+                state.$meta.withLock { $0.imageData = data }
                 return .none
 
             case let .decodeBase64Response(.failure(error)):
@@ -260,12 +257,12 @@ public struct Base64ImageReducer {
                 }
                 state.imageData = nil
                 state.imageInfo = nil
-                state.$storage.withLock { $0.imageData = nil }
+                state.$meta.withLock { $0.imageData = nil }
                 return .none
 
             case let .encodeImageResponse(encoded):
                 state.base64String = encoded
-                state.$storage.withLock { $0.base64String = encoded }
+                state.$base64StringStorage.withLock { $0 = encoded }
                 return .none
             }
         }

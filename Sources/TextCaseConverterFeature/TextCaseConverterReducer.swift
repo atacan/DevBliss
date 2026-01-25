@@ -10,7 +10,8 @@ public struct TextCaseConverterReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        @Shared(.textCaseConverterIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("textCaseConverter")) public var inputText = ""
+        @Shared(.toolOutput("textCaseConverter")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         @Shared(.appStorage(SettingsKey.TextCaseConverter.sourceCase)) public var sourceCase: WordGroupCase = .kebab
@@ -18,24 +19,25 @@ public struct TextCaseConverterReducer {
         @Shared(.appStorage(SettingsKey.TextCaseConverter.textSeperator)) public var textSeperator: WordGroupSeperator = .newLine
 
         public init() {
-            // Derive shared refs from storage - changes auto-persist!
+            let inputText = Shared(wrappedValue: "", .toolInput("textCaseConverter"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("textCaseConverter"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            // For "Move to other tool" - set storage first, then derive
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .textCaseConverterIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("textCaseConverter"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("textCaseConverter"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 

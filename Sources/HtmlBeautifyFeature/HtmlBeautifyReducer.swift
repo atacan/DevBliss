@@ -11,28 +11,32 @@ public struct HtmlBeautifyReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.htmlBeautifyIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("htmlBeautify")) public var inputText = ""
+        @Shared(.toolOutput("htmlBeautify")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var mode: HtmlBeautifyMode = .beautify
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("htmlBeautify"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("htmlBeautify"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .htmlBeautifyIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("htmlBeautify"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("htmlBeautify"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 

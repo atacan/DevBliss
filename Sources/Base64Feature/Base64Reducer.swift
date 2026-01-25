@@ -11,7 +11,8 @@ public struct Base64Reducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.base64IO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("base64")) public var inputText = ""
+        @Shared(.toolOutput("base64")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var mode: Base64Mode = .encode
@@ -20,22 +21,25 @@ public struct Base64Reducer {
         var autoRemoveNullBytes: Bool = true
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("base64"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("base64"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .base64IO)
+            let inputText = Shared(wrappedValue: input, .toolInput("base64"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("base64"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
 
         var config: Base64Config {

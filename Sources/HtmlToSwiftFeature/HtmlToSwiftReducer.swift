@@ -15,7 +15,8 @@ public struct HtmlToSwiftReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        @Shared(.htmlToSwiftIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("htmlToSwift")) public var inputText = ""
+        @Shared(.toolOutput("htmlToSwift")) public var outputText = ""
         var inputOutput: InputOutputAttributedEditorsReducer.State
         var isConversionRequestInFlight = false
         var dsl: SwiftDSL = .binaryBirds
@@ -26,38 +27,50 @@ public struct HtmlToSwiftReducer {
             dsl: SwiftDSL = .binaryBirds,
             component: HtmlOutputComponent = .fullHtml
         ) {
-            self.inputOutput = inputOutput
+            let inputText = Shared(wrappedValue: "", .toolInput("htmlToSwift"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("htmlToSwift"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
+            )
             self.dsl = dsl
             self.component = component
         }
 
         public init(inputOutput: InputOutputAttributedEditorsReducer.State = .init()) {
-            self.inputOutput = inputOutput
+            let inputText = Shared(wrappedValue: "", .toolInput("htmlToSwift"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("htmlToSwift"))
+            self._inputText = inputText
+            self._outputText = outputText
+            self.inputOutput = InputOutputAttributedEditorsReducer.State(
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
+            )
         }
 
         public init() {
-            // Explicitly initialize storage first
-            let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .htmlToSwiftIO)
-            self._storage = sharedStorage
+            let inputText = Shared(wrappedValue: "", .toolInput("htmlToSwift"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("htmlToSwift"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: sharedStorage.input,
-                outputRawText: sharedStorage.output
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
             )
             // Config (dsl, component) loaded via observeSettings action
         }
 
         public init(input: String, output: String = "") {
-            // Explicitly initialize storage with provided values
-            let sharedStorage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .htmlToSwiftIO)
-            self._storage = sharedStorage
+            let inputText = Shared(wrappedValue: input, .toolInput("htmlToSwift"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("htmlToSwift"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: sharedStorage.input,
-                outputRawText: sharedStorage.output
+                inputText: inputText.projectedValue,
+                outputRawText: outputText.projectedValue
             )
-        }
-
-        public var outputText: String {
-            inputOutput.output.text.string
         }
     }
 

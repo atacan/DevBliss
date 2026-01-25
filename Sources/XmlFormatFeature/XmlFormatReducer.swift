@@ -11,28 +11,32 @@ public struct XmlFormatReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.xmlFormatIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("xmlFormat")) public var inputText = ""
+        @Shared(.toolOutput("xmlFormat")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var mode: XmlFormatMode = .beautify
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("xmlFormat"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("xmlFormat"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .xmlFormatIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("xmlFormat"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("xmlFormat"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 

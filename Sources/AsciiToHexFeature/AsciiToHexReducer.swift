@@ -11,33 +11,37 @@ public struct AsciiToHexReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.asciiToHexIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("asciiToHex")) public var inputText = ""
+        @Shared(.toolOutput("asciiToHex")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var uppercase: Bool = true
         var separator: HexSeparator = .space
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("asciiToHex"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("asciiToHex"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .asciiToHexIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("asciiToHex"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("asciiToHex"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         var config: AsciiToHexConfig {
             AsciiToHexConfig(uppercase: uppercase, separator: separator)
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 

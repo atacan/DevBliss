@@ -10,25 +10,22 @@ public struct UrlParserReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.urlParserIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("urlParser")) public var inputText = ""
+        @Shared(.toolOutput("urlParser")) public var outputText = ""
         var result: UrlParseResult?
         var autoDetect: Bool = true
         var errorMessage: String?
 
         public var input: String {
-            get { storage.input }
-            set { $storage.withLock { $0.input = newValue } }
+            get { inputText }
+            set { $inputText.withLock { $0 = newValue } }
         }
 
         public init() {
         }
 
         public init(input: String) {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: ""), .urlParserIO)
-        }
-
-        public var outputText: String {
-            result?.queryJSON ?? ""
+            self._inputText = Shared(wrappedValue: input, .toolInput("urlParser"))
         }
     }
 

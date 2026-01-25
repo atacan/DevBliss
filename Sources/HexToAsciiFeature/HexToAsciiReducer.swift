@@ -11,32 +11,36 @@ public struct HexToAsciiReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.hexToAsciiIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("hexToAscii")) public var inputText = ""
+        @Shared(.toolOutput("hexToAscii")) public var outputText = ""
         var inputOutput: InputOutputEditorsReducer.State
         var isConversionRequestInFlight = false
         var allowSeparators: Bool = true
 
         public init() {
+            let inputText = Shared(wrappedValue: "", .toolInput("hexToAscii"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("hexToAscii"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .hexToAsciiIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("hexToAscii"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("hexToAscii"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: _storage.projectedValue.input,
-                outputText: _storage.projectedValue.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
         }
 
         var config: HexToAsciiConfig {
             HexToAsciiConfig(allowSeparators: allowSeparators)
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 

@@ -12,7 +12,8 @@ public struct PrefixSuffixReducer {
     public init() {}
     @ObservableState
     public struct State: Equatable {
-        @Shared(.prefixSuffixIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("prefixSuffix")) public var inputText = ""
+        @Shared(.toolOutput("prefixSuffix")) public var outputText = ""
         public var inputOutput: InputOutputEditorsReducer.State
         public var configuration: PrefixSuffixConfig
         var isConversionRequestInFlight = false
@@ -21,12 +22,13 @@ public struct PrefixSuffixReducer {
             inputOutput: InputOutputEditorsReducer.State = .init(),
             configuration: PrefixSuffixConfig = .init()
         ) {
-            // Initialize inputOutput using derived shared refs from storage
-            // We must create Shared projections from the persisted key, not from $storage
-            let sharedStorage = Shared(wrappedValue: ToolIOStorage(), .prefixSuffixIO)
+            let inputText = Shared(wrappedValue: "", .toolInput("prefixSuffix"))
+            let outputText = Shared(wrappedValue: "", .toolOutput("prefixSuffix"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: sharedStorage.input,
-                outputText: sharedStorage.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
 
             // Initialize other properties
@@ -59,15 +61,13 @@ public struct PrefixSuffixReducer {
         }
 
         public init(input: String, output: String = "") {
-            // Initialize @Shared storage with provided values
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .prefixSuffixIO)
-
-            // Initialize inputOutput using derived shared refs
-            // Create a new Shared reference from the same key to get projections
-            let sharedStorage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .prefixSuffixIO)
+            let inputText = Shared(wrappedValue: input, .toolInput("prefixSuffix"))
+            let outputText = Shared(wrappedValue: output, .toolOutput("prefixSuffix"))
+            self._inputText = inputText
+            self._outputText = outputText
             self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: sharedStorage.input,
-                outputText: sharedStorage.output
+                inputText: inputText.projectedValue,
+                outputText: outputText.projectedValue
             )
 
             // Initialize other properties
@@ -85,10 +85,6 @@ public struct PrefixSuffixReducer {
                 trimWhiteSpace: userDefaults.bool(forKey: SettingsKey.PrefixSuffix.trimWhiteSpace) ?? true
             )
             self.configuration = config
-        }
-
-        public var outputText: String {
-            inputOutput.output.text
         }
     }
 

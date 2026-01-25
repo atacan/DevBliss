@@ -10,7 +10,8 @@ public struct UnixTimeReducer {
 
     @ObservableState
     public struct State: Equatable {
-        @Shared(.unixTimeIO) public var storage = ToolIOStorage()
+        @Shared(.toolInput("unixTime")) public var inputText = ""
+        @Shared(.toolOutput("unixTime")) public var outputText = ""
         var isConversionRequestInFlight = false
         var mode: UnixTimeMode = .unixToDate
         var autoDetect: Bool = true
@@ -18,20 +19,17 @@ public struct UnixTimeReducer {
         var result: UnixTimeResult?
         var errorMessage: String?
 
-        // Input is derived from storage.input for persistence
+        // Input is derived from inputText for persistence
         public var input: String {
-            get { storage.input }
-            set { $storage.withLock { $0.input = newValue } }
+            get { inputText }
+            set { $inputText.withLock { $0 = newValue } }
         }
 
         public init() {}
 
         public init(input: String, output: String = "") {
-            self._storage = Shared(wrappedValue: ToolIOStorage(input: input, output: output), .unixTimeIO)
-        }
-
-        public var outputText: String {
-            result?.unixTimestamp ?? ""
+            self._inputText = Shared(wrappedValue: input, .toolInput("unixTime"))
+            self._outputText = Shared(wrappedValue: output, .toolOutput("unixTime"))
         }
     }
 
@@ -68,7 +66,7 @@ public struct UnixTimeReducer {
                 let timestamp = unixTime.currentTimestamp()
                 let timestampString = String(Int(timestamp))
                 state.mode = .unixToDate
-                state.$storage.withLock { $0.input = timestampString }
+                state.$inputText.withLock { $0 = timestampString }
                 return .send(.convertButtonTouched)
 
             case .convertButtonTouched:
