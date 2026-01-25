@@ -98,7 +98,7 @@ public struct SvgToCssReducer {
 }
 
 public struct SvgToCssView: View {
-    @Perception.Bindable var store: StoreOf<SvgToCssReducer>
+    @Bindable var store: StoreOf<SvgToCssReducer>
 
     public init(store: StoreOf<SvgToCssReducer>) {
         self.store = store

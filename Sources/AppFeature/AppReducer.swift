@@ -653,7 +653,7 @@ public struct AppReducer {
 // MARK: - App View
 
 public struct AppView: View {
-    @Perception.Bindable var store: StoreOf<AppReducer>
+    @Bindable var store: StoreOf<AppReducer>
 
     public init(store: StoreOf<AppReducer>) {
         self.store = store

@@ -136,7 +136,7 @@ public struct NameGeneratorProbabilisticReducer {
 }
 
 public struct NameGeneratorProbabilisticView: View {
-    @Perception.Bindable var store: StoreOf<NameGeneratorProbabilisticReducer>
+    @Bindable var store: StoreOf<NameGeneratorProbabilisticReducer>
 
     public init(store: StoreOf<NameGeneratorProbabilisticReducer>) {
         self.store = store

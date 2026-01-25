@@ -71,7 +71,7 @@ public struct UrlParserReducer {
 }
 
 public struct UrlParserView: View {
-    @Perception.Bindable var store: StoreOf<UrlParserReducer>
+    @Bindable var store: StoreOf<UrlParserReducer>
 
     public init(store: StoreOf<UrlParserReducer>) {
         self.store = store

@@ -145,7 +145,7 @@ public struct JwtDebuggerReducer {
 }
 
 public struct JwtDebuggerView: View {
-    @Perception.Bindable var store: StoreOf<JwtDebuggerReducer>
+    @Bindable var store: StoreOf<JwtDebuggerReducer>
 
     public init(store: StoreOf<JwtDebuggerReducer>) {
         self.store = store

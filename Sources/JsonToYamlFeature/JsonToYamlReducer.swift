@@ -102,7 +102,7 @@ public struct JsonToYamlReducer {
 }
 
 public struct JsonToYamlView: View {
-    @Perception.Bindable var store: StoreOf<JsonToYamlReducer>
+    @Bindable var store: StoreOf<JsonToYamlReducer>
 
     public init(store: StoreOf<JsonToYamlReducer>) {
         self.store = store

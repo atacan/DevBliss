@@ -152,7 +152,7 @@ public struct PrefixSuffixReducer {
 }
 
 public struct PrefixSuffixView: View {
-    @Perception.Bindable var store: StoreOf<PrefixSuffixReducer>
+    @Bindable var store: StoreOf<PrefixSuffixReducer>
 
     @FocusState private var focusedField: Field?
     enum Field: Int, Hashable {

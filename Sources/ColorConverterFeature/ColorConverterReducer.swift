@@ -104,7 +104,7 @@ public struct ColorConverterReducer {
 }
 
 public struct ColorConverterView: View {
-    @Perception.Bindable var store: StoreOf<ColorConverterReducer>
+    @Bindable var store: StoreOf<ColorConverterReducer>
 
     public init(store: StoreOf<ColorConverterReducer>) {
         self.store = store

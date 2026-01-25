@@ -81,7 +81,7 @@ extension OutputEditorReducer.State {
 }
 
 public struct OutputEditorView: View {
-    @Perception.Bindable var store: StoreOf<OutputEditorReducer>
+    @Bindable var store: StoreOf<OutputEditorReducer>
 
     let title: String
     let copyButtonTitle: String

@@ -94,7 +94,7 @@ public struct RandomStringGeneratorReducer {
 }
 
 public struct RandomStringGeneratorView: View {
-    @Perception.Bindable var store: StoreOf<RandomStringGeneratorReducer>
+    @Bindable var store: StoreOf<RandomStringGeneratorReducer>
 
     public init(store: StoreOf<RandomStringGeneratorReducer>) {
         self.store = store

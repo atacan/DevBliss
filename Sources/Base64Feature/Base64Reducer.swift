@@ -110,7 +110,7 @@ public struct Base64Reducer {
 }
 
 public struct Base64View: View {
-    @Perception.Bindable var store: StoreOf<Base64Reducer>
+    @Bindable var store: StoreOf<Base64Reducer>
 
     public init(store: StoreOf<Base64Reducer>) {
         self.store = store

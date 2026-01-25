@@ -107,7 +107,7 @@ public struct LineSortDedupeReducer {
 }
 
 public struct LineSortDedupeView: View {
-    @Perception.Bindable var store: StoreOf<LineSortDedupeReducer>
+    @Bindable var store: StoreOf<LineSortDedupeReducer>
 
     public init(store: StoreOf<LineSortDedupeReducer>) {
         self.store = store

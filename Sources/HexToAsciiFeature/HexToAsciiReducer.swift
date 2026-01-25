@@ -97,7 +97,7 @@ public struct HexToAsciiReducer {
 }
 
 public struct HexToAsciiView: View {
-    @Perception.Bindable var store: StoreOf<HexToAsciiReducer>
+    @Bindable var store: StoreOf<HexToAsciiReducer>
 
     public init(store: StoreOf<HexToAsciiReducer>) {
         self.store = store

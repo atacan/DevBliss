@@ -127,7 +127,7 @@ public struct HtmlToMarkdownReducer {
 }
 
 public struct HtmlToMarkdownView: View {
-    @Perception.Bindable var store: StoreOf<HtmlToMarkdownReducer>
+    @Bindable var store: StoreOf<HtmlToMarkdownReducer>
 
     public init(store: StoreOf<HtmlToMarkdownReducer>) {
         self.store = store
