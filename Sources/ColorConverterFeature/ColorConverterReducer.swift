@@ -104,7 +104,7 @@ public struct ColorConverterReducer {
 }
 
 public struct ColorConverterView: View {
-    @Bindable var store: StoreOf<ColorConverterReducer>
+    @Perception.Bindable var store: StoreOf<ColorConverterReducer>
 
     public init(store: StoreOf<ColorConverterReducer>) {
         self.store = store
@@ -132,10 +132,14 @@ public struct ColorConverterView: View {
                 GridRow {
                     ConfigLabel("Options")
                     Toggle("Uppercase hex", isOn: $store.uppercaseHex)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
 
                     Toggle("Include alpha", isOn: $store.includeAlpha)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                 }
             }
             .padding(.horizontal, 16)

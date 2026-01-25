@@ -109,7 +109,7 @@ public struct HashGeneratorReducer {
 }
 
 public struct HashGeneratorView: View {
-    @Bindable var store: StoreOf<HashGeneratorReducer>
+    @Perception.Bindable var store: StoreOf<HashGeneratorReducer>
 
     public init(store: StoreOf<HashGeneratorReducer>) {
         self.store = store
@@ -121,7 +121,9 @@ public struct HashGeneratorView: View {
                 GridRow {
 //                    ConfigLabel("Format")
                     Toggle("Uppercase", isOn: $store.uppercase)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                 }
             }
             .padding(.horizontal, 16)

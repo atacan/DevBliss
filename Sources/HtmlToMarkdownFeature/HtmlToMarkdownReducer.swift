@@ -127,7 +127,7 @@ public struct HtmlToMarkdownReducer {
 }
 
 public struct HtmlToMarkdownView: View {
-    @Bindable var store: StoreOf<HtmlToMarkdownReducer>
+    @Perception.Bindable var store: StoreOf<HtmlToMarkdownReducer>
 
     public init(store: StoreOf<HtmlToMarkdownReducer>) {
         self.store = store
@@ -232,7 +232,7 @@ public struct HtmlToMarkdownView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(Color(nsColor: .controlBackgroundColor))
+                    .background(ThemeColor.Background.controlBackground)
 
                     Divider()
 
@@ -253,7 +253,7 @@ public struct HtmlToMarkdownView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(Color(nsColor: .controlBackgroundColor))
+                    .background(ThemeColor.Background.controlBackground)
 
                     Divider()
 
@@ -263,7 +263,7 @@ public struct HtmlToMarkdownView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(nsColor: .textBackgroundColor))
+                    .background(ThemeColor.Background.textBackground)
                 }
             }
         )

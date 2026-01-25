@@ -71,7 +71,7 @@ public struct HtmlPreviewReducer {
 }
 
 public struct HtmlPreviewView: View {
-    @Bindable var store: StoreOf<HtmlPreviewReducer>
+    @Perception.Bindable var store: StoreOf<HtmlPreviewReducer>
     @StateObject private var webViewStore = HtmlPreviewWebViewStore()
 
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.HtmlPreview.splitViewFraction)
@@ -88,11 +88,17 @@ public struct HtmlPreviewView: View {
                 GridRow {
 //                    ConfigLabel("Options")
                     Toggle("Enable JavaScript", isOn: $store.enableJavaScript)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                     Toggle("Allow link navigation", isOn: $store.allowLinkNavigation)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                     Toggle("Allow network", isOn: $store.allowNetwork)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                 }
             }
             .padding(.horizontal, 16)

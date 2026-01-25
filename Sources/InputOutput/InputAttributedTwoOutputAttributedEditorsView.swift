@@ -73,7 +73,7 @@ public struct InputAttributedTwoOutputAttributedEditorsReducer {
 }
 
 public struct InputAttributedTwoOutputAttributedEditorsView: View {
-    @Bindable var store: StoreOf<InputAttributedTwoOutputAttributedEditorsReducer>
+    @Perception.Bindable var store: StoreOf<InputAttributedTwoOutputAttributedEditorsReducer>
 
     let inputEditorTitle: String
     let outputEditorTitle: String

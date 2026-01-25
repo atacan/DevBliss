@@ -15,6 +15,7 @@ public enum XmlFormatMode: String, CaseIterable, Identifiable, Codable {
 extension XmlFormatClient: DependencyKey {
     public static let liveValue = Self(
         format: { input, mode in
+            #if os(macOS)
             let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !trimmed.isEmpty else { throw XmlFormatError.emptyInput }
 
@@ -27,6 +28,9 @@ extension XmlFormatClient: DependencyKey {
             case .minify:
                 return document.xmlString(options: [.nodeCompactEmptyElement])
             }
+            #else
+            throw XmlFormatError.notAvailableOnPlatform
+            #endif
         }
     )
 }
@@ -41,6 +45,7 @@ extension DependencyValues {
 public enum XmlFormatError: LocalizedError {
     case emptyInput
     case invalidEncoding
+    case notAvailableOnPlatform
 
     public var errorDescription: String? {
         switch self {
@@ -48,6 +53,8 @@ public enum XmlFormatError: LocalizedError {
             return "Paste XML content to format"
         case .invalidEncoding:
             return "XML input is not valid UTF-8"
+        case .notAvailableOnPlatform:
+            return "XML formatting is not available on this platform"
         }
     }
 }

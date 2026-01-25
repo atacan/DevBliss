@@ -98,7 +98,7 @@ public struct AsciiToHexReducer {
 }
 
 public struct AsciiToHexView: View {
-    @Bindable var store: StoreOf<AsciiToHexReducer>
+    @Perception.Bindable var store: StoreOf<AsciiToHexReducer>
 
     public init(store: StoreOf<AsciiToHexReducer>) {
         self.store = store
@@ -119,7 +119,9 @@ public struct AsciiToHexView: View {
                     .blissMenuPicker(width: 120)
 
                     Toggle("Uppercase", isOn: $store.uppercase)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
 
 //                    Spacer()
                 }

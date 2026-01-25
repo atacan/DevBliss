@@ -97,7 +97,7 @@ public struct YamlToJsonReducer {
 }
 
 public struct YamlToJsonView: View {
-    @Bindable var store: StoreOf<YamlToJsonReducer>
+    @Perception.Bindable var store: StoreOf<YamlToJsonReducer>
 
     public init(store: StoreOf<YamlToJsonReducer>) {
         self.store = store
@@ -109,7 +109,9 @@ public struct YamlToJsonView: View {
 //                GridRow {
 //                    ConfigLabel("Options")
 //                    Toggle("Pretty printed", isOn: $store.prettyPrinted)
+#if os(macOS)
 //                        .toggleStyle(.checkbox)
+#endif
 //                    Spacer()
 //                }
 //            }

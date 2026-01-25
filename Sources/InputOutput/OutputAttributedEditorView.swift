@@ -101,7 +101,7 @@ extension OutputAttributedEditorReducer.State {
 }
 
 public struct OutputAttributedEditorView: View {
-    @Bindable var store: StoreOf<OutputAttributedEditorReducer>
+    @Perception.Bindable var store: StoreOf<OutputAttributedEditorReducer>
     @State var isActivitySheetPresented: Bool = false
 
     let title: String

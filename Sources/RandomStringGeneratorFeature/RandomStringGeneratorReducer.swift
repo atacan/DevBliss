@@ -94,7 +94,7 @@ public struct RandomStringGeneratorReducer {
 }
 
 public struct RandomStringGeneratorView: View {
-    @Bindable var store: StoreOf<RandomStringGeneratorReducer>
+    @Perception.Bindable var store: StoreOf<RandomStringGeneratorReducer>
 
     public init(store: StoreOf<RandomStringGeneratorReducer>) {
         self.store = store
@@ -119,7 +119,9 @@ public struct RandomStringGeneratorView: View {
                         Toggle("Digits", isOn: $store.includeDigits)
                         Toggle("Symbols", isOn: $store.includeSymbols)
                     }
+                    #if os(macOS)
                     .toggleStyle(.checkbox)
+                    #endif
                     .gridCellColumns(3)
                 }
             }

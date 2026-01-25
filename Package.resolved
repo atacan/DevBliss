@@ -37,15 +37,6 @@
       }
     },
     {
-      "identity" : "html-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/atacan/html-swift",
-      "state" : {
-        "branch" : "main",
-        "revision" : "579334004f05d5f910639a07c3df6cb32051f2d9"
-      }
-    },
-    {
       "identity" : "jwtdecode.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/auth0/JWTDecode.swift",
@@ -59,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nicklockwood/LRUCache.git",
       "state" : {
-        "revision" : "0d91406ecd4d6c1c56275866f00508d9aeacc92a",
-        "version" : "1.2.0"
+        "revision" : "cb5b2bd0da83ad29c0bec762d39f41c8ad0eaf3e",
+        "version" : "1.2.1"
       }
     },
     {

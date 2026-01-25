@@ -136,7 +136,7 @@ public struct UrlToMarkdownReducer {
 }
 
 public struct UrlToMarkdownView: View {
-    @Bindable var store: StoreOf<UrlToMarkdownReducer>
+    @Perception.Bindable var store: StoreOf<UrlToMarkdownReducer>
 
     public init(store: StoreOf<UrlToMarkdownReducer>) {
         self.store = store
@@ -191,7 +191,7 @@ public struct UrlToMarkdownView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(Color(nsColor: .controlBackgroundColor))
+                .background(ThemeColor.Background.controlBackground)
 
                 Divider()
 
@@ -203,7 +203,7 @@ public struct UrlToMarkdownView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(nsColor: .textBackgroundColor))
+                    .background(ThemeColor.Background.textBackground)
                 } else {
                     OutputAttributedEditorView(
                         store: store.scope(state: \.output, action: \.output),

@@ -93,7 +93,7 @@ public struct CssBeautifyReducer {
 }
 
 public struct CssBeautifyView: View {
-    @Bindable var store: StoreOf<CssBeautifyReducer>
+    @Perception.Bindable var store: StoreOf<CssBeautifyReducer>
 
     public init(store: StoreOf<CssBeautifyReducer>) {
         self.store = store

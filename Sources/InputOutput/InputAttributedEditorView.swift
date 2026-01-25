@@ -109,7 +109,7 @@ extension InputAttributedEditorReducer.State {
 }
 
 public struct InputAttributedEditorView: View {
-    @Bindable var store: StoreOf<InputAttributedEditorReducer>
+    @Perception.Bindable var store: StoreOf<InputAttributedEditorReducer>
 
     let title: String
     let pasteButtonTitle: String
@@ -146,12 +146,12 @@ public struct InputAttributedEditorView: View {
                     })
             #elseif os(iOS)
                 TextEditor(
-                    text: store.binding(
-                        get: { state in
-                            state.text.string
+                    text: Binding(
+                        get: {
+                            store.text.string
                         },
-                        send: { newValue in
-                            .binding(.set(\.$text, .init(string: newValue)))
+                        set: { newValue in
+                            store.send(.binding(.set(\.text, .init(string: newValue))))
                         }
                     )
                 )

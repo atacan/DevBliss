@@ -93,7 +93,7 @@ public struct BackslashEscapeReducer {
 }
 
 public struct BackslashEscapeView: View {
-    @Bindable var store: StoreOf<BackslashEscapeReducer>
+    @Perception.Bindable var store: StoreOf<BackslashEscapeReducer>
 
     public init(store: StoreOf<BackslashEscapeReducer>) {
         self.store = store

@@ -105,7 +105,7 @@ public struct UnixTimeReducer {
 }
 
 public struct UnixTimeView: View {
-    @Bindable var store: StoreOf<UnixTimeReducer>
+    @Perception.Bindable var store: StoreOf<UnixTimeReducer>
 
     public init(store: StoreOf<UnixTimeReducer>) {
         self.store = store
@@ -175,7 +175,9 @@ public struct UnixTimeView: View {
                     .frame(width: 200)
 
                     Toggle("Auto-detect", isOn: $store.autoDetect)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                         .help("Automatically detect if input is Unix timestamp or date")
 
                     Picker("Timezone", selection: $store.selectedTimezone) {
@@ -262,7 +264,7 @@ struct ResultCard: View {
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         #if os(macOS)
-        .background(Color(nsColor: .controlBackgroundColor))
+        .background(ThemeColor.Background.controlBackground)
         #else
         .background(Color(uiColor: .secondarySystemBackground))
         #endif

@@ -57,7 +57,7 @@ public struct StringInspectorReducer {
 }
 
 public struct StringInspectorView: View {
-    @Bindable var store: StoreOf<StringInspectorReducer>
+    @Perception.Bindable var store: StoreOf<StringInspectorReducer>
 
     public init(store: StoreOf<StringInspectorReducer>) {
         self.store = store

@@ -272,7 +272,7 @@ public struct Base64ImageReducer {
 // MARK: - View
 
 public struct Base64ImageView: View {
-    @Bindable var store: StoreOf<Base64ImageReducer>
+    @Perception.Bindable var store: StoreOf<Base64ImageReducer>
 
     public init(store: StoreOf<Base64ImageReducer>) {
         self.store = store
@@ -286,6 +286,7 @@ public struct Base64ImageView: View {
             }
 
             // Main content
+            #if os(macOS)
             HSplitView {
                 // Left: Base64 String Section
                 stringSection
@@ -295,6 +296,17 @@ public struct Base64ImageView: View {
                 imageSection
                     .frame(minWidth: 300)
             }
+            #else
+            VStack(spacing: 0) {
+                // Top: Base64 String Section
+                stringSection
+
+                Divider()
+
+                // Bottom: Image Section
+                imageSection
+            }
+            #endif
         }
     }
 
@@ -333,13 +345,13 @@ public struct Base64ImageView: View {
             .font(.system(.body, design: .monospaced))
             .scrollContentBackground(.hidden)
             #if os(macOS)
-            .background(Color(nsColor: .textBackgroundColor))
+            .background(ThemeColor.Background.textBackground)
             #endif
             .clipShape(RoundedRectangle(cornerRadius: 6))
             .overlay(
                 RoundedRectangle(cornerRadius: 6)
                     #if os(macOS)
-                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
+                    .stroke(ThemeColor.Background.separator, lineWidth: 1)
                     #endif
             )
             .padding(.horizontal, 12)
@@ -400,12 +412,12 @@ public struct Base64ImageView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
                     #if os(macOS)
-                    .fill(Color(nsColor: .windowBackgroundColor))
+                    .fill(ThemeColor.Background.windowBackground)
                     #endif
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
                             #if os(macOS)
-                            .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
+                            .stroke(ThemeColor.Background.separator, lineWidth: 1)
                             #endif
                     )
 

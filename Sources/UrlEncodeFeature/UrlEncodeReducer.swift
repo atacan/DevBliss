@@ -102,7 +102,7 @@ public struct UrlEncodeReducer {
 }
 
 public struct UrlEncodeView: View {
-    @Bindable var store: StoreOf<UrlEncodeReducer>
+    @Perception.Bindable var store: StoreOf<UrlEncodeReducer>
 
     public init(store: StoreOf<UrlEncodeReducer>) {
         self.store = store
@@ -147,7 +147,9 @@ public struct UrlEncodeView: View {
                     .frame(width: 160)
 
                     Toggle("Auto-detect", isOn: $store.autoDetect)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                         .gridCellColumns(2)
                         .help("Automatically detect if input looks URL-encoded and switch to Decode mode")
                 }
@@ -167,7 +169,9 @@ public struct UrlEncodeView: View {
 
                     ConfigLabel("Decode")
                     Toggle("+ as space", isOn: $store.decodePlusAsSpace)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                         .help("Decode + characters as spaces (for form data)")
                         .disabled(store.direction == .encode)
                 }
@@ -191,7 +195,7 @@ public struct UrlEncodeView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(8)
                         #if os(macOS)
-                        .background(Color(nsColor: .textBackgroundColor))
+                        .background(ThemeColor.Background.textBackground)
                         #else
                         .background(Color(uiColor: .secondarySystemBackground))
                         #endif
@@ -199,7 +203,7 @@ public struct UrlEncodeView: View {
                         .overlay(
                             RoundedRectangle(cornerRadius: 6)
                                 #if os(macOS)
-                                .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
+                                .stroke(ThemeColor.Background.separator, lineWidth: 1)
                                 #else
                                 .stroke(Color(uiColor: .separator), lineWidth: 1)
                                 #endif

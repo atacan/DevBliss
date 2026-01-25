@@ -24,6 +24,24 @@ public enum ThemeColor {
             public static let systemText = UIColor.label
         #endif
     }
+
+    public enum Background {
+        #if os(macOS)
+            public static let textBackground = Color(nsColor: .textBackgroundColor)
+            public static let controlBackground = Color(nsColor: .controlBackgroundColor)
+            public static let windowBackground = Color(nsColor: .windowBackgroundColor)
+            public static let separator = Color(nsColor: .separatorColor)
+            public static let systemGray = Color(nsColor: .systemGray)
+        #endif
+
+        #if os(iOS)
+            public static let textBackground = Color(uiColor: .systemBackground)
+            public static let controlBackground = Color(uiColor: .secondarySystemBackground)
+            public static let windowBackground = Color(uiColor: .systemBackground)
+            public static let separator = Color(uiColor: .separator)
+            public static let systemGray = Color(uiColor: .systemGray)
+        #endif
+    }
 }
 
 public enum ThemeFont {

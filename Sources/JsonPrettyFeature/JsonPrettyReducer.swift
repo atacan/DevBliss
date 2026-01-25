@@ -91,7 +91,7 @@ public struct JsonPrettyReducer {
 }
 
 public struct JsonPrettyView: View {
-    @Bindable var store: StoreOf<JsonPrettyReducer>
+    @Perception.Bindable var store: StoreOf<JsonPrettyReducer>
 
     public init(store: StoreOf<JsonPrettyReducer>) {
         self.store = store

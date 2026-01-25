@@ -71,7 +71,7 @@ public struct UrlParserReducer {
 }
 
 public struct UrlParserView: View {
-    @Bindable var store: StoreOf<UrlParserReducer>
+    @Perception.Bindable var store: StoreOf<UrlParserReducer>
 
     public init(store: StoreOf<UrlParserReducer>) {
         self.store = store
@@ -99,7 +99,9 @@ public struct UrlParserView: View {
                 GridRow {
 //                    ConfigLabel("Options")
                     Toggle("Auto-detect", isOn: $store.autoDetect)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                         .help("Automatically parse when URL includes multiple query items")
                 }
             }

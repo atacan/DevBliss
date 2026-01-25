@@ -103,7 +103,7 @@ public struct CertificateDecoderReducer {
 }
 
 public struct CertificateDecoderView: View {
-    @Bindable var store: StoreOf<CertificateDecoderReducer>
+    @Perception.Bindable var store: StoreOf<CertificateDecoderReducer>
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.CertificateDecoder.splitViewFraction)
     @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.CertificateDecoder.splitViewLayout)
     @StateObject var hide = SideHolder()

@@ -58,6 +58,16 @@ merge-main: check-clean ## Merge current branch into main and push
 	@# git checkout "$(BRANCH)"
 
 # ------------------------------------------------------------------------------
+# Build
+# ------------------------------------------------------------------------------
+
+build-for-ios:
+	/Users/atacan/Developer/Repositories/agent-files/scripts/build_and_summarize.sh --platform ios AppFeature
+
+build-for-macos:
+	/Users/atacan/Developer/Repositories/agent-files/scripts/build_and_summarize.sh AppFeature
+
+# ------------------------------------------------------------------------------
 # Code Quality
 # ------------------------------------------------------------------------------
 

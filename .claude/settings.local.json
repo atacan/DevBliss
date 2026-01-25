@@ -18,7 +18,8 @@
       "Bash(grep:*)",
       "WebFetch(domain:www.pointfree.co)",
       "Skill(tca-navigation)",
-      "Skill(beads)"
+      "Skill(beads)",
+      "Bash(/Users/atacan/Developer/Repositories/agent-files/scripts/build_and_summarize.sh:*)"
     ]
   }
 }

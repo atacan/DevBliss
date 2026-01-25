@@ -21,7 +21,7 @@ public extension View {
             .textFieldStyle(.plain)
             .padding(8)
             #if os(macOS)
-            .background(Color(nsColor: .textBackgroundColor))
+            .background(ThemeColor.Background.textBackground)
             #else
             .background(Color(uiColor: .secondarySystemBackground))
             #endif
@@ -29,7 +29,7 @@ public extension View {
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
                     #if os(macOS)
-                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
+                    .stroke(ThemeColor.Background.separator, lineWidth: 1)
                     #else
                     .stroke(Color(uiColor: .separator), lineWidth: 1)
                     #endif
@@ -42,7 +42,7 @@ public extension View {
             .textFieldStyle(.plain)
             .padding(6)
             #if os(macOS)
-            .background(Color(nsColor: .textBackgroundColor))
+            .background(ThemeColor.Background.textBackground)
             #else
             .background(Color(uiColor: .secondarySystemBackground))
             #endif
@@ -50,7 +50,7 @@ public extension View {
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
                     #if os(macOS)
-                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
+                    .stroke(ThemeColor.Background.separator, lineWidth: 1)
                     #else
                     .stroke(Color(uiColor: .separator), lineWidth: 1)
                     #endif

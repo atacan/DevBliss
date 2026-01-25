@@ -126,7 +126,7 @@ public struct RegExpTesterReducer {
 }
 
 public struct RegExpTesterView: View {
-    @Bindable var store: StoreOf<RegExpTesterReducer>
+    @Perception.Bindable var store: StoreOf<RegExpTesterReducer>
 
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.RegExpTester.splitViewFraction)
     @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.RegExpTester.splitViewLayout)
@@ -188,7 +188,9 @@ public struct RegExpTesterView: View {
                         Toggle("Multiline", isOn: $store.options.anchorsMatchLines)
                         Toggle("Unicode boundaries", isOn: $store.options.useUnicodeWordBoundaries)
                     }
+                    #if os(macOS)
                     .toggleStyle(.checkbox)
+                    #endif
                     .gridCellColumns(3)
                 }
             }
