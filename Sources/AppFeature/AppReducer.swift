@@ -663,20 +663,6 @@ public struct AppView: View {
         } detail: {
             detailContent
         }
-        #if os(macOS)
-        .toolbar {
-            ToolbarItem {
-                Button {
-                    NSApp.keyWindow?.firstResponder?
-                        .tryToPerform(#selector(NSSplitViewController.toggleSidebar(_:)), with: nil)
-                } label: {
-                    Label("Toggle sidebar", systemImage: "sidebar.left")
-                }
-                .keyboardShortcut("l", modifiers: [.command, .shift])
-                .help(NSLocalizedString("Toggle sidebar (Command+Shift+L)", bundle: Bundle.module, comment: ""))
-            }
-        }
-        #endif
     }
 
     // MARK: - Sidebar
@@ -763,10 +749,6 @@ public struct AppView: View {
                         .font(.monospaced(Font.system(size: 10))())
                 }
 
-                toolRow(.hashGenerator, label: "Hash Generator", shortcut: "g") {
-                    Image(systemName: "lock.shield")
-                }
-
                 toolRow(.base64Image, label: "Base64 Image", shortcut: "i") {
                     Image(systemName: "photo")
                 }
@@ -790,34 +772,6 @@ public struct AppView: View {
                 toolRow(.jwtDebugger, label: "JWT Debugger", shortcut: "j") {
                     Image(systemName: "signature")
                 }
-            }
-
-            Section(
-                NSLocalizedString(
-                    "Formatters",
-                    bundle: Bundle.module,
-                    comment: "sidebar section name for a group of tools"
-                )
-            ) {
-                toolRow(.htmlBeautify, label: "HTML Beautify", shortcut: "H") {
-                    Text("HTML")
-                        .font(.monospaced(Font.system(size: 8))())
-                }
-
-                toolRow(.cssBeautify, label: "CSS Beautify", shortcut: "C") {
-                    Text("CSS")
-                        .font(.monospaced(Font.system(size: 8))())
-                }
-
-                toolRow(.jsBeautify, label: "JS Beautify", shortcut: "J") {
-                    Text("JS")
-                        .font(.monospaced(Font.system(size: 10))())
-                }
-
-                toolRow(.jsonPretty, label: "Json", shortcut: "7") {
-                    Text("{.,}")
-                        .font(.monospaced(Font.system(size: 8))())
-                }
 
                 toolRow(.jsonToYaml, label: "JSON to YAML", shortcut: "y") {
                     Text("J→Y")
@@ -829,8 +783,50 @@ public struct AppView: View {
                         .font(.monospaced(Font.system(size: 8))())
                 }
 
+                toolRow(.qrCodeTool, label: "QR Code", shortcut: "q") {
+                    Image(systemName: "qrcode")
+                }
+
+                toolRow(.backslashEscape, label: "Backslash Escape", shortcut: "k") {
+                    Text("\\\\")
+                        .font(.monospaced(Font.system(size: 10))())
+                }
+            }
+
+            Section(
+                NSLocalizedString(
+                    "Formatters",
+                    bundle: Bundle.module,
+                    comment: "sidebar section name for a group of tools"
+                )
+            ) {
+                toolRow(.htmlBeautify, label: "HTML", shortcut: "H") {
+                    Text("HTML")
+                        .font(.monospaced(Font.system(size: 8))())
+                }
+
+                toolRow(.cssBeautify, label: "CSS", shortcut: "C") {
+                    Text("CSS")
+                        .font(.monospaced(Font.system(size: 8))())
+                }
+
+                toolRow(.jsBeautify, label: "JS", shortcut: "J") {
+                    Text("JS")
+                        .font(.monospaced(Font.system(size: 10))())
+                }
+
+                toolRow(.jsonPretty, label: "Json", shortcut: "7") {
+                    Text("{.,}")
+                        .font(.monospaced(Font.system(size: 8))())
+                }
+
                 toolRow(.swiftPrettyLockwood, label: "Swift", shortcut: "8") {
                     Image(systemName: "swift")
+                }
+
+                toolRow(.xmlFormat, label: "XML Formatter", shortcut: "m") {
+                    Text("</>")
+                        .font(.monospaced(Font.system(size: 8))())
                 }
             }
 
@@ -862,6 +858,14 @@ public struct AppView: View {
                 toolRow(.randomStringGenerator, label: "Random String", shortcut: "t") {
                     Image(systemName: "shuffle")
                 }
+
+                toolRow(.hashGenerator, label: "Hash Generator", shortcut: "g") {
+                    Image(systemName: "lock.shield")
+                }
+
+                toolRow(.uuidUlid, label: "UUID/ULID", shortcut: "w") {
+                    Image(systemName: "number.circle")
+                }
             }
 
             Section(
@@ -879,14 +883,6 @@ public struct AppView: View {
                     Image(systemName: "shield.checkered")
                 }
 
-                toolRow(.qrCodeTool, label: "QR Code", shortcut: "q") {
-                    Image(systemName: "qrcode")
-                }
-
-                toolRow(.uuidUlid, label: "UUID/ULID", shortcut: "w") {
-                    Image(systemName: "number.circle")
-                }
-
                 toolRow(.urlParser, label: "URL Parser", shortcut: "p") {
                     Image(systemName: "link.badge.plus")
                 }
@@ -894,16 +890,6 @@ public struct AppView: View {
                 toolRow(.regExpTester, label: "RegExp Tester", shortcut: "r") {
                     Text(".*")
                         .font(.monospaced(Font.system(size: 10))())
-                }
-
-                toolRow(.backslashEscape, label: "Backslash Escape", shortcut: "k") {
-                    Text("\\\\")
-                        .font(.monospaced(Font.system(size: 10))())
-                }
-
-                toolRow(.xmlFormat, label: "XML Formatter", shortcut: "m") {
-                    Text("</>")
-                        .font(.monospaced(Font.system(size: 8))())
                 }
 
                 toolRow(.htmlPreview, label: "HTML Preview", shortcut: "v") {
