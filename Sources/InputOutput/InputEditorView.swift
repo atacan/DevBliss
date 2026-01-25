@@ -91,7 +91,7 @@ extension InputEditorReducer.State {
 }
 
 public struct InputEditorView: View {
-    @Perception.Bindable var store: StoreOf<InputEditorReducer>
+    @Bindable var store: StoreOf<InputEditorReducer>
 
     let title: String
     let pasteButtonTitle: String

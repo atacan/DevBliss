@@ -93,7 +93,7 @@ public struct HtmlBeautifyReducer {
 }
 
 public struct HtmlBeautifyView: View {
-    @Perception.Bindable var store: StoreOf<HtmlBeautifyReducer>
+    @Bindable var store: StoreOf<HtmlBeautifyReducer>
 
     public init(store: StoreOf<HtmlBeautifyReducer>) {
         self.store = store

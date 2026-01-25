@@ -128,7 +128,7 @@ public struct NameGeneratorPrefixSuffixReducer {
 }
 
 public struct NameGeneratorPrefixSuffixView: View {
-    @Perception.Bindable var store: StoreOf<NameGeneratorPrefixSuffixReducer>
+    @Bindable var store: StoreOf<NameGeneratorPrefixSuffixReducer>
 
     public init(store: StoreOf<NameGeneratorPrefixSuffixReducer>) {
         self.store = store

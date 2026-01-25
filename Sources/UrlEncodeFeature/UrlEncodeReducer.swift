@@ -102,7 +102,7 @@ public struct UrlEncodeReducer {
 }
 
 public struct UrlEncodeView: View {
-    @Perception.Bindable var store: StoreOf<UrlEncodeReducer>
+    @Bindable var store: StoreOf<UrlEncodeReducer>
 
     public init(store: StoreOf<UrlEncodeReducer>) {
         self.store = store

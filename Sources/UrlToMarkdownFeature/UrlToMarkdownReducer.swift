@@ -136,7 +136,7 @@ public struct UrlToMarkdownReducer {
 }
 
 public struct UrlToMarkdownView: View {
-    @Perception.Bindable var store: StoreOf<UrlToMarkdownReducer>
+    @Bindable var store: StoreOf<UrlToMarkdownReducer>
 
     public init(store: StoreOf<UrlToMarkdownReducer>) {
         self.store = store

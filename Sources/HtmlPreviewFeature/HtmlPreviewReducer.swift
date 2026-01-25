@@ -71,7 +71,7 @@ public struct HtmlPreviewReducer {
 }
 
 public struct HtmlPreviewView: View {
-    @Perception.Bindable var store: StoreOf<HtmlPreviewReducer>
+    @Bindable var store: StoreOf<HtmlPreviewReducer>
     @StateObject private var webViewStore = HtmlPreviewWebViewStore()
 
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.HtmlPreview.splitViewFraction)

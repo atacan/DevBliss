@@ -272,7 +272,7 @@ public struct Base64ImageReducer {
 // MARK: - View
 
 public struct Base64ImageView: View {
-    @Perception.Bindable var store: StoreOf<Base64ImageReducer>
+    @Bindable var store: StoreOf<Base64ImageReducer>
 
     public init(store: StoreOf<Base64ImageReducer>) {
         self.store = store

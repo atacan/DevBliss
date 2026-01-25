@@ -126,7 +126,7 @@ public struct RegExpTesterReducer {
 }
 
 public struct RegExpTesterView: View {
-    @Perception.Bindable var store: StoreOf<RegExpTesterReducer>
+    @Bindable var store: StoreOf<RegExpTesterReducer>
 
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.RegExpTester.splitViewFraction)
     @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.RegExpTester.splitViewLayout)

@@ -109,7 +109,7 @@ public struct HashGeneratorReducer {
 }
 
 public struct HashGeneratorView: View {
-    @Perception.Bindable var store: StoreOf<HashGeneratorReducer>
+    @Bindable var store: StoreOf<HashGeneratorReducer>
 
     public init(store: StoreOf<HashGeneratorReducer>) {
         self.store = store

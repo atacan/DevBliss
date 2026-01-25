@@ -97,7 +97,7 @@ public struct YamlToJsonReducer {
 }
 
 public struct YamlToJsonView: View {
-    @Perception.Bindable var store: StoreOf<YamlToJsonReducer>
+    @Bindable var store: StoreOf<YamlToJsonReducer>
 
     public init(store: StoreOf<YamlToJsonReducer>) {
         self.store = store

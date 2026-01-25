@@ -148,7 +148,7 @@ public struct UuidUlidReducer {
 }
 
 public struct UuidUlidView: View {
-    @Perception.Bindable var store: StoreOf<UuidUlidReducer>
+    @Bindable var store: StoreOf<UuidUlidReducer>
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.UuidUlid.splitViewFraction)
     @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.UuidUlid.splitViewLayout)
     @StateObject var hide = SideHolder()

@@ -105,7 +105,7 @@ public struct UnixTimeReducer {
 }
 
 public struct UnixTimeView: View {
-    @Perception.Bindable var store: StoreOf<UnixTimeReducer>
+    @Bindable var store: StoreOf<UnixTimeReducer>
 
     public init(store: StoreOf<UnixTimeReducer>) {
         self.store = store
