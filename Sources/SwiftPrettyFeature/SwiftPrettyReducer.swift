@@ -129,7 +129,7 @@ public struct SwiftPrettyReducer {
 }
 
 public struct SwiftPrettyView: View {
-    @Bindable var store: StoreOf<SwiftPrettyReducer>
+    @Perception.Bindable var store: StoreOf<SwiftPrettyReducer>
 
     @State var configIsExpanded = true
 

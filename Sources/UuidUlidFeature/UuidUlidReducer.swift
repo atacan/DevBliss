@@ -148,7 +148,7 @@ public struct UuidUlidReducer {
 }
 
 public struct UuidUlidView: View {
-    @Bindable var store: StoreOf<UuidUlidReducer>
+    @Perception.Bindable var store: StoreOf<UuidUlidReducer>
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.UuidUlid.splitViewFraction)
     @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.UuidUlid.splitViewLayout)
     @StateObject var hide = SideHolder()
@@ -182,7 +182,9 @@ public struct UuidUlidView: View {
 
                         Stepper("Count \(store.count)", value: $store.count, in: 1...100)
                         Toggle("Lowercase", isOn: $store.lowercase)
+                             #if os(macOS)
                              .toggleStyle(.checkbox)
+                             #endif
                     }
                 }
             }

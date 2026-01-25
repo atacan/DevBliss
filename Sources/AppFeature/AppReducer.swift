@@ -626,10 +626,12 @@ public struct AppReducer {
             state.destination = .urlEncode(UrlEncodeReducer.State())
         case .jwtDebugger:
             state.destination = .jwtDebugger(JwtDebuggerReducer.State())
-        #if os(macOS)
-            case .fileContentSearch:
-                state.destination = .fileContentSearch(FileContentSearchReducer.State())
-        #endif
+        case .fileContentSearch:
+            #if os(macOS)
+            state.destination = .fileContentSearch(FileContentSearchReducer.State())
+            #else
+            break  // Not available on iOS
+            #endif
         case .uuidGenerator:
             break  // Inactive tool
         }
@@ -651,7 +653,7 @@ public struct AppReducer {
 // MARK: - App View
 
 public struct AppView: View {
-    @Bindable var store: StoreOf<AppReducer>
+    @Perception.Bindable var store: StoreOf<AppReducer>
 
     public init(store: StoreOf<AppReducer>) {
         self.store = store

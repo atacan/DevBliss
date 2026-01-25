@@ -107,7 +107,7 @@ public struct LineSortDedupeReducer {
 }
 
 public struct LineSortDedupeView: View {
-    @Bindable var store: StoreOf<LineSortDedupeReducer>
+    @Perception.Bindable var store: StoreOf<LineSortDedupeReducer>
 
     public init(store: StoreOf<LineSortDedupeReducer>) {
         self.store = store
@@ -129,19 +129,27 @@ public struct LineSortDedupeView: View {
                     .frame(width: 200)
 
                     Toggle("Case-insensitive", isOn: $store.caseInsensitive)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
 
                     Toggle("Trim whitespace", isOn: $store.trimWhitespace)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                 }
 
                 GridRow {
                     ConfigLabel("Options")
                     Toggle("Remove duplicates", isOn: $store.removeDuplicates)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
 
                     Toggle("Remove empty lines", isOn: $store.removeEmptyLines)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                 }
             }
             .padding(.horizontal, 16)

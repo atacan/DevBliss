@@ -50,7 +50,7 @@ public struct OutputControlsReducer {
 }
 
 struct OutputControlsView: View {
-    @Bindable var store: StoreOf<OutputControlsReducer>
+    @Perception.Bindable var store: StoreOf<OutputControlsReducer>
 
     let copyButtonTitle: String
     let saveAsButtonTitle: String

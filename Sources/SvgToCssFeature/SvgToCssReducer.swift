@@ -98,7 +98,7 @@ public struct SvgToCssReducer {
 }
 
 public struct SvgToCssView: View {
-    @Bindable var store: StoreOf<SvgToCssReducer>
+    @Perception.Bindable var store: StoreOf<SvgToCssReducer>
 
     public init(store: StoreOf<SvgToCssReducer>) {
         self.store = store
@@ -110,10 +110,14 @@ public struct SvgToCssView: View {
                 GridRow {
 //                    ConfigLabel("Options")
                     Toggle("Include data: prefix", isOn: $store.includeDataPrefix)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
 
                     Toggle("Wrap in CSS", isOn: $store.wrapWithCss)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                 }
             }
             .padding(.horizontal, 16)

@@ -100,11 +100,11 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
+        .package(path: "/Users/atacan/Developer/Repositories/JSBeautify"),
+        .package(path: "/Users/atacan/Developer/Repositories/html-swift"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.23.1"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.10.0"),
-        .package(path: "/Users/atacan/Developer/Repositories/JSBeautify"),
         .package(url: "https://github.com/stevengharris/SplitView", from: "3.1.0"),
-        .package(url: "https://github.com/atacan/html-swift", branch: "main"),
         .package(url: "https://github.com/nkristek/Highlight.git", branch: "master"),
         .package(url: "https://github.com/atacan/MacSwiftUI", branch: "main"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.51.0"),

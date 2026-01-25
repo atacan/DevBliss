@@ -55,7 +55,7 @@ public struct InputOutputAttributedEditorsReducer {
 }
 
 public struct InputOutputAttributedEditorsView: View {
-    @Bindable var store: StoreOf<InputOutputAttributedEditorsReducer>
+    @Perception.Bindable var store: StoreOf<InputOutputAttributedEditorsReducer>
 
     let inputEditorTitle: String
     let outputEditorTitle: String

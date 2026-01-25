@@ -104,7 +104,7 @@ public struct TextCaseConverterReducer {
 }
 
 public struct TextCaseConverterView: View {
-    @Bindable var store: StoreOf<TextCaseConverterReducer>
+    @Perception.Bindable var store: StoreOf<TextCaseConverterReducer>
 
     #if os(iOS)
         private let pickerTitleSpace: CGFloat = 0

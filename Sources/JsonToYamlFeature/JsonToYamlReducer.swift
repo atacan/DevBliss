@@ -102,7 +102,7 @@ public struct JsonToYamlReducer {
 }
 
 public struct JsonToYamlView: View {
-    @Bindable var store: StoreOf<JsonToYamlReducer>
+    @Perception.Bindable var store: StoreOf<JsonToYamlReducer>
 
     public init(store: StoreOf<JsonToYamlReducer>) {
         self.store = store
@@ -114,7 +114,9 @@ public struct JsonToYamlView: View {
 //                GridRow {
 //                    ConfigLabel("Options")
 //                    Toggle("Sort keys", isOn: $store.sortKeys)
+#if os(macOS)
 //                        .toggleStyle(.checkbox)
+#endif
 //                    Spacer()
 //                }
 //            }

@@ -147,7 +147,7 @@ public struct QrCodeToolReducer {
 }
 
 public struct QrCodeToolView: View {
-    @Bindable var store: StoreOf<QrCodeToolReducer>
+    @Perception.Bindable var store: StoreOf<QrCodeToolReducer>
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.QrCodeTool.splitViewFraction)
     @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.QrCodeTool.splitViewLayout)
     @StateObject var hide = SideHolder()

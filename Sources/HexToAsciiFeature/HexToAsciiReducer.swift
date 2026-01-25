@@ -97,7 +97,7 @@ public struct HexToAsciiReducer {
 }
 
 public struct HexToAsciiView: View {
-    @Bindable var store: StoreOf<HexToAsciiReducer>
+    @Perception.Bindable var store: StoreOf<HexToAsciiReducer>
 
     public init(store: StoreOf<HexToAsciiReducer>) {
         self.store = store
@@ -109,7 +109,9 @@ public struct HexToAsciiView: View {
                 GridRow {
 //                    ConfigLabel("Options")
                     Toggle("Allow separators", isOn: $store.allowSeparators)
+                        #if os(macOS)
                         .toggleStyle(.checkbox)
+                        #endif
                         .help("Allow spaces, commas, colons, and 0x prefixes")
                 }
             }

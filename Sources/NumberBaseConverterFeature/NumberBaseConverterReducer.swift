@@ -107,7 +107,7 @@ public struct NumberBaseConverterReducer {
 }
 
 public struct NumberBaseConverterView: View {
-    @Bindable var store: StoreOf<NumberBaseConverterReducer>
+    @Perception.Bindable var store: StoreOf<NumberBaseConverterReducer>
 
     public init(store: StoreOf<NumberBaseConverterReducer>) {
         self.store = store

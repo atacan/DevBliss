@@ -110,7 +110,7 @@ public struct Base64Reducer {
 }
 
 public struct Base64View: View {
-    @Bindable var store: StoreOf<Base64Reducer>
+    @Perception.Bindable var store: StoreOf<Base64Reducer>
 
     public init(store: StoreOf<Base64Reducer>) {
         self.store = store
@@ -145,7 +145,9 @@ public struct Base64View: View {
                         Toggle("Strip null bytes", isOn: $store.autoRemoveNullBytes)
                             .help("Remove null bytes at the end of decoded string")
                     }
+                    #if os(macOS)
                     .toggleStyle(.checkbox)
+                    #endif
                     .gridCellColumns(3)
                 }
             }

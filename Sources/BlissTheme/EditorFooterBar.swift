@@ -15,7 +15,7 @@ public struct EditorFooterBar<Content: View>: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         #if os(macOS)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(ThemeColor.Background.windowBackground)
         #else
         .background(Color(uiColor: .secondarySystemBackground))
         #endif
@@ -48,7 +48,7 @@ public struct EditorFooterButton: View {
         }
         .buttonStyle(.plain)
         #if os(macOS)
-        .foregroundStyle(isAnimating ? Color(nsColor: .systemGreen) : Color(nsColor: .controlTextColor))
+        .foregroundStyle(isAnimating ? ThemeColor.Text.success : ThemeColor.Text.controlText)
         #else
         .foregroundStyle(isAnimating ? Color.green : Color.primary)
         #endif

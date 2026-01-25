@@ -145,7 +145,7 @@ public struct JwtDebuggerReducer {
 }
 
 public struct JwtDebuggerView: View {
-    @Bindable var store: StoreOf<JwtDebuggerReducer>
+    @Perception.Bindable var store: StoreOf<JwtDebuggerReducer>
 
     public init(store: StoreOf<JwtDebuggerReducer>) {
         self.store = store
@@ -177,7 +177,9 @@ public struct JwtDebuggerView: View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
                 Toggle("Auto-detect", isOn: $store.autoDetect)
+                    #if os(macOS)
                     .toggleStyle(.checkbox)
+                    #endif
                     .help("Automatically decode when input looks like a JWT")
 
                 Spacer()
@@ -387,7 +389,7 @@ private struct JwtCardContainer<Content: View>: View {
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         #if os(macOS)
-        .background(Color(nsColor: .controlBackgroundColor))
+        .background(ThemeColor.Background.controlBackground)
         #else
         .background(Color(uiColor: .secondarySystemBackground))
         #endif

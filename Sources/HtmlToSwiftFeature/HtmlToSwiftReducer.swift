@@ -153,7 +153,7 @@ public struct HtmlToSwiftReducer {
 }
 
 public struct HtmlToSwiftView: View {
-    @Bindable var store: StoreOf<HtmlToSwiftReducer>
+    @Perception.Bindable var store: StoreOf<HtmlToSwiftReducer>
 
     public init(store: StoreOf<HtmlToSwiftReducer>) {
         self.store = store

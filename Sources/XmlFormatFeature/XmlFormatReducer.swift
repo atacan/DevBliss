@@ -93,7 +93,7 @@ public struct XmlFormatReducer {
 }
 
 public struct XmlFormatView: View {
-    @Bindable var store: StoreOf<XmlFormatReducer>
+    @Perception.Bindable var store: StoreOf<XmlFormatReducer>
 
     public init(store: StoreOf<XmlFormatReducer>) {
         self.store = store
