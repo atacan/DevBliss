@@ -46,7 +46,7 @@ public struct UrlEncodeReducer {
         BindingReducer()
         Reduce<State, Action> { state, action in
             switch action {
-            case .binding(\.input):
+            case .binding(\.inputText):
                 // Auto-detect if input looks URL-encoded
                 if state.autoDetect {
                     let input = state.input.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -109,10 +109,10 @@ public struct UrlEncodeView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             // Input section: TextField + Convert
             HStack(spacing: 12) {
-                TextField("Enter text to encode/decode", text: $store.input)
+                TextField("Enter text to encode/decode", text: $store.inputText)
                     .blissTextField()
                     .onSubmit {
                         store.send(.convertButtonTouched)
@@ -123,7 +123,7 @@ public struct UrlEncodeView: View {
                 }
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help("Convert (Command Return)")
-                .disabled(store.input.isEmpty)
+                .disabled(store.inputText.isEmpty)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -148,9 +148,8 @@ public struct UrlEncodeView: View {
 
                     Toggle("Auto-detect", isOn: $store.autoDetect)
                         .toggleStyle(.checkbox)
+                        .gridCellColumns(2)
                         .help("Automatically detect if input looks URL-encoded and switch to Decode mode")
-
-                    Spacer()
                 }
 
                 GridRow {
@@ -162,6 +161,7 @@ public struct UrlEncodeView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .labelsHidden()
                     .frame(width: 160)
                     .disabled(store.direction == .decode)
 
@@ -170,8 +170,6 @@ public struct UrlEncodeView: View {
                         .toggleStyle(.checkbox)
                         .help("Decode + characters as spaces (for form data)")
                         .disabled(store.direction == .encode)
-
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)
@@ -181,12 +179,9 @@ public struct UrlEncodeView: View {
 
             // Result section
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("Result")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                }
+                Text("Result")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
 
                 HStack(spacing: 8) {
                     Text(store.result.isEmpty ? "Result will appear here" : store.result)
@@ -229,8 +224,6 @@ public struct UrlEncodeView: View {
                     .buttonStyle(.bordered)
                     .disabled(store.result.isEmpty)
                     .help("Use result as new input")
-
-                    Spacer()
                 }
             }
             .padding(.horizontal, 16)
