@@ -1,41 +1,41 @@
-import Base64Feature
-import Base64ImageFeature
 import AsciiToHexFeature
 import BackslashEscapeFeature
+import Base64Feature
+import Base64ImageFeature
 import CertificateDecoderFeature
 import ColorConverterFeature
 import ComposableArchitecture
+import CssBeautifyFeature
 import FileContentSearchFeature
 import HashGeneratorFeature
-import HtmlBeautifyFeature
-import CssBeautifyFeature
-import HtmlToSwiftFeature
-import HtmlToMarkdownFeature
-import HtmlPreviewFeature
 import HexToAsciiFeature
-import JsonToYamlFeature
-import JsonPrettyFeature
+import HtmlBeautifyFeature
+import HtmlPreviewFeature
+import HtmlToMarkdownFeature
+import HtmlToSwiftFeature
 import JsBeautifyFeature
+import JsonPrettyFeature
+import JsonToYamlFeature
 import JwtDebuggerFeature
 import LineSortDedupeFeature
 import NameGeneratorFeature
 import NumberBaseConverterFeature
 import PrefixSuffixFeature
 import QrCodeToolFeature
-import RegexMatchesFeature
-import RegExpTesterFeature
 import RandomStringGeneratorFeature
+import RegExpTesterFeature
+import RegexMatchesFeature
 import SharedModels
+import StringInspectorFeature
 import SvgToCssFeature
 import SwiftPrettyFeature
 import SwiftUI
-import StringInspectorFeature
 import TextCaseConverterFeature
 import UnixTimeFeature
-import UuidUlidFeature
 import UrlEncodeFeature
 import UrlParserFeature
 import UrlToMarkdownFeature
+import UuidUlidFeature
 import XmlFormatFeature
 import YamlToJsonFeature
 
@@ -80,7 +80,7 @@ public enum Destination {
     case urlEncode(UrlEncodeReducer)
     case jwtDebugger(JwtDebuggerReducer)
     #if os(macOS)
-    case fileContentSearch(FileContentSearchReducer)
+        case fileContentSearch(FileContentSearchReducer)
     #endif
 }
 
@@ -134,7 +134,7 @@ public struct AppReducer {
             case .urlEncode: return .urlEncode
             case .jwtDebugger: return .jwtDebugger
             #if os(macOS)
-            case .fileContentSearch: return .fileContentSearch
+                case .fileContentSearch: return .fileContentSearch
             #endif
             case .none: return nil
             }
@@ -156,14 +156,14 @@ public struct AppReducer {
     public var body: some Reducer<State, Action> {
         Reduce<State, Action> { state, action in
             switch action {
-            case let .destination(.presented(destinationAction)):
+            case .destination(.presented(let destinationAction)):
                 return handleDestinationAction(destinationAction, state: &state)
 
-            case let .navigationLinkTouched(tool):
+            case .navigationLinkTouched(let tool):
                 handleNavigation(tool: tool, state: &state)
                 return .none
 
-            case let .setCurrentTool(tool):
+            case .setCurrentTool(let tool):
                 if let tool = tool {
                     handleNavigation(tool: tool, state: &state)
                 }
@@ -189,163 +189,163 @@ public struct AppReducer {
     private func handleDestinationAction(_ action: Destination.Action, state: inout State) -> Effect<Action> {
         switch action {
         // Standard tools with single output
-        case let .htmlToSwift(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .htmlToSwift(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .htmlToSwift(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .htmlToMarkdown(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .htmlToMarkdown(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .htmlToMarkdown(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .urlToMarkdown(.output(.outputControls(.otherToolSelected(tool)))):
+        case .urlToMarkdown(.output(.outputControls(.otherToolSelected(let tool)))):
             if case .urlToMarkdown(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .jsonPretty(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .jsonPretty(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .jsonPretty(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .htmlBeautify(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .htmlBeautify(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .htmlBeautify(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .cssBeautify(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .cssBeautify(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .cssBeautify(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .jsBeautify(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .jsBeautify(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .jsBeautify(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .textCaseConverter(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .textCaseConverter(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .textCaseConverter(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .prefixSuffix(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .prefixSuffix(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .prefixSuffix(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .lineSortDedupe(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .lineSortDedupe(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .lineSortDedupe(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .asciiToHex(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .asciiToHex(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .asciiToHex(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .hexToAscii(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .hexToAscii(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .hexToAscii(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .colorConverter(.output(.outputControls(.otherToolSelected(tool)))):
+        case .colorConverter(.output(.outputControls(.otherToolSelected(let tool)))):
             if case .colorConverter(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .svgToCss(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .svgToCss(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .svgToCss(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .backslashEscape(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .backslashEscape(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .backslashEscape(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .xmlFormat(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .xmlFormat(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .xmlFormat(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .swiftPrettyLockwood(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .swiftPrettyLockwood(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .swiftPrettyLockwood(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
         // RegexMatches has TWO outputs
-        case let .regexMatches(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .regexMatches(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .regexMatches(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .regexMatches(.inputOutput(.outputSecond(.outputControls(.otherToolSelected(tool))))):
+        case .regexMatches(.inputOutput(.outputSecond(.outputControls(.otherToolSelected(let tool))))):
             if case .regexMatches(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputSecondText, otherTool: tool, state: &state)
             }
 
-        case let .base64(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .base64(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .base64(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .hashGenerator(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .hashGenerator(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .hashGenerator(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .numberBaseConverter(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .numberBaseConverter(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .numberBaseConverter(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .certificateDecoder(.output(.outputControls(.otherToolSelected(tool)))):
+        case .certificateDecoder(.output(.outputControls(.otherToolSelected(let tool)))):
             if case .certificateDecoder(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .qrCodeTool(.output(.outputControls(.otherToolSelected(tool)))):
+        case .qrCodeTool(.output(.outputControls(.otherToolSelected(let tool)))):
             if case .qrCodeTool(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .jsonToYaml(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .jsonToYaml(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .jsonToYaml(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .yamlToJson(.inputOutput(.output(.outputControls(.otherToolSelected(tool))))):
+        case .yamlToJson(.inputOutput(.output(.outputControls(.otherToolSelected(let tool))))):
             if case .yamlToJson(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .uuidUlid(.output(.outputControls(.otherToolSelected(tool)))):
+        case .uuidUlid(.output(.outputControls(.otherToolSelected(let tool)))):
             if case .uuidUlid(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
         // Generators (output-only tools)
-        case let .nameGenerator(.output(.outputControls(.otherToolSelected(tool)))):
+        case .nameGenerator(.output(.outputControls(.otherToolSelected(let tool)))):
             if case .nameGenerator(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .randomStringGenerator(.output(.outputControls(.otherToolSelected(tool)))):
+        case .randomStringGenerator(.output(.outputControls(.otherToolSelected(let tool)))):
             if case .randomStringGenerator(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
-        case let .regExpTester(.output(.outputControls(.otherToolSelected(tool)))):
+        case .regExpTester(.output(.outputControls(.otherToolSelected(let tool)))):
             if case .regExpTester(let s) = state.destination {
                 handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
             }
 
         #if os(macOS)
-        case let .fileContentSearch(.output(.outputControls(.otherToolSelected(tool)))):
-            if case .fileContentSearch(let s) = state.destination {
-                handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
-            }
+            case .fileContentSearch(.output(.outputControls(.otherToolSelected(let tool)))):
+                if case .fileContentSearch(let s) = state.destination {
+                    handleOtherTool(thisToolOutput: s.outputText, otherTool: tool, state: &state)
+                }
         #endif
 
         default:
@@ -451,10 +451,10 @@ public struct AppReducer {
                 s.$inputText.withLock { $0 = outputText }
             }
         case .uuidGenerator:
-            break // Inactive tool
+            break  // Inactive tool
         case .fileContentSearch:
             #if os(macOS)
-            state.destination = .fileContentSearch(FileContentSearchReducer.State())
+                state.destination = .fileContentSearch(FileContentSearchReducer.State())
             #endif
         case .nameGenerator:
             state.destination = .nameGenerator(NameGeneratorReducer.State())
@@ -627,11 +627,11 @@ public struct AppReducer {
         case .jwtDebugger:
             state.destination = .jwtDebugger(JwtDebuggerReducer.State())
         #if os(macOS)
-        case .fileContentSearch:
-            state.destination = .fileContentSearch(FileContentSearchReducer.State())
+            case .fileContentSearch:
+                state.destination = .fileContentSearch(FileContentSearchReducer.State())
         #endif
         case .uuidGenerator:
-            break // Inactive tool
+            break  // Inactive tool
         }
     }
 
@@ -670,6 +670,7 @@ public struct AppView: View {
     @ViewBuilder
     private var sidebarContent: some View {
         List(selection: $store.currentTool.sending(\.setCurrentTool)) {
+            // Sort by name inside sections
             Section(
                 NSLocalizedString(
                     "Converters",
@@ -677,54 +678,82 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.asciiToHex, label: "ASCII to Hex", shortcut: "a") { 
-                    Text("0x") .font(.monospaced(Font.system(size: 10))()) }
-                toolRow(.backslashEscape, label: "Backslash Escape", shortcut: "k") { 
-                    Text("\\\\") .font(.monospaced(Font.system(size: 10))()) }
-                toolRow(.base64, label: "Base64", shortcut: "b") { 
-                    Text("B64") .font(.monospaced(Font.system(size: 10))()) }
-                toolRow(.base64Image, label: "Base64 Image", shortcut: "i") { 
-                    Image(systemName: "photo") }
-                toolRow(.colorConverter, label: "Color Converter", shortcut: "c") { 
-                    Image(systemName: "paintpalette") }
-                toolRow(.hexToAscii, label: "Hex to ASCII", shortcut: "x") { 
-                    Text("x→A") .font(.monospaced(Font.system(size: 8))()) }
-                toolRow(.htmlToMarkdown, label: "HTML to Markdown", shortcut: "2") { 
-                    ZStack(alignment: .leading) { 
-                    Text("M↓") .font(.monospaced(Font.system(size: 14))()) .fontWeight(.medium) .offset(CGSize(width: 5, height: 0)) 
-                Text("<>") .font(.monospaced(Font.system(size: 14))()) .fontWeight(.thin) .offset(CGSize(width: 0, height: -7)) } }
-                toolRow(.htmlToSwift, label: "Html to Swift", shortcut: "1") { 
-                    ZStack(alignment: .leading) { 
-                    Image(systemName: "swift") .offset(CGSize(width: 5, height: 0)) 
-                Text("<>") .font(.monospaced(Font.system(size: 14))()) .fontWeight(.thin) .offset(CGSize(width: 0, height: -7)) } }
-                toolRow(.jsonToYaml, label: "JSON to YAML", shortcut: "y") { 
-                    Text("J→Y") .font(.monospaced(Font.system(size: 8))()) }
-                toolRow(.jwtDebugger, label: "JWT Debugger", shortcut: "j") { 
-                    Image(systemName: "signature") }
-                toolRow(.lineSortDedupe, label: "Line Sort/Dedupe", shortcut: "l") { 
-                    Image(systemName: "arrow.up.arrow.down") }
-                toolRow(.numberBaseConverter, label: "Number Base", shortcut: "n") { 
-                    Image(systemName: "number") }
-                toolRow(.prefixSuffix, label: "Prefix Suffix", shortcut: "5") { 
-                    Image(systemName: "arrow.right.and.line.vertical.and.arrow.left") }
-                toolRow(.qrCodeTool, label: "QR Code", shortcut: "q") { 
-                    Image(systemName: "qrcode") }
-                toolRow(.regexMatches, label: "Regex Matches", shortcut: "6") { 
-                    Text("(.*)") .font(.monospaced(Font.system(size: 8))()) }
-                toolRow(.svgToCss, label: "SVG to CSS", shortcut: "z") { 
-                    Image(systemName: "square.and.arrow.down") }
-                toolRow(.textCaseConverter, label: "Text Case", shortcut: "4") { 
-                    Text("Aa") }
-                toolRow(.unixTime, label: "Unix Time", shortcut: "u") { 
-                    Image(systemName: "clock") }
-                toolRow(.urlEncode, label: "URL Encode", shortcut: "e") { 
-                    Image(systemName: "link") }
-                toolRow(.urlToMarkdown, label: "URL to Markdown", shortcut: "3") { 
-                    ZStack(alignment: .leading) { 
-                    Text("M↓") .font(.monospaced(Font.system(size: 14))()) .fontWeight(.medium) .offset(CGSize(width: 5, height: 0)) 
-                    Image(systemName: "link") .font(.system(size: 10)) .offset(CGSize(width: 0, height: -7)) } }
-                toolRow(.yamlToJson, label: "YAML to JSON", shortcut: "h") { 
-                    Text("Y→J") .font(.monospaced(Font.system(size: 8))()) }
+                toolRow(.asciiToHex, label: "ASCII to Hex", shortcut: "a") {
+                    Text("0x").font(.monospaced(Font.system(size: 10))())
+                }
+                toolRow(.backslashEscape, label: "Backslash Escape", shortcut: "k") {
+                    Text("\\\\").font(.monospaced(Font.system(size: 10))())
+                }
+                toolRow(.base64, label: "Base64", shortcut: "b") {
+                    Text("B64").font(.monospaced(Font.system(size: 10))())
+                }
+                toolRow(.base64Image, label: "Base64 Image", shortcut: "i") {
+                    Image(systemName: "photo")
+                }
+                toolRow(.colorConverter, label: "Color Converter", shortcut: "c") {
+                    Image(systemName: "paintpalette")
+                }
+                toolRow(.hexToAscii, label: "Hex to ASCII", shortcut: "x") {
+                    Text("x→A").font(.monospaced(Font.system(size: 8))())
+                }
+                toolRow(.htmlToMarkdown, label: "HTML to Markdown", shortcut: "2") {
+                    ZStack(alignment: .leading) {
+                        Text("M↓").font(.monospaced(Font.system(size: 14))()).fontWeight(.medium)
+                            .offset(CGSize(width: 5, height: 0))
+                        Text("<>").font(.monospaced(Font.system(size: 14))()).fontWeight(.thin)
+                            .offset(CGSize(width: 0, height: -7))
+                    }
+                }
+                toolRow(.htmlToSwift, label: "Html to Swift", shortcut: "1") {
+                    ZStack(alignment: .leading) {
+                        Image(systemName: "swift").offset(CGSize(width: 5, height: 0))
+                        Text("<>").font(.monospaced(Font.system(size: 14))()).fontWeight(.thin)
+                            .offset(CGSize(width: 0, height: -7))
+                    }
+                }
+                toolRow(.jsonToYaml, label: "JSON to YAML", shortcut: "y") {
+                    Text("J→Y").font(.monospaced(Font.system(size: 8))())
+                }
+                toolRow(.jwtDebugger, label: "JWT Debugger", shortcut: "j") {
+                    Image(systemName: "signature")
+                }
+                toolRow(.lineSortDedupe, label: "Line Sort/Dedupe", shortcut: "l") {
+                    Image(systemName: "arrow.up.arrow.down")
+                }
+                toolRow(.numberBaseConverter, label: "Number Base", shortcut: "n") {
+                    Image(systemName: "number")
+                }
+                toolRow(.prefixSuffix, label: "Prefix Suffix", shortcut: "5") {
+                    Image(systemName: "arrow.right.and.line.vertical.and.arrow.left")
+                }
+                toolRow(.qrCodeTool, label: "QR Code", shortcut: "q") {
+                    Image(systemName: "qrcode")
+                }
+                toolRow(.regexMatches, label: "Regex Matches", shortcut: "6") {
+                    Text("(.*)").font(.monospaced(Font.system(size: 8))())
+                }
+                toolRow(.svgToCss, label: "SVG to CSS", shortcut: "z") {
+                    Image(systemName: "square.and.arrow.down")
+                }
+                toolRow(.textCaseConverter, label: "Text Case", shortcut: "4") {
+                    Text("Aa")
+                }
+                toolRow(.unixTime, label: "Unix Time", shortcut: "u") {
+                    Image(systemName: "clock")
+                }
+                toolRow(.urlEncode, label: "URL Encode", shortcut: "e") {
+                    Image(systemName: "link")
+                }
+                toolRow(.urlToMarkdown, label: "URL to Markdown", shortcut: "3") {
+                    ZStack(alignment: .leading) {
+                        Text("M↓").font(.monospaced(Font.system(size: 14))()).fontWeight(.medium)
+                            .offset(CGSize(width: 5, height: 0))
+                        Image(systemName: "link").font(.system(size: 10)).offset(CGSize(width: 0, height: -7))
+                    }
+                }
+                toolRow(.yamlToJson, label: "YAML to JSON", shortcut: "h") {
+                    Text("Y→J").font(.monospaced(Font.system(size: 8))())
+                }
             }
 
             Section(
@@ -734,31 +763,38 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.cssBeautify, label: "CSS", shortcut: "C") { 
-                    Text("CSS") .font(.monospaced(Font.system(size: 8))()) }
-                toolRow(.htmlBeautify, label: "HTML", shortcut: "H") { 
-                    Text("HTML") .font(.monospaced(Font.system(size: 8))()) }
-                toolRow(.jsBeautify, label: "JS", shortcut: "J") { 
-                    Text("JS") .font(.monospaced(Font.system(size: 10))()) }
-                toolRow(.jsonPretty, label: "Json", shortcut: "7") { 
-                    Text("{.,}") .font(.monospaced(Font.system(size: 8))()) }
-                toolRow(.swiftPrettyLockwood, label: "Swift", shortcut: "8") { 
-                    Image(systemName: "swift") }
-                toolRow(.xmlFormat, label: "XML Formatter", shortcut: "m") { 
-                    Text("</>") .font(.monospaced(Font.system(size: 8))()) }
+                toolRow(.cssBeautify, label: "CSS", shortcut: "C") {
+                    Text("CSS").font(.monospaced(Font.system(size: 8))())
+                }
+                toolRow(.htmlBeautify, label: "HTML", shortcut: "H") {
+                    Text("HTML").font(.monospaced(Font.system(size: 8))())
+                }
+                toolRow(.jsBeautify, label: "JS", shortcut: "J") {
+                    Text("JS").font(.monospaced(Font.system(size: 10))())
+                }
+                toolRow(.jsonPretty, label: "Json", shortcut: "7") {
+                    Text("{.,}").font(.monospaced(Font.system(size: 8))())
+                }
+                toolRow(.swiftPrettyLockwood, label: "Swift", shortcut: "8") {
+                    Image(systemName: "swift")
+                }
+                toolRow(.xmlFormat, label: "XML Formatter", shortcut: "m") {
+                    Text("</>").font(.monospaced(Font.system(size: 8))())
+                }
             }
 
             #if os(macOS)
-            Section(
-                NSLocalizedString(
-                    "File",
-                    bundle: Bundle.module,
-                    comment: "sidebar section name for a group of tools"
-                )
-            ) {
-             toolRow(.fileContentSearch, label: "File Search", shortcut: "9") { 
-                Image(systemName: "doc.text.magnifyingglass") }
-            }
+                Section(
+                    NSLocalizedString(
+                        "File",
+                        bundle: Bundle.module,
+                        comment: "sidebar section name for a group of tools"
+                    )
+                ) {
+                    toolRow(.fileContentSearch, label: "File Search", shortcut: "9") {
+                        Image(systemName: "doc.text.magnifyingglass")
+                    }
+                }
             #endif
 
             Section(
@@ -768,14 +804,18 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.hashGenerator, label: "Hash Generator", shortcut: "g") { 
-                    Image(systemName: "lock.shield") }
-                toolRow(.nameGenerator, label: "Name", shortcut: "0") { 
-                    Image(systemName: "person") }
-                toolRow(.randomStringGenerator, label: "Random String", shortcut: "t") { 
-                    Image(systemName: "shuffle") }
-                toolRow(.uuidUlid, label: "UUID/ULID", shortcut: "w") { 
-                    Image(systemName: "number.circle") }
+                toolRow(.hashGenerator, label: "Hash Generator", shortcut: "g") {
+                    Image(systemName: "lock.shield")
+                }
+                toolRow(.nameGenerator, label: "Name", shortcut: "0") {
+                    Image(systemName: "person")
+                }
+                toolRow(.randomStringGenerator, label: "Random String", shortcut: "t") {
+                    Image(systemName: "shuffle")
+                }
+                toolRow(.uuidUlid, label: "UUID/ULID", shortcut: "w") {
+                    Image(systemName: "number.circle")
+                }
             }
 
             Section(
@@ -785,16 +825,21 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.certificateDecoder, label: "Certificate Decoder", shortcut: "d") { 
-                    Image(systemName: "shield.checkered") }
-                toolRow(.htmlPreview, label: "HTML Preview", shortcut: "v") { 
-                    Image(systemName: "safari") }
-                toolRow(.regExpTester, label: "RegExp Tester", shortcut: "r") { 
-                    Text(".*") .font(.monospaced(Font.system(size: 10))()) }
-                toolRow(.stringInspector, label: "String Inspector", shortcut: "s") { 
-                    Image(systemName: "text.magnifyingglass") }
-                toolRow(.urlParser, label: "URL Parser", shortcut: "p") { 
-                    Image(systemName: "link.badge.plus") }
+                toolRow(.certificateDecoder, label: "Certificate Decoder", shortcut: "d") {
+                    Image(systemName: "shield.checkered")
+                }
+                toolRow(.htmlPreview, label: "HTML Preview", shortcut: "v") {
+                    Image(systemName: "safari")
+                }
+                toolRow(.regExpTester, label: "RegExp Tester", shortcut: "r") {
+                    Text(".*").font(.monospaced(Font.system(size: 10))())
+                }
+                toolRow(.stringInspector, label: "String Inspector", shortcut: "s") {
+                    Image(systemName: "text.magnifyingglass")
+                }
+                toolRow(.urlParser, label: "URL Parser", shortcut: "p") {
+                    Image(systemName: "link.badge.plus")
+                }
             }
         }
         .listStyle(.sidebar)
@@ -830,7 +875,7 @@ public struct AppView: View {
         @ViewBuilder icon: () -> Icon
     ) -> some View {
         Label {
-            
+
             Text(NSLocalizedString(label, bundle: Bundle.module, comment: "tool name on the sidebar"))
         } icon: {
             icon()
@@ -1242,19 +1287,20 @@ public struct AppView: View {
                     .padding(.top)
 
             #if os(macOS)
-            case .fileContentSearch(let childStore):
-                FileContentSearchView(store: childStore)
-                    .navigationTitle(
-                        NSLocalizedString(
-                            "Search inside files",
-                            bundle: Bundle.module,
-                            comment: "navigation title on top of the window"
+                case .fileContentSearch(let childStore):
+                    FileContentSearchView(store: childStore)
+                        .navigationTitle(
+                            NSLocalizedString(
+                                "Search inside files",
+                                bundle: Bundle.module,
+                                comment: "navigation title on top of the window"
+                            )
                         )
-                    )
-                    .padding(.top)
+                        .padding(.top)
             #endif
             }
-        } else {
+        }
+        else {
             HomeStartView()
         }
     }
