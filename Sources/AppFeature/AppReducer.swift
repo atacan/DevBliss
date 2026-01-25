@@ -677,120 +677,54 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.htmlToSwift, label: "Html to Swift", shortcut: "1") {
-                    ZStack(alignment: .leading) {
-                        Image(systemName: "swift")
-                            .offset(CGSize(width: 5, height: 0))
-                        Text("<>")
-                            .font(.monospaced(Font.system(size: 14))())
-                            .fontWeight(.thin)
-                            .offset(CGSize(width: 0, height: -7))
-                    }
-                }
-
-                toolRow(.htmlToMarkdown, label: "HTML to Markdown", shortcut: "2") {
-                    ZStack(alignment: .leading) {
-                        Text("M↓")
-                            .font(.monospaced(Font.system(size: 14))())
-                            .fontWeight(.medium)
-                            .offset(CGSize(width: 5, height: 0))
-                        Text("<>")
-                            .font(.monospaced(Font.system(size: 14))())
-                            .fontWeight(.thin)
-                            .offset(CGSize(width: 0, height: -7))
-                    }
-                }
-
-                toolRow(.urlToMarkdown, label: "URL to Markdown", shortcut: "3") {
-                    ZStack(alignment: .leading) {
-                        Text("M↓")
-                            .font(.monospaced(Font.system(size: 14))())
-                            .fontWeight(.medium)
-                            .offset(CGSize(width: 5, height: 0))
-                        Image(systemName: "link")
-                            .font(.system(size: 10))
-                            .offset(CGSize(width: 0, height: -7))
-                    }
-                }
-
-                toolRow(.textCaseConverter, label: "Text Case", shortcut: "4") {
-                    Text("Aa")
-                }
-
-                toolRow(.prefixSuffix, label: "Prefix Suffix", shortcut: "5") {
-                    Image(systemName: "arrow.right.and.line.vertical.and.arrow.left")
-                }
-
-                toolRow(.lineSortDedupe, label: "Line Sort/Dedupe", shortcut: "l") {
-                    Image(systemName: "arrow.up.arrow.down")
-                }
-
-                toolRow(.regexMatches, label: "Regex Matches", shortcut: "6") {
-                    Text("(.*)")
-                        .font(.monospaced(Font.system(size: 8))())
-                }
-
-                toolRow(.asciiToHex, label: "ASCII to Hex", shortcut: "a") {
-                    Text("0x")
-                        .font(.monospaced(Font.system(size: 10))())
-                }
-
-                toolRow(.hexToAscii, label: "Hex to ASCII", shortcut: "x") {
-                    Text("x→A")
-                        .font(.monospaced(Font.system(size: 8))())
-                }
-
-                toolRow(.colorConverter, label: "Color Converter", shortcut: "c") {
-                    Image(systemName: "paintpalette")
-                }
-
-                toolRow(.base64, label: "Base64", shortcut: "b") {
-                    Text("B64")
-                        .font(.monospaced(Font.system(size: 10))())
-                }
-
-                toolRow(.base64Image, label: "Base64 Image", shortcut: "i") {
-                    Image(systemName: "photo")
-                }
-
-                toolRow(.numberBaseConverter, label: "Number Base", shortcut: "n") {
-                    Image(systemName: "number")
-                }
-
-                toolRow(.svgToCss, label: "SVG to CSS", shortcut: "z") {
-                    Image(systemName: "square.and.arrow.down")
-                }
-
-                toolRow(.unixTime, label: "Unix Time", shortcut: "u") {
-                    Image(systemName: "clock")
-                }
-
-                toolRow(.urlEncode, label: "URL Encode", shortcut: "e") {
-                    Image(systemName: "link")
-                }
-
-                toolRow(.jwtDebugger, label: "JWT Debugger", shortcut: "j") {
-                    Image(systemName: "signature")
-                }
-
-                toolRow(.jsonToYaml, label: "JSON to YAML", shortcut: "y") {
-                    Text("J→Y")
-                        .font(.monospaced(Font.system(size: 8))())
-                }
-
-                toolRow(.yamlToJson, label: "YAML to JSON", shortcut: "h") {
-                    Text("Y→J")
-                        .font(.monospaced(Font.system(size: 8))())
-                }
-
-                toolRow(.qrCodeTool, label: "QR Code", shortcut: "q") {
-                    Image(systemName: "qrcode")
-                }
-
-                toolRow(.backslashEscape, label: "Backslash Escape", shortcut: "k") {
-                    Text("\\\\")
-                        .font(.monospaced(Font.system(size: 10))())
-                }
+                toolRow(.asciiToHex, label: "ASCII to Hex", shortcut: "a") { 
+                    Text("0x") .font(.monospaced(Font.system(size: 10))()) }
+                toolRow(.backslashEscape, label: "Backslash Escape", shortcut: "k") { 
+                    Text("\\\\") .font(.monospaced(Font.system(size: 10))()) }
+                toolRow(.base64, label: "Base64", shortcut: "b") { 
+                    Text("B64") .font(.monospaced(Font.system(size: 10))()) }
+                toolRow(.base64Image, label: "Base64 Image", shortcut: "i") { 
+                    Image(systemName: "photo") }
+                toolRow(.colorConverter, label: "Color Converter", shortcut: "c") { 
+                    Image(systemName: "paintpalette") }
+                toolRow(.hexToAscii, label: "Hex to ASCII", shortcut: "x") { 
+                    Text("x→A") .font(.monospaced(Font.system(size: 8))()) }
+                toolRow(.htmlToMarkdown, label: "HTML to Markdown", shortcut: "2") { 
+                    ZStack(alignment: .leading) { 
+                    Text("M↓") .font(.monospaced(Font.system(size: 14))()) .fontWeight(.medium) .offset(CGSize(width: 5, height: 0)) 
+                Text("<>") .font(.monospaced(Font.system(size: 14))()) .fontWeight(.thin) .offset(CGSize(width: 0, height: -7)) } }
+                toolRow(.htmlToSwift, label: "Html to Swift", shortcut: "1") { 
+                    ZStack(alignment: .leading) { 
+                    Image(systemName: "swift") .offset(CGSize(width: 5, height: 0)) 
+                Text("<>") .font(.monospaced(Font.system(size: 14))()) .fontWeight(.thin) .offset(CGSize(width: 0, height: -7)) } }
+                toolRow(.jsonToYaml, label: "JSON to YAML", shortcut: "y") { 
+                    Text("J→Y") .font(.monospaced(Font.system(size: 8))()) }
+                toolRow(.jwtDebugger, label: "JWT Debugger", shortcut: "j") { 
+                    Image(systemName: "signature") }
+                toolRow(.lineSortDedupe, label: "Line Sort/Dedupe", shortcut: "l") { 
+                    Image(systemName: "arrow.up.arrow.down") }
+                toolRow(.numberBaseConverter, label: "Number Base", shortcut: "n") { 
+                    Image(systemName: "number") }
+                toolRow(.prefixSuffix, label: "Prefix Suffix", shortcut: "5") { 
+                    Image(systemName: "arrow.right.and.line.vertical.and.arrow.left") }
+                toolRow(.qrCodeTool, label: "QR Code", shortcut: "q") { 
+                    Image(systemName: "qrcode") }
+                toolRow(.regexMatches, label: "Regex Matches", shortcut: "6") { 
+                    Text("(.*)") .font(.monospaced(Font.system(size: 8))()) }
+                toolRow(.svgToCss, label: "SVG to CSS", shortcut: "z") { 
+                    Image(systemName: "square.and.arrow.down") }
+                toolRow(.textCaseConverter, label: "Text Case", shortcut: "4") { 
+                    Text("Aa") }
+                toolRow(.unixTime, label: "Unix Time", shortcut: "u") { 
+                    Image(systemName: "clock") }
+                toolRow(.urlEncode, label: "URL Encode", shortcut: "e") { 
+                    Image(systemName: "link") }
+                toolRow(.urlToMarkdown, label: "URL to Markdown", shortcut: "3") { 
+                    ZStack(alignment: .leading) { 
+                    Text("M↓") .font(.monospaced(Font.system(size: 14))()) .fontWeight(.medium) .offset(CGSize(width: 5, height: 0)) 
+                    Image(systemName: "link") .font(.system(size: 10)) .offset(CGSize(width: 0, height: -7)) } }
+                toolRow(.yamlToJson, label: "YAML to JSON", shortcut: "h") { 
+                    Text("Y→J") .font(.monospaced(Font.system(size: 8))()) }
             }
 
             Section(
@@ -800,34 +734,18 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.htmlBeautify, label: "HTML", shortcut: "H") {
-                    Text("HTML")
-                        .font(.monospaced(Font.system(size: 8))())
-                }
-
-                toolRow(.cssBeautify, label: "CSS", shortcut: "C") {
-                    Text("CSS")
-                        .font(.monospaced(Font.system(size: 8))())
-                }
-
-                toolRow(.jsBeautify, label: "JS", shortcut: "J") {
-                    Text("JS")
-                        .font(.monospaced(Font.system(size: 10))())
-                }
-
-                toolRow(.jsonPretty, label: "Json", shortcut: "7") {
-                    Text("{.,}")
-                        .font(.monospaced(Font.system(size: 8))())
-                }
-
-                toolRow(.swiftPrettyLockwood, label: "Swift", shortcut: "8") {
-                    Image(systemName: "swift")
-                }
-
-                toolRow(.xmlFormat, label: "XML Formatter", shortcut: "m") {
-                    Text("</>")
-                        .font(.monospaced(Font.system(size: 8))())
-                }
+                toolRow(.cssBeautify, label: "CSS", shortcut: "C") { 
+                    Text("CSS") .font(.monospaced(Font.system(size: 8))()) }
+                toolRow(.htmlBeautify, label: "HTML", shortcut: "H") { 
+                    Text("HTML") .font(.monospaced(Font.system(size: 8))()) }
+                toolRow(.jsBeautify, label: "JS", shortcut: "J") { 
+                    Text("JS") .font(.monospaced(Font.system(size: 10))()) }
+                toolRow(.jsonPretty, label: "Json", shortcut: "7") { 
+                    Text("{.,}") .font(.monospaced(Font.system(size: 8))()) }
+                toolRow(.swiftPrettyLockwood, label: "Swift", shortcut: "8") { 
+                    Image(systemName: "swift") }
+                toolRow(.xmlFormat, label: "XML Formatter", shortcut: "m") { 
+                    Text("</>") .font(.monospaced(Font.system(size: 8))()) }
             }
 
             #if os(macOS)
@@ -838,9 +756,8 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.fileContentSearch, label: "File Search", shortcut: "9") {
-                    Image(systemName: "doc.text.magnifyingglass")
-                }
+             toolRow(.fileContentSearch, label: "File Search", shortcut: "9") { 
+                Image(systemName: "doc.text.magnifyingglass") }
             }
             #endif
 
@@ -851,21 +768,14 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.nameGenerator, label: "Name", shortcut: "0") {
-                    Image(systemName: "person")
-                }
-
-                toolRow(.randomStringGenerator, label: "Random String", shortcut: "t") {
-                    Image(systemName: "shuffle")
-                }
-
-                toolRow(.hashGenerator, label: "Hash Generator", shortcut: "g") {
-                    Image(systemName: "lock.shield")
-                }
-
-                toolRow(.uuidUlid, label: "UUID/ULID", shortcut: "w") {
-                    Image(systemName: "number.circle")
-                }
+                toolRow(.hashGenerator, label: "Hash Generator", shortcut: "g") { 
+                    Image(systemName: "lock.shield") }
+                toolRow(.nameGenerator, label: "Name", shortcut: "0") { 
+                    Image(systemName: "person") }
+                toolRow(.randomStringGenerator, label: "Random String", shortcut: "t") { 
+                    Image(systemName: "shuffle") }
+                toolRow(.uuidUlid, label: "UUID/ULID", shortcut: "w") { 
+                    Image(systemName: "number.circle") }
             }
 
             Section(
@@ -875,26 +785,16 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.stringInspector, label: "String Inspector", shortcut: "s") {
-                    Image(systemName: "text.magnifyingglass")
-                }
-
-                toolRow(.certificateDecoder, label: "Certificate Decoder", shortcut: "d") {
-                    Image(systemName: "shield.checkered")
-                }
-
-                toolRow(.urlParser, label: "URL Parser", shortcut: "p") {
-                    Image(systemName: "link.badge.plus")
-                }
-
-                toolRow(.regExpTester, label: "RegExp Tester", shortcut: "r") {
-                    Text(".*")
-                        .font(.monospaced(Font.system(size: 10))())
-                }
-
-                toolRow(.htmlPreview, label: "HTML Preview", shortcut: "v") {
-                    Image(systemName: "safari")
-                }
+                toolRow(.certificateDecoder, label: "Certificate Decoder", shortcut: "d") { 
+                    Image(systemName: "shield.checkered") }
+                toolRow(.htmlPreview, label: "HTML Preview", shortcut: "v") { 
+                    Image(systemName: "safari") }
+                toolRow(.regExpTester, label: "RegExp Tester", shortcut: "r") { 
+                    Text(".*") .font(.monospaced(Font.system(size: 10))()) }
+                toolRow(.stringInspector, label: "String Inspector", shortcut: "s") { 
+                    Image(systemName: "text.magnifyingglass") }
+                toolRow(.urlParser, label: "URL Parser", shortcut: "p") { 
+                    Image(systemName: "link.badge.plus") }
             }
         }
         .listStyle(.sidebar)
@@ -930,6 +830,7 @@ public struct AppView: View {
         @ViewBuilder icon: () -> Icon
     ) -> some View {
         Label {
+            
             Text(NSLocalizedString(label, bundle: Bundle.module, comment: "tool name on the sidebar"))
         } icon: {
             icon()
