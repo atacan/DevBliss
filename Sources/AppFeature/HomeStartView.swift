@@ -38,6 +38,11 @@ struct HomeStartView: View {
                     Text(NSLocalizedString("Paste to Input", bundle: Bundle.module, comment: ""))
                         .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
                 }
+                HStack {
+                    Text("⌘K")
+                    Text(NSLocalizedString("Go to Tool", bundle: Bundle.module, comment: ""))
+                        .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
+                }
             }  // <-VStack
             .font(.title2)
 

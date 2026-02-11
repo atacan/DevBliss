@@ -5,6 +5,7 @@ import Base64ImageFeature
 import CertificateDecoderFeature
 import ColorConverterFeature
 import ComposableArchitecture
+import DSFQuickActionBar
 import CssBeautifyFeature
 import FileContentSearchFeature
 import HashGeneratorFeature
@@ -93,6 +94,7 @@ public struct AppReducer {
     @ObservableState
     public struct State {
         @Presents public var destination: Destination.State?
+        public var isQuickActionBarVisible: Bool = false
 
         // Derive currentTool from destination instead of separate state
         public var currentTool: Tool? {
@@ -149,6 +151,7 @@ public struct AppReducer {
         case destination(PresentationAction<Destination.Action>)
         case navigationLinkTouched(Tool)
         case setCurrentTool(Tool?)
+        case setQuickActionBarVisible(Bool)
     }
 
     public var body: some Reducer<State, Action> {
@@ -165,6 +168,10 @@ public struct AppReducer {
                 if let tool = tool {
                     handleNavigation(tool: tool, state: &state)
                 }
+                return .none
+
+            case .setQuickActionBarVisible(let visible):
+                state.isQuickActionBarVisible = visible
                 return .none
 
             case .destination:
@@ -633,6 +640,7 @@ public struct AppReducer {
 
 public struct AppView: View {
     @Bindable var store: StoreOf<AppReducer>
+    @State private var quickActionBarSelectedTool: Tool?
 
     public init(store: StoreOf<AppReducer>) {
         self.store = store
@@ -644,6 +652,54 @@ public struct AppView: View {
         } detail: {
             detailContent
         }
+        .overlay {
+            quickActionBarView
+        }
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button {
+                    store.send(.setQuickActionBarVisible(true))
+                } label: {
+                    Label("Go to Tool", systemImage: "magnifyingglass")
+                }
+                .keyboardShortcut("k", modifiers: .command)
+            }
+        }
+        .onChange(of: quickActionBarSelectedTool) { _, newValue in
+            if let tool = newValue {
+                store.send(.setCurrentTool(tool))
+                quickActionBarSelectedTool = nil
+            }
+        }
+    }
+
+    // MARK: - Quick Action Bar
+
+    @ViewBuilder
+    private var quickActionBarView: some View {
+        QuickActionBar<Tool, Text>(
+            location: .window,
+            visible: $store.isQuickActionBarVisible.sending(\.setQuickActionBarVisible),
+            requiredClickCount: .single,
+            selectedItem: $quickActionBarSelectedTool,
+            placeholderText: "Search tools…",
+            itemsForSearchTerm: { task in
+                let searchTerm = task.searchTerm
+                let results: [Tool]
+                if searchTerm.isEmpty {
+                    results = Tool.allCases.filter(\.isActive)
+                } else {
+                    results = Tool.allCases.filter { tool in
+                        tool.isActive
+                            && tool.name.localizedCaseInsensitiveContains(searchTerm)
+                    }
+                }
+                task.complete(with: results)
+            },
+            viewForItem: { tool, _ in
+                Text(tool.name)
+            }
+        )
     }
 
     // MARK: - Sidebar

@@ -204,7 +204,7 @@ public enum Tool: Int, CaseIterable, Identifiable {
         }
     }
 
-    var isActive: Bool {
+    public var isActive: Bool {
         switch self {
         case .uuidGenerator:
             return false

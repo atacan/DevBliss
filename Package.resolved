@@ -28,6 +28,24 @@
       }
     },
     {
+      "identity" : "dsfappearancemanager",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/dagronf/DSFAppearanceManager",
+      "state" : {
+        "revision" : "e9add5fdf05fe50950d105c77963b7373ddb5ad4",
+        "version" : "3.5.1"
+      }
+    },
+    {
+      "identity" : "dsfquickactionbar",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/dagronf/DSFQuickActionBar",
+      "state" : {
+        "branch" : "main",
+        "revision" : "7be7b3bd2cebb19ee119ba1f972ecce581de5aeb"
+      }
+    },
+    {
       "identity" : "highlight",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nkristek/Highlight.git",
