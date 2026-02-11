@@ -5,34 +5,6 @@ struct HomeStartView: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .center) {
                 Spacer()
-                Image(systemName: "sidebar.squares.left")
-                Text(NSLocalizedString("Navigation", bundle: Bundle.module, comment: ""))
-                Spacer()
-            }  // <-HStack
-            .font(.title)
-            .padding()
-
-            VStack(alignment: .description, spacing: 8) {
-                HStack {
-                    Text("⌘1, ⌘2")
-                    Text(NSLocalizedString("Go to a tool by order", bundle: Bundle.module, comment: ""))
-                        .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
-                }
-                HStack {
-                    Text("⌃⇥")
-                    Text(NSLocalizedString("Go to the next tool", bundle: Bundle.module, comment: ""))
-                        .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
-                }
-                HStack {
-                    Text("⌥⌃⇥")
-                    Text(NSLocalizedString("Go to the previous tool", bundle: Bundle.module, comment: ""))
-                        .alignmentGuide(.description) { d in d[HorizontalAlignment.leading] }
-                }
-            }
-            .font(.title2)
-
-            HStack(alignment: .center) {
-                Spacer()
                 Image(systemName: "hammer")
                 Text(NSLocalizedString("Tool Usage", bundle: Bundle.module, comment: ""))
                 Spacer()

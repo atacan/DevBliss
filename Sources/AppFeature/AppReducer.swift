@@ -149,8 +149,6 @@ public struct AppReducer {
         case destination(PresentationAction<Destination.Action>)
         case navigationLinkTouched(Tool)
         case setCurrentTool(Tool?)
-        case nextToolButtonTouched
-        case previousToolButtonTouched
     }
 
     public var body: some Reducer<State, Action> {
@@ -167,14 +165,6 @@ public struct AppReducer {
                 if let tool = tool {
                     handleNavigation(tool: tool, state: &state)
                 }
-                return .none
-
-            case .nextToolButtonTouched:
-                handleNextToolNavigation(state: &state)
-                return .none
-
-            case .previousToolButtonTouched:
-                handlePreviousToolNavigation(state: &state)
                 return .none
 
             case .destination:
@@ -637,17 +627,6 @@ public struct AppReducer {
         }
     }
 
-    private func handleNextToolNavigation(state: inout State) {
-        guard let currentTool = state.currentTool else { return }
-        let nextTool = currentTool.next()
-        handleNavigation(tool: nextTool, state: &state)
-    }
-
-    private func handlePreviousToolNavigation(state: inout State) {
-        guard let currentTool = state.currentTool else { return }
-        let previousTool = currentTool.previous()
-        handleNavigation(tool: previousTool, state: &state)
-    }
 }
 
 // MARK: - App View
@@ -680,25 +659,25 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.asciiToHex, label: "ASCII to Hex", shortcut: "a") {
+                toolRow(.asciiToHex, label: "ASCII to Hex") {
                     Text("0x").font(.monospaced(Font.system(size: 10))())
                 }
-                toolRow(.backslashEscape, label: "Backslash Escape", shortcut: "k") {
+                toolRow(.backslashEscape, label: "Backslash Escape") {
                     Text("\\\\").font(.monospaced(Font.system(size: 10))())
                 }
-                toolRow(.base64, label: "Base64", shortcut: "b") {
+                toolRow(.base64, label: "Base64") {
                     Text("B64").font(.monospaced(Font.system(size: 10))())
                 }
-                toolRow(.base64Image, label: "Base64 Image", shortcut: "i") {
+                toolRow(.base64Image, label: "Base64 Image") {
                     Image(systemName: "photo")
                 }
-                toolRow(.colorConverter, label: "Color Converter", shortcut: "c") {
+                toolRow(.colorConverter, label: "Color Converter") {
                     Image(systemName: "paintpalette")
                 }
-                toolRow(.hexToAscii, label: "Hex to ASCII", shortcut: "x") {
+                toolRow(.hexToAscii, label: "Hex to ASCII") {
                     Text("x→A").font(.monospaced(Font.system(size: 8))())
                 }
-                toolRow(.htmlToMarkdown, label: "HTML to Markdown", shortcut: "2") {
+                toolRow(.htmlToMarkdown, label: "HTML to Markdown") {
                     ZStack(alignment: .leading) {
                         Text("M↓").font(.monospaced(Font.system(size: 14))()).fontWeight(.medium)
                             .offset(CGSize(width: 5, height: 0))
@@ -706,54 +685,54 @@ public struct AppView: View {
                             .offset(CGSize(width: 0, height: -7))
                     }
                 }
-                toolRow(.htmlToSwift, label: "Html to Swift", shortcut: "1") {
+                toolRow(.htmlToSwift, label: "Html to Swift") {
                     ZStack(alignment: .leading) {
                         Image(systemName: "swift").offset(CGSize(width: 5, height: 0))
                         Text("<>").font(.monospaced(Font.system(size: 14))()).fontWeight(.thin)
                             .offset(CGSize(width: 0, height: -7))
                     }
                 }
-                toolRow(.jsonToYaml, label: "JSON to YAML", shortcut: "y") {
+                toolRow(.jsonToYaml, label: "JSON to YAML") {
                     Text("J→Y").font(.monospaced(Font.system(size: 8))())
                 }
-                toolRow(.jwtDebugger, label: "JWT Debugger", shortcut: "j") {
+                toolRow(.jwtDebugger, label: "JWT Debugger") {
                     Image(systemName: "signature")
                 }
-                toolRow(.lineSortDedupe, label: "Line Sort/Dedupe", shortcut: "l") {
+                toolRow(.lineSortDedupe, label: "Line Sort/Dedupe") {
                     Image(systemName: "arrow.up.arrow.down")
                 }
-                toolRow(.numberBaseConverter, label: "Number Base", shortcut: "n") {
+                toolRow(.numberBaseConverter, label: "Number Base") {
                     Image(systemName: "number")
                 }
-                toolRow(.prefixSuffix, label: "Prefix Suffix", shortcut: "5") {
+                toolRow(.prefixSuffix, label: "Prefix Suffix") {
                     Image(systemName: "arrow.right.and.line.vertical.and.arrow.left")
                 }
-                toolRow(.qrCodeTool, label: "QR Code", shortcut: "q") {
+                toolRow(.qrCodeTool, label: "QR Code") {
                     Image(systemName: "qrcode")
                 }
-                toolRow(.regexMatches, label: "Regex Matches", shortcut: "6") {
+                toolRow(.regexMatches, label: "Regex Matches") {
                     Text("(.*)").font(.monospaced(Font.system(size: 8))())
                 }
-                toolRow(.svgToCss, label: "SVG to CSS", shortcut: "z") {
+                toolRow(.svgToCss, label: "SVG to CSS") {
                     Image(systemName: "square.and.arrow.down")
                 }
-                toolRow(.textCaseConverter, label: "Text Case", shortcut: "4") {
+                toolRow(.textCaseConverter, label: "Text Case") {
                     Text("Aa")
                 }
-                toolRow(.unixTime, label: "Unix Time", shortcut: "u") {
+                toolRow(.unixTime, label: "Unix Time") {
                     Image(systemName: "clock")
                 }
-                toolRow(.urlEncode, label: "URL Encode", shortcut: "e") {
+                toolRow(.urlEncode, label: "URL Encode") {
                     Image(systemName: "link")
                 }
-                toolRow(.urlToMarkdown, label: "URL to Markdown", shortcut: "3") {
+                toolRow(.urlToMarkdown, label: "URL to Markdown") {
                     ZStack(alignment: .leading) {
                         Text("M↓").font(.monospaced(Font.system(size: 14))()).fontWeight(.medium)
                             .offset(CGSize(width: 5, height: 0))
                         Image(systemName: "link").font(.system(size: 10)).offset(CGSize(width: 0, height: -7))
                     }
                 }
-                toolRow(.yamlToJson, label: "YAML to JSON", shortcut: "h") {
+                toolRow(.yamlToJson, label: "YAML to JSON") {
                     Text("Y→J").font(.monospaced(Font.system(size: 8))())
                 }
             }
@@ -765,22 +744,22 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.cssBeautify, label: "CSS", shortcut: "C") {
+                toolRow(.cssBeautify, label: "CSS") {
                     Text("CSS").font(.monospaced(Font.system(size: 8))())
                 }
-                toolRow(.htmlBeautify, label: "HTML", shortcut: "H") {
+                toolRow(.htmlBeautify, label: "HTML") {
                     Text("HTML").font(.monospaced(Font.system(size: 8))())
                 }
-                toolRow(.jsBeautify, label: "JS", shortcut: "J") {
+                toolRow(.jsBeautify, label: "JS") {
                     Text("JS").font(.monospaced(Font.system(size: 10))())
                 }
-                toolRow(.jsonPretty, label: "Json", shortcut: "7") {
+                toolRow(.jsonPretty, label: "Json") {
                     Text("{.,}").font(.monospaced(Font.system(size: 8))())
                 }
-                toolRow(.swiftPrettyLockwood, label: "Swift", shortcut: "8") {
+                toolRow(.swiftPrettyLockwood, label: "Swift") {
                     Image(systemName: "swift")
                 }
-                toolRow(.xmlFormat, label: "XML Formatter", shortcut: "m") {
+                toolRow(.xmlFormat, label: "XML Formatter") {
                     Text("</>").font(.monospaced(Font.system(size: 8))())
                 }
             }
@@ -793,7 +772,7 @@ public struct AppView: View {
                         comment: "sidebar section name for a group of tools"
                     )
                 ) {
-                    toolRow(.fileContentSearch, label: "File Search", shortcut: "9") {
+                    toolRow(.fileContentSearch, label: "File Search") {
                         Image(systemName: "doc.text.magnifyingglass")
                     }
                 }
@@ -806,16 +785,16 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.hashGenerator, label: "Hash Generator", shortcut: "g") {
+                toolRow(.hashGenerator, label: "Hash Generator") {
                     Image(systemName: "lock.shield")
                 }
-                toolRow(.nameGenerator, label: "Name", shortcut: "0") {
+                toolRow(.nameGenerator, label: "Name") {
                     Image(systemName: "person")
                 }
-                toolRow(.randomStringGenerator, label: "Random String", shortcut: "t") {
+                toolRow(.randomStringGenerator, label: "Random String") {
                     Image(systemName: "shuffle")
                 }
-                toolRow(.uuidUlid, label: "UUID/ULID", shortcut: "w") {
+                toolRow(.uuidUlid, label: "UUID/ULID") {
                     Image(systemName: "number.circle")
                 }
             }
@@ -827,19 +806,19 @@ public struct AppView: View {
                     comment: "sidebar section name for a group of tools"
                 )
             ) {
-                toolRow(.certificateDecoder, label: "Certificate Decoder", shortcut: "d") {
+                toolRow(.certificateDecoder, label: "Certificate Decoder") {
                     Image(systemName: "shield.checkered")
                 }
-                toolRow(.htmlPreview, label: "HTML Preview", shortcut: "v") {
+                toolRow(.htmlPreview, label: "HTML Preview") {
                     Image(systemName: "safari")
                 }
-                toolRow(.regExpTester, label: "RegExp Tester", shortcut: "r") {
+                toolRow(.regExpTester, label: "RegExp Tester") {
                     Text(".*").font(.monospaced(Font.system(size: 10))())
                 }
-                toolRow(.stringInspector, label: "String Inspector", shortcut: "s") {
+                toolRow(.stringInspector, label: "String Inspector") {
                     Image(systemName: "text.magnifyingglass")
                 }
-                toolRow(.urlParser, label: "URL Parser", shortcut: "p") {
+                toolRow(.urlParser, label: "URL Parser") {
                     Image(systemName: "link.badge.plus")
                 }
             }
@@ -847,24 +826,6 @@ public struct AppView: View {
         .listStyle(.sidebar)
         .frame(minWidth: 150)
         .accessibilityLabel(NSLocalizedString("Sidebar with the list of tools", bundle: Bundle.module, comment: ""))
-        .overlay {
-            // Hidden buttons for keyboard navigation
-            Button {
-                store.send(.nextToolButtonTouched)
-            } label: {
-                EmptyView()
-            }
-            .buttonStyle(.plain)
-            .keyboardShortcut(.tab, modifiers: .control)
-
-            Button {
-                store.send(.previousToolButtonTouched)
-            } label: {
-                EmptyView()
-            }
-            .buttonStyle(.plain)
-            .keyboardShortcut(.tab, modifiers: [.control, .option])
-        }
     }
 
     // MARK: - Tool Row Helper
@@ -873,17 +834,14 @@ public struct AppView: View {
     private func toolRow<Icon: View>(
         _ tool: Tool,
         label: String,
-        shortcut: String,
         @ViewBuilder icon: () -> Icon
     ) -> some View {
         Label {
-
             Text(NSLocalizedString(label, bundle: Bundle.module, comment: "tool name on the sidebar"))
         } icon: {
             icon()
         }
         .tag(tool)
-        .keyboardShortcut(KeyEquivalent(Character(shortcut)))
     }
 
     // MARK: - Detail Content
