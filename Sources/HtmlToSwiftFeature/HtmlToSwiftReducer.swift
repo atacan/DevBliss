@@ -78,13 +78,15 @@ public struct HtmlToSwiftReducer {
         case observeSettings
         case binding(BindingAction<State>)
         case convertButtonTouched
-        case conversionResponse(TaskResult<NSAttributedString>)
+        case conversionResponse(TaskResult<String>)
+        case highlightResponse(NSAttributedString)
         case inputOutput(InputOutputAttributedEditorsReducer.Action)
     }
 
     @Dependency(\.htmlToSwift) var htmlToSwift
     @Dependency(\.syntaxHighlight) var syntaxHighlight
-    private enum CancelID { case conversionRequest }
+    private enum CancelID { case conversionRequest, highlightRequest }
+    private static let maxHighlightCharacters = 100_000
     @Dependency(\.userDefaults) var userDefaults
 
     public var body: some Reducer<State, Action> {
@@ -102,25 +104,42 @@ public struct HtmlToSwiftReducer {
                         await send(
                             .conversionResponse(
                                 TaskResult {
-                                    // First convert HTML to Swift
-                                    let swiftCode = try await htmlToSwift.convert(input.text, for: dsl, output: component)
-                                    // Then highlight the Swift code
-                                    let highlighted = await syntaxHighlight.highlightSwift(swiftCode)
-                                    return highlighted
+                                    try await htmlToSwift.convert(input.text, for: dsl, output: component)
                                 }
                             )
                         )
                     }
                     .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
 
-            case let .conversionResponse(.success(highlightedCode)):
+            case let .conversionResponse(.success(swiftCode)):
                 state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(highlightedCode)
+                let showPlainText = state.inputOutput.output.updateText(swiftCode)
                     .map { Action.inputOutput(.output($0)) }
+
+                guard swiftCode.count <= Self.maxHighlightCharacters else {
+                    return showPlainText
+                }
+
+                return .merge(
+                    showPlainText,
+                    .run { [syntaxHighlight] send in
+                        let highlighted = await syntaxHighlight.highlightSwift(swiftCode)
+                        if highlighted.length > 0 {
+                            await send(.highlightResponse(highlighted))
+                        }
+                    }
+                    .cancellable(id: CancelID.highlightRequest, cancelInFlight: true)
+                )
+
             case let .conversionResponse(.failure(error)):
                 state.isConversionRequestInFlight = false
                 return state.inputOutput.output.updateText(errorAttributedString(error.localizedDescription))
                     .map { Action.inputOutput(.output($0)) }
+
+            case let .highlightResponse(highlighted):
+                return state.inputOutput.output.updateText(highlighted)
+                    .map { Action.inputOutput(.output($0)) }
+
             case .inputOutput:
                 return .none
             }

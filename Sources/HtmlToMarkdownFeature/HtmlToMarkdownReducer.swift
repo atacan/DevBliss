@@ -76,13 +76,15 @@ public struct HtmlToMarkdownReducer {
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case convertButtonTouched
-        case conversionResponse(TaskResult<NSAttributedString>)
+        case conversionResponse(TaskResult<String>)
+        case highlightResponse(NSAttributedString)
         case inputOutput(InputOutputAttributedEditorsReducer.Action)
     }
 
     @Dependency(\.htmlToMarkdown) var htmlToMarkdown
     @Dependency(\.syntaxHighlight) var syntaxHighlight
-    private enum CancelID { case conversionRequest }
+    private enum CancelID { case conversionRequest, highlightRequest }
+    private static let maxHighlightCharacters = 100_000
     @Dependency(\.mainQueue) var mainQueue
 
     public var body: some Reducer<State, Action> {
@@ -98,23 +100,42 @@ public struct HtmlToMarkdownReducer {
                         await send(
                             .conversionResponse(
                                 TaskResult {
-                                    let markdown = try await htmlToMarkdown.convert(input, config)
-                                    let highlighted = await syntaxHighlight.highlightMarkdown(markdown)
-                                    return highlighted
+                                    try await htmlToMarkdown.convert(input, config)
                                 }
                             )
                         )
                     }
                     .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
 
-            case let .conversionResponse(.success(highlighted)):
+            case let .conversionResponse(.success(markdown)):
                 state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(highlighted)
+                let showPlainText = state.inputOutput.output.updateText(markdown)
                     .map { Action.inputOutput(.output($0)) }
+
+                guard markdown.count <= Self.maxHighlightCharacters else {
+                    return showPlainText
+                }
+
+                return .merge(
+                    showPlainText,
+                    .run { [syntaxHighlight] send in
+                        let highlighted = await syntaxHighlight.highlightMarkdown(markdown)
+                        if highlighted.length > 0 {
+                            await send(.highlightResponse(highlighted))
+                        }
+                    }
+                    .cancellable(id: CancelID.highlightRequest, cancelInFlight: true)
+                )
+
             case let .conversionResponse(.failure(error)):
                 state.isConversionRequestInFlight = false
                 return state.inputOutput.output.updateText(errorAttributedString(error.localizedDescription))
                     .map { Action.inputOutput(.output($0)) }
+
+            case let .highlightResponse(highlighted):
+                return state.inputOutput.output.updateText(highlighted)
+                    .map { Action.inputOutput(.output($0)) }
+
             case .inputOutput:
                 return .none
             }
