@@ -116,54 +116,87 @@ public struct Base64View: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var modePicker: some View {
+        Picker("Mode", selection: $store.mode) {
+            ForEach(Base64Mode.allCases) { mode in
+                Text(mode.rawValue)
+                    .tag(mode)
+            }
+        }
+        .labelsHidden()
+        .pickerStyle(.segmented)
+    }
+
+    private var autoDetectToggle: some View {
+        Toggle("Auto-detect", isOn: $store.autoDetect)
+            .help("Automatically detect if input is Base64 and switch mode")
+    }
+
+    private var stripDataURLToggle: some View {
+        Toggle("Strip data URL", isOn: $store.autoRemoveDataURLPrefix)
+            .help("Remove data:...;base64, prefix when decoding")
+    }
+
+    private var stripNullBytesToggle: some View {
+        Toggle("Strip null bytes", isOn: $store.autoRemoveNullBytes)
+            .help("Remove null bytes at the end of decoded string")
+    }
+
+    private var convertButton: some View {
+        LoadingButton(
+            store.mode == .encode ? "Encode" : "Decode",
+            isLoading: store.isConversionRequestInFlight
+        ) {
+            store.send(.convertButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help("Convert (⌘ Return)")
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
-            // Mode selection and options
-            Grid(horizontalSpacing: 12, verticalSpacing: 4) {
-                GridRow {
-//                    ConfigLabel("Mode")
-                    Picker("Mode", selection: $store.mode) {
-                        ForEach(Base64Mode.allCases) { mode in
-                            Text(mode.rawValue)
-                                .tag(mode)
-                        }
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(width: 160)
+            #if os(iOS)
+            VStack(spacing: 8) {
+                modePicker
+                HStack(spacing: 12) {
+                    autoDetectToggle
+                    Spacer()
                 }
-
-                GridRow {
-//                    ConfigLabel("Options")
-                    HStack(spacing: 16) {
-                        Toggle("Auto-detect", isOn: $store.autoDetect)
-                            .help("Automatically detect if input is Base64 and switch mode")
-
-                        Toggle("Strip data URL", isOn: $store.autoRemoveDataURLPrefix)
-                            .help("Remove data:...;base64, prefix when decoding")
-
-                        Toggle("Strip null bytes", isOn: $store.autoRemoveNullBytes)
-                            .help("Remove null bytes at the end of decoded string")
-                    }
-                    #if os(macOS)
-                    .toggleStyle(.checkbox)
-                    #endif
-                    .gridCellColumns(3)
+                HStack(spacing: 12) {
+                    stripDataURLToggle
+                    Spacer()
+                }
+                HStack(spacing: 12) {
+                    stripNullBytesToggle
+                    Spacer()
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            // Convert button
-            LoadingButton(
-                store.mode == .encode ? "Encode" : "Decode",
-                isLoading: store.isConversionRequestInFlight
-            ) {
-                store.send(.convertButtonTouched)
+            convertButton
+                .padding(.vertical, 8)
+            #else
+            // Mode selection and options
+            VStack(spacing: 4) {
+                modePicker
+                    .frame(width: 160)
+
+                HStack(spacing: 16) {
+                    autoDetectToggle
+                    stripDataURLToggle
+                    stripNullBytesToggle
+                }
+                .toggleStyle(.checkbox)
             }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Convert (⌘ Return)")
+            .padding(.horizontal, 16)
             .padding(.vertical, 8)
+
+            convertButton
+                .padding(.vertical, 8)
+            #endif
 
             Divider()
 

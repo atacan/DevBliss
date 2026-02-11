@@ -113,54 +113,84 @@ public struct LineSortDedupeView: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var sortOrderPicker: some View {
+        Picker("Order", selection: $store.sortOrder) {
+            ForEach(LineSortOrder.allCases) { order in
+                Text(order.rawValue)
+                    .tag(order)
+            }
+        }
+        .pickerStyle(.segmented)
+        .labelsHidden()
+    }
+
+    private var caseInsensitiveToggle: some View {
+        Toggle("Case-insensitive", isOn: $store.caseInsensitive)
+    }
+
+    private var trimWhitespaceToggle: some View {
+        Toggle("Trim whitespace", isOn: $store.trimWhitespace)
+    }
+
+    private var removeDuplicatesToggle: some View {
+        Toggle("Remove duplicates", isOn: $store.removeDuplicates)
+    }
+
+    private var removeEmptyLinesToggle: some View {
+        Toggle("Remove empty lines", isOn: $store.removeEmptyLines)
+    }
+
+    private var processButton: some View {
+        LoadingButton("Process", isLoading: store.isConversionRequestInFlight) {
+            store.send(.convertButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help("Process (⌘ Return)")
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
+            #if os(iOS)
+            VStack(spacing: 10) {
+                sortOrderPicker
+                caseInsensitiveToggle
+                trimWhitespaceToggle
+                removeDuplicatesToggle
+                removeEmptyLinesToggle
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            processButton
+                .padding(.vertical, 8)
+            #else
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
                     ConfigLabel("Sort by")
-                    Picker("Order", selection: $store.sortOrder) {
-                        ForEach(LineSortOrder.allCases) { order in
-                            Text(order.rawValue)
-                                .tag(order)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    .frame(width: 200)
-
-                    Toggle("Case-insensitive", isOn: $store.caseInsensitive)
-                        #if os(macOS)
+                    sortOrderPicker
+                        .frame(width: 200)
+                    caseInsensitiveToggle
                         .toggleStyle(.checkbox)
-                        #endif
-
-                    Toggle("Trim whitespace", isOn: $store.trimWhitespace)
-                        #if os(macOS)
+                    trimWhitespaceToggle
                         .toggleStyle(.checkbox)
-                        #endif
                 }
 
                 GridRow {
                     ConfigLabel("Options")
-                    Toggle("Remove duplicates", isOn: $store.removeDuplicates)
-                        #if os(macOS)
+                    removeDuplicatesToggle
                         .toggleStyle(.checkbox)
-                        #endif
-
-                    Toggle("Remove empty lines", isOn: $store.removeEmptyLines)
-                        #if os(macOS)
+                    removeEmptyLinesToggle
                         .toggleStyle(.checkbox)
-                        #endif
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            LoadingButton("Process", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Process (⌘ Return)")
-            .padding(.vertical, 8)
+            processButton
+                .padding(.vertical, 8)
+            #endif
 
             Divider()
 

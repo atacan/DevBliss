@@ -126,70 +126,116 @@ public struct UnixTimeView: View {
         ("Australia/Sydney", "Sydney (AEST/AEDT)"),
     ]
 
+    // MARK: - Reusable Controls
+
+    private var inputField: some View {
+        TextField("Enter Unix timestamp or date", text: $store.input)
+            .blissTextField()
+            .onSubmit {
+                store.send(.convertButtonTouched)
+            }
+    }
+
+    private var nowButton: some View {
+        Button {
+            store.send(.nowButtonTouched)
+        } label: {
+            Label("Now", systemImage: "clock")
+        }
+        .buttonStyle(.bordered)
+        .keyboardShortcut("n", modifiers: [.command])
+        .help("Insert current timestamp (⌘N)")
+    }
+
+    private var convertButton: some View {
+        LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
+            store.send(.convertButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help("Convert (⌘ Return)")
+        .disabled(store.input.isEmpty || store.isConversionRequestInFlight)
+    }
+
+    private var modePicker: some View {
+        Picker("Mode", selection: $store.mode) {
+            ForEach(UnixTimeMode.allCases) { mode in
+                Text(mode.rawValue)
+                    .tag(mode)
+            }
+        }
+        .labelsHidden()
+        .pickerStyle(.segmented)
+    }
+
+    private var autoDetectToggle: some View {
+        Toggle("Auto-detect", isOn: $store.autoDetect)
+            .help("Automatically detect if input is Unix timestamp or date")
+    }
+
+    private var timezonePicker: some View {
+        Picker("Timezone", selection: $store.selectedTimezone) {
+            ForEach(Self.commonTimezones, id: \.0) { tz in
+                Text(tz.1).tag(tz.0)
+            }
+        }
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
-            // Input section: TextField + Now + Convert
-            HStack(spacing: 12) {
-                TextField("Enter Unix timestamp or date", text: $store.input)
-                    .blissTextField()
-                    .onSubmit {
-                        store.send(.convertButtonTouched)
-                    }
-
-                Button {
-                    store.send(.nowButtonTouched)
-                } label: {
-                    Label("Now", systemImage: "clock")
-                }
-                .buttonStyle(.bordered)
-                .keyboardShortcut("n", modifiers: [.command])
-                .help("Insert current timestamp (⌘N)")
-
-                LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
-                    store.send(.convertButtonTouched)
-                }
-                .keyboardShortcut(.return, modifiers: [.command])
-                .help("Convert (⌘ Return)")
-                .disabled(store.input.isEmpty || store.isConversionRequestInFlight)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-
             // Error message
             if let errorMessage = store.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
-            // Options row
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel("Mode")
-                    Picker("Mode", selection: $store.mode) {
-                        ForEach(UnixTimeMode.allCases) { mode in
-                            Text(mode.rawValue)
-                                .tag(mode)
-                        }
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(width: 200)
-
-                    Toggle("Auto-detect", isOn: $store.autoDetect)
-                        #if os(macOS)
-                        .toggleStyle(.checkbox)
-                        #endif
-                        .help("Automatically detect if input is Unix timestamp or date")
-
-                    Picker("Timezone", selection: $store.selectedTimezone) {
-                        ForEach(Self.commonTimezones, id: \.0) { tz in
-                            Text(tz.1).tag(tz.0)
-                        }
-                    }
-                    .blissMenuPicker(width: 180)
+            #if os(iOS)
+            VStack(spacing: 10) {
+                inputField
+                HStack(spacing: 12) {
+                    nowButton
+                    convertButton
+                }
+                modePicker
+                HStack(spacing: 16) {
+                    autoDetectToggle
+                    Spacer()
+                }
+                HStack {
+                    Text("Timezone")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    timezonePicker
+                        .labelsHidden()
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
+            #else
+            // Input section: TextField + Now + Convert
+            HStack(spacing: 12) {
+                inputField
+                nowButton
+                convertButton
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+
+            // Options row
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    ConfigLabel("Mode")
+                    modePicker
+                        .frame(width: 200)
+
+                    autoDetectToggle
+                        .toggleStyle(.checkbox)
+
+                    timezonePicker
+                        .blissMenuPicker(width: 180)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            #endif
 
             Divider()
 

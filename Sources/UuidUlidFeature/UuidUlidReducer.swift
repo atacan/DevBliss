@@ -157,46 +157,87 @@ public struct UuidUlidView: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var modePicker: some View {
+        Picker("Mode", selection: $store.mode) {
+            ForEach(UuidUlidReducer.Mode.allCases) { mode in
+                Text(mode.rawValue).tag(mode)
+            }
+        }
+        .pickerStyle(.segmented)
+    }
+
+    private var typePicker: some View {
+        Picker("Type", selection: $store.type) {
+            ForEach(UuidUlidType.allCases) { type in
+                Text(type.rawValue).tag(type)
+            }
+        }
+        .labelsHidden()
+    }
+
+    private var countStepper: some View {
+        Stepper("Count \(store.count)", value: $store.count, in: 1...100)
+    }
+
+    private var lowercaseToggle: some View {
+        Toggle("Lowercase", isOn: $store.lowercase)
+    }
+
+    private var actionButton: some View {
+        LoadingButton(store.mode == .generate ? "Generate" : "Decode", isLoading: store.isConversionRequestInFlight) {
+            store.send(.convertButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help("Convert (⌘ Return)")
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
+            #if os(iOS)
+            VStack(spacing: 10) {
+                modePicker
+                if store.mode == .generate {
+                    HStack {
+                        Text("Type")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                        typePicker
+                    }
+                    countStepper
+                    lowercaseToggle
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            actionButton
+                .padding(.vertical, 8)
+            #else
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
                     ConfigLabel("Mode")
-                    Picker("Mode", selection: $store.mode) {
-                        ForEach(UuidUlidReducer.Mode.allCases) { mode in
-                            Text(mode.rawValue).tag(mode)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 200)
+                    modePicker
+                        .frame(width: 200)
 
                     if store.mode == .generate {
                         ConfigLabel("Type")
-                        Picker("Type", selection: $store.type) {
-                            ForEach(UuidUlidType.allCases) { type in
-                                Text(type.rawValue).tag(type)
-                            }
-                        }
-                        .labelsHidden()
-                        .blissMenuPicker(width: 120)
+                        typePicker
+                            .blissMenuPicker(width: 120)
 
-                        Stepper("Count \(store.count)", value: $store.count, in: 1...100)
-                        Toggle("Lowercase", isOn: $store.lowercase)
-                             #if os(macOS)
-                             .toggleStyle(.checkbox)
-                             #endif
+                        countStepper
+                        lowercaseToggle
+                            .toggleStyle(.checkbox)
                     }
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            LoadingButton(store.mode == .generate ? "Generate" : "Decode", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Convert (⌘ Return)")
-            .padding(.vertical, 8)
+            actionButton
+                .padding(.vertical, 8)
+            #endif
 
             if let errorMessage = store.errorMessage {
                 ErrorMessageView(errorMessage)

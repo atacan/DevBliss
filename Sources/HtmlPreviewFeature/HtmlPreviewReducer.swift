@@ -82,37 +82,61 @@ public struct HtmlPreviewView: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var enableJavaScriptToggle: some View {
+        Toggle("Enable JavaScript", isOn: $store.enableJavaScript)
+    }
+
+    private var allowLinkNavigationToggle: some View {
+        Toggle("Allow link navigation", isOn: $store.allowLinkNavigation)
+    }
+
+    private var allowNetworkToggle: some View {
+        Toggle("Allow network", isOn: $store.allowNetwork)
+    }
+
+    private var openInBrowserButton: some View {
+        LoadingButton("Open in Browser", isLoading: false) {
+            openInBrowser(store.input.text)
+        }
+        .buttonStyle(.bordered)
+    }
+
+    private var reloadButton: some View {
+        LoadingButton("Reload", isLoading: false) {
+            webViewStore.reload(html: store.input.text)
+        }
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
+            #if os(iOS)
+            VStack(spacing: 8) {
+                enableJavaScriptToggle
+                allowLinkNavigationToggle
+                allowNetworkToggle
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            #else
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-//                    ConfigLabel("Options")
-                    Toggle("Enable JavaScript", isOn: $store.enableJavaScript)
-                        #if os(macOS)
+                    enableJavaScriptToggle
                         .toggleStyle(.checkbox)
-                        #endif
-                    Toggle("Allow link navigation", isOn: $store.allowLinkNavigation)
-                        #if os(macOS)
+                    allowLinkNavigationToggle
                         .toggleStyle(.checkbox)
-                        #endif
-                    Toggle("Allow network", isOn: $store.allowNetwork)
-                        #if os(macOS)
+                    allowNetworkToggle
                         .toggleStyle(.checkbox)
-                        #endif
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
+            #endif
 
             HStack(spacing: 12) {
-                LoadingButton("Open in Browser", isLoading: false) {
-                    openInBrowser(store.input.text)
-                }
-                .buttonStyle(.bordered)
-
-                LoadingButton("Reload", isLoading: false) {
-                    webViewStore.reload(html: store.input.text)
-                }
+                openInBrowserButton
+                reloadButton
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 8)

@@ -104,37 +104,57 @@ public struct AsciiToHexView: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var separatorPicker: some View {
+        Picker("Separator", selection: $store.separator) {
+            ForEach(HexSeparator.allCases) { separator in
+                Text(separator.rawValue)
+                    .tag(separator)
+            }
+        }
+    }
+
+    private var uppercaseToggle: some View {
+        Toggle("Uppercase", isOn: $store.uppercase)
+    }
+
+    private var convertButton: some View {
+        LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
+            store.send(.convertButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help("Convert (⌘ Return)")
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
+            #if os(iOS)
+            VStack(spacing: 10) {
+                separatorPicker
+                uppercaseToggle
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            convertButton
+                .padding(.vertical, 8)
+            #else
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
                     ConfigLabel("Separator")
-
-                    Picker("Separator", selection: $store.separator) {
-                        ForEach(HexSeparator.allCases) { separator in
-                            Text(separator.rawValue)
-                                .tag(separator)
-                        }
-                    }
-                    .blissMenuPicker(width: 120)
-
-                    Toggle("Uppercase", isOn: $store.uppercase)
-                        #if os(macOS)
+                    separatorPicker
+                        .blissMenuPicker(width: 120)
+                    uppercaseToggle
                         .toggleStyle(.checkbox)
-                        #endif
-
-//                    Spacer()
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Convert (⌘ Return)")
-            .padding(.vertical, 8)
+            convertButton
+                .padding(.vertical, 8)
+            #endif
 
             Divider()
 

@@ -156,43 +156,83 @@ public struct QrCodeToolView: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var modePicker: some View {
+        Picker("Mode", selection: $store.mode) {
+            ForEach(QrCodeToolReducer.Mode.allCases) { mode in
+                Text(mode.rawValue).tag(mode)
+            }
+        }
+        .labelsHidden()
+        .pickerStyle(.segmented)
+    }
+
+    private var correctionPicker: some View {
+        Picker("Correction", selection: $store.errorCorrection) {
+            ForEach(QrCodeErrorCorrection.allCases) { option in
+                Text(option.rawValue).tag(option)
+            }
+        }
+    }
+
+    private var sizeStepper: some View {
+        Stepper("Size \(store.dimension)", value: $store.dimension, in: 128...1024, step: 64)
+    }
+
+    private var actionButton: some View {
+        LoadingButton(store.mode == .generate ? "Generate" : "Decode", isLoading: store.isConversionRequestInFlight) {
+            store.send(.convertButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help("Convert (⌘ Return)")
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
+            #if os(iOS)
+            VStack(spacing: 10) {
+                modePicker
+                if store.mode == .generate {
+                    HStack {
+                        Text("Correction")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                        correctionPicker
+                            .labelsHidden()
+                        Spacer()
+                    }
+                    sizeStepper
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            actionButton
+                .padding(.vertical, 8)
+            #else
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
                     ConfigLabel("Mode")
-                    Picker("Mode", selection: $store.mode) {
-                        ForEach(QrCodeToolReducer.Mode.allCases) { mode in
-                            Text(mode.rawValue).tag(mode)
-                        }
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(width: 200)
+                    modePicker
+                        .frame(width: 200)
 
                     if store.mode == .generate {
                         ConfigLabel("Correction")
-                        Picker("Correction", selection: $store.errorCorrection) {
-                            ForEach(QrCodeErrorCorrection.allCases) { option in
-                                Text(option.rawValue).tag(option)
-                            }
-                        }
-                        .blissMenuPicker(width: 140)
-                        
+                        correctionPicker
+                            .blissMenuPicker(width: 140)
+
                         ConfigLabel("Size")
-                        Stepper("Size \(store.dimension)", value: $store.dimension, in: 128...1024, step: 64)
+                        sizeStepper
                     }
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            LoadingButton(store.mode == .generate ? "Generate" : "Decode", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Convert (⌘ Return)")
-            .padding(.vertical, 8)
+            actionButton
+                .padding(.vertical, 8)
+            #endif
 
             if let errorMessage = store.errorMessage {
                 ErrorMessageView(errorMessage)

@@ -918,6 +918,9 @@ public struct AppView: View {
             icon()
         }
         .tag(tool)
+        .accessibilityIdentifier("sidebar.\(label)")
+        .accessibilityLabel(label)
+        .accessibilityAddTraits(.isButton)
     }
 
     // MARK: - Detail Content

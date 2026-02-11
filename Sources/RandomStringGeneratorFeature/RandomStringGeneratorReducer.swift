@@ -100,40 +100,84 @@ public struct RandomStringGeneratorView: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var lengthStepper: some View {
+        Stepper(value: $store.length, in: 1...256) {
+            Text("\(store.length)")
+                .frame(width: 50, alignment: .leading)
+        }
+    }
+
+    private var lowercaseToggle: some View {
+        Toggle("Lowercase", isOn: $store.includeLowercase)
+    }
+
+    private var uppercaseToggle: some View {
+        Toggle("Uppercase", isOn: $store.includeUppercase)
+    }
+
+    private var digitsToggle: some View {
+        Toggle("Digits", isOn: $store.includeDigits)
+    }
+
+    private var symbolsToggle: some View {
+        Toggle("Symbols", isOn: $store.includeSymbols)
+    }
+
+    private var generateButton: some View {
+        LoadingButton("Generate", isLoading: false) {
+            store.send(.generateButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help("Generate (⌘ Return)")
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
+            #if os(iOS)
+            VStack(spacing: 10) {
+                HStack {
+                    Text("Length")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    lengthStepper
+                }
+                lowercaseToggle
+                uppercaseToggle
+                digitsToggle
+                symbolsToggle
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            generateButton
+                .padding(.vertical, 8)
+            #else
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
                     ConfigLabel("Length")
-                    Stepper(value: $store.length, in: 1...256) {
-                        Text("\(store.length)")
-                            .frame(width: 50, alignment: .leading)
-                    }
+                    lengthStepper
                 }
 
                 GridRow {
                     ConfigLabel("Include")
                     HStack(spacing: 16) {
-                        Toggle("Lowercase", isOn: $store.includeLowercase)
-                        Toggle("Uppercase", isOn: $store.includeUppercase)
-                        Toggle("Digits", isOn: $store.includeDigits)
-                        Toggle("Symbols", isOn: $store.includeSymbols)
+                        lowercaseToggle
+                        uppercaseToggle
+                        digitsToggle
+                        symbolsToggle
                     }
-                    #if os(macOS)
                     .toggleStyle(.checkbox)
-                    #endif
                     .gridCellColumns(3)
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            LoadingButton("Generate", isLoading: false) {
-                store.send(.generateButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Generate (⌘ Return)")
-            .padding(.vertical, 8)
+            generateButton
+                .padding(.vertical, 8)
+            #endif
 
             if let errorMessage = store.errorMessage {
                 ErrorMessageView(errorMessage)

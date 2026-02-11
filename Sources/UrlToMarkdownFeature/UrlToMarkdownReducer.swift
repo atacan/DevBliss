@@ -235,8 +235,70 @@ public struct UrlToMarkdownView: View {
         }
     }
 
+    // MARK: - Configuration Controls
+
+    private var enginePicker: some View {
+        Picker("Engine", selection: $store.configuration.engine) {
+            Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
+            Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
+        }
+        .help("Turndown for complex HTML, html-to-md for speed")
+    }
+
+    private var headingStylePicker: some View {
+        Picker("Heading Style", selection: $store.configuration.headingStyle) {
+            Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
+            Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
+        }
+        .help("ATX uses # prefix, Setext uses underlines")
+    }
+
+    private var bulletMarkerPicker: some View {
+        Picker("Bullet Marker", selection: $store.configuration.bulletListMarker) {
+            Text("-").tag("-")
+            Text("*").tag("*")
+            Text("+").tag("+")
+        }
+        .pickerStyle(.segmented)
+        .labelsHidden()
+        .help("Character for unordered list items")
+    }
+
+    private var codeBlockStylePicker: some View {
+        Picker("Code Block Style", selection: $store.configuration.codeBlockStyle) {
+            Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
+            Text("Indented").tag(DemarkCodeBlockStyle.indented)
+        }
+        .help("Fenced uses triple backticks, Indented uses 4 spaces")
+    }
+
+    private var contentSelectorField: some View {
+        TextField("e.g., article, main, .content", text: $store.loadingConfiguration.contentSelector)
+            .blissCompactTextField()
+            .help("CSS selector to extract specific content (leave empty for full page)")
+    }
+
     @ViewBuilder
     private var configurationGrid: some View {
+        #if os(iOS)
+        VStack(spacing: 10) {
+            enginePicker
+            headingStylePicker
+            HStack {
+                Text("Bullet")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                bulletMarkerPicker
+            }
+            codeBlockStylePicker
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Content Selector")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                contentSelectorField
+            }
+        }
+        #else
         let labelWidth: CGFloat = 120
 
         Grid(horizontalSpacing: 18, verticalSpacing: 12) {
@@ -244,62 +306,41 @@ public struct UrlToMarkdownView: View {
             GridRow {
                 ConfigLabel("Engine")
                     .frame(width: labelWidth, alignment: .trailing)
-                Picker("Engine", selection: $store.configuration.engine) {
-                    Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
-                    Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
-                }
-                .blissMenuPicker(width: 180)
-                .controlSize(.small)
-                .help("Turndown for complex HTML, html-to-md for speed")
+                enginePicker
+                    .blissMenuPicker(width: 180)
+                    .controlSize(.small)
 
                 ConfigLabel("Heading Style")
                     .frame(width: labelWidth, alignment: .trailing)
-                Picker("Heading Style", selection: $store.configuration.headingStyle) {
-                    Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
-                    Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
-                }
-                .blissMenuPicker(width: 160)
-                .controlSize(.small)
-                .help("ATX uses # prefix, Setext uses underlines")
+                headingStylePicker
+                    .blissMenuPicker(width: 160)
+                    .controlSize(.small)
             }
 
             // Row 2: Bullet Marker and Code Block Style
             GridRow {
                 ConfigLabel("Bullet Marker")
                     .frame(width: labelWidth, alignment: .trailing)
-                Picker("Bullet Marker", selection: $store.configuration.bulletListMarker) {
-                    Text("-").tag("-")
-                    Text("*").tag("*")
-                    Text("+").tag("+")
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .frame(width: 180, alignment: .leading)
-                .controlSize(.small)
-                .help("Character for unordered list items")
+                bulletMarkerPicker
+                    .frame(width: 180, alignment: .leading)
+                    .controlSize(.small)
 
                 ConfigLabel("Code Blocks")
                     .frame(width: labelWidth, alignment: .trailing)
-                Picker("Code Block Style", selection: $store.configuration.codeBlockStyle) {
-                    Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
-                    Text("Indented").tag(DemarkCodeBlockStyle.indented)
-                }
-                .blissMenuPicker(width: 160)
-                .controlSize(.small)
-                .help("Fenced uses triple backticks, Indented uses 4 spaces")
+                codeBlockStylePicker
+                    .blissMenuPicker(width: 160)
+                    .controlSize(.small)
             }
 
-            // Row 3: Content Selector - aligned with grid columns above
+            // Row 3: Content Selector
             GridRow {
                 ConfigLabel("Content Selector")
                     .frame(width: labelWidth, alignment: .trailing)
-                TextField("e.g., article, main, .content", text: $store.loadingConfiguration.contentSelector)
-                    .blissCompactTextField()
-//                    .frame(maxWidth: 200)
+                contentSelectorField
                     .gridCellColumns(3)
-                    .help("CSS selector to extract specific content (leave empty for full page)")
             }
         }
+        #endif
     }
 }
 

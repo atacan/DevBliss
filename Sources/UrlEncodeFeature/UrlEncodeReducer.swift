@@ -108,76 +108,124 @@ public struct UrlEncodeView: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var inputField: some View {
+        TextField("Enter text to encode/decode", text: $store.inputText)
+            .blissTextField()
+            .onSubmit {
+                store.send(.convertButtonTouched)
+            }
+    }
+
+    private var convertButton: some View {
+        LoadingButton("Convert", isLoading: false) {
+            store.send(.convertButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help("Convert (Command Return)")
+        .disabled(store.inputText.isEmpty)
+    }
+
+    private var directionPicker: some View {
+        Picker("Mode", selection: $store.direction) {
+            ForEach(UrlEncodeDirection.allCases) { direction in
+                Text(direction.rawValue)
+                    .tag(direction)
+            }
+        }
+        .pickerStyle(.segmented)
+        .labelsHidden()
+    }
+
+    private var autoDetectToggle: some View {
+        Toggle("Auto-detect", isOn: $store.autoDetect)
+            .help("Automatically detect if input looks URL-encoded and switch to Decode mode")
+    }
+
+    private var encodeModePicker: some View {
+        Picker("Encode Mode", selection: $store.encodeMode) {
+            ForEach(UrlEncodeMode.allCases) { mode in
+                Text(mode.rawValue)
+                    .tag(mode)
+            }
+        }
+        .pickerStyle(.segmented)
+        .labelsHidden()
+        .disabled(store.direction == .decode)
+    }
+
+    private var decodePlusToggle: some View {
+        Toggle("+ as space", isOn: $store.decodePlusAsSpace)
+            .help("Decode + characters as spaces (for form data)")
+            .disabled(store.direction == .encode)
+    }
+
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Input section: TextField + Convert
-            HStack(spacing: 12) {
-                TextField("Enter text to encode/decode", text: $store.inputText)
-                    .blissTextField()
-                    .onSubmit {
-                        store.send(.convertButtonTouched)
-                    }
-
-                LoadingButton("Convert", isLoading: false) {
-                    store.send(.convertButtonTouched)
-                }
-                .keyboardShortcut(.return, modifiers: [.command])
-                .help("Convert (Command Return)")
-                .disabled(store.inputText.isEmpty)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-
             // Error message
             if let errorMessage = store.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
-            // Options rows
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel("Mode")
-                    Picker("Mode", selection: $store.direction) {
-                        ForEach(UrlEncodeDirection.allCases) { direction in
-                            Text(direction.rawValue)
-                                .tag(direction)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 160)
-
-                    Toggle("Auto-detect", isOn: $store.autoDetect)
-                        #if os(macOS)
-                        .toggleStyle(.checkbox)
-                        #endif
-                        .gridCellColumns(2)
-                        .help("Automatically detect if input looks URL-encoded and switch to Decode mode")
+            #if os(iOS)
+            VStack(spacing: 10) {
+                inputField
+                HStack(spacing: 12) {
+                    convertButton
                 }
-
-                GridRow {
-                    ConfigLabel("Encode")
-                    Picker("Encode Mode", selection: $store.encodeMode) {
-                        ForEach(UrlEncodeMode.allCases) { mode in
-                            Text(mode.rawValue)
-                                .tag(mode)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    .frame(width: 160)
-                    .disabled(store.direction == .decode)
-
-                    ConfigLabel("Decode")
-                    Toggle("+ as space", isOn: $store.decodePlusAsSpace)
-                        #if os(macOS)
-                        .toggleStyle(.checkbox)
-                        #endif
-                        .help("Decode + characters as spaces (for form data)")
-                        .disabled(store.direction == .encode)
+                directionPicker
+                HStack(spacing: 16) {
+                    autoDetectToggle
+                    Spacer()
+                }
+                HStack {
+                    Text("Encode")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    encodeModePicker
+                }
+                HStack(spacing: 16) {
+                    decodePlusToggle
+                    Spacer()
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
+            #else
+            // Input section: TextField + Convert
+            HStack(spacing: 12) {
+                inputField
+                convertButton
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+
+            // Options rows
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    ConfigLabel("Mode")
+                    directionPicker
+                        .frame(width: 160)
+
+                    autoDetectToggle
+                        .toggleStyle(.checkbox)
+                        .gridCellColumns(2)
+                }
+
+                GridRow {
+                    ConfigLabel("Encode")
+                    encodeModePicker
+                        .frame(width: 160)
+
+                    ConfigLabel("Decode")
+                    decodePlusToggle
+                        .toggleStyle(.checkbox)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            #endif
 
             Divider()
 

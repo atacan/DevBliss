@@ -116,73 +116,128 @@ public struct TextCaseConverterView: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var sourceCasePicker: some View {
+        Picker(
+            NSLocalizedString("From", bundle: Bundle.module, comment: ""),
+            selection: $store.sourceCase
+        ) {
+            ForEach(WordGroupCase.allCases) { sourceCase in
+                Text(sourceCase.rawValue)
+                    .tag(sourceCase)
+            }
+        }
+    }
+
+    private var targetCasePicker: some View {
+        Picker(
+            NSLocalizedString("To", bundle: Bundle.module, comment: ""),
+            selection: $store.targetCase
+        ) {
+            ForEach(WordGroupCase.allCases) { targetCase in
+                Text(targetCase.rawValue)
+                    .tag(targetCase)
+            }
+        }
+    }
+
+    private var separatorPicker: some View {
+        Picker(
+            NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""),
+            selection: $store.textSeperator
+        ) {
+            ForEach(WordGroupSeperator.allCases) { (seperator: WordGroupSeperator) in
+                Text(seperator == .newLine ? "New Line" : "Space")
+                    .tag(seperator)
+            }
+        }
+    }
+
+    private var switchCasesButton: some View {
+        Button {
+            store.send(.switchCasesButtonTouched)
+        } label: {
+            Label(NSLocalizedString("Switch Cases", bundle: Bundle.module, comment: ""), systemImage: "arrow.left.and.right")
+        }
+        .buttonStyle(.bordered)
+        .keyboardShortcut("w", modifiers: [.command, .shift])
+        .help(NSLocalizedString("Switch source and target cases (⌘⇧W)", bundle: Bundle.module, comment: ""))
+    }
+
+    private var convertButton: some View {
+        LoadingButton(
+            NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
+            isLoading: store.isConversionRequestInFlight
+        ) {
+            store.send(.convertButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help(NSLocalizedString("Convert code (⌘ Return)", bundle: Bundle.module, comment: ""))
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel(NSLocalizedString("From", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("From", bundle: Bundle.module, comment: ""),
-                        selection: $store.sourceCase
-                    ) {
-                        ForEach(WordGroupCase.allCases) { sourceCase in
-                            Text(sourceCase.rawValue)
-                                .tag(sourceCase)
-                        }
-                    }
-                    .blissMenuPicker(width: 140)
-
-                    ConfigLabel(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("To", bundle: Bundle.module, comment: ""),
-                        selection: $store.targetCase
-                    ) {
-                        ForEach(WordGroupCase.allCases) { targetCase in
-                            Text(targetCase.rawValue)
-                                .tag(targetCase)
-                        }
-                    }
-                    .blissMenuPicker(width: 140)
+            #if os(iOS)
+            VStack(spacing: 10) {
+                HStack {
+                    Text(NSLocalizedString("From", bundle: Bundle.module, comment: ""))
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    sourceCasePicker
+                        .labelsHidden()
                 }
-
-                GridRow {
-                    ConfigLabel(NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""),
-                        selection: $store.textSeperator
-                    ) {
-                        ForEach(WordGroupSeperator.allCases) { (seperator: WordGroupSeperator) in
-                            Text(seperator == .newLine ? "New Line" : "Space")
-                                .tag(seperator)
-                        }
-                    }
-                    .blissMenuPicker(width: 140)
-                    .gridCellColumns(3)
+                HStack {
+                    Text(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    targetCasePicker
+                        .labelsHidden()
+                }
+                HStack {
+                    Text(NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""))
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    separatorPicker
+                        .labelsHidden()
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
             HStack(spacing: 12) {
-                Button {
-                    store.send(.switchCasesButtonTouched)
-                } label: {
-                    Label(NSLocalizedString("Switch Cases", bundle: Bundle.module, comment: ""), systemImage: "arrow.left.and.right")
-                }
-                .buttonStyle(.bordered)
-                .keyboardShortcut("w", modifiers: [.command, .shift])
-                .help(NSLocalizedString("Switch source and target cases (⌘⇧W)", bundle: Bundle.module, comment: ""))
-
-                LoadingButton(
-                    NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
-                    isLoading: store.isConversionRequestInFlight
-                ) {
-                    store.send(.convertButtonTouched)
-                }
-                .keyboardShortcut(.return, modifiers: [.command])
-                .help(NSLocalizedString("Convert code (⌘ Return)", bundle: Bundle.module, comment: ""))
+                switchCasesButton
+                convertButton
             }
             .padding(.vertical, 8)
+            #else
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    ConfigLabel(NSLocalizedString("From", bundle: Bundle.module, comment: ""))
+                    sourceCasePicker
+                        .blissMenuPicker(width: 140)
+
+                    ConfigLabel(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
+                    targetCasePicker
+                        .blissMenuPicker(width: 140)
+                }
+
+                GridRow {
+                    ConfigLabel(NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""))
+                    separatorPicker
+                        .blissMenuPicker(width: 140)
+                        .gridCellColumns(3)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            HStack(spacing: 12) {
+                switchCasesButton
+                convertButton
+            }
+            .padding(.vertical, 8)
+            #endif
 
             Divider()
 

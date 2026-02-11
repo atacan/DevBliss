@@ -136,66 +136,125 @@ public struct RegExpTesterView: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var patternField: some View {
+        TextField("Enter regex pattern", text: $store.pattern)
+            .blissTextField()
+    }
+
+    private var testButton: some View {
+        LoadingButton("Test", isLoading: false) {
+            store.send(.testButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help("Test (⌘ Return)")
+    }
+
+    private var replacementField: some View {
+        TextField("Replacement pattern", text: $store.replacement)
+            .blissTextField()
+    }
+
+    private var matchNavigation: some View {
+        HStack(spacing: 8) {
+            Button {
+                store.send(.previousMatchButtonTouched)
+            } label: {
+                Image(systemName: "chevron.left")
+            }
+            .buttonStyle(.borderless)
+
+            Text(matchCounterText)
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Button {
+                store.send(.nextMatchButtonTouched)
+            } label: {
+                Image(systemName: "chevron.right")
+            }
+            .buttonStyle(.borderless)
+        }
+    }
+
+    private var caseInsensitiveToggle: some View {
+        Toggle("Case insensitive", isOn: $store.options.caseInsensitive)
+    }
+
+    private var allowCommentsToggle: some View {
+        Toggle("Allow comments", isOn: $store.options.allowCommentsAndWhitespace)
+    }
+
+    private var dotMatchesToggle: some View {
+        Toggle("Dot matches newlines", isOn: $store.options.dotMatchesLineSeparators)
+    }
+
+    private var multilineToggle: some View {
+        Toggle("Multiline", isOn: $store.options.anchorsMatchLines)
+    }
+
+    private var unicodeBoundariesToggle: some View {
+        Toggle("Unicode boundaries", isOn: $store.options.useUnicodeWordBoundaries)
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
+            #if os(iOS)
+            VStack(spacing: 12) {
+                HStack(spacing: 8) {
+                    patternField
+                    testButton
+                }
+                HStack(spacing: 8) {
+                    replacementField
+                    matchNavigation
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Options")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    caseInsensitiveToggle
+                    allowCommentsToggle
+                    dotMatchesToggle
+                    multilineToggle
+                    unicodeBoundariesToggle
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            #else
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
                     ConfigLabel("Pattern")
-                    TextField("Enter regex pattern", text: $store.pattern)
-                        .blissTextField()
+                    patternField
                         .gridCellColumns(2)
-
-                    LoadingButton("Test", isLoading: false) {
-                        store.send(.testButtonTouched)
-                    }
-                    .keyboardShortcut(.return, modifiers: [.command])
-                    .help("Test (⌘ Return)")
+                    testButton
                 }
 
                 GridRow {
                     ConfigLabel("Replace")
-                    TextField("Replacement pattern", text: $store.replacement)
-                        .blissTextField()
+                    replacementField
                         .gridCellColumns(2)
-
-                    HStack(spacing: 8) {
-                        Button {
-                            store.send(.previousMatchButtonTouched)
-                        } label: {
-                            Image(systemName: "chevron.left")
-                        }
-                        .buttonStyle(.borderless)
-
-                        Text(matchCounterText)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-
-                        Button {
-                            store.send(.nextMatchButtonTouched)
-                        } label: {
-                            Image(systemName: "chevron.right")
-                        }
-                        .buttonStyle(.borderless)
-                    }
+                    matchNavigation
                 }
 
                 GridRow {
                     ConfigLabel("Options")
                     HStack(spacing: 16) {
-                        Toggle("Case insensitive", isOn: $store.options.caseInsensitive)
-                        Toggle("Allow comments", isOn: $store.options.allowCommentsAndWhitespace)
-                        Toggle("Dot matches newlines", isOn: $store.options.dotMatchesLineSeparators)
-                        Toggle("Multiline", isOn: $store.options.anchorsMatchLines)
-                        Toggle("Unicode boundaries", isOn: $store.options.useUnicodeWordBoundaries)
+                        caseInsensitiveToggle
+                        allowCommentsToggle
+                        dotMatchesToggle
+                        multilineToggle
+                        unicodeBoundariesToggle
                     }
-                    #if os(macOS)
                     .toggleStyle(.checkbox)
-                    #endif
                     .gridCellColumns(3)
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
+            #endif
 
             if let errorMessage = store.errorMessage {
                 ErrorMessageView(errorMessage)

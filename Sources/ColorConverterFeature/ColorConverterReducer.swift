@@ -110,20 +110,47 @@ public struct ColorConverterView: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var inputField: some View {
+        TextField("Enter a color value (hex or rgb)", text: $store.input)
+            .blissTextField()
+            .onSubmit {
+                store.send(.convertButtonTouched)
+            }
+    }
+
+    private var convertButton: some View {
+        LoadingButton("Convert", isLoading: false) {
+            store.send(.convertButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help("Convert (⌘ Return)")
+    }
+
+    private var uppercaseHexToggle: some View {
+        Toggle("Uppercase hex", isOn: $store.uppercaseHex)
+    }
+
+    private var includeAlphaToggle: some View {
+        Toggle("Include alpha", isOn: $store.includeAlpha)
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
+            #if os(iOS)
+            VStack(spacing: 10) {
+                inputField
+                convertButton
+                uppercaseHexToggle
+                includeAlphaToggle
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            #else
             HStack(spacing: 12) {
-                TextField("Enter a color value (hex or rgb)", text: $store.input)
-                    .blissTextField()
-                    .onSubmit {
-                        store.send(.convertButtonTouched)
-                    }
-
-                LoadingButton("Convert", isLoading: false) {
-                    store.send(.convertButtonTouched)
-                }
-                .keyboardShortcut(.return, modifiers: [.command])
-                .help("Convert (⌘ Return)")
+                inputField
+                convertButton
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -131,19 +158,15 @@ public struct ColorConverterView: View {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
                     ConfigLabel("Options")
-                    Toggle("Uppercase hex", isOn: $store.uppercaseHex)
-                        #if os(macOS)
+                    uppercaseHexToggle
                         .toggleStyle(.checkbox)
-                        #endif
-
-                    Toggle("Include alpha", isOn: $store.includeAlpha)
-                        #if os(macOS)
+                    includeAlphaToggle
                         .toggleStyle(.checkbox)
-                        #endif
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
+            #endif
 
             if let errorMessage = store.errorMessage {
                 ErrorMessageView(errorMessage)

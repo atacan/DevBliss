@@ -173,50 +173,71 @@ public struct JwtDebuggerView: View {
         }
     }
 
+    // MARK: - Reusable Controls
+
+    private var autoDetectToggle: some View {
+        Toggle("Auto-detect", isOn: $store.autoDetect)
+            .help("Automatically decode when input looks like a JWT")
+    }
+
+    private var algorithmDisplay: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "cpu")
+            Text("Algorithm")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+            Text(store.algorithmDisplay)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private var secretKeyField: some View {
+        TextField(
+            "Secret or public key (for signature verification)",
+            text: $store.secretKey
+        )
+        .font(.monospaced(.body)())
+        .autocorrectionDisabled()
+        #if os(iOS)
+        .textInputAutocapitalization(.never)
+        #endif
+        .blissTextField()
+    }
+
+    private var decodeButton: some View {
+        LoadingButton(
+            NSLocalizedString("Decode", comment: ""),
+            isLoading: store.isDecoding
+        ) {
+            store.send(.decodeButtonTouched)
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help(NSLocalizedString("Decode token (Command+Return)", comment: ""))
+        .disabled(store.isTokenEmpty)
+    }
+
     private var optionsView: some View {
         VStack(spacing: 12) {
+            #if os(iOS)
+            HStack {
+                autoDetectToggle
+            }
+            algorithmDisplay
+            secretKeyField
+            decodeButton
+            #else
             HStack(spacing: 12) {
-                Toggle("Auto-detect", isOn: $store.autoDetect)
-                    #if os(macOS)
+                autoDetectToggle
                     .toggleStyle(.checkbox)
-                    #endif
-                    .help("Automatically decode when input looks like a JWT")
-
                 Spacer()
-
-                HStack(spacing: 6) {
-                    Image(systemName: "cpu")
-                    Text("Algorithm")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                    Text(store.algorithmDisplay)
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                }
+                algorithmDisplay
             }
-
             HStack(spacing: 12) {
-                TextField(
-                    "Secret or public key (for signature verification)",
-                    text: $store.secretKey
-                )
-                .font(.monospaced(.body)())
-                .autocorrectionDisabled()
-                #if os(iOS)
-                .textInputAutocapitalization(.never)
-                #endif
-                .blissTextField()
-
-                LoadingButton(
-                    NSLocalizedString("Decode", comment: ""),
-                    isLoading: store.isDecoding
-                ) {
-                    store.send(.decodeButtonTouched)
-                }
-                .keyboardShortcut(.return, modifiers: [.command])
-                .help(NSLocalizedString("Decode token (Command+Return)", comment: ""))
-                .disabled(store.isTokenEmpty)
+                secretKeyField
+                decodeButton
             }
+            #endif
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)

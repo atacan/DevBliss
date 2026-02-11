@@ -84,29 +84,66 @@ public struct UUIDGeneratorView: View {
         self.store = store
     }
 
+    // MARK: - Reusable Controls
+
+    private var countField: some View {
+        IntegerTextField(value: $store.count, range: 1 ... 1_000_000)
+    }
+
+    private var casePicker: some View {
+        Picker("", selection: $store.textCase) {
+            Text(NSLocalizedString("lowercase", bundle: Bundle.module, comment: "")).tag(TextCase.lower)
+            Text(NSLocalizedString("UPPERCASE", bundle: Bundle.module, comment: "")).tag(TextCase.upper)
+        }
+    }
+
+    private var generateButton: some View {
+        LoadingButton(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
+            store.send(.generateButtonTouched)
+        }
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: $store.count, range: 1 ... 1_000_000)
-                        .frame(width: 140)
-
-                    ConfigLabel(NSLocalizedString("Case", bundle: Bundle.module, comment: ""))
-                    Picker("", selection: $store.textCase) {
-                        Text(NSLocalizedString("lowercase", bundle: Bundle.module, comment: "")).tag(TextCase.lower)
-                        Text(NSLocalizedString("UPPERCASE", bundle: Bundle.module, comment: "")).tag(TextCase.upper)
-                    }
-                    .blissMenuPicker(width: 140)
+            #if os(iOS)
+            VStack(spacing: 10) {
+                HStack {
+                    Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    countField
+                }
+                HStack {
+                    Text(NSLocalizedString("Case", bundle: Bundle.module, comment: ""))
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    casePicker
+                        .labelsHidden()
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            LoadingButton(NSLocalizedString("Generate", bundle: Bundle.module, comment: "")) {
-                store.send(.generateButtonTouched)
+            generateButton
+                .padding(.vertical, 8)
+            #else
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    ConfigLabel(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
+                    countField
+                        .frame(width: 140)
+
+                    ConfigLabel(NSLocalizedString("Case", bundle: Bundle.module, comment: ""))
+                    casePicker
+                        .blissMenuPicker(width: 140)
+                }
             }
+            .padding(.horizontal, 16)
             .padding(.vertical, 8)
+
+            generateButton
+                .padding(.vertical, 8)
+            #endif
 
             Divider()
 
