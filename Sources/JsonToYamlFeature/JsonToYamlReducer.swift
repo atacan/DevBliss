@@ -49,13 +49,15 @@ public struct JsonToYamlReducer {
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case convertButtonTouched
-        case conversionResponse(TaskResult<NSAttributedString>)
+        case conversionResponse(TaskResult<String>)
+        case highlightResponse(NSAttributedString)
         case inputOutput(InputOutputAttributedEditorsReducer.Action)
     }
 
     @Dependency(\.jsonToYaml) var jsonToYaml
     @Dependency(\.syntaxHighlight) var syntaxHighlight
-    private enum CancelID { case conversionRequest }
+    private enum CancelID { case conversionRequest, highlightRequest }
+    private static let maxHighlightCharacters = 100_000
 
     public var body: some Reducer<State, Action> {
         BindingReducer()
@@ -67,27 +69,44 @@ public struct JsonToYamlReducer {
                 state.isConversionRequestInFlight = true
                 let input = state.inputOutput.input.text
                 let config = state.config
-                return .run { [jsonToYaml, syntaxHighlight] send in
+                return .run { [jsonToYaml] send in
                     await send(
                         .conversionResponse(
                             TaskResult {
-                                let yaml = try await jsonToYaml.convert(input, config)
-                                let highlighted = await syntaxHighlight.highlightYaml(yaml)
-                                return highlighted
+                                try await jsonToYaml.convert(input, config)
                             }
                         )
                     )
                 }
                 .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
 
-            case let .conversionResponse(.success(highlighted)):
+            case let .conversionResponse(.success(yaml)):
                 state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(highlighted)
+                let showPlainText = state.inputOutput.output.updateText(yaml)
                     .map { Action.inputOutput(.output($0)) }
+
+                guard yaml.count <= Self.maxHighlightCharacters else {
+                    return showPlainText
+                }
+
+                return .merge(
+                    showPlainText,
+                    .run { [syntaxHighlight] send in
+                        let highlighted = await syntaxHighlight.highlightYaml(yaml)
+                        if highlighted.length > 0 {
+                            await send(.highlightResponse(highlighted))
+                        }
+                    }
+                    .cancellable(id: CancelID.highlightRequest, cancelInFlight: true)
+                )
 
             case let .conversionResponse(.failure(error)):
                 state.isConversionRequestInFlight = false
                 return state.inputOutput.output.updateText(errorAttributedString(error.localizedDescription))
+                    .map { Action.inputOutput(.output($0)) }
+
+            case let .highlightResponse(highlighted):
+                return state.inputOutput.output.updateText(highlighted)
                     .map { Action.inputOutput(.output($0)) }
 
             case .inputOutput:

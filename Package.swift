@@ -101,7 +101,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(path: "/Users/atacan/Developer/Repositories/JSBeautify"),
-        .package(path: "/Users/atacan/Developer/Repositories/html-swift"),
+        .package(url: "https://github.com/atacan/html-swift", branch: "main"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.23.1"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.10.0"),
         .package(url: "https://github.com/stevengharris/SplitView", from: "3.1.0"),
@@ -853,6 +853,15 @@ let package = Package(
             resources: [.process("Resources")]
         ),
 
+        .testTarget(
+            name: "JsonToYamlClientTests",
+            dependencies: [
+                "JsonToYamlClient",
+                "SyntaxHighlightClient",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ],
+            resources: [.process("Resources")]
+        ),
         .testTarget(
             name: "HtmlToSwiftClientTests",
             dependencies: ["HtmlToSwiftClient"]

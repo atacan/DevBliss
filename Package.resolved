@@ -37,6 +37,15 @@
       }
     },
     {
+      "identity" : "html-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/html-swift",
+      "state" : {
+        "branch" : "main",
+        "revision" : "579334004f05d5f910639a07c3df6cb32051f2d9"
+      }
+    },
+    {
       "identity" : "jwtdecode.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/auth0/JWTDecode.swift",
