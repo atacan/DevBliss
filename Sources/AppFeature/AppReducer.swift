@@ -689,10 +689,16 @@ public struct AppView: View {
                 if searchTerm.isEmpty {
                     results = Tool.allCases.filter(\.isActive)
                 } else {
-                    results = Tool.allCases.filter { tool in
-                        tool.isActive
-                            && tool.name.localizedCaseInsensitiveContains(searchTerm)
-                    }
+                    results = Tool.allCases
+                        .filter(\.isActive)
+                        .compactMap { tool -> (Tool, Int)? in
+                            guard let score = tool.name.fuzzyMatchScore(searchTerm) else {
+                                return nil
+                            }
+                            return (tool, score)
+                        }
+                        .sorted { $0.1 < $1.1 }
+                        .map(\.0)
                 }
                 task.complete(with: results)
             },
@@ -1319,6 +1325,33 @@ public struct AppView: View {
         else {
             HomeStartView()
         }
+    }
+}
+
+// MARK: - Fuzzy Match
+
+extension String {
+    /// Returns a score if `query` fuzzy-matches this string (characters appear in order),
+    /// or nil if there's no match. Lower score = better match.
+    func fuzzyMatchScore(_ query: String) -> Int? {
+        let haystack = self.lowercased()
+        let needle = query.lowercased()
+        var score = 0
+        var haystackIndex = haystack.startIndex
+        var previousMatchIndex: String.Index?
+
+        for char in needle {
+            guard let found = haystack[haystackIndex...].firstIndex(of: char) else {
+                return nil
+            }
+            // Penalize gaps between matched characters
+            if let prev = previousMatchIndex {
+                score += haystack.distance(from: prev, to: found)
+            }
+            previousMatchIndex = found
+            haystackIndex = haystack.index(after: found)
+        }
+        return score
     }
 }
 
