@@ -5,7 +5,9 @@ import Base64ImageFeature
 import CertificateDecoderFeature
 import ColorConverterFeature
 import ComposableArchitecture
-import DSFQuickActionBar
+#if os(macOS)
+    import DSFQuickActionBar
+#endif
 import CssBeautifyFeature
 import FileContentSearchFeature
 import HashGeneratorFeature
@@ -94,7 +96,9 @@ public struct AppReducer {
     @ObservableState
     public struct State {
         @Presents public var destination: Destination.State?
-        public var isQuickActionBarVisible: Bool = false
+        #if os(macOS)
+            public var isQuickActionBarVisible: Bool = false
+        #endif
 
         // Derive currentTool from destination instead of separate state
         public var currentTool: Tool? {
@@ -151,7 +155,9 @@ public struct AppReducer {
         case destination(PresentationAction<Destination.Action>)
         case navigationLinkTouched(Tool)
         case setCurrentTool(Tool?)
-        case setQuickActionBarVisible(Bool)
+        #if os(macOS)
+            case setQuickActionBarVisible(Bool)
+        #endif
     }
 
     public var body: some Reducer<State, Action> {
@@ -170,9 +176,11 @@ public struct AppReducer {
                 }
                 return .none
 
-            case .setQuickActionBarVisible(let visible):
-                state.isQuickActionBarVisible = visible
-                return .none
+            #if os(macOS)
+                case .setQuickActionBarVisible(let visible):
+                    state.isQuickActionBarVisible = visible
+                    return .none
+            #endif
 
             case .destination:
                 return .none
@@ -640,7 +648,9 @@ public struct AppReducer {
 
 public struct AppView: View {
     @Bindable var store: StoreOf<AppReducer>
-    @State private var quickActionBarSelectedTool: Tool?
+    #if os(macOS)
+        @State private var quickActionBarSelectedTool: Tool?
+    #endif
 
     public init(store: StoreOf<AppReducer>) {
         self.store = store
@@ -652,6 +662,7 @@ public struct AppView: View {
         } detail: {
             detailContent
         }
+        #if os(macOS)
         .overlay {
             quickActionBarView
         }
@@ -671,42 +682,45 @@ public struct AppView: View {
                 quickActionBarSelectedTool = nil
             }
         }
+        #endif
     }
 
     // MARK: - Quick Action Bar
 
-    @ViewBuilder
-    private var quickActionBarView: some View {
-        QuickActionBar<Tool, Text>(
-            location: .window,
-            visible: $store.isQuickActionBarVisible.sending(\.setQuickActionBarVisible),
-            requiredClickCount: .single,
-            selectedItem: $quickActionBarSelectedTool,
-            placeholderText: "Search tools…",
-            itemsForSearchTerm: { task in
-                let searchTerm = task.searchTerm
-                let results: [Tool]
-                if searchTerm.isEmpty {
-                    results = Tool.allCases.filter(\.isActive)
-                } else {
-                    results = Tool.allCases
-                        .filter(\.isActive)
-                        .compactMap { tool -> (Tool, Int)? in
-                            guard let score = tool.name.fuzzyMatchScore(searchTerm) else {
-                                return nil
+    #if os(macOS)
+        @ViewBuilder
+        private var quickActionBarView: some View {
+            QuickActionBar<Tool, Text>(
+                location: .window,
+                visible: $store.isQuickActionBarVisible.sending(\.setQuickActionBarVisible),
+                requiredClickCount: .single,
+                selectedItem: $quickActionBarSelectedTool,
+                placeholderText: "Search tools…",
+                itemsForSearchTerm: { task in
+                    let searchTerm = task.searchTerm
+                    let results: [Tool]
+                    if searchTerm.isEmpty {
+                        results = Tool.allCases.filter(\.isActive)
+                    } else {
+                        results = Tool.allCases
+                            .filter(\.isActive)
+                            .compactMap { tool -> (Tool, Int)? in
+                                guard let score = tool.name.fuzzyMatchScore(searchTerm) else {
+                                    return nil
+                                }
+                                return (tool, score)
                             }
-                            return (tool, score)
-                        }
-                        .sorted { $0.1 < $1.1 }
-                        .map(\.0)
+                            .sorted { $0.1 < $1.1 }
+                            .map(\.0)
+                    }
+                    task.complete(with: results)
+                },
+                viewForItem: { tool, _ in
+                    Text(tool.name)
                 }
-                task.complete(with: results)
-            },
-            viewForItem: { tool, _ in
-                Text(tool.name)
-            }
-        )
-    }
+            )
+        }
+    #endif
 
     // MARK: - Sidebar
 

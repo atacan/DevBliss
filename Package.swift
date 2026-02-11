@@ -127,7 +127,7 @@ let package = Package(
         .target(
             name: "AppFeature",
             dependencies: [
-                .product(name: "DSFQuickActionBar", package: "DSFQuickActionBar"),
+                .product(name: "DSFQuickActionBar", package: "DSFQuickActionBar", condition: .when(platforms: [.macOS])),
                 "AsciiToHexFeature",
                 "BackslashEscapeFeature",
                 "Base64Feature",
