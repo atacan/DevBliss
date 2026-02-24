@@ -63,6 +63,11 @@
             BindingReducer()
             Reduce<State, Action> { state, action in
                 switch action {
+                case .binding(\.selectedFiles):
+                    return .merge(
+                        .cancel(id: CancelID.readFileRequest),
+                        selectedFilesChanged(&state)
+                    )
                 case .binding:
                     return .none
                 case .directorySelectionButtonTouched:
@@ -107,9 +112,6 @@
                 case .output:
                     return .none
                 }
-            }
-            .onChange(of: \.selectedFiles) { selected, state, _ in
-                selectedFilesChanged(&state)
             }
 
             Scope(state: \.output, action: \.output) {

@@ -406,6 +406,12 @@ let package = Package(
                 .product(name: "TCAEnchance", package: "TCAEnchancements"),
             ]
         ),
+        .testTarget(
+            name: "FileContentSearchFeatureTests",
+            dependencies: [
+                "FileContentSearchFeature",
+            ]
+        ),
         .target(
             name: "FilesClient",
             dependencies: [
