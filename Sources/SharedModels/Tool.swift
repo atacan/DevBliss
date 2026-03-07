@@ -384,4 +384,9 @@ public enum SettingsKey {
         public static var splitViewFraction = "HtmlPreview_splitViewFraction"
         public static var splitViewLayout = "HtmlPreview_splitViewLayout"
     }
+
+    public enum StringDiff {
+        public static var splitViewFraction = "StringDiff_splitViewFraction"
+        public static var splitViewLayout = "StringDiff_splitViewLayout"
+    }
 }

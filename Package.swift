@@ -747,6 +747,7 @@ let package = Package(
                 "BlissTheme",
                 .product(name: "JSDiff", package: "swift-jsdiff"),
                 .product(name: "JSDiffUI", package: "swift-jsdiff"),
+                .product(name: "SplitView", package: "SplitView"),
             ]
         ),
         .target(

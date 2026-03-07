@@ -4,6 +4,7 @@ import InputOutput
 import JSDiff
 import JSDiffUI
 import SharedModels
+import SplitView
 import StringDiffClient
 import SwiftUI
 
@@ -85,6 +86,10 @@ public struct StringDiffReducer {
 public struct StringDiffView: View {
     @Bindable var store: StoreOf<StringDiffReducer>
 
+    let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.StringDiff.splitViewFraction)
+    @StateObject var layout = LayoutHolder.usingUserDefaults(.vertical, key: SettingsKey.StringDiff.splitViewLayout)
+    @StateObject var hide = SideHolder()
+
     public init(store: StoreOf<StringDiffReducer>) {
         self.store = store
     }
@@ -95,22 +100,11 @@ public struct StringDiffView: View {
 
             Divider()
 
-            HStack(spacing: 0) {
-                InputEditorView(
-                    store: store.scope(state: \.oldInput, action: \.oldInput),
-                    title: NSLocalizedString("Original", comment: "")
-                )
-                Divider()
-                InputEditorView(
-                    store: store.scope(state: \.newInput, action: \.newInput),
-                    title: NSLocalizedString("Modified", comment: "")
-                )
-            }
-            .frame(minHeight: 200, idealHeight: 300)
-
-            Divider()
-
-            diffResultView
+            VSplit(top: { editorsPane }, bottom: { diffResultView })
+                .fraction(fraction)
+//                .layout(layout)
+                .hide(hide)
+                .styling(visibleThickness: 2)
         }
     }
 
@@ -143,6 +137,20 @@ public struct StringDiffView: View {
         .padding(.vertical, 8)
     }
 
+    private var editorsPane: some View {
+        HStack(spacing: 0) {
+            InputEditorView(
+                store: store.scope(state: \.oldInput, action: \.oldInput),
+                title: NSLocalizedString("Original", comment: "")
+            )
+            Divider()
+            InputEditorView(
+                store: store.scope(state: \.newInput, action: \.newInput),
+                title: NSLocalizedString("Modified", comment: "")
+            )
+        }
+    }
+
     @ViewBuilder
     private var diffResultView: some View {
         if store.changes.isEmpty && !store.isComputing {
@@ -153,7 +161,7 @@ public struct StringDiffView: View {
                 Spacer()
             }
         } else {
-            ScrollView {
+            ScrollView(.vertical) {
                 DiffView(
                     changes: store.changes,
                     displayStyle: store.displayStyle
