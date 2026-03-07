@@ -294,18 +294,18 @@
                 store: Store(
                     initialState: .init(
                         searchOptions: .init(
-                            searchTerm: "atacan",
-                            searchFolder: "/Users/atacan/Documents/myway/Repositories/scripts/backup",
+                            searchTerm: "example",
+                            searchFolder: "/Users/example/projects",
                             searchHiddenFiles: false
                         ),
                         output: .init(text: "Something inside\nthis file is very important", outputControls: .init()),
                         foundFiles: IdentifiedArrayOf(
                             uniqueElements: [
                                 FoundFile(
-                                    fileURL: URL(string: "Users/atacan/amazement/secret.swift")!,
+                                    fileURL: URL(string: "Users/example/projects/file.swift")!,
                                     lineNumbers: [23, 34, 43],
                                     modifiedTime: Date(timeIntervalSince1970: 12300),
-                                    gitUsername: "atacan"
+                                    gitUsername: "developer"
                                 )
                             ]
                         )

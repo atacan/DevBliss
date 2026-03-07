@@ -64,6 +64,15 @@
       }
     },
     {
+      "identity" : "jsbeautify",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/JSBeautify.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "dd73e2ed6553e9240c1239efadb14898b07ea5d5"
+      }
+    },
+    {
       "identity" : "jwtdecode.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/auth0/JWTDecode.swift",
@@ -250,6 +259,15 @@
       "state" : {
         "branch" : "xcode26",
         "revision" : "0afff683710e63433847641562da5908fe01205f"
+      }
+    },
+    {
+      "identity" : "swift-highlight",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/swift-highlight.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a82d6ebe26966f5337398bb8039854f5b06e27e6"
       }
     },
     {

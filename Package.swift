@@ -98,8 +98,8 @@ let package = Package(
         .library(name: "YamlToJsonFeature", targets: ["YamlToJsonFeature"]),
     ],
     dependencies: [
-        .package(path: "/Users/atacan/Developer/Repositories/JSBeautify"),
-        .package(path: "/Users/atacan/Developer/Repositories/swift-highlight/"),
+        .package(url: "https://github.com/atacan/JSBeautify.git", branch: "main"),
+        .package(url: "https://github.com/atacan/swift-highlight.git", branch: "main"),
         .package(url: "https://github.com/apple/swift-asn1", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-certificates", from: "1.11.0"),
         .package(url: "https://github.com/atacan/demark", branch: "convert-url"),
