@@ -157,6 +157,7 @@ extension SharedReaderKey where Self == FileStorageKey<ToolIOStorage> {
     public static var unixTimeIO: Self { .fileStorage(.toolStorage("unixTime")) }
     public static var urlEncodeIO: Self { .fileStorage(.toolStorage("urlEncode")) }
     public static var jwtDebuggerIO: Self { .fileStorage(.toolStorage("jwtDebugger")) }
+    public static var stringDiffIO: Self { .fileStorage(.toolStorage("stringDiff")) }
 }
 
 extension SharedReaderKey where Self == FileStorageKey<ToolIOStorageDoubleOutput> {

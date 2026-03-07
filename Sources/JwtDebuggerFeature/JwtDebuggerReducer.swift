@@ -247,10 +247,7 @@ public struct JwtDebuggerView: View {
     private var outputView: some View {
         if let inspection = store.inspection {
             ScrollView {
-                LazyVGrid(
-                    columns: [GridItem(.adaptive(minimum: 260, maximum: 520), spacing: 16)],
-                    spacing: 16
-                ) {
+                VStack(spacing: 16) {
                     JwtJsonCard(title: "Header", json: inspection.headerJSON, icon: "doc.text")
                     JwtJsonCard(title: "Payload", json: inspection.payloadJSON, icon: "doc.plaintext")
                     JwtSignatureCard(inspection: inspection)

@@ -39,6 +39,7 @@ public enum Tool: Int, CaseIterable, Identifiable {
     case unixTime
     case urlEncode
     case jwtDebugger
+    case stringDiff
 
     public var id: Self { self }
 
@@ -120,6 +121,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return NSLocalizedString("URL Encode", bundle: Bundle.module, comment: "")
         case .jwtDebugger:
             return NSLocalizedString("JWT Debugger", bundle: Bundle.module, comment: "")
+        case .stringDiff:
+            return NSLocalizedString("String Diff", bundle: Bundle.module, comment: "")
         }
     }
 
@@ -200,6 +203,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
         case .urlEncode:
             return true
         case .jwtDebugger:
+            return true
+        case .stringDiff:
             return true
         }
     }

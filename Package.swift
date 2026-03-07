@@ -71,6 +71,8 @@ let package = Package(
         .library(name: "RegExpTesterClient", targets: ["RegExpTesterClient"]),
         .library(name: "RegExpTesterFeature", targets: ["RegExpTesterFeature"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
+        .library(name: "StringDiffClient", targets: ["StringDiffClient"]),
+        .library(name: "StringDiffFeature", targets: ["StringDiffFeature"]),
         .library(name: "StringInspectorClient", targets: ["StringInspectorClient"]),
         .library(name: "StringInspectorFeature", targets: ["StringInspectorFeature"]),
         .library(name: "SvgToCssClient", targets: ["SvgToCssClient"]),
@@ -99,6 +101,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/atacan/JSBeautify.git", branch: "main"),
+        .package(url: "https://github.com/atacan/swift-jsdiff", branch: "main"),
         .package(url: "https://github.com/atacan/swift-highlight.git", branch: "main"),
         .package(url: "https://github.com/apple/swift-asn1", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-certificates", from: "1.11.0"),
@@ -155,6 +158,7 @@ let package = Package(
                 "RegexMatchesFeature",
                 "RegExpTesterFeature",
                 "SharedModels",
+                "StringDiffFeature",
                 "StringInspectorFeature",
                 "SvgToCssFeature",
                 "SwiftPrettyFeature",
@@ -725,6 +729,24 @@ let package = Package(
                 "SharedModels",
                 "BlissTheme",
                 .product(name: "SplitView", package: "SplitView"),
+            ]
+        ),
+        .target(
+            name: "StringDiffClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "JSDiff", package: "swift-jsdiff"),
+            ]
+        ),
+        .target(
+            name: "StringDiffFeature",
+            dependencies: [
+                "StringDiffClient",
+                "InputOutput",
+                "SharedModels",
+                "BlissTheme",
+                .product(name: "JSDiff", package: "swift-jsdiff"),
+                .product(name: "JSDiffUI", package: "swift-jsdiff"),
             ]
         ),
         .target(

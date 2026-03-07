@@ -29,6 +29,7 @@ import RandomStringGeneratorFeature
 import RegExpTesterFeature
 import RegexMatchesFeature
 import SharedModels
+import StringDiffFeature
 import StringInspectorFeature
 import SvgToCssFeature
 import SwiftPrettyFeature
@@ -82,6 +83,7 @@ public enum Destination {
     case unixTime(UnixTimeReducer)
     case urlEncode(UrlEncodeReducer)
     case jwtDebugger(JwtDebuggerReducer)
+    case stringDiff(StringDiffReducer)
     #if os(macOS)
         case fileContentSearch(FileContentSearchReducer)
     #endif
@@ -139,6 +141,7 @@ public struct AppReducer {
             case .unixTime: return .unixTime
             case .urlEncode: return .urlEncode
             case .jwtDebugger: return .jwtDebugger
+            case .stringDiff: return .stringDiff
             #if os(macOS)
                 case .fileContentSearch: return .fileContentSearch
             #endif
@@ -552,6 +555,13 @@ public struct AppReducer {
                 _ = s.input.updateText(outputText)
                 state.destination = .jwtDebugger(s)
             }
+        case .stringDiff:
+            state.destination = .stringDiff(StringDiffReducer.State())
+            if case .stringDiff(var s) = state.destination {
+                s.$oldText.withLock { $0 = outputText }
+                _ = s.oldInput.updateText(outputText)
+                state.destination = .stringDiff(s)
+            }
         }
     }
 
@@ -631,6 +641,8 @@ public struct AppReducer {
             state.destination = .urlEncode(UrlEncodeReducer.State())
         case .jwtDebugger:
             state.destination = .jwtDebugger(JwtDebuggerReducer.State())
+        case .stringDiff:
+            state.destination = .stringDiff(StringDiffReducer.State())
         case .fileContentSearch:
             #if os(macOS)
             state.destination = .fileContentSearch(FileContentSearchReducer.State())
@@ -890,6 +902,9 @@ public struct AppView: View {
                 }
                 toolRow(.regExpTester, label: "RegExp Tester") {
                     Text(".*").font(.monospaced(Font.system(size: 10))())
+                }
+                toolRow(.stringDiff, label: "String Diff") {
+                    Image(systemName: "arrow.triangle.2.circlepath")
                 }
                 toolRow(.stringInspector, label: "String Inspector") {
                     Image(systemName: "text.magnifyingglass")
@@ -1308,6 +1323,17 @@ public struct AppView: View {
                     .navigationTitle(
                         NSLocalizedString(
                             "JWT Debugger",
+                            bundle: Bundle.module,
+                            comment: "navigation title on top of the window"
+                        )
+                    )
+                    .padding(.top)
+
+            case .stringDiff(let childStore):
+                StringDiffView(store: childStore)
+                    .navigationTitle(
+                        NSLocalizedString(
+                            "String Diff",
                             bundle: Bundle.module,
                             comment: "navigation title on top of the window"
                         )
