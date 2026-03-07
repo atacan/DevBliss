@@ -280,15 +280,6 @@
       }
     },
     {
-      "identity" : "swift-jsdiff",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/atacan/swift-jsdiff",
-      "state" : {
-        "branch" : "main",
-        "revision" : "bc2eacaf7bccfd42cae7662e75d01ebb168c232d"
-      }
-    },
-    {
       "identity" : "swift-markdown-ui",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/gonzalezreal/swift-markdown-ui",

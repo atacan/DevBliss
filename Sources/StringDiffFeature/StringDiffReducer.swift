@@ -161,13 +161,12 @@ public struct StringDiffView: View {
                 Spacer()
             }
         } else {
-            ScrollView(.vertical) {
+            ScrollView([.horizontal, .vertical]) {
                 DiffView(
                     changes: store.changes,
                     displayStyle: store.displayStyle
                 )
                 .font(.system(.body, design: .monospaced))
-                .padding()
             }
         }
     }

@@ -1,4 +1,4 @@
-# DevBliss - Your Local Development Helper for macOS and iOS
+# Blissum - Your Local Development Helper for macOS and iOS
 
 <table align="center" border="0" cellspacing="0" cellpadding="0">
     <tr>
