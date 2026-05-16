@@ -100,7 +100,8 @@ let package = Package(
         .library(name: "YamlToJsonFeature", targets: ["YamlToJsonFeature"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/atacan/JSBeautify.git", branch: "main"),
+//        .package(url: "https://github.com/atacan/JSBeautify.git", branch: "main"),
+        .package(path: "/Users/atacan/Developer/Repositories/JSBeautify"),
         .package(path: "/Users/atacan/Developer/Repositories/JSDiff"),
         .package(url: "https://github.com/atacan/swift-highlight.git", branch: "main"),
         .package(url: "https://github.com/apple/swift-asn1", from: "1.0.0"),
@@ -109,7 +110,6 @@ let package = Package(
         .package(url: "https://github.com/atacan/html-swift", branch: "main"),
         .package(url: "https://github.com/atacan/MacSwiftUI", branch: "main"),
         .package(url: "https://github.com/atacan/PillPickerView", branch: "develop"),
-        .package(url: "https://github.com/atacan/TCAEnchancements", from: "1.0.0"),
         .package(url: "https://github.com/auth0/JWTDecode.swift", from: "3.0.0"),
         .package(url: "https://github.com/dagronf/DSFQuickActionBar", branch: "main"),
         .package(url: "https://github.com/dagronf/QRCode", from: "11.0.0"),
@@ -407,7 +407,6 @@ let package = Package(
                 "InputOutput",
                 "FilesClient",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "TCAEnchance", package: "TCAEnchancements"),
             ]
         ),
         .testTarget(
@@ -853,12 +852,25 @@ let package = Package(
                 .product(name: "JWTDecode", package: "JWTDecode.swift"),
             ]
         ),
+        .testTarget(
+            name: "JwtDebuggerClientTests",
+            dependencies: [
+                "JwtDebuggerClient",
+            ]
+        ),
         .target(
             name: "JwtDebuggerFeature",
             dependencies: [
                 "JwtDebuggerClient",
                 "InputOutput",
                 "SharedModels",
+            ]
+        ),
+        .testTarget(
+            name: "JwtDebuggerFeatureTests",
+            dependencies: [
+                "JwtDebuggerFeature",
+                "JwtDebuggerClient",
             ]
         ),
         .target(
