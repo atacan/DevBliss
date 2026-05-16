@@ -1,26 +1,29 @@
-import ComposableArchitecture
-import SharedModels
 import XCTest
-
 @testable import PrefixSuffixFeature
 
 @MainActor
 final class PrefixSuffixFeatureTests: XCTestCase {
-    func testPrefixConfigBinding() async {
-        let inputPrefixReplace = "prefix to replace"
+    func testPrefixSuffixModelConvertsUsingCurrentConfiguration() async {
+        let model = PrefixSuffixModel()
+        model.inputText = "foobar"
+        model.prefixReplace = "foo"
+        model.prefixReplaceWith = "bar"
+        model.suffixAdd = "!"
+        model.trimWhiteSpace = true
 
-        let store = TestStore(initialState: PrefixSuffixReducer.State()) {
-            PrefixSuffixReducer()
-        } withDependencies: {
-            $0.userDefaults = .ephemeral()
+        model.convertButtonTouched()
+
+        while model.isConversionRequestInFlight {
+            try? await Task.sleep(nanoseconds: 10_000_000)
         }
 
-        // user changed the prefix replacement text field
-        await store.send(.binding(.set(\.configuration.prefixReplace, inputPrefixReplace))) {
-            $0.configuration.prefixReplace = inputPrefixReplace
-        }
+        XCTAssertEqual(model.outputText, "barbar!")
+    }
 
-        // verify the state was updated
-        XCTAssertEqual(store.state.configuration.prefixReplace, inputPrefixReplace)
+    func testPrefixSuffixToggleCanBeChangedFromViewState() {
+        let model = PrefixSuffixModel()
+        XCTAssertEqual(model.trimWhiteSpace, true)
+        model.trimWhiteSpace = false
+        XCTAssertEqual(model.trimWhiteSpace, false)
     }
 }

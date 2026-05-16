@@ -1,5 +1,4 @@
-import ComposableArchitecture
-import FileContentSearchClient
+import Dependencies
 import Foundation
 import XCTest
 
@@ -16,29 +15,21 @@ final class FileContentSearchFeatureTests: XCTestCase {
             gitUsername: nil
         )
 
-        let store = TestStore(
-            initialState: FileContentSearchReducer.State(
-                searchOptions: .init(),
-                output: .init(text: ""),
-                foundFiles: [foundFile]
-            )
-        ) {
-            FileContentSearchReducer()
-        } withDependencies: {
+        await withDependencies {
             $0.filesClient.read = { url in
                 XCTAssertEqual(url, fileURL)
                 return "let value = 42"
             }
-        }
-
-        await store.send(.binding(.set(\.selectedFiles, [foundFile.id]))) {
-            $0.selectedFiles = [foundFile.id]
-            $0.isReadingFile = true
-        }
-
-        await store.receive(.selectedFileContentRead(.success("let value = 42"))) {
-            $0.isReadingFile = false
-            $0.output.$text.withLock { $0 = "let value = 42" }
+        } operation: {
+            let model = FileContentSearchModel(foundFiles: [foundFile])
+            model.setSelectedFiles([foundFile.id])
+            for _ in 0..<50 {
+                if !model.isReadingFile {
+                    break
+                }
+                try? await Task.sleep(nanoseconds: 1_000_000)
+            }
+            XCTAssertEqual(model.outputText, "let value = 42")
         }
     }
 }

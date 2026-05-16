@@ -1,98 +1,69 @@
 import BlissTheme
-import ComposableArchitecture
-import HashGeneratorClient
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import SplitView
 import SwiftUI
 
-@Reducer
-public struct HashGeneratorReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class HashGeneratorModel {
+    @ObservationIgnored
+    @Shared(.toolInput("hashGenerator"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("hashGenerator")) public var inputText = ""
-        @Shared(.toolOutput("hashGenerator")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var uppercase: Bool = false
+    @ObservationIgnored
+    @Shared(.toolOutput("hashGenerator"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("hashGenerator"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("hashGenerator"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var uppercase: Bool = false
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("hashGenerator"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("hashGenerator"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Dependency(\.hashGenerator) private var hashGenerator
 
-        var config: HashGeneratorConfig {
-            HashGeneratorConfig(uppercase: uppercase)
-        }
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("hashGenerator"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("hashGenerator"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<HashGeneratorResult>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("hashGenerator"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("hashGenerator"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.hashGenerator) var hashGenerator
-    private enum CancelID { case conversionRequest }
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let uppercase = self.uppercase
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let config = state.config
-                return .run { [hashGenerator] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await hashGenerator.hashes(input, config)
-                            }
-                        )
-                    )
-                }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
+        conversionTask = Task { [weak self, input = input, uppercase = uppercase, hashGenerator = hashGenerator] in
+            guard let self else { return }
+            do {
+                let config = HashGeneratorConfig(uppercase: uppercase)
+                let result = try await hashGenerator.hashes(input, config)
                 let output = format(result: result)
-                return state.inputOutput.output.updateText(output)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = output
+                }
             }
-        }
-
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
+            catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = error.localizedDescription
+                }
+            }
         }
     }
 
@@ -106,21 +77,42 @@ public struct HashGeneratorReducer {
         ]
         .joined(separator: "\n")
     }
+
+    public func setUppercase(_ value: Bool) {
+        uppercase = value
+    }
+
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
+    }
 }
 
-public struct HashGeneratorView: View {
-    @Bindable var store: StoreOf<HashGeneratorReducer>
+extension HashGeneratorModel: Equatable {
+    public static func == (lhs: HashGeneratorModel, rhs: HashGeneratorModel) -> Bool {
+        lhs === rhs
+    }
+}
 
-    public init(store: StoreOf<HashGeneratorReducer>) {
-        self.store = store
+struct HashGeneratorView_Previews: PreviewProvider {
+    static var previews: some View {
+        HashGeneratorModelView(model: .init())
+    }
+}
+
+public struct HashGeneratorModelView: View {
+    @Bindable var model: HashGeneratorModel
+
+    public init(model: HashGeneratorModel) {
+        self.model = model
     }
 
     public var body: some View {
         VStack(spacing: 0) {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-//                    ConfigLabel("Format")
-                    Toggle("Uppercase", isOn: $store.uppercase)
+                    Toggle("Uppercase", isOn: $model.uppercase)
                         #if os(macOS)
                         .toggleStyle(.checkbox)
                         #endif
@@ -129,8 +121,8 @@ public struct HashGeneratorView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            LoadingButton("Generate", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
+            LoadingButton("Generate", isLoading: model.isConversionRequestInFlight) {
+                model.convertButtonTouched()
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help("Generate (⌘ Return)")
@@ -138,19 +130,37 @@ public struct HashGeneratorView: View {
 
             Divider()
 
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "Input",
-                outputEditorTitle: "Hashes",
-                keyForFraction: SettingsKey.HashGenerator.splitViewFraction,
-                keyForLayout: SettingsKey.HashGenerator.splitViewLayout
-            )
+            Split(primary: { inputEditor }, secondary: { outputEditor })
+                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.HashGenerator.splitViewFraction))
+                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.HashGenerator.splitViewLayout))
+                .styling(visibleThickness: 2)
         }
     }
-}
 
-struct HashGeneratorView_Previews: PreviewProvider {
-    static var previews: some View {
-        HashGeneratorView(store: .init(initialState: .init()) { HashGeneratorReducer() })
+    private var inputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Input")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.inputText)
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
+    }
+
+    private var outputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Hashes")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
     }
 }

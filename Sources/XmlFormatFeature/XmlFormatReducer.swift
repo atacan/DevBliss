@@ -1,110 +1,105 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import SplitView
 import SwiftUI
-import XmlFormatClient
 
-@Reducer
-public struct XmlFormatReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class XmlFormatModel {
+    @ObservationIgnored
+    @Shared(.toolInput("xmlFormat"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("xmlFormat")) public var inputText = ""
-        @Shared(.toolOutput("xmlFormat")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var mode: XmlFormatMode = .beautify
+    @ObservationIgnored
+    @Shared(.toolOutput("xmlFormat"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("xmlFormat"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("xmlFormat"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var mode: XmlFormatMode = .beautify
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("xmlFormat"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("xmlFormat"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Dependency(\.xmlFormat) private var xmlFormat
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("xmlFormat"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("xmlFormat"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("xmlFormat"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("xmlFormat"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.xmlFormat) var xmlFormat
-    private enum CancelID { case conversionRequest }
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let mode = self.mode
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let mode = state.mode
-                return .run { [xmlFormat] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await xmlFormat.format(input, mode)
-                            }
-                        )
-                    )
+        conversionTask = Task { [weak self, input = input, mode = mode, xmlFormat = xmlFormat] in
+            guard let self else { return }
+            do {
+                let result = try await xmlFormat.format(input, mode)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = result
                 }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+            }
+            catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = error.localizedDescription
+                }
             }
         }
+    }
 
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
+    public func setMode(_ mode: XmlFormatMode) {
+        self.mode = mode
+    }
+
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct XmlFormatView: View {
-    @Bindable var store: StoreOf<XmlFormatReducer>
+extension XmlFormatModel: Equatable {
+    public static func == (lhs: XmlFormatModel, rhs: XmlFormatModel) -> Bool {
+        lhs === rhs
+    }
+}
 
-    public init(store: StoreOf<XmlFormatReducer>) {
-        self.store = store
+struct XmlFormatView_Previews: PreviewProvider {
+    static var previews: some View {
+        XmlFormatModelView(model: .init())
+    }
+}
+
+public struct XmlFormatModelView: View {
+    @Bindable var model: XmlFormatModel
+
+    public init(model: XmlFormatModel) {
+        self.model = model
     }
 
     public var body: some View {
         VStack(spacing: 0) {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-//                    ConfigLabel("Mode")
-                    Picker("Mode", selection: $store.mode) {
+                    Picker("Mode", selection: $model.mode) {
                         ForEach(XmlFormatMode.allCases) { mode in
                             Text(mode.rawValue)
                                 .tag(mode)
@@ -118,8 +113,8 @@ public struct XmlFormatView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            LoadingButton("Format", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
+            LoadingButton("Format", isLoading: model.isConversionRequestInFlight) {
+                model.convertButtonTouched()
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help("Format (⌘ Return)")
@@ -127,19 +122,44 @@ public struct XmlFormatView: View {
 
             Divider()
 
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "XML",
-                outputEditorTitle: "Result",
-                keyForFraction: SettingsKey.XmlFormat.splitViewFraction,
-                keyForLayout: SettingsKey.XmlFormat.splitViewLayout
-            )
+            Split(primary: { inputEditor }, secondary: { outputEditor })
+                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.XmlFormat.splitViewFraction))
+                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.XmlFormat.splitViewLayout))
+                .styling(visibleThickness: 2)
+        }
+    }
+
+    private var inputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("XML")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.inputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
+    }
+
+    private var outputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Result")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
         }
     }
 }
 
-struct XmlFormatView_Previews: PreviewProvider {
+struct XmlFormatModelView_Previews: PreviewProvider {
     static var previews: some View {
-        XmlFormatView(store: .init(initialState: .init()) { XmlFormatReducer() })
+        XmlFormatModelView(model: .init())
     }
 }

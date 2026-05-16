@@ -1,10 +1,10 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
 import SplitView
 import SwiftUI
-import UuidUlidClient
 
 #if os(macOS)
 import AppKit
@@ -12,10 +12,9 @@ import AppKit
 import UIKit
 #endif
 
-@Reducer
-public struct UuidUlidReducer {
-    public init() {}
-
+@MainActor
+@Observable
+public final class UuidUlidModel {
     public enum Mode: String, CaseIterable, Identifiable {
         case generate = "Generate"
         case decode = "Decode"
@@ -23,145 +22,138 @@ public struct UuidUlidReducer {
         public var id: Self { self }
     }
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("uuidUlid")) public var inputText = ""
-        @Shared(.toolOutput("uuidUlid")) public var outputText = ""
-        var input: InputEditorReducer.State
-        var output: OutputEditorReducer.State
-        var mode: Mode = .generate
-        var type: UuidUlidType = .uuid
-        var count: Int = 5
-        var lowercase: Bool = false
-        var result: UuidUlidDecodeResult?
-        var errorMessage: String?
-        var isConversionRequestInFlight = false
+    @ObservationIgnored
+    @Shared(.toolInput("uuidUlid"))
+    public var inputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("uuidUlid"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("uuidUlid"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.input = InputEditorReducer.State(text: inputText.projectedValue)
-            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
-        }
+    @ObservationIgnored
+    @Shared(.toolOutput("uuidUlid"))
+    public var outputText = ""
 
-        public init(inputText: String, outputText: String = "") {
-            let input = Shared(wrappedValue: inputText, .toolInput("uuidUlid"))
-            let output = Shared(wrappedValue: outputText, .toolOutput("uuidUlid"))
-            self._inputText = input
-            self._outputText = output
-            self.input = InputEditorReducer.State(text: input.projectedValue)
-            self.output = OutputEditorReducer.State(text: output.projectedValue)
+    public var mode: Mode = .generate
+    public var type: UuidUlidType = .uuid
+    public var count: Int = 5
+    public var lowercase: Bool = false
+    public var result: UuidUlidDecodeResult?
+    public var errorMessage: String?
+    public var isConversionRequestInFlight = false
+
+    @ObservationIgnored
+    @Dependency(\.uuidUlid) private var uuidUlid
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("uuidUlid"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("uuidUlid"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
+
+    public init(inputText: String, outputText: String = "") {
+        let inputText = Shared(wrappedValue: inputText, .toolInput("uuidUlid"))
+        let outputText = Shared(wrappedValue: outputText, .toolOutput("uuidUlid"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
+
+    public func setMode(_ mode: Mode) {
+        self.mode = mode
+        if mode == .generate {
+            result = nil
+            errorMessage = nil
         }
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case input(InputEditorReducer.Action)
-        case output(OutputEditorReducer.Action)
-        case convertButtonTouched
-        case generateResponse(TaskResult<String>)
-        case decodeResponse(TaskResult<UuidUlidDecodeResult>)
+    public func setType(_ type: UuidUlidType) {
+        self.type = type
     }
 
-    @Dependency(\.uuidUlid) var uuidUlid
-    private enum CancelID { case conversionRequest }
+    public func setCount(_ count: Int) {
+        self.count = count
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .input:
-                return .none
-            case .output:
-                return .none
+    public func setLowercase(_ lowercase: Bool) {
+        self.lowercase = lowercase
+    }
 
-            case .convertButtonTouched:
-                state.errorMessage = nil
-                state.isConversionRequestInFlight = true
-                if state.mode == .generate {
-                    let type = state.type
-                    let count = state.count
-                    let lowercase = state.lowercase
-                    return .run { [uuidUlid] send in
-                        await send(
-                            .generateResponse(
-                                TaskResult {
-                                    try await uuidUlid.generate(type, count, lowercase)
-                                }
-                            )
-                        )
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        errorMessage = nil
+
+        if mode == .generate {
+            let type = self.type
+            let count = self.count
+            let lowercase = self.lowercase
+
+            conversionTask = Task { [weak self, uuidUlid = uuidUlid, type = type, count = count, lowercase = lowercase] in
+                guard let self else { return }
+                do {
+                    let result = try await uuidUlid.generate(type, count, lowercase)
+                    await MainActor.run {
+                        isConversionRequestInFlight = false
+                        self.result = nil
+                        self.outputText = result
                     }
-                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-                } else {
-                    let input = state.input.text
-                    return .run { [uuidUlid] send in
-                        await send(
-                            .decodeResponse(
-                                TaskResult {
-                                    try await uuidUlid.decode(input)
-                                }
-                            )
-                        )
-                    }
-                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
                 }
-
-            case let .generateResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                state.result = nil
-                return state.output.updateText(result)
-                    .map { Action.output($0) }
-
-            case let .generateResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                state.errorMessage = error.localizedDescription
-                return state.output.updateText(error.localizedDescription)
-                    .map { Action.output($0) }
-
-            case let .decodeResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                state.result = result
-                return state.output.updateText(result.summary)
-                    .map { Action.output($0) }
-
-            case let .decodeResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                state.result = nil
-                state.errorMessage = error.localizedDescription
-                return state.output.updateText(error.localizedDescription)
-                    .map { Action.output($0) }
+                catch {
+                    if error is CancellationError { return }
+                    await MainActor.run {
+                        isConversionRequestInFlight = false
+                        errorMessage = error.localizedDescription
+                        self.outputText = error.localizedDescription
+                    }
+                }
+            }
+        } else {
+            let input = inputText
+            conversionTask = Task { [weak self, uuidUlid = uuidUlid, input = input] in
+                guard let self else { return }
+                do {
+                    let decoded = try await uuidUlid.decode(input)
+                    await MainActor.run {
+                        isConversionRequestInFlight = false
+                        result = decoded
+                        self.outputText = decoded.summary
+                    }
+                }
+                catch {
+                    if error is CancellationError { return }
+                    await MainActor.run {
+                        isConversionRequestInFlight = false
+                        self.result = nil
+                        errorMessage = error.localizedDescription
+                        self.outputText = error.localizedDescription
+                    }
+                }
             }
         }
+    }
 
-        Scope(state: \.input, action: \.input) {
-            InputEditorReducer()
-        }
-
-        Scope(state: \.output, action: \.output) {
-            OutputEditorReducer()
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct UuidUlidView: View {
-    @Bindable var store: StoreOf<UuidUlidReducer>
+public struct UuidUlidModelView: View {
+    @Bindable var model: UuidUlidModel
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.UuidUlid.splitViewFraction)
     @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.UuidUlid.splitViewLayout)
     @StateObject var hide = SideHolder()
 
-    public init(store: StoreOf<UuidUlidReducer>) {
-        self.store = store
+    public init(model: UuidUlidModel) {
+        self.model = model
     }
 
     // MARK: - Reusable Controls
 
     private var modePicker: some View {
-        Picker("Mode", selection: $store.mode) {
-            ForEach(UuidUlidReducer.Mode.allCases) { mode in
+        Picker("Mode", selection: $model.mode) {
+            ForEach(UuidUlidModel.Mode.allCases) { mode in
                 Text(mode.rawValue).tag(mode)
             }
         }
@@ -169,7 +161,7 @@ public struct UuidUlidView: View {
     }
 
     private var typePicker: some View {
-        Picker("Type", selection: $store.type) {
+        Picker("Type", selection: $model.type) {
             ForEach(UuidUlidType.allCases) { type in
                 Text(type.rawValue).tag(type)
             }
@@ -178,16 +170,16 @@ public struct UuidUlidView: View {
     }
 
     private var countStepper: some View {
-        Stepper("Count \(store.count)", value: $store.count, in: 1...100)
+        Stepper("Count \(model.count)", value: $model.count, in: 1...100)
     }
 
     private var lowercaseToggle: some View {
-        Toggle("Lowercase", isOn: $store.lowercase)
+        Toggle("Lowercase", isOn: $model.lowercase)
     }
 
     private var actionButton: some View {
-        LoadingButton(store.mode == .generate ? "Generate" : "Decode", isLoading: store.isConversionRequestInFlight) {
-            store.send(.convertButtonTouched)
+        LoadingButton(model.mode == .generate ? "Generate" : "Decode", isLoading: model.isConversionRequestInFlight) {
+            model.convertButtonTouched()
         }
         .keyboardShortcut(.return, modifiers: [.command])
         .help("Convert (⌘ Return)")
@@ -198,7 +190,7 @@ public struct UuidUlidView: View {
             #if os(iOS)
             VStack(spacing: 10) {
                 modePicker
-                if store.mode == .generate {
+                if model.mode == .generate {
                     HStack {
                         Text("Type")
                             .font(.callout)
@@ -221,7 +213,7 @@ public struct UuidUlidView: View {
                     modePicker
                         .frame(width: 200)
 
-                    if store.mode == .generate {
+                    if model.mode == .generate {
                         ConfigLabel("Type")
                         typePicker
                             .blissMenuPicker(width: 120)
@@ -239,7 +231,7 @@ public struct UuidUlidView: View {
                 .padding(.vertical, 8)
             #endif
 
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
@@ -252,15 +244,21 @@ public struct UuidUlidView: View {
     }
 
     private var inputEditor: some View {
-        InputEditorView(
-            store: store.scope(state: \.input, action: \.input),
-            title: store.mode == .generate ? "Input (optional)" : "UUID or ULID"
-        )
+        VStack(alignment: .leading, spacing: 6) {
+            Text(model.mode == .generate ? "Input (optional)" : "UUID or ULID")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.inputText)
+                .frame(minHeight: 140)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
     }
 
     private var outputPane: some View {
         VStack(spacing: 0) {
-            if store.mode == .decode, let result = store.result {
+            if model.mode == .decode, let result = model.result {
                 ScrollView {
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 220, maximum: 420), spacing: 16)], spacing: 16) {
                         ResultCard(title: "Type", value: result.type.rawValue, icon: "tag")
@@ -273,7 +271,7 @@ public struct UuidUlidView: View {
                     }
                     .padding()
                 }
-            } else if store.mode == .decode {
+            } else if model.mode == .decode {
                 Spacer()
                 Text("Enter a UUID or ULID to decode")
                     .foregroundColor(.secondary)
@@ -282,7 +280,16 @@ public struct UuidUlidView: View {
 
             Divider()
 
-            OutputEditorView(store: store.scope(state: \.output, action: \.output))
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Output")
+                    .font(.headline)
+                    .padding(.horizontal, 8)
+                TextEditor(text: $model.outputText)
+                    .font(.system(.body, design: .monospaced))
+                    .frame(minHeight: 120)
+                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, 8)
+            }
         }
     }
 }
@@ -328,6 +335,6 @@ private struct ResultCard: View {
 
 struct UuidUlidView_Previews: PreviewProvider {
     static var previews: some View {
-        UuidUlidView(store: .init(initialState: .init()) { UuidUlidReducer() })
+        UuidUlidModelView(model: .init())
     }
 }

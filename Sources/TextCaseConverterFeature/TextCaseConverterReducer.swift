@@ -1,110 +1,116 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import SplitView
 import SwiftUI
-import TextCaseConverterClient
 
-@Reducer
-public struct TextCaseConverterReducer {
-    public init() {}
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("textCaseConverter")) public var inputText = ""
-        @Shared(.toolOutput("textCaseConverter")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        @Shared(.appStorage(SettingsKey.TextCaseConverter.sourceCase)) public var sourceCase: WordGroupCase = .kebab
-        @Shared(.appStorage(SettingsKey.TextCaseConverter.targetCase)) public var targetCase: WordGroupCase = .snake
-        @Shared(.appStorage(SettingsKey.TextCaseConverter.textSeperator)) public var textSeperator: WordGroupSeperator = .newLine
+@MainActor
+@Observable
+public final class TextCaseConverterModel {
+    @ObservationIgnored
+    @Shared(.toolInput("textCaseConverter"))
+    public var inputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("textCaseConverter"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("textCaseConverter"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Shared(.toolOutput("textCaseConverter"))
+    public var outputText = ""
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("textCaseConverter"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("textCaseConverter"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Shared(.appStorage(SettingsKey.TextCaseConverter.sourceCase))
+    public var sourceCase: WordGroupCase = .kebab
+
+    @ObservationIgnored
+    @Shared(.appStorage(SettingsKey.TextCaseConverter.targetCase))
+    public var targetCase: WordGroupCase = .snake
+
+    @ObservationIgnored
+    @Shared(.appStorage(SettingsKey.TextCaseConverter.textSeperator))
+    public var textSeperator: WordGroupSeperator = .newLine
+
+    public var isConversionRequestInFlight = false
+
+    @ObservationIgnored
+    @Dependency(\.textCaseConverter) private var textCaseConverter
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("textCaseConverter"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("textCaseConverter"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case switchCasesButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init(
+        input: String,
+        output: String = ""
+    ) {
+        let inputText = Shared(wrappedValue: input, .toolInput("textCaseConverter"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("textCaseConverter"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.textCaseConverter) var textCaseConverter
-    private enum CancelID { case conversionRequest }
+    public func switchCases() {
+        let oldSource = sourceCase
+        sourceCase = targetCase
+        targetCase = oldSource
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .switchCasesButtonTouched:
-                let oldSource = state.sourceCase
-                let oldTarget = state.targetCase
-                state.$sourceCase.withLock { $0 = oldTarget }
-                state.$targetCase.withLock { $0 = oldSource }
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                return
-                    .run {
-                        [
-                            input = state.inputOutput.input,
-                            sourceCase = state.sourceCase,
-                            targetCase = state.targetCase
-                        ] send in
-                        await send(
-                            .conversionResponse(
-                                TaskResult {
-                                    try await textCaseConverter.convert(input.text, .newLine, sourceCase, targetCase)
-                                }
-                            )
-                        )
-                    }
-                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
+    public func setSourceCase(_ value: WordGroupCase) {
+        sourceCase = value
+    }
 
-            case let .conversionResponse(.success(swiftCode)):
-                state.isConversionRequestInFlight = false
-                // https://github.com/pointfreeco/swift-composable-architecture/discussions/1952#discussioncomment-5167956
-                return state.inputOutput.output.updateText(swiftCode)
-                    .map { Action.inputOutput(.output($0)) }
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-            case .inputOutput:
-                return .none
+    public func setTargetCase(_ value: WordGroupCase) {
+        targetCase = value
+    }
+
+    public func setTextSeperator(_ value: WordGroupSeperator) {
+        textSeperator = value
+    }
+
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let sourceCase = self.sourceCase
+        let targetCase = self.targetCase
+        conversionTask = Task { [weak self, input = input, sourceCase = sourceCase, targetCase = targetCase, textCaseConverter = textCaseConverter] in
+            guard let self else { return }
+            do {
+                let result = try await textCaseConverter.convert(input, .newLine, sourceCase, targetCase)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = result
+                }
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = error.localizedDescription
+                }
             }
         }
+    }
 
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct TextCaseConverterView: View {
-    @Bindable var store: StoreOf<TextCaseConverterReducer>
+extension TextCaseConverterModel: Equatable {
+    public static func == (lhs: TextCaseConverterModel, rhs: TextCaseConverterModel) -> Bool {
+        lhs === rhs
+    }
+}
+
+public struct TextCaseConverterModelView: View {
+    @Bindable var model: TextCaseConverterModel
 
     #if os(iOS)
         private let pickerTitleSpace: CGFloat = 0
@@ -112,16 +118,10 @@ public struct TextCaseConverterView: View {
         private let pickerTitleSpace: CGFloat = 4
     #endif
 
-    public init(store: StoreOf<TextCaseConverterReducer>) {
-        self.store = store
-    }
-
-    // MARK: - Reusable Controls
-
     private var sourceCasePicker: some View {
         Picker(
             NSLocalizedString("From", bundle: Bundle.module, comment: ""),
-            selection: $store.sourceCase
+            selection: $model.sourceCase
         ) {
             ForEach(WordGroupCase.allCases) { sourceCase in
                 Text(sourceCase.rawValue)
@@ -133,7 +133,7 @@ public struct TextCaseConverterView: View {
     private var targetCasePicker: some View {
         Picker(
             NSLocalizedString("To", bundle: Bundle.module, comment: ""),
-            selection: $store.targetCase
+            selection: $model.targetCase
         ) {
             ForEach(WordGroupCase.allCases) { targetCase in
                 Text(targetCase.rawValue)
@@ -145,7 +145,7 @@ public struct TextCaseConverterView: View {
     private var separatorPicker: some View {
         Picker(
             NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""),
-            selection: $store.textSeperator
+            selection: $model.textSeperator
         ) {
             ForEach(WordGroupSeperator.allCases) { (seperator: WordGroupSeperator) in
                 Text(seperator == .newLine ? "New Line" : "Space")
@@ -156,7 +156,7 @@ public struct TextCaseConverterView: View {
 
     private var switchCasesButton: some View {
         Button {
-            store.send(.switchCasesButtonTouched)
+            model.switchCases()
         } label: {
             Label(NSLocalizedString("Switch Cases", bundle: Bundle.module, comment: ""), systemImage: "arrow.left.and.right")
         }
@@ -168,9 +168,9 @@ public struct TextCaseConverterView: View {
     private var convertButton: some View {
         LoadingButton(
             NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
-            isLoading: store.isConversionRequestInFlight
+            isLoading: model.isConversionRequestInFlight
         ) {
-            store.send(.convertButtonTouched)
+            model.convertButtonTouched()
         }
         .keyboardShortcut(.return, modifiers: [.command])
         .help(NSLocalizedString("Convert code (⌘ Return)", bundle: Bundle.module, comment: ""))
@@ -241,21 +241,39 @@ public struct TextCaseConverterView: View {
 
             Divider()
 
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: TextCaseConverterReducer.Action.inputOutput),
-                inputEditorTitle: NSLocalizedString("Input", bundle: Bundle.module, comment: ""),
-                outputEditorTitle: NSLocalizedString("Output", bundle: Bundle.module, comment: ""),
-                keyForFraction: SettingsKey.TextCaseConverter.splitViewFraction,
-                keyForLayout: SettingsKey.TextCaseConverter.splitViewLayout
-            )
+            Split(primary: { inputEditor }, secondary: { outputEditor })
+                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.TextCaseConverter.splitViewFraction))
+                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.TextCaseConverter.splitViewLayout))
+                .styling(visibleThickness: 2)
         }
     }
-}
 
-// preview
-struct TextCaseConverterReducer_Previews: PreviewProvider {
-    static var previews: some View {
-        TextCaseConverterView(store: .init(initialState: .init()) { TextCaseConverterReducer() })
+    private var inputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(NSLocalizedString("Input", bundle: Bundle.module, comment: ""))
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.inputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
+    }
+
+    private var outputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(NSLocalizedString("Output", bundle: Bundle.module, comment: ""))
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
     }
 }
 

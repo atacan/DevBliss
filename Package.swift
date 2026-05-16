@@ -12,91 +12,52 @@ let package = Package(
     ],
     products: [
         .library(name: "AppFeature", targets: ["AppFeature"]),
-        .library(name: "AsciiToHexClient", targets: ["AsciiToHexClient"]),
         .library(name: "AsciiToHexFeature", targets: ["AsciiToHexFeature"]),
-        .library(name: "BackslashEscapeClient", targets: ["BackslashEscapeClient"]),
         .library(name: "BackslashEscapeFeature", targets: ["BackslashEscapeFeature"]),
-        .library(name: "Base64Client", targets: ["Base64Client"]),
         .library(name: "Base64Feature", targets: ["Base64Feature"]),
-        .library(name: "Base64ImageClient", targets: ["Base64ImageClient"]),
         .library(name: "Base64ImageFeature", targets: ["Base64ImageFeature"]),
         .library(name: "BlissTheme", targets: ["BlissTheme"]),
-        .library(name: "CertificateDecoderClient", targets: ["CertificateDecoderClient"]),
         .library(name: "CertificateDecoderFeature", targets: ["CertificateDecoderFeature"]),
         .library(name: "ClipboardClient", targets: ["ClipboardClient"]),
-        .library(name: "ColorConverterClient", targets: ["ColorConverterClient"]),
         .library(name: "ColorConverterFeature", targets: ["ColorConverterFeature"]),
         .library(name: "CommandLineClient", targets: ["CommandLineClient"]),
-        .library(name: "CssBeautifyClient", targets: ["CssBeautifyClient"]),
         .library(name: "CssBeautifyFeature", targets: ["CssBeautifyFeature"]),
-        .library(name: "FileContentSearchClient", targets: ["FileContentSearchClient"]),
         .library(name: "FileContentSearchFeature", targets: ["FileContentSearchFeature"]),
         .library(name: "FilePanelsClient", targets: ["FilePanelsClient"]),
         .library(name: "FilesClient", targets: ["FilesClient"]),
-        .library(name: "HashGeneratorClient", targets: ["HashGeneratorClient"]),
         .library(name: "HashGeneratorFeature", targets: ["HashGeneratorFeature"]),
-        .library(name: "HexToAsciiClient", targets: ["HexToAsciiClient"]),
         .library(name: "HexToAsciiFeature", targets: ["HexToAsciiFeature"]),
-        .library(name: "HtmlBeautifyClient", targets: ["HtmlBeautifyClient"]),
         .library(name: "HtmlBeautifyFeature", targets: ["HtmlBeautifyFeature"]),
-        .library(name: "HtmlPreviewClient", targets: ["HtmlPreviewClient"]),
         .library(name: "HtmlPreviewFeature", targets: ["HtmlPreviewFeature"]),
-        .library(name: "HtmlToMarkdownClient", targets: ["HtmlToMarkdownClient"]),
         .library(name: "HtmlToMarkdownFeature", targets: ["HtmlToMarkdownFeature"]),
-        .library(name: "HtmlToSwiftClient", targets: ["HtmlToSwiftClient"]),
         .library(name: "HtmlToSwiftFeature", targets: ["HtmlToSwiftFeature"]),
         .library(name: "InputOutput", targets: ["InputOutput"]),
-        .library(name: "JsBeautifyClient", targets: ["JsBeautifyClient"]),
         .library(name: "JsBeautifyFeature", targets: ["JsBeautifyFeature"]),
-        .library(name: "JsonPrettyClient", targets: ["JsonPrettyClient"]),
         .library(name: "JsonPrettyFeature", targets: ["JsonPrettyFeature"]),
-        .library(name: "JsonToYamlClient", targets: ["JsonToYamlClient"]),
         .library(name: "JsonToYamlFeature", targets: ["JsonToYamlFeature"]),
-        .library(name: "JwtDebuggerClient", targets: ["JwtDebuggerClient"]),
         .library(name: "JwtDebuggerFeature", targets: ["JwtDebuggerFeature"]),
-        .library(name: "LineSortDedupeClient", targets: ["LineSortDedupeClient"]),
         .library(name: "LineSortDedupeFeature", targets: ["LineSortDedupeFeature"]),
-        .library(name: "NameGeneratorClient", targets: ["NameGeneratorClient"]),
         .library(name: "NameGeneratorFeature", targets: ["NameGeneratorFeature"]),
-        .library(name: "NumberBaseConverterClient", targets: ["NumberBaseConverterClient"]),
         .library(name: "NumberBaseConverterFeature", targets: ["NumberBaseConverterFeature"]),
-        .library(name: "PrefixSuffixClient", targets: ["PrefixSuffixClient"]),
         .library(name: "PrefixSuffixFeature", targets: ["PrefixSuffixFeature"]),
-        .library(name: "QrCodeToolClient", targets: ["QrCodeToolClient"]),
         .library(name: "QrCodeToolFeature", targets: ["QrCodeToolFeature"]),
-        .library(name: "RandomStringGeneratorClient", targets: ["RandomStringGeneratorClient"]),
         .library(name: "RandomStringGeneratorFeature", targets: ["RandomStringGeneratorFeature"]),
-        .library(name: "RegexMatchesClient", targets: ["RegexMatchesClient"]),
         .library(name: "RegexMatchesFeature", targets: ["RegexMatchesFeature"]),
-        .library(name: "RegExpTesterClient", targets: ["RegExpTesterClient"]),
         .library(name: "RegExpTesterFeature", targets: ["RegExpTesterFeature"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
-        .library(name: "StringDiffClient", targets: ["StringDiffClient"]),
         .library(name: "StringDiffFeature", targets: ["StringDiffFeature"]),
-        .library(name: "StringInspectorClient", targets: ["StringInspectorClient"]),
         .library(name: "StringInspectorFeature", targets: ["StringInspectorFeature"]),
-        .library(name: "SvgToCssClient", targets: ["SvgToCssClient"]),
         .library(name: "SvgToCssFeature", targets: ["SvgToCssFeature"]),
-        .library(name: "SwiftPrettyClient", targets: ["SwiftPrettyClient"]),
         .library(name: "SwiftPrettyFeature", targets: ["SwiftPrettyFeature"]),
         .library(name: "SyntaxHighlightClient", targets: ["SyntaxHighlightClient"]),
-        .library(name: "TextCaseConverterClient", targets: ["TextCaseConverterClient"]),
         .library(name: "TextCaseConverterFeature", targets: ["TextCaseConverterFeature"]),
-        .library(name: "UnixTimeClient", targets: ["UnixTimeClient"]),
         .library(name: "UnixTimeFeature", targets: ["UnixTimeFeature"]),
-        .library(name: "UrlEncodeClient", targets: ["UrlEncodeClient"]),
         .library(name: "UrlEncodeFeature", targets: ["UrlEncodeFeature"]),
-        .library(name: "UrlParserClient", targets: ["UrlParserClient"]),
         .library(name: "UrlParserFeature", targets: ["UrlParserFeature"]),
-        .library(name: "UrlToMarkdownClient", targets: ["UrlToMarkdownClient"]),
         .library(name: "UrlToMarkdownFeature", targets: ["UrlToMarkdownFeature"]),
-        .library(name: "UUIDGeneratorClient", targets: ["UUIDGeneratorClient"]),
         .library(name: "UUIDGeneratorFeature", targets: ["UUIDGeneratorFeature"]),
-        .library(name: "UuidUlidClient", targets: ["UuidUlidClient"]),
         .library(name: "UuidUlidFeature", targets: ["UuidUlidFeature"]),
-        .library(name: "XmlFormatClient", targets: ["XmlFormatClient"]),
         .library(name: "XmlFormatFeature", targets: ["XmlFormatFeature"]),
-        .library(name: "YamlToJsonClient", targets: ["YamlToJsonClient"]),
         .library(name: "YamlToJsonFeature", targets: ["YamlToJsonFeature"]),
     ],
     dependencies: [
@@ -116,6 +77,7 @@ let package = Package(
         .package(url: "https://github.com/gonzalezreal/swift-markdown-ui", from: "2.0.0"),
         .package(url: "https://github.com/jpsim/Yams", from: "6.0.1"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.51.0"),
+        .package(url: "https://github.com/pointfreeco/swift-sharing", from: "1.0.0"),
         .package(url: "https://github.com/nkristek/Highlight.git", branch: "master"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.25.5"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.10.0"),
@@ -174,166 +136,123 @@ let package = Package(
             ]
         ),
         .target(
-            name: "AsciiToHexClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-            ]
-        ),
-        .target(
             name: "AsciiToHexFeature",
             dependencies: [
-                "AsciiToHexClient",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "ColorConverterClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "ColorConverterFeature",
             dependencies: [
-                "ColorConverterClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "Base64Client",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "Base64Feature",
             dependencies: [
-                "Base64Client",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
                 "InputOutput",
                 "SharedModels",
-            ]
-        ),
-        .target(
-            name: "Base64ImageClient",
-            dependencies: [
-                "SharedModels",
-                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "Base64ImageFeature",
             dependencies: [
-                "Base64ImageClient",
                 "BlissTheme",
                 "SharedModels",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-            ]
-        ),
-        .target(
-            name: "HashGeneratorClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "HashGeneratorFeature",
             dependencies: [
-                "HashGeneratorClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "SvgToCssClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "SvgToCssFeature",
             dependencies: [
-                "SvgToCssClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
-        .target(
-            name: "BackslashEscapeClient",
+        .testTarget(
+            name: "SvgToCssFeatureTests",
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
+                "SvgToCssFeature",
             ]
         ),
         .target(
             name: "BackslashEscapeFeature",
             dependencies: [
-                "BackslashEscapeClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
-        .target(
-            name: "CertificateDecoderClient",
+        .testTarget(
+            name: "BackslashEscapeFeatureTests",
             dependencies: [
+                "BackslashEscapeFeature",
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "X509", package: "swift-certificates"),
-                .product(name: "SwiftASN1", package: "swift-asn1"),
+            ]
+        ),
+        .testTarget(
+            name: "Base64FeatureTests",
+            dependencies: [
+                "Base64Feature",
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "CertificateDecoderFeature",
             dependencies: [
-                "CertificateDecoderClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-                .product(name: "SplitView", package: "SplitView"),
-            ]
-        ),
-        .target(
-            name: "QrCodeToolClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "QRCode", package: "QRCode"),
+                .product(name: "SplitView", package: "SplitView"),
+                .product(name: "Sharing", package: "swift-sharing"),
+                .product(name: "X509", package: "swift-certificates"),
+                .product(name: "SwiftASN1", package: "swift-asn1"),
             ]
         ),
         .target(
             name: "QrCodeToolFeature",
             dependencies: [
-                "QrCodeToolClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
                 .product(name: "SplitView", package: "SplitView"),
                 .product(name: "QRCode", package: "QRCode"),
-            ]
-        ),
-        .target(
-            name: "JsonToYamlClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "Yams", package: "Yams"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "JsonToYamlFeature",
             dependencies: [
-                "JsonToYamlClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
                 "SyntaxHighlightClient",
-            ]
-        ),
-        .target(
-            name: "YamlToJsonClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "Yams", package: "Yams"),
             ]
@@ -341,23 +260,19 @@ let package = Package(
         .target(
             name: "YamlToJsonFeature",
             dependencies: [
-                "YamlToJsonClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "UuidUlidClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "ULID", package: "ULID.swift"),
+                .product(name: "Yams", package: "Yams"),
             ]
         ),
         .target(
             name: "UuidUlidFeature",
             dependencies: [
-                "UuidUlidClient",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
+                .product(name: "ULID", package: "ULID.swift"),
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
@@ -393,26 +308,21 @@ let package = Package(
             ]
         ),
         .target(
-            name: "FileContentSearchClient",
-            dependencies: [
-                "CommandLineClient",
-                .product(name: "Dependencies", package: "swift-dependencies"),
-            ]
-        ),
-        .target(
             name: "FileContentSearchFeature",
             dependencies: [
-                "FileContentSearchClient",
                 "FilePanelsClient",
+                "CommandLineClient",
                 "InputOutput",
                 "FilesClient",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .testTarget(
             name: "FileContentSearchFeatureTests",
             dependencies: [
                 "FileContentSearchFeature",
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
@@ -435,20 +345,14 @@ let package = Package(
             ]
         ),
         .target(
-            name: "HtmlToSwiftClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "HtmlSwift", package: "html-swift"),
-            ]
-        ),
-        .target(
             name: "HtmlToSwiftFeature",
             dependencies: [
-                "HtmlToSwiftClient",
                 "InputOutput",
                 "SharedModels",
+                .product(name: "Dependencies", package: "swift-dependencies"),
                 "SyntaxHighlightClient",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "HtmlSwift", package: "html-swift"),
+                .product(name: "Sharing", package: "swift-sharing"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
         ),
@@ -456,235 +360,198 @@ let package = Package(
             name: "HtmlToSwiftFeatureTests",
             dependencies: [
                 "HtmlToSwiftFeature",
-            ]
-        ),
-        .target(
-            name: "HtmlToMarkdownClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "Demark", package: "demark"),
             ]
         ),
         .target(
             name: "HtmlToMarkdownFeature",
             dependencies: [
-                "HtmlToMarkdownClient",
                 "InputOutput",
                 "SharedModels",
                 "SyntaxHighlightClient",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
-                .product(name: "MarkdownUI", package: "swift-markdown-ui"),
-            ]
-        ),
-        .target(
-            name: "HtmlPreviewClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Demark", package: "demark"),
+                .product(name: "Sharing", package: "swift-sharing"),
+                .product(name: "MarkdownUI", package: "swift-markdown-ui"),
             ]
         ),
         .target(
             name: "HtmlPreviewFeature",
             dependencies: [
-                "HtmlPreviewClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
+                .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "SplitView", package: "SplitView"),
-            ]
-        ),
-        .target(
-            name: "UrlToMarkdownClient",
-            dependencies: [
-                "HtmlToMarkdownClient",
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "Demark", package: "demark"),
-            ]
-        ),
-        .target(
-            name: "UrlParserClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "UrlParserFeature",
             dependencies: [
-                "UrlParserClient",
                 "SharedModels",
                 "BlissTheme",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
+            ]
+        ),
+        .testTarget(
+            name: "UrlParserFeatureTests",
+            dependencies: [
+                "UrlParserFeature",
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "UrlToMarkdownFeature",
             dependencies: [
-                "UrlToMarkdownClient",
-                "HtmlToMarkdownClient",
+                "HtmlToMarkdownFeature",
                 "InputOutput",
                 "SharedModels",
                 "SyntaxHighlightClient",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
-                .product(name: "MarkdownUI", package: "swift-markdown-ui"),
-            ]
-        ),
-        .target(
-            name: "JsonPrettyClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "Highlight", package: "Highlight"),
+                .product(name: "Demark", package: "demark"),
+                .product(name: "Sharing", package: "swift-sharing"),
+                .product(name: "MarkdownUI", package: "swift-markdown-ui"),
             ]
         ),
         .target(
             name: "JsonPrettyFeature",
             dependencies: [
-                "JsonPrettyClient",
                 "InputOutput",
                 "SharedModels",
-            ]
-        ),
-        .target(
-            name: "HtmlBeautifyClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "JSBeautify", package: "JSBeautify"),
+                .product(name: "Highlight", package: "Highlight"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "HtmlBeautifyFeature",
             dependencies: [
-                "HtmlBeautifyClient",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "JSBeautify", package: "JSBeautify"),
+                .product(name: "Sharing", package: "swift-sharing"),
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "CssBeautifyClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "JSBeautify", package: "JSBeautify"),
             ]
         ),
         .target(
             name: "CssBeautifyFeature",
             dependencies: [
-                "CssBeautifyClient",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "JSBeautify", package: "JSBeautify"),
+                .product(name: "Sharing", package: "swift-sharing"),
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "JsBeautifyClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "JSBeautify", package: "JSBeautify"),
             ]
         ),
         .target(
             name: "JsBeautifyFeature",
             dependencies: [
-                "JsBeautifyClient",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "JSBeautify", package: "JSBeautify"),
+                .product(name: "Sharing", package: "swift-sharing"),
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "LineSortDedupeClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "LineSortDedupeFeature",
             dependencies: [
-                "LineSortDedupeClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "HexToAsciiClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "HexToAsciiFeature",
             dependencies: [
-                "HexToAsciiClient",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
             ]
         ),
-        .target(
-            name: "XmlFormatClient",
+        .testTarget(
+            name: "HexToAsciiFeatureTests",
             dependencies: [
+                "HexToAsciiFeature",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .testTarget(
+            name: "HashGeneratorFeatureTests",
+            dependencies: [
+                "HashGeneratorFeature",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .testTarget(
+            name: "NumberBaseConverterFeatureTests",
+            dependencies: [
+                "NumberBaseConverterFeature",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .testTarget(
+            name: "AsciiToHexFeatureTests",
+            dependencies: [
+                "AsciiToHexFeature",
                 .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "XmlFormatFeature",
             dependencies: [
-                "XmlFormatClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "NameGeneratorClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "NameGeneratorFeature",
             dependencies: [
-                "NameGeneratorClient",
                 "InputOutput",
-                "PillPickerView",
+                "SharedModels",
+                "BlissTheme",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
-        .target(
-            name: "RandomStringGeneratorClient",
+        .testTarget(
+            name: "NameGeneratorFeatureTests",
             dependencies: [
+                "NameGeneratorFeature",
                 .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "RandomStringGeneratorFeature",
             dependencies: [
-                "RandomStringGeneratorClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "PrefixSuffixClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                "SharedModels",
-                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
-            ]
-        ),
-        .testTarget(
-            name: "PrefixSuffixClientTests",
-            dependencies: [
-                "PrefixSuffixClient",
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "PrefixSuffixFeature",
             dependencies: [
-                "PrefixSuffixClient",
                 "InputOutput",
                 "SharedModels",
+                "BlissTheme",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
         ),
         .testTarget(
@@ -694,105 +561,79 @@ let package = Package(
             ]
         ),
         .target(
-            name: "RegexMatchesClient",
+            name: "RegexMatchesFeature",
             dependencies: [
+                "InputOutput",
+                "SharedModels",
+                "BlissTheme",
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .testTarget(
-            name: "RegexMatchesClientTests",
+            name: "RegexMatchesFeatureTests",
             dependencies: [
-                "RegexMatchesClient",
-            ]
-        ),
-        .target(
-            name: "RegexMatchesFeature",
-            dependencies: [
-                "RegexMatchesClient",
-                "InputOutput",
-                "SharedModels",
-                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
-            ]
-        ),
-        .target(
-            name: "RegExpTesterClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
+                "RegexMatchesFeature",
             ]
         ),
         .target(
             name: "RegExpTesterFeature",
             dependencies: [
-                "RegExpTesterClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-                .product(name: "SplitView", package: "SplitView"),
-            ]
-        ),
-        .target(
-            name: "StringDiffClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "JSDiff", package: "JSDiff"),
+                .product(name: "Sharing", package: "swift-sharing"),
+                .product(name: "SplitView", package: "SplitView"),
             ]
         ),
         .target(
             name: "StringDiffFeature",
             dependencies: [
-                "StringDiffClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
+                .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "JSDiff", package: "JSDiff"),
                 .product(name: "JSDiffUI", package: "JSDiff"),
                 .product(name: "SplitView", package: "SplitView"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
-        .target(
-            name: "StringInspectorClient",
+        .testTarget(
+            name: "StringDiffFeatureTests",
             dependencies: [
+                "StringDiffFeature",
                 .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "StringInspectorFeature",
             dependencies: [
-                "StringInspectorClient",
                 "InputOutput",
                 "SharedModels",
-                "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "NumberBaseConverterClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "NumberBaseConverterFeature",
             dependencies: [
-                "NumberBaseConverterClient",
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
-            ]
-        ),
-        .target(
-            name: "SwiftPrettyClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "SwiftFormat", package: "SwiftFormat"),
             ]
         ),
         .target(
             name: "SwiftPrettyFeature",
             dependencies: [
-                "SwiftPrettyClient",
                 "InputOutput",
                 "SharedModels",
+                .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
+                .product(name: "SwiftFormat", package: "SwiftFormat"),
             ]
         ),
         .testTarget(
@@ -802,66 +643,58 @@ let package = Package(
             ]
         ),
         .target(
-            name: "TextCaseConverterClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-            ]
-        ),
-        .target(
             name: "TextCaseConverterFeature",
             dependencies: [
-                "TextCaseConverterClient",
                 "InputOutput",
                 "SharedModels",
+                .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
         ),
-        .target(
-            name: "UnixTimeClient",
+        .testTarget(
+            name: "TextCaseConverterFeatureTests",
             dependencies: [
+                "TextCaseConverterFeature",
                 .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "UnixTimeFeature",
             dependencies: [
-                "UnixTimeClient",
                 "BlissTheme",
                 "SharedModels",
-            ]
-        ),
-        .target(
-            name: "UrlEncodeClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "UrlEncodeFeature",
             dependencies: [
-                "UrlEncodeClient",
                 "BlissTheme",
                 "SharedModels",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-            ]
-        ),
-        .target(
-            name: "JwtDebuggerClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "JWTDecode", package: "JWTDecode.swift"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .testTarget(
-            name: "JwtDebuggerClientTests",
+            name: "UrlEncodeFeatureTests",
             dependencies: [
-                "JwtDebuggerClient",
+                "UrlEncodeFeature",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .testTarget(
+            name: "XmlFormatFeatureTests",
+            dependencies: [
+                "XmlFormatFeature",
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "JwtDebuggerFeature",
             dependencies: [
-                "JwtDebuggerClient",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "JWTDecode", package: "JWTDecode.swift"),
                 "InputOutput",
                 "SharedModels",
             ]
@@ -870,42 +703,23 @@ let package = Package(
             name: "JwtDebuggerFeatureTests",
             dependencies: [
                 "JwtDebuggerFeature",
-                "JwtDebuggerClient",
-            ]
-        ),
-        .target(
-            name: "UUIDGeneratorClient",
-            dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(
             name: "UUIDGeneratorFeature",
             dependencies: [
-                "UUIDGeneratorClient",
-                "InputOutput",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
         .target(
             name: "SharedModels",
             dependencies: [
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Sharing", package: "swift-sharing"),
             ],
             resources: [.process("Resources")]
         ),
 
-        .testTarget(
-            name: "JsonToYamlClientTests",
-            dependencies: [
-                "JsonToYamlClient",
-                "SyntaxHighlightClient",
-                .product(name: "Dependencies", package: "swift-dependencies"),
-            ],
-            resources: [.process("Resources")]
-        ),
-        .testTarget(
-            name: "HtmlToSwiftClientTests",
-            dependencies: ["HtmlToSwiftClient"]
-        ),
     ]
 )

@@ -1,146 +1,146 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
-import JsBeautifyClient
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import SplitView
 import SwiftUI
 
-@Reducer
-public struct JsBeautifyReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class JsBeautifyModel {
+    @ObservationIgnored
+    @Shared(.toolInput("jsBeautify"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("jsBeautify")) public var inputText = ""
-        @Shared(.toolOutput("jsBeautify")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var mode: JsBeautifyMode = .beautify
+    @ObservationIgnored
+    @Shared(.toolOutput("jsBeautify"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("jsBeautify"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("jsBeautify"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var mode: JsBeautifyMode = .beautify
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("jsBeautify"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("jsBeautify"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Dependency(\.jsBeautify) private var jsBeautify
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("jsBeautify"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("jsBeautify"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("jsBeautify"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("jsBeautify"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.jsBeautify) var jsBeautify
-    private enum CancelID { case conversionRequest }
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let mode = self.mode
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let mode = state.mode
-                return .run { [jsBeautify] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await jsBeautify.format(input, mode)
-                            }
-                        )
-                    )
+        conversionTask = Task { [weak self, input = input, mode = mode, jsBeautify = jsBeautify] in
+            guard let self else { return }
+            do {
+                let result = try await jsBeautify.format(input, mode)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = result
                 }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+            }
+            catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = error.localizedDescription
+                }
             }
         }
+    }
 
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
+    public func setMode(_ mode: JsBeautifyMode) {
+        self.mode = mode
+    }
+
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct JsBeautifyView: View {
-    @Bindable var store: StoreOf<JsBeautifyReducer>
-
-    public init(store: StoreOf<JsBeautifyReducer>) {
-        self.store = store
-    }
-
-    public var body: some View {
-        VStack(spacing: 0) {
-//            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-//                GridRow {
-//                    ConfigLabel("Mode")
-//                    Picker("Mode", selection: $store.mode) {
-//                        ForEach(JsBeautifyMode.allCases) { mode in
-//                            Text(mode.rawValue)
-//                                .tag(mode)
-//                        }
-//                    }
-//                    .pickerStyle(.segmented)
-//                    .frame(width: 200)
-//
-//                    Spacer()
-//                }
-//            }
-//            .padding(.horizontal, 16)
-//            .padding(.vertical, 8)
-
-            LoadingButton(store.mode == .beautify ? "Format" : "Minify", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Format (Cmd Return)")
-            .padding(.vertical, 8)
-
-            Divider()
-
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "JavaScript",
-                outputEditorTitle: "Result",
-                keyForFraction: SettingsKey.JsBeautify.splitViewFraction,
-                keyForLayout: SettingsKey.JsBeautify.splitViewLayout
-            )
-        }
+extension JsBeautifyModel: Equatable {
+    public static func == (lhs: JsBeautifyModel, rhs: JsBeautifyModel) -> Bool {
+        lhs === rhs
     }
 }
 
 struct JsBeautifyView_Previews: PreviewProvider {
     static var previews: some View {
-        JsBeautifyView(store: .init(initialState: .init()) { JsBeautifyReducer() })
+        JsBeautifyModelView(model: .init())
+    }
+}
+
+public struct JsBeautifyModelView: View {
+    @Bindable var model: JsBeautifyModel
+
+    public init(model: JsBeautifyModel) {
+        self.model = model
+    }
+
+    private var convertButton: some View {
+        LoadingButton(model.mode == .beautify ? "Format" : "Minify", isLoading: model.isConversionRequestInFlight) {
+            model.convertButtonTouched()
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+        .help("Format (Cmd Return)")
+    }
+
+    public var body: some View {
+        VStack(spacing: 0) {
+            convertButton
+                .padding(.vertical, 8)
+
+            Divider()
+
+            Split(primary: { inputEditor }, secondary: { outputEditor })
+                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.JsBeautify.splitViewFraction))
+                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.JsBeautify.splitViewLayout))
+                .styling(visibleThickness: 2)
+        }
+    }
+
+    private var inputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("JavaScript")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.inputText)
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
+    }
+
+    private var outputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Result")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
     }
 }

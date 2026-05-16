@@ -1,93 +1,33 @@
 import BlissTheme
-import ComposableArchitecture
-import SharedModels
 import SwiftUI
-import UrlParserClient
 
-@Reducer
-public struct UrlParserReducer {
-    public init() {}
-
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("urlParser")) public var inputText = ""
-        @Shared(.toolOutput("urlParser")) public var outputText = ""
-        var result: UrlParseResult?
-        var autoDetect: Bool = true
-        var errorMessage: String?
-
-        public var input: String {
-            get { inputText }
-            set { $inputText.withLock { $0 = newValue } }
-        }
-
-        public init() {
-        }
-
-        public init(input: String) {
-            self._inputText = Shared(wrappedValue: input, .toolInput("urlParser"))
-        }
-    }
-
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case parseButtonTouched
-    }
-
-    @Dependency(\.urlParser) var urlParser
-
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding(\.input):
-                state.errorMessage = nil
-
-                if state.autoDetect, urlParser.shouldAutoParse(state.input) {
-                    return parse(state: &state)
-                }
-                return .none
-
-            case .binding:
-                return .none
-
-            case .parseButtonTouched:
-                state.errorMessage = nil
-                return parse(state: &state)
-            }
-        }
-    }
-
-    private func parse(state: inout State) -> Effect<Action> {
-        do {
-            state.result = try urlParser.parse(state.input)
-            return .none
-        } catch {
-            state.result = nil
-            state.errorMessage = error.localizedDescription
-            return .none
-        }
-    }
-}
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 public struct UrlParserView: View {
-    @Bindable var store: StoreOf<UrlParserReducer>
+    @Bindable var model: UrlParserModel
 
-    public init(store: StoreOf<UrlParserReducer>) {
-        self.store = store
+    public init(model: UrlParserModel) {
+        self.model = model
     }
 
     public var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                TextField("Enter URL", text: $store.input)
+                TextField("Enter URL", text: Binding(
+                    get: { model.inputText },
+                    set: { model.parseInputChanged($0) }
+                ))
                     .blissTextField()
                     .onSubmit {
-                        store.send(.parseButtonTouched)
+                        model.parseButtonTouched()
                     }
 
                 LoadingButton("Parse", isLoading: false) {
-                    store.send(.parseButtonTouched)
+                    model.parseButtonTouched()
                 }
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help("Parse (⌘ Return)")
@@ -97,8 +37,7 @@ public struct UrlParserView: View {
 
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-//                    ConfigLabel("Options")
-                    Toggle("Auto-detect", isOn: $store.autoDetect)
+                    Toggle("Auto-detect", isOn: $model.autoDetect)
                         #if os(macOS)
                         .toggleStyle(.checkbox)
                         #endif
@@ -108,13 +47,13 @@ public struct UrlParserView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
             Divider()
 
-            if let result = store.result {
+            if let result = model.result {
                 ScrollView {
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 220, maximum: 420), spacing: 16)], spacing: 16) {
                         ResultCard(title: "Protocol", value: result.scheme, icon: "chevron.left.forwardslash.chevron.right")
@@ -136,6 +75,8 @@ public struct UrlParserView: View {
         }
     }
 }
+
+public typealias UrlParserModelView = UrlParserView
 
 private struct ResultCard: View {
     let title: String
@@ -178,6 +119,7 @@ private struct ResultCard: View {
 
 struct UrlParserView_Previews: PreviewProvider {
     static var previews: some View {
-        UrlParserView(store: .init(initialState: .init()) { UrlParserReducer() })
+        UrlParserView(model: .init())
     }
 }
+

@@ -1,149 +1,113 @@
 import BlissTheme
-import ComposableArchitecture
 import Foundation
-import InputOutput
-import JsonToYamlClient
+import Dependencies
 import SharedModels
+import Sharing
 import SwiftUI
-import SyntaxHighlightClient
+import Observation
+import SplitView
 
-@Reducer
-public struct JsonToYamlReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class JsonToYamlModel {
+    @ObservationIgnored
+    @Shared(.toolInput("jsonToYaml"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("jsonToYaml")) public var inputText = ""
-        @Shared(.toolOutput("jsonToYaml")) public var outputText = ""
-        var inputOutput: InputOutputAttributedEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var sortKeys: Bool = false
+    @ObservationIgnored
+    @Shared(.toolOutput("jsonToYaml"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("jsonToYaml"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("jsonToYaml"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputRawText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var sortKeys: Bool = false
+    public var errorText: String?
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("jsonToYaml"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("jsonToYaml"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputRawText: outputText.projectedValue
-            )
-        }
-
-        var config: JsonToYamlConfig {
-            JsonToYamlConfig(sortKeys: sortKeys)
-        }
+    public var config: JsonToYamlConfig {
+        JsonToYamlConfig(sortKeys: sortKeys)
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case highlightResponse(NSAttributedString)
-        case inputOutput(InputOutputAttributedEditorsReducer.Action)
+    @ObservationIgnored
+    @Dependency(\.jsonToYaml) private var jsonToYaml
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("jsonToYaml"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("jsonToYaml"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.jsonToYaml) var jsonToYaml
-    @Dependency(\.syntaxHighlight) var syntaxHighlight
-    private enum CancelID { case conversionRequest, highlightRequest }
-    private static let maxHighlightCharacters = 100_000
+    public init(
+        input: String,
+        output: String = ""
+    ) {
+        let inputText = Shared(wrappedValue: input, .toolInput("jsonToYaml"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("jsonToYaml"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let config = state.config
-                return .run { [jsonToYaml] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await jsonToYaml.convert(input, config)
-                            }
-                        )
-                    )
+    public func setSortKeys(_ value: Bool) {
+        sortKeys = value
+    }
+
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        errorText = nil
+        let input = inputText
+        let config = self.config
+        conversionTask = Task { [weak self, input = input, config = config, jsonToYaml = jsonToYaml] in
+            guard let self else { return }
+            do {
+                let yaml = try await jsonToYaml.convert(input, config)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = yaml
                 }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(yaml)):
-                state.isConversionRequestInFlight = false
-                let showPlainText = state.inputOutput.output.updateText(yaml)
-                    .map { Action.inputOutput(.output($0)) }
-
-                guard yaml.count <= Self.maxHighlightCharacters else {
-                    return showPlainText
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    errorText = error.localizedDescription
+                    outputText = error.localizedDescription
                 }
-
-                return .merge(
-                    showPlainText,
-                    .run { [syntaxHighlight] send in
-                        let highlighted = await syntaxHighlight.highlightYaml(yaml)
-                        if highlighted.length > 0 {
-                            await send(.highlightResponse(highlighted))
-                        }
-                    }
-                    .cancellable(id: CancelID.highlightRequest, cancelInFlight: true)
-                )
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(errorAttributedString(error.localizedDescription))
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .highlightResponse(highlighted):
-                return state.inputOutput.output.updateText(highlighted)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
             }
         }
+    }
 
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputAttributedEditorsReducer()
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct JsonToYamlView: View {
-    @Bindable var store: StoreOf<JsonToYamlReducer>
+extension JsonToYamlModel: Equatable {
+    public static func == (lhs: JsonToYamlModel, rhs: JsonToYamlModel) -> Bool {
+        lhs === rhs
+    }
+}
 
-    public init(store: StoreOf<JsonToYamlReducer>) {
-        self.store = store
+struct JsonToYamlView_Previews: PreviewProvider {
+    static var previews: some View {
+        JsonToYamlModelView(model: .init())
+    }
+}
+
+public struct JsonToYamlModelView: View {
+    @Bindable var model: JsonToYamlModel
+
+    public init(model: JsonToYamlModel) {
+        self.model = model
     }
 
     public var body: some View {
         VStack(spacing: 0) {
-//            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-//                GridRow {
-//                    ConfigLabel("Options")
-//                    Toggle("Sort keys", isOn: $store.sortKeys)
-#if os(macOS)
-//                        .toggleStyle(.checkbox)
-#endif
-//                    Spacer()
-//                }
-//            }
-//            .padding(.horizontal, 16)
-//            .padding(.vertical, 8)
-
-            LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
+            LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
+                model.convertButtonTouched()
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help("Convert (⌘ Return)")
@@ -151,19 +115,38 @@ public struct JsonToYamlView: View {
 
             Divider()
 
-            InputOutputAttributedEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "JSON",
-                outputEditorTitle: "YAML",
-                keyForFraction: SettingsKey.JsonToYaml.splitViewFraction,
-                keyForLayout: SettingsKey.JsonToYaml.splitViewLayout
-            )
+            Split(primary: { inputEditor }, secondary: { outputEditor })
+                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.JsonToYaml.splitViewFraction))
+                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.JsonToYaml.splitViewLayout))
+                .styling(visibleThickness: 2)
         }
     }
-}
 
-struct JsonToYamlView_Previews: PreviewProvider {
-    static var previews: some View {
-        JsonToYamlView(store: .init(initialState: .init()) { JsonToYamlReducer() })
+    private var inputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("JSON")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.inputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
+    }
+
+    private var outputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("YAML")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
     }
 }

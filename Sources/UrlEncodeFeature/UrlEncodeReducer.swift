@@ -1,134 +1,41 @@
 import BlissTheme
-import ComposableArchitecture
-import SharedModels
 import SwiftUI
-import UrlEncodeClient
 
-@Reducer
-public struct UrlEncodeReducer {
-    public init() {}
-
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("urlEncode")) public var inputText = ""
-        @Shared(.toolOutput("urlEncode")) public var outputText = ""
-        var direction: UrlEncodeDirection = .encode
-        var encodeMode: UrlEncodeMode = .rfc3986
-        var autoDetect: Bool = true
-        var decodePlusAsSpace: Bool = true
-        var result: String = ""
-        var errorMessage: String?
-
-        // Input is derived from inputText for persistence
-        public var input: String {
-            get { inputText }
-            set { $inputText.withLock { $0 = newValue } }
-        }
-
-        public init() {}
-
-        public init(input: String, output: String = "") {
-            self._inputText = Shared(wrappedValue: input, .toolInput("urlEncode"))
-            self._outputText = Shared(wrappedValue: output, .toolOutput("urlEncode"))
-        }
-    }
-
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case useAsInputButtonTouched
-        case copyResultButtonTouched
-    }
-
-    @Dependency(\.urlEncode) var urlEncode
-
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding(\.inputText):
-                // Auto-detect if input looks URL-encoded
-                if state.autoDetect {
-                    let input = state.input.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if urlEncode.looksEncoded(input) {
-                        state.direction = .decode
-                    } else if !input.isEmpty {
-                        state.direction = .encode
-                    }
-                }
-                return .none
-
-            case .binding:
-                return .none
-
-            case .convertButtonTouched:
-                state.errorMessage = nil
-                let input = state.input.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard !input.isEmpty else {
-                    state.errorMessage = "Please enter a value"
-                    return .none
-                }
-
-                switch state.direction {
-                case .encode:
-                    state.result = urlEncode.encode(input, state.encodeMode)
-                case .decode:
-                    state.result = urlEncode.decode(input, state.decodePlusAsSpace)
-                }
-
-                // Persist output
-                state.$outputText.withLock { $0 = state.result }
-                return .none
-
-            case .useAsInputButtonTouched:
-                guard !state.result.isEmpty else { return .none }
-                state.$inputText.withLock { $0 = state.result }
-                state.result = ""
-                // Swap direction when using output as input
-                state.direction = state.direction == .encode ? .decode : .encode
-                return .none
-
-            case .copyResultButtonTouched:
-                #if os(macOS)
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(state.result, forType: .string)
-                #else
-                UIPasteboard.general.string = state.result
-                #endif
-                return .none
-            }
-        }
-    }
-}
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 public struct UrlEncodeView: View {
-    @Bindable var store: StoreOf<UrlEncodeReducer>
+    @Bindable var model: UrlEncodeModel
 
-    public init(store: StoreOf<UrlEncodeReducer>) {
-        self.store = store
+    public init(model: UrlEncodeModel) {
+        self.model = model
     }
 
-    // MARK: - Reusable Controls
-
     private var inputField: some View {
-        TextField("Enter text to encode/decode", text: $store.inputText)
-            .blissTextField()
-            .onSubmit {
-                store.send(.convertButtonTouched)
-            }
+        TextField("Enter text to encode/decode", text: Binding(
+            get: { model.inputText },
+            set: { model.updateInput($0) }
+        ))
+        .blissTextField()
+        .onSubmit {
+            model.convertButtonTouched()
+        }
     }
 
     private var convertButton: some View {
         LoadingButton("Convert", isLoading: false) {
-            store.send(.convertButtonTouched)
+            model.convertButtonTouched()
         }
         .keyboardShortcut(.return, modifiers: [.command])
         .help("Convert (Command Return)")
-        .disabled(store.inputText.isEmpty)
+        .disabled(model.inputText.isEmpty)
     }
 
     private var directionPicker: some View {
-        Picker("Mode", selection: $store.direction) {
+        Picker("Mode", selection: $model.direction) {
             ForEach(UrlEncodeDirection.allCases) { direction in
                 Text(direction.rawValue)
                     .tag(direction)
@@ -139,12 +46,12 @@ public struct UrlEncodeView: View {
     }
 
     private var autoDetectToggle: some View {
-        Toggle("Auto-detect", isOn: $store.autoDetect)
+        Toggle("Auto-detect", isOn: $model.autoDetect)
             .help("Automatically detect if input looks URL-encoded and switch to Decode mode")
     }
 
     private var encodeModePicker: some View {
-        Picker("Encode Mode", selection: $store.encodeMode) {
+        Picker("Encode Mode", selection: $model.encodeMode) {
             ForEach(UrlEncodeMode.allCases) { mode in
                 Text(mode.rawValue)
                     .tag(mode)
@@ -152,19 +59,18 @@ public struct UrlEncodeView: View {
         }
         .pickerStyle(.segmented)
         .labelsHidden()
-        .disabled(store.direction == .decode)
+        .disabled(model.direction == .decode)
     }
 
     private var decodePlusToggle: some View {
-        Toggle("+ as space", isOn: $store.decodePlusAsSpace)
+        Toggle("+ as space", isOn: $model.decodePlusAsSpace)
             .help("Decode + characters as spaces (for form data)")
-            .disabled(store.direction == .encode)
+            .disabled(model.direction == .encode)
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Error message
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
@@ -193,7 +99,6 @@ public struct UrlEncodeView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             #else
-            // Input section: TextField + Convert
             HStack(spacing: 12) {
                 inputField
                 convertButton
@@ -201,7 +106,6 @@ public struct UrlEncodeView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
 
-            // Options rows
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
                     ConfigLabel("Mode")
@@ -229,16 +133,15 @@ public struct UrlEncodeView: View {
 
             Divider()
 
-            // Result section
             VStack(alignment: .leading, spacing: 8) {
                 Text("Result")
                     .font(.callout)
                     .foregroundStyle(.secondary)
 
                 HStack(spacing: 8) {
-                    Text(store.result.isEmpty ? "Result will appear here" : store.result)
+                    Text(model.result.isEmpty ? "Result will appear here" : model.result)
                         .font(.system(.body, design: .monospaced))
-                        .foregroundStyle(store.result.isEmpty ? .secondary : .primary)
+                        .foregroundStyle(model.result.isEmpty ? .secondary : .primary)
                         .textSelection(.enabled)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(8)
@@ -256,25 +159,23 @@ public struct UrlEncodeView: View {
                                 .stroke(Color(uiColor: .separator), lineWidth: 1)
                                 #endif
                         )
-                }
 
-                HStack(spacing: 12) {
                     Button {
-                        store.send(.copyResultButtonTouched)
+                        model.copyResultButtonTouched()
                     } label: {
                         Label("Copy", systemImage: "doc.on.doc")
                     }
                     .buttonStyle(.bordered)
-                    .disabled(store.result.isEmpty)
+                    .disabled(model.result.isEmpty)
                     .help("Copy result to clipboard")
 
                     Button {
-                        store.send(.useAsInputButtonTouched)
+                        model.useAsInputButtonTouched()
                     } label: {
                         Label("Use as Input", systemImage: "arrow.up")
                     }
                     .buttonStyle(.bordered)
-                    .disabled(store.result.isEmpty)
+                    .disabled(model.result.isEmpty)
                     .help("Use result as new input")
                 }
             }
@@ -286,10 +187,11 @@ public struct UrlEncodeView: View {
     }
 }
 
-// MARK: - Preview
+public typealias UrlEncodeModelView = UrlEncodeView
 
-struct UrlEncodeReducer_Previews: PreviewProvider {
+struct UrlEncodeView_Previews: PreviewProvider {
     static var previews: some View {
-        UrlEncodeView(store: .init(initialState: .init()) { UrlEncodeReducer() })
+        UrlEncodeView(model: .init())
     }
 }
+

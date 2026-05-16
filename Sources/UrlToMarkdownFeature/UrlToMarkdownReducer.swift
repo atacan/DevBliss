@@ -1,16 +1,12 @@
 import BlissTheme
-import ComposableArchitecture
-import Demark
 import Dependencies
-import DependenciesAdditions
+import Demark
 import Foundation
-import HtmlToMarkdownClient
-import InputOutput
+import HtmlToMarkdownFeature
 import MarkdownUI
 import SharedModels
+import Sharing
 import SwiftUI
-import SyntaxHighlightClient
-import UrlToMarkdownClient
 
 // MARK: - FileStorage Keys for Configuration
 
@@ -40,164 +36,146 @@ extension SharedReaderKey where Self == FileStorageKey<UrlLoadingConfig> {
     }
 }
 
-@Reducer
-public struct UrlToMarkdownReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class UrlToMarkdownModel {
+    @ObservationIgnored
+    @Shared(.toolInput("urlToMarkdown")) public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("urlToMarkdown")) public var inputText = ""
-        @Shared(.toolOutput("urlToMarkdown")) public var outputText = ""
-        @Shared(.urlToMarkdownConfig) public var configuration = HtmlToMarkdownConfig()
-        @Shared(.urlLoadingConfig) public var loadingConfiguration = UrlLoadingConfig()
-        public var output: OutputAttributedEditorReducer.State
-        var isConversionRequestInFlight = false
-        var errorMessage: String?
-        var showMarkdownPreview = false
+    @ObservationIgnored
+    @Shared(.toolOutput("urlToMarkdown")) public var outputText = ""
 
-        // URL input is derived from inputText for persistence
-        public var urlInput: String {
-            get { inputText }
-            set { $inputText.withLock { $0 = newValue } }
-        }
+    @ObservationIgnored
+    @Shared(.urlToMarkdownConfig) public var configuration = HtmlToMarkdownConfig()
 
-        public init(
-            configuration: HtmlToMarkdownConfig = .init(),
-            loadingConfiguration: UrlLoadingConfig = .init()
-        ) {
-            let outputText = Shared(wrappedValue: "", .toolOutput("urlToMarkdown"))
-            self._outputText = outputText
-            self.output = OutputAttributedEditorReducer.State(rawText: outputText.projectedValue)
-            self.isConversionRequestInFlight = false
-        }
+    @ObservationIgnored
+    @Shared(.urlLoadingConfig) public var loadingConfiguration = UrlLoadingConfig()
 
-        public var outputString: String {
-            output.text.string
-        }
+    public var isConversionRequestInFlight = false
+    public var errorMessage: String?
+    public var showMarkdownPreview = false
+
+    private var conversionTask: Task<Void, Never>?
+
+    @ObservationIgnored
+    @Dependency(\.urlToMarkdown) private var urlToMarkdown
+
+    public var urlInput: String {
+        get { inputText }
+        set { inputText = newValue }
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case highlightResponse(NSAttributedString)
-        case output(OutputAttributedEditorReducer.Action)
+    public init(
+        configuration: HtmlToMarkdownConfig = .init(),
+        loadingConfiguration: UrlLoadingConfig = .init()
+    ) {
+        let inputText = Shared(wrappedValue: "", .toolInput("urlToMarkdown"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("urlToMarkdown"))
+        self._inputText = inputText
+        self._outputText = outputText
+        self.isConversionRequestInFlight = false
+        self.showMarkdownPreview = false
+        self.configuration = configuration
+        self.loadingConfiguration = loadingConfiguration
     }
 
-    @Dependency(\.urlToMarkdown) var urlToMarkdown
-    @Dependency(\.syntaxHighlight) var syntaxHighlight
-    private enum CancelID { case conversionRequest, highlightRequest }
-    private static let maxHighlightCharacters = 100_000
-    @Dependency(\.mainQueue) var mainQueue
+    public init(input: String, output: String = "") {
+        let outputText = Shared(wrappedValue: output, .toolOutput("urlToMarkdown"))
+        self._inputText = Shared(wrappedValue: input, .toolInput("urlToMarkdown"))
+        self._outputText = outputText
+        self.isConversionRequestInFlight = false
+        self.showMarkdownPreview = false
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.errorMessage = nil
-                guard let url = URL(string: state.urlInput) else {
-                    state.errorMessage = "Invalid URL"
-                    return .none
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        conversionTask = nil
+
+        errorMessage = nil
+        guard !inputText.isEmpty else {
+            errorMessage = "URL must not be empty"
+            return
+        }
+
+        guard let url = URL(string: inputText) else {
+            errorMessage = "Invalid URL"
+            return
+        }
+
+        isConversionRequestInFlight = true
+        let config = configuration
+        let loadingConfig = loadingConfiguration
+        let urlToMarkdown = urlToMarkdown
+
+        conversionTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                let markdown = try await urlToMarkdown.convert(url, config, loadingConfig)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = markdown
                 }
-                state.isConversionRequestInFlight = true
-                return
-                    .run { [url = url, config = state.configuration, loadingConfig = state.loadingConfiguration] send in
-                        await send(
-                            .conversionResponse(
-                                TaskResult {
-                                    try await urlToMarkdown.convert(url, config, loadingConfig)
-                                }
-                            )
-                        )
-                    }
-                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(markdown)):
-                state.isConversionRequestInFlight = false
-                let showPlainText = state.output.updateText(markdown)
-                    .map { Action.output($0) }
-
-                guard markdown.count <= Self.maxHighlightCharacters else {
-                    return showPlainText
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    errorMessage = error.localizedDescription
+                    outputText = error.localizedDescription
                 }
-
-                return .merge(
-                    showPlainText,
-                    .run { [syntaxHighlight] send in
-                        let highlighted = await syntaxHighlight.highlightMarkdown(markdown)
-                        if highlighted.length > 0 {
-                            await send(.highlightResponse(highlighted))
-                        }
-                    }
-                    .cancellable(id: CancelID.highlightRequest, cancelInFlight: true)
-                )
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                state.errorMessage = error.localizedDescription
-                return state.output.updateText(errorAttributedString(error.localizedDescription))
-                    .map { Action.output($0) }
-
-            case let .highlightResponse(highlighted):
-                return state.output.updateText(highlighted)
-                    .map { Action.output($0) }
-
-            case .output:
-                return .none
             }
         }
+    }
 
-        Scope(state: \.output, action: \.output) {
-            OutputAttributedEditorReducer()
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct UrlToMarkdownView: View {
-    @Bindable var store: StoreOf<UrlToMarkdownReducer>
+extension UrlToMarkdownModel: Equatable {
+    public static func == (lhs: UrlToMarkdownModel, rhs: UrlToMarkdownModel) -> Bool {
+        lhs === rhs
+    }
+}
 
-    public init(store: StoreOf<UrlToMarkdownReducer>) {
-        self.store = store
+public struct UrlToMarkdownModelView: View {
+    @Bindable var model: UrlToMarkdownModel
+
+    public init(model: UrlToMarkdownModel) {
+        self.model = model
     }
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Primary action area: URL input + Convert button
             HStack(spacing: 12) {
-                TextField("Enter URL to convert", text: $store.urlInput)
+                TextField("Enter URL to convert", text: $model.urlInput)
                     .blissTextField()
                     .onSubmit {
-                        store.send(.convertButtonTouched)
+                        model.convertButtonTouched()
                     }
 
-                LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
-                    store.send(.convertButtonTouched)
+                LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
+                    model.convertButtonTouched()
                 }
                 .keyboardShortcut(.return, modifiers: [.command])
                 .help("Convert URL to Markdown (⌘ Return)")
-                .disabled(store.urlInput.isEmpty || store.isConversionRequestInFlight)
+                .disabled(model.urlInput.isEmpty || model.isConversionRequestInFlight)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
 
-            // Error message
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
-            // Configuration panel
             configurationGrid
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
 
             Divider()
 
-            // Output area with preview toggle
             VStack(spacing: 0) {
-                // Header with title and preview toggle
                 HStack {
                     Text("Markdown Output")
                         .font(.headline)
@@ -205,7 +183,7 @@ public struct UrlToMarkdownView: View {
 
                     Spacer()
 
-                    Toggle("Preview", isOn: $store.showMarkdownPreview)
+                    Toggle("Preview", isOn: $model.showMarkdownPreview)
                         .toggleStyle(.switch)
                         .controlSize(.small)
                         .help("Toggle between raw markdown and rendered preview")
@@ -216,29 +194,26 @@ public struct UrlToMarkdownView: View {
 
                 Divider()
 
-                // Content: either preview or raw editor
-                if store.showMarkdownPreview {
+                if model.showMarkdownPreview {
                     ScrollView {
-                        Markdown(store.outputText)
+                        Markdown(model.outputText)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(ThemeColor.Background.textBackground)
                 } else {
-                    OutputAttributedEditorView(
-                        store: store.scope(state: \.output, action: \.output),
-                        title: ""
-                    )
+                    TextEditor(text: $model.outputText)
+                        .font(.system(.body, design: .monospaced))
+                        .scrollContentBackground(.hidden)
+                        .padding(.horizontal, 8)
                 }
             }
         }
     }
 
-    // MARK: - Configuration Controls
-
     private var enginePicker: some View {
-        Picker("Engine", selection: $store.configuration.engine) {
+        Picker("Engine", selection: $model.configuration.engine) {
             Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
             Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
         }
@@ -246,7 +221,7 @@ public struct UrlToMarkdownView: View {
     }
 
     private var headingStylePicker: some View {
-        Picker("Heading Style", selection: $store.configuration.headingStyle) {
+        Picker("Heading Style", selection: $model.configuration.headingStyle) {
             Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
             Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
         }
@@ -254,7 +229,7 @@ public struct UrlToMarkdownView: View {
     }
 
     private var bulletMarkerPicker: some View {
-        Picker("Bullet Marker", selection: $store.configuration.bulletListMarker) {
+        Picker("Bullet Marker", selection: $model.configuration.bulletListMarker) {
             Text("-").tag("-")
             Text("*").tag("*")
             Text("+").tag("+")
@@ -265,15 +240,15 @@ public struct UrlToMarkdownView: View {
     }
 
     private var codeBlockStylePicker: some View {
-        Picker("Code Block Style", selection: $store.configuration.codeBlockStyle) {
-            Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
+        Picker("Code Block Style", selection: $model.configuration.codeBlockStyle) {
+            Text("Fenced (``` )").tag(DemarkCodeBlockStyle.fenced)
             Text("Indented").tag(DemarkCodeBlockStyle.indented)
         }
         .help("Fenced uses triple backticks, Indented uses 4 spaces")
     }
 
     private var contentSelectorField: some View {
-        TextField("e.g., article, main, .content", text: $store.loadingConfiguration.contentSelector)
+        TextField("e.g., article, main, .content", text: $model.loadingConfiguration.contentSelector)
             .blissCompactTextField()
             .help("CSS selector to extract specific content (leave empty for full page)")
     }
@@ -302,7 +277,6 @@ public struct UrlToMarkdownView: View {
         let labelWidth: CGFloat = 120
 
         Grid(horizontalSpacing: 18, verticalSpacing: 12) {
-            // Row 1: Engine and Heading Style
             GridRow {
                 ConfigLabel("Engine")
                     .frame(width: labelWidth, alignment: .trailing)
@@ -317,7 +291,6 @@ public struct UrlToMarkdownView: View {
                     .controlSize(.small)
             }
 
-            // Row 2: Bullet Marker and Code Block Style
             GridRow {
                 ConfigLabel("Bullet Marker")
                     .frame(width: labelWidth, alignment: .trailing)
@@ -332,7 +305,6 @@ public struct UrlToMarkdownView: View {
                     .controlSize(.small)
             }
 
-            // Row 3: Content Selector
             GridRow {
                 ConfigLabel("Content Selector")
                     .frame(width: labelWidth, alignment: .trailing)
@@ -344,9 +316,8 @@ public struct UrlToMarkdownView: View {
     }
 }
 
-// Preview
-struct UrlToMarkdownReducer_Previews: PreviewProvider {
+struct UrlToMarkdownModelView_Previews: PreviewProvider {
     static var previews: some View {
-        UrlToMarkdownView(store: .init(initialState: .init()) { UrlToMarkdownReducer() })
+        UrlToMarkdownModelView(model: .init())
     }
 }

@@ -1,97 +1,114 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
+import Dependencies
 import JSDiff
 import JSDiffUI
+import Observation
 import SharedModels
+import Sharing
 import SplitView
-import StringDiffClient
 import SwiftUI
 
-@Reducer
-public struct StringDiffReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class StringDiffModel {
+    @ObservationIgnored
+    @Shared(.toolInput("stringDiff")) public var oldText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("stringDiff")) public var oldText = ""
-        @Shared(.toolOutput("stringDiff")) public var newText = ""
-        public var oldInput: InputEditorReducer.State
-        public var newInput: InputEditorReducer.State
-        var diffType: DiffType = .lines
-        var displayStyle: DiffDisplayStyle = .inline
-        var changes: [Change] = []
-        var isComputing = false
+    @ObservationIgnored
+    @Shared(.toolOutput("stringDiff")) public var newText = ""
 
-        public init() {
-            let oldText = Shared(wrappedValue: "", .toolInput("stringDiff"))
-            let newText = Shared(wrappedValue: "", .toolOutput("stringDiff"))
-            self._oldText = oldText
-            self._newText = newText
-            self.oldInput = InputEditorReducer.State(text: oldText.projectedValue)
-            self.newInput = InputEditorReducer.State(text: newText.projectedValue)
-        }
+    public var diffType: DiffType = .lines
+    public var displayStyle: DiffDisplayStyle = .inline
+    public var changes: [Change] = []
+    public var isComputing = false
+
+    @ObservationIgnored
+    @Dependency(\.stringDiff) private var stringDiff
+
+    @ObservationIgnored
+    private var diffTask: Task<Void, Never>?
+
+    public init() {
+        let oldText = Shared(wrappedValue: "", .toolInput("stringDiff"))
+        let newText = Shared(wrappedValue: "", .toolOutput("stringDiff"))
+        self._oldText = oldText
+        self._newText = newText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case oldInput(InputEditorReducer.Action)
-        case newInput(InputEditorReducer.Action)
-        case computeDiff
-        case diffResponse(TaskResult<[Change]>)
+    public init(oldText: String, newText: String = "") {
+        let oldText = Shared(wrappedValue: oldText, .toolInput("stringDiff"))
+        let newText = Shared(wrappedValue: newText, .toolOutput("stringDiff"))
+        self._oldText = oldText
+        self._newText = newText
+        scheduleDiff()
     }
 
-    @Dependency(\.stringDiff) var stringDiff
-    private enum CancelID { case diff }
+    public func setOldText(_ value: String) {
+        oldText = value
+        scheduleDiff()
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Scope(state: \.oldInput, action: \.oldInput) {
-            InputEditorReducer()
-        }
-        Scope(state: \.newInput, action: \.newInput) {
-            InputEditorReducer()
-        }
-        Reduce { state, action in
-            switch action {
-            case .binding(\.diffType):
-                return .send(.computeDiff)
-            case .binding:
-                return .none
-            case .oldInput, .newInput:
-                return .send(.computeDiff)
-            case .computeDiff:
-                state.isComputing = true
-                let old = state.oldText
-                let new = state.newText
-                let type = state.diffType
-                return .run { [stringDiff] send in
-                    await send(.diffResponse(TaskResult {
-                        await stringDiff.diff(type, old, new)
-                    }))
+    public func setNewText(_ value: String) {
+        newText = value
+        scheduleDiff()
+    }
+
+    public func setDiffType(_ value: DiffType) {
+        guard diffType != value else { return }
+        diffType = value
+        scheduleDiff()
+    }
+
+    public func convertButtonTouched() {
+        scheduleDiff()
+    }
+
+    public func cancel() {
+        diffTask?.cancel()
+        diffTask = nil
+        isComputing = false
+    }
+
+    private func scheduleDiff() {
+        diffTask?.cancel()
+        isComputing = true
+
+        let old = oldText
+        let new = newText
+        let type = diffType
+
+        diffTask = Task { [weak self, old = old, new = new, type = type, stringDiff = stringDiff] in
+            guard let self else { return }
+            do {
+                let result = try await stringDiff.diff(type, old, new)
+                await MainActor.run {
+                    isComputing = false
+                    changes = result
                 }
-                .cancellable(id: CancelID.diff, cancelInFlight: true)
-            case let .diffResponse(.success(changes)):
-                state.isComputing = false
-                state.changes = changes
-                return .none
-            case .diffResponse(.failure):
-                state.isComputing = false
-                return .none
+            } catch {
+                await MainActor.run {
+                    isComputing = false
+                    changes = []
+                }
             }
         }
     }
 }
 
-public struct StringDiffView: View {
-    @Bindable var store: StoreOf<StringDiffReducer>
+extension StringDiffModel: Equatable {
+    public static func == (lhs: StringDiffModel, rhs: StringDiffModel) -> Bool {
+        lhs === rhs
+    }
+}
 
+public struct StringDiffModelView: View {
+    @Bindable var model: StringDiffModel
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.StringDiff.splitViewFraction)
     @StateObject var layout = LayoutHolder.usingUserDefaults(.vertical, key: SettingsKey.StringDiff.splitViewLayout)
     @StateObject var hide = SideHolder()
 
-    public init(store: StoreOf<StringDiffReducer>) {
-        self.store = store
+    public init(model: StringDiffModel) {
+        self.model = model
     }
 
     public var body: some View {
@@ -102,7 +119,6 @@ public struct StringDiffView: View {
 
             VSplit(top: { editorsPane }, bottom: { diffResultView })
                 .fraction(fraction)
-//                .layout(layout)
                 .hide(hide)
                 .styling(visibleThickness: 2)
         }
@@ -112,7 +128,10 @@ public struct StringDiffView: View {
         HStack(spacing: 12) {
             Picker(
                 NSLocalizedString("Diff Type", comment: ""),
-                selection: $store.diffType
+                selection: Binding(
+                    get: { model.diffType },
+                    set: { model.setDiffType($0) }
+                )
             ) {
                 ForEach(DiffType.allCases) { type in
                     Text(type.displayName).tag(type)
@@ -123,12 +142,17 @@ public struct StringDiffView: View {
 
             Divider().frame(height: 20)
 
-            DiffStylePicker(displayStyle: $store.displayStyle)
-                .fixedSize()
+            DiffStylePicker(
+                displayStyle: Binding(
+                    get: { model.displayStyle },
+                    set: { model.displayStyle = $0 }
+                )
+            )
+            .fixedSize()
 
             Spacer()
 
-            if store.isComputing {
+            if model.isComputing {
                 ProgressView()
                     .controlSize(.small)
             }
@@ -139,21 +163,53 @@ public struct StringDiffView: View {
 
     private var editorsPane: some View {
         HStack(spacing: 0) {
-            InputEditorView(
-                store: store.scope(state: \.oldInput, action: \.oldInput),
-                title: NSLocalizedString("Original", comment: "")
+            TextEditor(
+                text: Binding(
+                    get: { model.oldText },
+                    set: { model.setOldText($0) }
+                )
             )
+            .font(.system(.body, design: .monospaced))
+            .padding(8)
+            .background(ThemeColor.Background.textBackground)
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(ThemeColor.Background.separator, lineWidth: 1)
+            )
+            .overlay(alignment: .topLeading) {
+                Text("Original")
+                    .padding(4)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
             Divider()
-            InputEditorView(
-                store: store.scope(state: \.newInput, action: \.newInput),
-                title: NSLocalizedString("Modified", comment: "")
+
+            TextEditor(
+                text: Binding(
+                    get: { model.newText },
+                    set: { model.setNewText($0) }
+                )
             )
+            .font(.system(.body, design: .monospaced))
+            .padding(8)
+            .background(ThemeColor.Background.textBackground)
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(ThemeColor.Background.separator, lineWidth: 1)
+            )
+            .overlay(alignment: .topLeading) {
+                Text("Modified")
+                    .padding(4)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
     @ViewBuilder
     private var diffResultView: some View {
-        if store.changes.isEmpty && !store.isComputing {
+        if model.changes.isEmpty && !model.isComputing {
             VStack {
                 Spacer()
                 Text(NSLocalizedString("Enter text in both editors to see the diff", comment: ""))
@@ -163,8 +219,8 @@ public struct StringDiffView: View {
         } else {
             ScrollView([.horizontal, .vertical]) {
                 DiffView(
-                    changes: store.changes,
-                    displayStyle: store.displayStyle
+                    changes: model.changes,
+                    displayStyle: model.displayStyle
                 )
                 .font(.system(.body, design: .monospaced))
             }
@@ -172,8 +228,34 @@ public struct StringDiffView: View {
     }
 }
 
-struct StringDiffReducer_Previews: PreviewProvider {
+struct StringDiffModelView_Previews: PreviewProvider {
     static var previews: some View {
-        StringDiffView(store: .init(initialState: .init()) { StringDiffReducer() })
+        StringDiffModelView(model: .init())
+    }
+}
+
+// MARK: - Dependency
+
+public struct StringDiffClient {
+    public var diff: @Sendable (DiffType, String, String) async -> [Change]
+
+    public init(diff: @escaping @Sendable (DiffType, String, String) async -> [Change]) {
+        self.diff = diff
+    }
+}
+
+extension StringDiffClient: DependencyKey {
+    public static let liveValue = Self(
+        diff: { type, old, new in
+            guard let jsDiff = JSDiff() else { return [] }
+            return await jsDiff.diff(type, old, new)
+        }
+    )
+}
+
+public extension DependencyValues {
+    var stringDiff: StringDiffClient {
+        get { self[StringDiffClient.self] }
+        set { self[StringDiffClient.self] = newValue }
     }
 }

@@ -1,98 +1,83 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
-import NumberBaseConverterClient
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import SplitView
 import SwiftUI
 
-@Reducer
-public struct NumberBaseConverterReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class NumberBaseConverterModel {
+    @ObservationIgnored
+    @Shared(.toolInput("numberBaseConverter"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("numberBaseConverter")) public var inputText = ""
-        @Shared(.toolOutput("numberBaseConverter")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var fromBase: NumberBase = .decimal
-        var isConversionRequestInFlight = false
-        var errorMessage: String?
+    @ObservationIgnored
+    @Shared(.toolOutput("numberBaseConverter"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("numberBaseConverter"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("numberBaseConverter"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    public var fromBase: NumberBase = .decimal
+    public var isConversionRequestInFlight = false
+    public var errorMessage: String?
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("numberBaseConverter"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("numberBaseConverter"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Dependency(\.numberBaseConverter) private var numberBaseConverter
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("numberBaseConverter"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("numberBaseConverter"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<NumberBaseResult>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init(
+        input: String,
+        output: String = ""
+    ) {
+        let inputText = Shared(wrappedValue: input, .toolInput("numberBaseConverter"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("numberBaseConverter"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.numberBaseConverter) var numberBaseConverter
-    private enum CancelID { case conversionRequest }
+    public func setFromBase(_ fromBase: NumberBase) {
+        self.fromBase = fromBase
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.errorMessage = nil
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let fromBase = state.fromBase
-                return .run { [numberBaseConverter] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await numberBaseConverter.convert(input, fromBase)
-                            }
-                        )
-                    )
-                }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        errorMessage = nil
+        let input = inputText
+        let fromBase = self.fromBase
+        conversionTask = Task { [weak self, input = input, fromBase = fromBase, numberBaseConverter = numberBaseConverter] in
+            guard let self else { return }
+            do {
+                let result = try await numberBaseConverter.convert(input, fromBase)
                 let output = format(result: result)
-                return state.inputOutput.output.updateText(output)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                state.errorMessage = error.localizedDescription
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = output
+                }
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    errorMessage = error.localizedDescription
+                    outputText = error.localizedDescription
+                }
             }
         }
+    }
 
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 
     private func format(result: NumberBaseResult) -> String {
@@ -106,11 +91,17 @@ public struct NumberBaseConverterReducer {
     }
 }
 
-public struct NumberBaseConverterView: View {
-    @Bindable var store: StoreOf<NumberBaseConverterReducer>
+extension NumberBaseConverterModel: Equatable {
+    public static func == (lhs: NumberBaseConverterModel, rhs: NumberBaseConverterModel) -> Bool {
+        lhs === rhs
+    }
+}
 
-    public init(store: StoreOf<NumberBaseConverterReducer>) {
-        self.store = store
+public struct NumberBaseConverterModelView: View {
+    @Bindable var model: NumberBaseConverterModel
+
+    public init(model: NumberBaseConverterModel) {
+        self.model = model
     }
 
     public var body: some View {
@@ -118,7 +109,7 @@ public struct NumberBaseConverterView: View {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
                     ConfigLabel("Input Base")
-                    Picker("Base", selection: $store.fromBase) {
+                    Picker("Base", selection: $model.fromBase) {
                         ForEach(NumberBase.allCases) { base in
                             Text(base.label)
                                 .tag(base)
@@ -130,32 +121,57 @@ public struct NumberBaseConverterView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
+            LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
+                model.convertButtonTouched()
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help("Convert (⌘ Return)")
             .padding(.vertical, 8)
 
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
             Divider()
 
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "Input",
-                outputEditorTitle: "Converted",
-                keyForFraction: SettingsKey.NumberBaseConverter.splitViewFraction,
-                keyForLayout: SettingsKey.NumberBaseConverter.splitViewLayout
-            )
+            Split(primary: { inputEditor }, secondary: { outputEditor })
+                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.NumberBaseConverter.splitViewFraction))
+                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.NumberBaseConverter.splitViewLayout))
+                .styling(visibleThickness: 2)
+        }
+    }
+
+    private var inputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Input")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.inputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
+    }
+
+    private var outputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Converted")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
         }
     }
 }
 
 struct NumberBaseConverterView_Previews: PreviewProvider {
     static var previews: some View {
-        NumberBaseConverterView(store: .init(initialState: .init()) { NumberBaseConverterReducer() })
+        NumberBaseConverterModelView(model: .init())
     }
 }

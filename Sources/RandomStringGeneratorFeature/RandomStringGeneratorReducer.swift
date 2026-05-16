@@ -1,133 +1,126 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
-import RandomStringGeneratorClient
+import Dependencies
 import SharedModels
+import Sharing
 import SwiftUI
 
-@Reducer
-public struct RandomStringGeneratorReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class RandomStringGeneratorModel {
+    @ObservationIgnored
+    @Shared(.toolInput("randomStringGenerator"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("randomStringGenerator")) public var inputText = ""
-        @Shared(.toolOutput("randomStringGenerator")) public var outputText = ""
-        var output: OutputEditorReducer.State
-        var length: Int = 16
-        var includeLowercase: Bool = true
-        var includeUppercase: Bool = true
-        var includeDigits: Bool = true
-        var includeSymbols: Bool = false
-        var errorMessage: String?
+    @ObservationIgnored
+    @Shared(.toolOutput("randomStringGenerator"))
+    public var outputText = ""
 
-        public init() {
-            let outputText = Shared(wrappedValue: "", .toolOutput("randomStringGenerator"))
-            self._outputText = outputText
-            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
-        }
+    @ObservationIgnored
+    private var generationTask: Task<Void, Never>?
 
-        public init(output: String) {
-            let outputText = Shared(wrappedValue: output, .toolOutput("randomStringGenerator"))
-            self._outputText = outputText
-            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
-        }
+    public var length: Int = 16
+    public var includeLowercase: Bool = true
+    public var includeUppercase: Bool = true
+    public var includeDigits: Bool = true
+    public var includeSymbols: Bool = false
+    public var isConversionRequestInFlight = false
+    public var errorMessage: String?
 
-        var config: RandomStringConfig {
-            RandomStringConfig(
-                includeLowercase: includeLowercase,
-                includeUppercase: includeUppercase,
-                includeDigits: includeDigits,
-                includeSymbols: includeSymbols
-            )
-        }
+    public var config: RandomStringConfig {
+        RandomStringConfig(
+            includeLowercase: includeLowercase,
+            includeUppercase: includeUppercase,
+            includeDigits: includeDigits,
+            includeSymbols: includeSymbols
+        )
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case generateButtonTouched
-        case generationResponse(TaskResult<String>)
-        case output(OutputEditorReducer.Action)
+    @ObservationIgnored
+    @Dependency(\.randomStringGenerator) private var randomStringGenerator
+
+    public init() {
+        let outputText = Shared(wrappedValue: "", .toolOutput("randomStringGenerator"))
+        self._outputText = outputText
     }
 
-    @Dependency(\.randomStringGenerator) var randomStringGenerator
-    private enum CancelID { case generationRequest }
+    public init(output: String) {
+        let outputText = Shared(wrappedValue: output, .toolOutput("randomStringGenerator"))
+        self._outputText = outputText
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .generateButtonTouched:
-                state.errorMessage = nil
-                let length = state.length
-                let config = state.config
-                return .run { [randomStringGenerator] send in
-                    await send(
-                        .generationResponse(
-                            TaskResult {
-                                try await randomStringGenerator.generate(length, config)
-                            }
-                        )
-                    )
+    public func generateButtonTouched() {
+        generationTask?.cancel()
+        isConversionRequestInFlight = true
+        errorMessage = nil
+        let length = length
+        let config = config
+
+        generationTask = Task { [weak self, length = length, config = config, randomStringGenerator = randomStringGenerator] in
+            guard let self else { return }
+                do {
+                    let result = try await randomStringGenerator.generate(length, config)
+                    await MainActor.run {
+                        isConversionRequestInFlight = false
+                        outputText = result
+                    }
                 }
-                .cancellable(id: CancelID.generationRequest, cancelInFlight: true)
-
-            case let .generationResponse(.success(result)):
-                return state.output.updateText(result)
-                    .map { Action.output($0) }
-
-            case let .generationResponse(.failure(error)):
-                state.errorMessage = error.localizedDescription
-                return .none
-
-            case .output:
-                return .none
+                catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    errorMessage = error.localizedDescription
+                    outputText = error.localizedDescription
+                }
             }
         }
+    }
 
-        Scope(state: \.output, action: \.output) {
-            OutputEditorReducer()
-        }
+    public func cancel() {
+        generationTask?.cancel()
+        generationTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct RandomStringGeneratorView: View {
-    @Bindable var store: StoreOf<RandomStringGeneratorReducer>
+extension RandomStringGeneratorModel: Equatable {
+    public static func == (lhs: RandomStringGeneratorModel, rhs: RandomStringGeneratorModel) -> Bool {
+        lhs === rhs
+    }
+}
 
-    public init(store: StoreOf<RandomStringGeneratorReducer>) {
-        self.store = store
+public struct RandomStringGeneratorModelView: View {
+    @Bindable var model: RandomStringGeneratorModel
+
+    public init(model: RandomStringGeneratorModel) {
+        self.model = model
     }
 
-    // MARK: - Reusable Controls
-
     private var lengthStepper: some View {
-        Stepper(value: $store.length, in: 1...256) {
-            Text("\(store.length)")
+        Stepper(value: $model.length, in: 1...256) {
+            Text("\(model.length)")
                 .frame(width: 50, alignment: .leading)
         }
     }
 
     private var lowercaseToggle: some View {
-        Toggle("Lowercase", isOn: $store.includeLowercase)
+        Toggle("Lowercase", isOn: $model.includeLowercase)
     }
 
     private var uppercaseToggle: some View {
-        Toggle("Uppercase", isOn: $store.includeUppercase)
+        Toggle("Uppercase", isOn: $model.includeUppercase)
     }
 
     private var digitsToggle: some View {
-        Toggle("Digits", isOn: $store.includeDigits)
+        Toggle("Digits", isOn: $model.includeDigits)
     }
 
     private var symbolsToggle: some View {
-        Toggle("Symbols", isOn: $store.includeSymbols)
+        Toggle("Symbols", isOn: $model.includeSymbols)
     }
 
     private var generateButton: some View {
-        LoadingButton("Generate", isLoading: false) {
-            store.send(.generateButtonTouched)
+        LoadingButton("Generate", isLoading: model.isConversionRequestInFlight) {
+            model.generateButtonTouched()
         }
         .keyboardShortcut(.return, modifiers: [.command])
         .help("Generate (⌘ Return)")
@@ -179,19 +172,29 @@ public struct RandomStringGeneratorView: View {
                 .padding(.vertical, 8)
             #endif
 
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
             Divider()
 
-            OutputEditorView(store: store.scope(state: \.output, action: \.output))
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Random Strings")
+                    .font(.headline)
+                    .padding(.horizontal, 8)
+
+                TextEditor(text: $model.outputText)
+                    .font(.system(.body, design: .monospaced))
+                    .frame(minHeight: 180)
+                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, 8)
+            }
         }
     }
 }
 
-struct RandomStringGeneratorView_Previews: PreviewProvider {
+struct RandomStringGeneratorModel_Previews: PreviewProvider {
     static var previews: some View {
-        RandomStringGeneratorView(store: .init(initialState: .init()) { RandomStringGeneratorReducer() })
+        RandomStringGeneratorModelView(model: .init())
     }
 }

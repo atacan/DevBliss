@@ -1,113 +1,105 @@
-import AsciiToHexClient
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import SplitView
 import SwiftUI
 
-@Reducer
-public struct AsciiToHexReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class AsciiToHexModel {
+    @ObservationIgnored
+    @Shared(.toolInput("asciiToHex"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("asciiToHex")) public var inputText = ""
-        @Shared(.toolOutput("asciiToHex")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var uppercase: Bool = true
-        var separator: HexSeparator = .space
+    @ObservationIgnored
+    @Shared(.toolOutput("asciiToHex"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("asciiToHex"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("asciiToHex"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var uppercase: Bool = true
+    public var separator: HexSeparator = .space
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("asciiToHex"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("asciiToHex"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Dependency(\.asciiToHex) private var asciiToHex
 
-        var config: AsciiToHexConfig {
-            AsciiToHexConfig(uppercase: uppercase, separator: separator)
-        }
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public var config: AsciiToHexConfig {
+        AsciiToHexConfig(uppercase: uppercase, separator: separator)
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("asciiToHex"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("asciiToHex"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.asciiToHex) var asciiToHex
-    private enum CancelID { case conversionRequest }
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("asciiToHex"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("asciiToHex"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let config = state.config
-                return .run { [asciiToHex] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await asciiToHex.convert(input, config)
-                            }
-                        )
-                    )
+    public func setUppercase(_ enabled: Bool) {
+        uppercase = enabled
+    }
+
+    public func setSeparator(_ separator: HexSeparator) {
+        self.separator = separator
+    }
+
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let config = self.config
+
+        conversionTask = Task { [weak self, input = input, config = config, asciiToHex = asciiToHex] in
+            guard let self else { return }
+            do {
+                let result = try await asciiToHex.convert(input, config)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = result
                 }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+            }
+            catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = error.localizedDescription
+                }
             }
         }
+    }
 
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct AsciiToHexView: View {
-    @Bindable var store: StoreOf<AsciiToHexReducer>
+extension AsciiToHexModel: Equatable {
+    public static func == (lhs: AsciiToHexModel, rhs: AsciiToHexModel) -> Bool {
+        lhs === rhs
+    }
+}
 
-    public init(store: StoreOf<AsciiToHexReducer>) {
-        self.store = store
+public struct AsciiToHexModelView: View {
+    @Bindable var model: AsciiToHexModel
+
+    public init(model: AsciiToHexModel) {
+        self.model = model
     }
 
-    // MARK: - Reusable Controls
-
     private var separatorPicker: some View {
-        Picker("Separator", selection: $store.separator) {
+        Picker("Separator", selection: $model.separator) {
             ForEach(HexSeparator.allCases) { separator in
                 Text(separator.rawValue)
                     .tag(separator)
@@ -116,12 +108,12 @@ public struct AsciiToHexView: View {
     }
 
     private var uppercaseToggle: some View {
-        Toggle("Uppercase", isOn: $store.uppercase)
+        Toggle("Uppercase", isOn: $model.uppercase)
     }
 
     private var convertButton: some View {
-        LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
-            store.send(.convertButtonTouched)
+        LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
+            model.convertButtonTouched()
         }
         .keyboardShortcut(.return, modifiers: [.command])
         .help("Convert (⌘ Return)")
@@ -158,19 +150,44 @@ public struct AsciiToHexView: View {
 
             Divider()
 
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "ASCII",
-                outputEditorTitle: "Hex",
-                keyForFraction: SettingsKey.AsciiToHex.splitViewFraction,
-                keyForLayout: SettingsKey.AsciiToHex.splitViewLayout
-            )
+            Split(primary: { inputEditor }, secondary: { outputEditor })
+                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.AsciiToHex.splitViewFraction))
+                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.AsciiToHex.splitViewLayout))
+                .styling(visibleThickness: 2)
+        }
+    }
+
+    private var inputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("ASCII")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.inputText)
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
+    }
+
+    private var outputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Hex")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
         }
     }
 }
 
+// TODO: delete this file and move to AsciiToHexModelView once the app shell is fully migrated.
 struct AsciiToHexView_Previews: PreviewProvider {
     static var previews: some View {
-        AsciiToHexView(store: .init(initialState: .init()) { AsciiToHexReducer() })
+        AsciiToHexModelView(model: AsciiToHexModel())
     }
 }

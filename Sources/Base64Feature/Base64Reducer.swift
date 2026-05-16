@@ -1,125 +1,139 @@
-import Base64Client
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import SplitView
 import SwiftUI
 
-@Reducer
-public struct Base64Reducer {
-    public init() {}
+@MainActor
+@Observable
+public final class Base64Model {
+    @ObservationIgnored
+    @Shared(.toolInput("base64"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("base64")) public var inputText = ""
-        @Shared(.toolOutput("base64")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var mode: Base64Mode = .encode
-        var autoDetect: Bool = true
-        var autoRemoveDataURLPrefix: Bool = true
-        var autoRemoveNullBytes: Bool = true
+    @ObservationIgnored
+    @Shared(.toolOutput("base64"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("base64"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("base64"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var mode: Base64Mode = .encode
+    public var autoDetect: Bool = true
+    public var autoRemoveDataURLPrefix: Bool = true
+    public var autoRemoveNullBytes: Bool = true
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("base64"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("base64"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Dependency(\.base64) private var base64
 
-        var config: Base64Config {
-            Base64Config(
-                autoDetect: autoDetect,
-                autoRemoveDataURLPrefix: autoRemoveDataURLPrefix,
-                autoRemoveNullBytes: autoRemoveNullBytes
-            )
-        }
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public var config: Base64Config {
+        Base64Config(
+            autoDetect: autoDetect,
+            autoRemoveDataURLPrefix: autoRemoveDataURLPrefix,
+            autoRemoveNullBytes: autoRemoveNullBytes
+        )
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("base64"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("base64"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.base64) var base64
-    private enum CancelID { case conversionRequest }
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("base64"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("base64"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let mode = state.mode
-                let config = state.config
-                return .run { [base64] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                switch mode {
-                                case .encode:
-                                    return try await base64.encode(input)
-                                case .decode:
-                                    return try await base64.decode(input, config)
-                                }
-                            }
-                        )
-                    )
+    public func setMode(_ mode: Base64Mode) {
+        self.mode = mode
+    }
+
+    public func setAutoDetect(_ isEnabled: Bool) {
+        autoDetect = isEnabled
+    }
+
+    public func setAutoRemoveDataURLPrefix(_ isEnabled: Bool) {
+        autoRemoveDataURLPrefix = isEnabled
+    }
+
+    public func setAutoRemoveNullBytes(_ isEnabled: Bool) {
+        autoRemoveNullBytes = isEnabled
+    }
+
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let selectedMode = mode
+        let config = self.config
+
+        conversionTask = Task { [weak self, input = input, selectedMode = selectedMode, config = config, base64 = base64] in
+            guard let self else { return }
+            do {
+                let result: String
+                switch selectedMode {
+                case .encode:
+                    result = try await base64.encode(input)
+                case .decode:
+                    result = try await base64.decode(input, config)
                 }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
 
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = result
+                }
+            }
+            catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = error.localizedDescription
+                }
             }
         }
+    }
 
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct Base64View: View {
-    @Bindable var store: StoreOf<Base64Reducer>
+extension Base64Model: Equatable {
+    public static func == (lhs: Base64Model, rhs: Base64Model) -> Bool {
+        lhs === rhs
+    }
+}
 
-    public init(store: StoreOf<Base64Reducer>) {
-        self.store = store
+// MARK: - Preview
+
+struct Base64Model_Previews: PreviewProvider {
+    static var previews: some View {
+        Base64ModelView(model: .init())
+    }
+}
+
+public struct Base64ModelView: View {
+    @Bindable var model: Base64Model
+
+    private let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.Base64.splitViewFraction)
+    @StateObject private var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.Base64.splitViewLayout)
+    @StateObject private var hide = SideHolder()
+
+    public init(model: Base64Model) {
+        self.model = model
     }
 
-    // MARK: - Reusable Controls
-
     private var modePicker: some View {
-        Picker("Mode", selection: $store.mode) {
+        Picker("Mode", selection: $model.mode) {
             ForEach(Base64Mode.allCases) { mode in
                 Text(mode.rawValue)
                     .tag(mode)
@@ -130,26 +144,26 @@ public struct Base64View: View {
     }
 
     private var autoDetectToggle: some View {
-        Toggle("Auto-detect", isOn: $store.autoDetect)
+        Toggle("Auto-detect", isOn: $model.autoDetect)
             .help("Automatically detect if input is Base64 and switch mode")
     }
 
     private var stripDataURLToggle: some View {
-        Toggle("Strip data URL", isOn: $store.autoRemoveDataURLPrefix)
+        Toggle("Strip data URL", isOn: $model.autoRemoveDataURLPrefix)
             .help("Remove data:...;base64, prefix when decoding")
     }
 
     private var stripNullBytesToggle: some View {
-        Toggle("Strip null bytes", isOn: $store.autoRemoveNullBytes)
+        Toggle("Strip null bytes", isOn: $model.autoRemoveNullBytes)
             .help("Remove null bytes at the end of decoded string")
     }
 
     private var convertButton: some View {
         LoadingButton(
-            store.mode == .encode ? "Encode" : "Decode",
-            isLoading: store.isConversionRequestInFlight
+            model.mode == .encode ? "Encode" : "Decode",
+            isLoading: model.isConversionRequestInFlight
         ) {
-            store.send(.convertButtonTouched)
+            model.convertButtonTouched()
         }
         .keyboardShortcut(.return, modifiers: [.command])
         .help("Convert (⌘ Return)")
@@ -179,7 +193,6 @@ public struct Base64View: View {
             convertButton
                 .padding(.vertical, 8)
             #else
-            // Mode selection and options
             VStack(spacing: 4) {
                 modePicker
                     .frame(width: 160)
@@ -200,21 +213,38 @@ public struct Base64View: View {
 
             Divider()
 
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "Input",
-                outputEditorTitle: "Output",
-                keyForFraction: SettingsKey.Base64.splitViewFraction,
-                keyForLayout: SettingsKey.Base64.splitViewLayout
-            )
+            Split(primary: { inputEditor }, secondary: { outputEditor })
+                .fraction(fraction)
+                .layout(layout)
+                .hide(hide)
+                .styling(visibleThickness: 2)
         }
     }
-}
 
-// MARK: - Preview
+    private var inputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Input")
+                .font(.headline)
+                .padding(.horizontal, 8)
 
-struct Base64Reducer_Previews: PreviewProvider {
-    static var previews: some View {
-        Base64View(store: .init(initialState: .init()) { Base64Reducer() })
+            TextEditor(text: $model.inputText)
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
+    }
+
+    private var outputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Output")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
     }
 }

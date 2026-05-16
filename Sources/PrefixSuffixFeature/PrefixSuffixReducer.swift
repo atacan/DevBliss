@@ -1,158 +1,135 @@
 import BlissTheme
-import ComposableArchitecture
 import Dependencies
-import DependenciesAdditions
-import InputOutput
-import PrefixSuffixClient
+import Observation
 import SharedModels
+import Sharing
+import SplitView
 import SwiftUI
 
-@Reducer
-public struct PrefixSuffixReducer {
-    public init() {}
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("prefixSuffix")) public var inputText = ""
-        @Shared(.toolOutput("prefixSuffix")) public var outputText = ""
-        public var inputOutput: InputOutputEditorsReducer.State
-        public var configuration: PrefixSuffixConfig
-        var isConversionRequestInFlight = false
+@MainActor
+@Observable
+public final class PrefixSuffixModel {
+    @ObservationIgnored
+    @Shared(.toolInput("prefixSuffix")) public var inputText = ""
 
-        public init(
-            inputOutput: InputOutputEditorsReducer.State = .init(),
-            configuration: PrefixSuffixConfig = .init()
-        ) {
-            let inputText = Shared(wrappedValue: "", .toolInput("prefixSuffix"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("prefixSuffix"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
+    @ObservationIgnored
+    @Shared(.toolOutput("prefixSuffix")) public var outputText = ""
+
+    @ObservationIgnored
+    @Shared(.appStorage(SettingsKey.PrefixSuffix.prefixReplace))
+    public var prefixReplace: String = ""
+
+    @ObservationIgnored
+    @Shared(.appStorage(SettingsKey.PrefixSuffix.prefixReplaceWith))
+    public var prefixReplaceWith: String = ""
+
+    @ObservationIgnored
+    @Shared(.appStorage(SettingsKey.PrefixSuffix.prefixAdd))
+    public var prefixAdd: String = ""
+
+    @ObservationIgnored
+    @Shared(.appStorage(SettingsKey.PrefixSuffix.suffixReplace))
+    public var suffixReplace: String = ""
+
+    @ObservationIgnored
+    @Shared(.appStorage(SettingsKey.PrefixSuffix.suffixReplaceWith))
+    public var suffixReplaceWith: String = ""
+
+    @ObservationIgnored
+    @Shared(.appStorage(SettingsKey.PrefixSuffix.suffixAdd))
+    public var suffixAdd: String = ""
+
+    @ObservationIgnored
+    @Shared(.appStorage(SettingsKey.PrefixSuffix.trimWhiteSpace))
+    public var trimWhiteSpace: Bool = true
+
+    public var isConversionRequestInFlight = false
+    public var configuration: PrefixSuffixConfig {
+        get {
+            .init(
+                prefixReplace: prefixReplace,
+                prefixReplaceWith: prefixReplaceWith,
+                prefixAdd: prefixAdd,
+                suffixReplace: suffixReplace,
+                suffixReplaceWith: suffixReplaceWith,
+                suffixAdd: suffixAdd,
+                trimWhiteSpace: trimWhiteSpace
             )
-
-            // Initialize other properties
-            self.isConversionRequestInFlight = false
-
-            // Load config from UserDefaults
-            @Dependency(\.userDefaults) var userDefaults
-            let config: PrefixSuffixConfig = with(configuration) {
-                .init(
-                    prefixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplace)
-                        ?? $0
-                        .prefixReplace,
-                    prefixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplaceWith)
-                        ?? $0
-                        .prefixReplaceWith,
-                    prefixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixAdd) ?? $0.prefixAdd,
-                    suffixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplace)
-                        ?? $0
-                        .suffixReplace,
-                    suffixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplaceWith)
-                        ?? $0
-                        .suffixReplaceWith,
-                    suffixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixAdd) ?? $0.suffixAdd,
-                    trimWhiteSpace: userDefaults.bool(forKey: SettingsKey.PrefixSuffix.trimWhiteSpace)
-                        ?? $0
-                        .trimWhiteSpace
-                )
-            }
-            self.configuration = config
         }
-
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("prefixSuffix"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("prefixSuffix"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-
-            // Initialize other properties
-            self.isConversionRequestInFlight = false
-
-            // Load config from UserDefaults
-            @Dependency(\.userDefaults) var userDefaults
-            let config = PrefixSuffixConfig(
-                prefixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplace) ?? "",
-                prefixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixReplaceWith) ?? "",
-                prefixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.prefixAdd) ?? "",
-                suffixReplace: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplace) ?? "",
-                suffixReplaceWith: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixReplaceWith) ?? "",
-                suffixAdd: userDefaults.string(forKey: SettingsKey.PrefixSuffix.suffixAdd) ?? "",
-                trimWhiteSpace: userDefaults.bool(forKey: SettingsKey.PrefixSuffix.trimWhiteSpace) ?? true
-            )
-            self.configuration = config
+        set {
+            prefixReplace = newValue.prefixReplace
+            prefixReplaceWith = newValue.prefixReplaceWith
+            prefixAdd = newValue.prefixAdd
+            suffixReplace = newValue.suffixReplace
+            suffixReplaceWith = newValue.suffixReplaceWith
+            suffixAdd = newValue.suffixAdd
+            trimWhiteSpace = newValue.trimWhiteSpace
         }
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    @ObservationIgnored
+    @Dependency(\.prefixSuffix) private var prefixSuffix
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("prefixSuffix"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("prefixSuffix"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.prefixSuffix) var prefixSuffix
-    private enum CancelID { case conversionRequest }
-    @Dependency(\.userDefaults) var userDefaults
-    @Dependency(\.mainQueue) var mainQueue
+    public init(
+        input: String,
+        output: String = ""
+    ) {
+        let inputText = Shared(wrappedValue: input, .toolInput("prefixSuffix"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("prefixSuffix"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case let .binding(action):
-                return setPreferences(for: action, from: state)
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                return
-                    .run { [input = state.inputOutput.input.text, config = state.configuration] send in
-                        await send(
-                            .conversionResponse(
-                                TaskResult {
-                                    try await prefixSuffix.convert(input, config)
-                                }
-                            )
-                        )
-                    }
-                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                // https://github.com/pointfreeco/swift-composable-architecture/discussions/1952#discussioncomment-5167956
-                return state.inputOutput.output.updateText(result)
-                    .map { Action.inputOutput(.output($0)) }
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-            case .inputOutput:
-                return .none
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let config = configuration
+        conversionTask = Task { [weak self, input = input, config = config, prefixSuffix = prefixSuffix] in
+            guard let self else { return }
+            do {
+                let result = try await prefixSuffix.convert(input, config)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = result
+                }
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = error.localizedDescription
+                }
             }
         }
-
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
     }
 
-    private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
-        userDefaults.set(state.configuration.prefixReplace, forKey: SettingsKey.PrefixSuffix.prefixReplace)
-        userDefaults.set(state.configuration.prefixReplaceWith, forKey: SettingsKey.PrefixSuffix.prefixReplaceWith)
-        userDefaults.set(state.configuration.prefixAdd, forKey: SettingsKey.PrefixSuffix.prefixAdd)
-        userDefaults.set(state.configuration.suffixReplace, forKey: SettingsKey.PrefixSuffix.suffixReplace)
-        userDefaults.set(state.configuration.suffixReplaceWith, forKey: SettingsKey.PrefixSuffix.suffixReplaceWith)
-        userDefaults.set(state.configuration.suffixAdd, forKey: SettingsKey.PrefixSuffix.suffixAdd)
-        userDefaults.set(state.configuration.trimWhiteSpace, forKey: SettingsKey.PrefixSuffix.trimWhiteSpace)
-        return .none
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct PrefixSuffixView: View {
-    @Bindable var store: StoreOf<PrefixSuffixReducer>
+extension PrefixSuffixModel: Equatable {
+    public static func == (lhs: PrefixSuffixModel, rhs: PrefixSuffixModel) -> Bool {
+        lhs === rhs
+    }
+}
+
+// TODO: delete this file once all legacy App shell cases are fully migrated.
+
+public struct PrefixSuffixModelView: View {
+    @Bindable var model: PrefixSuffixModel
 
     @FocusState private var focusedField: Field?
     enum Field: Int, Hashable {
@@ -164,9 +141,13 @@ public struct PrefixSuffixView: View {
         case suffixAdd
     }
 
-    public init(store: StoreOf<PrefixSuffixReducer>) {
-        self.store = store
+    public init(model: PrefixSuffixModel) {
+        self.model = model
     }
+
+    private let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.PrefixSuffix.splitViewFraction)
+    @StateObject private var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.PrefixSuffix.splitViewLayout)
+    @StateObject private var hide = SideHolder()
 
     public var body: some View {
         VStack {
@@ -184,7 +165,7 @@ public struct PrefixSuffixView: View {
                     Group {
                         TextField(
                             NSLocalizedString("Replace prefix", bundle: Bundle.module, comment: ""),
-                            text: $store.configuration.prefixReplace
+                            text: $model.prefixReplace
                         )
                         .focused($focusedField, equals: .prefixReplace)
                         .onSubmit { focusNextField($focusedField) }
@@ -192,7 +173,7 @@ public struct PrefixSuffixView: View {
 
                         TextField(
                             NSLocalizedString("with", bundle: Bundle.module, comment: ""),
-                            text: $store.configuration.prefixReplaceWith
+                            text: $model.prefixReplaceWith
                         )
                         .focused($focusedField, equals: .prefixReplaceWith)
                         .onSubmit { focusNextField($focusedField) }
@@ -206,7 +187,7 @@ public struct PrefixSuffixView: View {
 
                         TextField(
                             NSLocalizedString("Then add Prefix", bundle: Bundle.module, comment: ""),
-                            text: $store.configuration.prefixAdd
+                            text: $model.prefixAdd
                         )
                         .focused($focusedField, equals: .prefixAdd)
                         .onSubmit { focusNextField($focusedField) }
@@ -234,7 +215,7 @@ public struct PrefixSuffixView: View {
                     Group {
                          TextField(
                              NSLocalizedString("Replace suffix", bundle: Bundle.module, comment: ""),
-                             text: $store.configuration.suffixReplace
+                             text: $model.suffixReplace
                          )
                          .focused($focusedField, equals: .suffixReplace)
                          .onSubmit { focusNextField($focusedField) }
@@ -242,7 +223,7 @@ public struct PrefixSuffixView: View {
 
                          TextField(
                              NSLocalizedString("with", bundle: Bundle.module, comment: ""),
-                             text: $store.configuration.suffixReplaceWith
+                             text: $model.suffixReplaceWith
                          )
                          .focused($focusedField, equals: .suffixReplaceWith)
                          .onSubmit { focusNextField($focusedField) }
@@ -256,50 +237,66 @@ public struct PrefixSuffixView: View {
 
                          TextField(
                              NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""),
-                             text: $store.configuration.suffixAdd
+                             text: $model.suffixAdd
                          )
                         .focused($focusedField, equals: .suffixAdd)
                         .onSubmit { focusNextField($focusedField) }
                         .help(NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""))
-                    }  // <-Group
+                    }
                     .font(.monospaced(.body)())
                     .textFieldStyle(.roundedBorder)
                 }
-                Image(systemName: "backward.end")
-                    .help(
-                        NSLocalizedString(
-                            "After applying prefix and suffice manipulations to each line separately, it ends.",
-                            bundle: Bundle.module,
-                            comment: ""
-                        )
-                    )
-            }  // <-HStack
-            .autocorrectionDisabled()
-            #if os(iOS)
-                .textInputAutocapitalization(.never)
-            #endif
+            }
+            .padding(.horizontal, 16)
             .frame(maxWidth: 850)
+
+            Toggle(NSLocalizedString("Trim whitespace", bundle: Bundle.module, comment: ""), isOn: $model.trimWhiteSpace)
 
             LoadingButton(
                 NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
-                isLoading: store.isConversionRequestInFlight
+                isLoading: model.isConversionRequestInFlight
             ) {
-                store.send(.convertButtonTouched)
+                model.convertButtonTouched()
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help(NSLocalizedString("Convert (Cmd+Return)", bundle: Bundle.module, comment: ""))
             .padding(.top)
 
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: PrefixSuffixReducer.Action.inputOutput),
-                inputEditorTitle: NSLocalizedString("Input", bundle: Bundle.module, comment: ""),
-                outputEditorTitle: NSLocalizedString("Output", bundle: Bundle.module, comment: ""),
-                keyForFraction: SettingsKey.PrefixSuffix.splitViewFraction,
-                keyForLayout: SettingsKey.PrefixSuffix.splitViewLayout
-            )
+            Split(primary: { inputEditor }, secondary: { outputEditor })
+                .fraction(fraction)
+                .layout(layout)
+                .hide(hide)
+                .styling(visibleThickness: 2)
         }
         .onAppear {
             focusedField = .prefixReplace
+        }
+    }
+
+    private var inputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Input")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.inputText)
+                .frame(minHeight: 140)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
+    }
+
+    private var outputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Output")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 140)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
         }
     }
 }
@@ -307,7 +304,7 @@ public struct PrefixSuffixView: View {
 // preview
 struct PrefixSuffixReducer_Previews: PreviewProvider {
     static var previews: some View {
-        PrefixSuffixView(store: .init(initialState: .init()) { PrefixSuffixReducer() })
+        PrefixSuffixModelView(model: .init())
     }
 }
 

@@ -1,16 +1,14 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
+import Dependencies
 import QRCode
-import QrCodeToolClient
 import SharedModels
+import Sharing
 import SplitView
 import SwiftUI
 
-@Reducer
-public struct QrCodeToolReducer {
-    public init() {}
-
+@MainActor
+@Observable
+public final class QrCodeToolModel {
     public enum Mode: String, CaseIterable, Identifiable {
         case generate = "Generate"
         case decode = "Decode"
@@ -18,149 +16,108 @@ public struct QrCodeToolReducer {
         public var id: Self { self }
     }
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("qrCodeTool")) public var inputText = ""
-        @Shared(.toolOutput("qrCodeTool")) public var outputText = ""
-        var input: InputEditorReducer.State
-        var output: OutputEditorReducer.State
-        var mode: Mode = .generate
-        var errorCorrection: QrCodeErrorCorrection = .high
-        var dimension: Int = 256
-        var decodedMessages: [String] = []
-        var errorMessage: String?
-        var isConversionRequestInFlight = false
+    @ObservationIgnored
+    @Shared(.toolInput("qrCodeTool"))
+    public var inputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("qrCodeTool"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("qrCodeTool"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.input = InputEditorReducer.State(text: inputText.projectedValue)
-            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
-        }
+    @ObservationIgnored
+    @Shared(.toolOutput("qrCodeTool"))
+    public var outputText = ""
 
-        public init(inputText: String, outputText: String = "") {
-            let input = Shared(wrappedValue: inputText, .toolInput("qrCodeTool"))
-            let output = Shared(wrappedValue: outputText, .toolOutput("qrCodeTool"))
-            self._inputText = input
-            self._outputText = output
-            self.input = InputEditorReducer.State(text: input.projectedValue)
-            self.output = OutputEditorReducer.State(text: output.projectedValue)
-        }
+    public var mode: Mode = .generate
+    public var errorCorrection: QrCodeErrorCorrection = .high
+    public var dimension: Int = 256
+    public var decodedMessages: [String] = []
+    public var errorMessage: String?
+    public var isConversionRequestInFlight = false
 
-        var config: QrCodeGenerationConfig {
-            QrCodeGenerationConfig(dimension: dimension, errorCorrection: errorCorrection)
-        }
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    @ObservationIgnored
+    @Dependency(\.qrCodeTool) private var qrCodeTool
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("qrCodeTool"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("qrCodeTool"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case input(InputEditorReducer.Action)
-        case output(OutputEditorReducer.Action)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<QrCodeGenerationResult>)
-        case decodeResponse(TaskResult<[String]>)
+    public init(inputText: String, outputText: String = "") {
+        let input = Shared(wrappedValue: inputText, .toolInput("qrCodeTool"))
+        let output = Shared(wrappedValue: outputText, .toolOutput("qrCodeTool"))
+        self._inputText = input
+        self._outputText = output
     }
 
-    @Dependency(\.qrCodeTool) var qrCodeTool
-    private enum CancelID { case conversionRequest }
+    public var config: QrCodeGenerationConfig {
+        QrCodeGenerationConfig(dimension: dimension, errorCorrection: errorCorrection)
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = true
+        errorMessage = nil
 
-            case .input:
-                return .none
+        let input = inputText
+        let mode = mode
+        let config = config
+        let qrCodeTool = qrCodeTool
 
-            case .output:
-                return .none
-
-            case .convertButtonTouched:
-                state.errorMessage = nil
-                state.isConversionRequestInFlight = true
-                let input = state.input.text
-                if state.mode == .generate {
-                    let config = state.config
-                    return .run { [qrCodeTool] send in
-                        await send(
-                            .conversionResponse(
-                                TaskResult {
-                                    try await qrCodeTool.generate(input, config)
-                                }
-                            )
-                        )
+        conversionTask = Task { [weak self, input = input, mode = mode, config = config, qrCodeTool = qrCodeTool] in
+            guard let self else { return }
+            do {
+                if mode == .generate {
+                    let result = try await qrCodeTool.generate(input, config)
+                    await MainActor.run {
+                        self.isConversionRequestInFlight = false
+                        self.decodedMessages = []
+                        self.outputText = result.base64PNG
                     }
-                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
                 } else {
-                    return .run { [qrCodeTool] send in
-                        await send(
-                            .decodeResponse(
-                                TaskResult {
-                                    try await qrCodeTool.decode(input)
-                                }
-                            )
-                        )
+                    let messages = try await qrCodeTool.decode(input)
+                    await MainActor.run {
+                        self.isConversionRequestInFlight = false
+                        self.decodedMessages = messages
+                        self.outputText = messages.joined(separator: "\n")
                     }
-                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
                 }
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                state.decodedMessages = []
-                return state.output.updateText(result.base64PNG)
-                    .map { Action.output($0) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                state.errorMessage = error.localizedDescription
-                return state.output.updateText(error.localizedDescription)
-                    .map { Action.output($0) }
-
-            case let .decodeResponse(.success(messages)):
-                state.isConversionRequestInFlight = false
-                state.decodedMessages = messages
-                let output = messages.joined(separator: "\n")
-                return state.output.updateText(output)
-                    .map { Action.output($0) }
-
-            case let .decodeResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                state.decodedMessages = []
-                state.errorMessage = error.localizedDescription
-                return state.output.updateText(error.localizedDescription)
-                    .map { Action.output($0) }
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    if mode == .decode {
+                        self.decodedMessages = []
+                    }
+                    self.errorMessage = error.localizedDescription
+                    self.outputText = error.localizedDescription
+                }
             }
         }
+    }
 
-        Scope(state: \.input, action: \.input) {
-            InputEditorReducer()
-        }
-
-        Scope(state: \.output, action: \.output) {
-            OutputEditorReducer()
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
 public struct QrCodeToolView: View {
-    @Bindable var store: StoreOf<QrCodeToolReducer>
+    @Bindable var model: QrCodeToolModel
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.QrCodeTool.splitViewFraction)
     @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.QrCodeTool.splitViewLayout)
     @StateObject var hide = SideHolder()
 
-    public init(store: StoreOf<QrCodeToolReducer>) {
-        self.store = store
+    public init(model: QrCodeToolModel) {
+        self.model = model
     }
 
-    // MARK: - Reusable Controls
-
     private var modePicker: some View {
-        Picker("Mode", selection: $store.mode) {
-            ForEach(QrCodeToolReducer.Mode.allCases) { mode in
+        Picker("Mode", selection: $model.mode) {
+            ForEach(QrCodeToolModel.Mode.allCases) { mode in
                 Text(mode.rawValue).tag(mode)
             }
         }
@@ -169,7 +126,7 @@ public struct QrCodeToolView: View {
     }
 
     private var correctionPicker: some View {
-        Picker("Correction", selection: $store.errorCorrection) {
+        Picker("Correction", selection: $model.errorCorrection) {
             ForEach(QrCodeErrorCorrection.allCases) { option in
                 Text(option.rawValue).tag(option)
             }
@@ -177,12 +134,12 @@ public struct QrCodeToolView: View {
     }
 
     private var sizeStepper: some View {
-        Stepper("Size \(store.dimension)", value: $store.dimension, in: 128...1024, step: 64)
+        Stepper("Size \(model.dimension)", value: $model.dimension, in: 128...1024, step: 64)
     }
 
     private var actionButton: some View {
-        LoadingButton(store.mode == .generate ? "Generate" : "Decode", isLoading: store.isConversionRequestInFlight) {
-            store.send(.convertButtonTouched)
+        LoadingButton(model.mode == .generate ? "Generate" : "Decode", isLoading: model.isConversionRequestInFlight) {
+            model.convertButtonTouched()
         }
         .keyboardShortcut(.return, modifiers: [.command])
         .help("Convert (⌘ Return)")
@@ -193,7 +150,7 @@ public struct QrCodeToolView: View {
             #if os(iOS)
             VStack(spacing: 10) {
                 modePicker
-                if store.mode == .generate {
+                if model.mode == .generate {
                     HStack {
                         Text("Correction")
                             .font(.callout)
@@ -217,7 +174,7 @@ public struct QrCodeToolView: View {
                     modePicker
                         .frame(width: 200)
 
-                    if store.mode == .generate {
+                    if model.mode == .generate {
                         ConfigLabel("Correction")
                         correctionPicker
                             .blissMenuPicker(width: 140)
@@ -234,7 +191,7 @@ public struct QrCodeToolView: View {
                 .padding(.vertical, 8)
             #endif
 
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
@@ -247,33 +204,39 @@ public struct QrCodeToolView: View {
     }
 
     private var inputEditor: some View {
-        InputEditorView(
-            store: store.scope(state: \.input, action: \.input),
-            title: store.mode == .generate ? "Content" : "Image Path or Base64"
-        )
+        VStack(alignment: .leading, spacing: 6) {
+            Text(model.mode == .generate ? "Content" : "Image Path or Base64")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.inputText)
+                .frame(minHeight: 140)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
     }
 
     private var outputPane: some View {
         VStack(spacing: 0) {
-            if store.mode == .generate {
-                if store.input.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            if model.mode == .generate {
+                if model.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     Spacer()
                     Text("Enter content to generate a QR code")
                         .foregroundColor(.secondary)
                     Spacer()
                 } else {
-                    QRCodeViewUI(content: store.input.text, errorCorrection: store.errorCorrection.qrCodeValue)
+                    QRCodeViewUI(content: model.inputText, errorCorrection: model.errorCorrection.qrCodeValue)
                         .frame(maxWidth: .infinity, maxHeight: 300)
                         .padding()
                 }
             } else {
-                if store.decodedMessages.isEmpty {
+                if model.decodedMessages.isEmpty {
                     Spacer()
                     Text("Provide an image path or base64 data to decode")
                         .foregroundColor(.secondary)
                     Spacer()
                 } else {
-                    List(store.decodedMessages, id: \.self) { message in
+                    List(model.decodedMessages, id: \.self) { message in
                         Text(message)
                             .font(.system(.body, design: .monospaced))
                             .textSelection(.enabled)
@@ -283,24 +246,22 @@ public struct QrCodeToolView: View {
 
             Divider()
 
-            OutputEditorView(store: store.scope(state: \.output, action: \.output))
-        }
-    }
-}
-
-private extension QrCodeErrorCorrection {
-    var qrCodeValue: QRCode.ErrorCorrection {
-        switch self {
-        case .low: return .low
-        case .medium: return .medium
-        case .quantize: return .quantize
-        case .high: return .high
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Output")
+                    .font(.headline)
+                    .padding(.horizontal, 8)
+                TextEditor(text: $model.outputText)
+                    .font(.system(.body, design: .monospaced))
+                    .frame(minHeight: 120)
+                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, 8)
+            }
         }
     }
 }
 
 struct QrCodeToolView_Previews: PreviewProvider {
     static var previews: some View {
-        QrCodeToolView(store: .init(initialState: .init()) { QrCodeToolReducer() })
+        QrCodeToolView(model: .init())
     }
 }

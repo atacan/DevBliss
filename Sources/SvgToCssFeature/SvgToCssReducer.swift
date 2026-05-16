@@ -1,120 +1,105 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
-import SvgToCssClient
+import Sharing
+import SplitView
 import SwiftUI
 
-@Reducer
-public struct SvgToCssReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class SvgToCssModel {
+    @ObservationIgnored
+    @Shared(.toolInput("svgToCss"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("svgToCss")) public var inputText = ""
-        @Shared(.toolOutput("svgToCss")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var includeDataPrefix: Bool = true
-        var wrapWithCss: Bool = true
+    @ObservationIgnored
+    @Shared(.toolOutput("svgToCss"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("svgToCss"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("svgToCss"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    public var includeDataPrefix = true
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("svgToCss"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("svgToCss"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    public var wrapWithCss = true
 
-        var config: SvgToCssConfig {
-            SvgToCssConfig(includeDataPrefix: includeDataPrefix, wrapWithCss: wrapWithCss)
-        }
+    public var isConversionRequestInFlight = false
+
+    @ObservationIgnored
+    @Dependency(\.svgToCss) private var svgToCss
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("svgToCss"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("svgToCss"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("svgToCss"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("svgToCss"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.svgToCss) var svgToCss
-    private enum CancelID { case conversionRequest }
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let config = state.config
-                return .run { [svgToCss] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await svgToCss.convert(input, config)
-                            }
-                        )
-                    )
+        let input = inputText
+        let config = SvgToCssConfig(includeDataPrefix: includeDataPrefix, wrapWithCss: wrapWithCss)
+
+        conversionTask = Task { [weak self, input = input, config = config, svgToCss = svgToCss] in
+            guard let self else { return }
+            do {
+                let result = try await svgToCss.convert(input, config)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = result
                 }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    outputText = error.localizedDescription
+                }
             }
         }
+    }
 
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct SvgToCssView: View {
-    @Bindable var store: StoreOf<SvgToCssReducer>
+extension SvgToCssModel: Equatable {
+    public static func == (lhs: SvgToCssModel, rhs: SvgToCssModel) -> Bool {
+        lhs === rhs
+    }
+}
 
-    public init(store: StoreOf<SvgToCssReducer>) {
-        self.store = store
+public struct SvgToCssModelView: View {
+    @Bindable var model: SvgToCssModel
+
+    public init(model: SvgToCssModel) {
+        self.model = model
     }
 
     public var body: some View {
         VStack(spacing: 0) {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
-//                    ConfigLabel("Options")
-                    Toggle("Include data: prefix", isOn: $store.includeDataPrefix)
+                    Toggle("Include data: prefix", isOn: $model.includeDataPrefix)
                         #if os(macOS)
                         .toggleStyle(.checkbox)
                         #endif
 
-                    Toggle("Wrap in CSS", isOn: $store.wrapWithCss)
+                    Toggle("Wrap in CSS", isOn: $model.wrapWithCss)
                         #if os(macOS)
                         .toggleStyle(.checkbox)
                         #endif
@@ -123,8 +108,8 @@ public struct SvgToCssView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
 
-            LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
+            LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
+                model.convertButtonTouched()
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help("Convert (⌘ Return)")
@@ -132,19 +117,44 @@ public struct SvgToCssView: View {
 
             Divider()
 
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "SVG",
-                outputEditorTitle: "CSS",
-                keyForFraction: SettingsKey.SvgToCss.splitViewFraction,
-                keyForLayout: SettingsKey.SvgToCss.splitViewLayout
-            )
+            Split(primary: { inputEditor }, secondary: { outputEditor })
+                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.SvgToCss.splitViewFraction))
+                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.SvgToCss.splitViewLayout))
+                .styling(visibleThickness: 2)
+        }
+    }
+
+    private var inputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("SVG")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.inputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
+    }
+
+    private var outputEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("CSS")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: $model.outputText)
+                .font(.system(.body, design: .monospaced))
+                .frame(minHeight: 220)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
         }
     }
 }
 
 struct SvgToCssView_Previews: PreviewProvider {
     static var previews: some View {
-        SvgToCssView(store: .init(initialState: .init()) { SvgToCssReducer() })
+        SvgToCssModelView(model: .init())
     }
 }

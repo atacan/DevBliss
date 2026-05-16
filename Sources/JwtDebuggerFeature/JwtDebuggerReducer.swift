@@ -1,170 +1,175 @@
 import BlissTheme
-import ComposableArchitecture
 import Dependencies
-import InputOutput
-import JwtDebuggerClient
+import Foundation
 import SharedModels
 import SwiftUI
 
-@Reducer
-public struct JwtDebuggerReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class JwtDebuggerModel {
+    @ObservationIgnored
+    @Shared(.toolInput("jwtDebugger")) public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("jwtDebugger")) public var inputText = ""
-        @Shared(.toolOutput("jwtDebugger")) public var outputText = ""
-        public var input: InputAttributedEditorReducer.State
-        var autoDetect = true
-        var secretKey = ""
-        var isDecoding = false
-        var inspection: JwtDebugInspection?
-        var errorMessage: String?
+    @ObservationIgnored
+    @Shared(.toolOutput("jwtDebugger")) public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("jwtDebugger"))
-            self._inputText = inputText
-            self.input = InputAttributedEditorReducer.State(rawText: inputText.projectedValue)
-        }
+    @ObservationIgnored
+    @Dependency(\.jwtDebugger) private var jwtDebugger
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("jwtDebugger"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("jwtDebugger"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.input = InputAttributedEditorReducer.State(rawText: inputText.projectedValue)
-        }
+    public var autoDetect = true
+    public var secretKey = ""
+    public var isDecoding = false
+    public var inspection: JwtDebugInspection?
+    public var errorMessage: String?
 
-        var tokenText: String {
-            input.text.string
-        }
+    @ObservationIgnored
+    private var decodeTask: Task<Void, Never>?
 
-        var isTokenEmpty: Bool {
-            tokenText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        }
-
-        var algorithmDisplay: String {
-            inspection?.algorithm ?? "Unknown"
-        }
+    public var isTokenEmpty: Bool {
+        tokenText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case input(InputAttributedEditorReducer.Action)
-        case decodeButtonTouched
-        case decodeResponse(TaskResult<JwtDebugInspection>)
+    public var algorithmDisplay: String {
+        inspection?.algorithm ?? "Unknown"
     }
 
-    @Dependency(\.jwtDebugger) var jwtDebugger
-    private enum CancelID { case decodeRequest }
+    private var tokenText: String {
+        inputText
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Scope(state: \.input, action: \.input) {
-            InputAttributedEditorReducer()
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("jwtDebugger"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("jwtDebugger"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
+
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("jwtDebugger"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("jwtDebugger"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
+
+    public func setAutoDetect(_ enabled: Bool) {
+        autoDetect = enabled
+        guard enabled else {
+            return
         }
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding(\.autoDetect):
-                guard state.autoDetect else {
-                    return .none
+        decodeIfNeeded(setLoading: false)
+    }
+
+    public func setSecretKey(_ newValue: String) {
+        secretKey = newValue
+        guard autoDetect else {
+            return
+        }
+        decodeIfNeeded(setLoading: false)
+    }
+
+    public func onInputChanged() {
+        guard autoDetect else {
+            if isTokenEmpty {
+                inspection = nil
+                errorMessage = nil
+            }
+            return
+        }
+        decodeIfNeeded(setLoading: false)
+    }
+
+    public func decodeButtonTouched() {
+        decode(setLoading: true)
+    }
+
+    public func cancel() {
+        decodeTask?.cancel()
+        decodeTask = nil
+        isDecoding = false
+    }
+
+    private func decodeIfNeeded(setLoading: Bool) {
+        guard looksLikeJwt(tokenText) else {
+            inspection = nil
+            return
+        }
+        decode(setLoading: setLoading)
+    }
+
+    private func decode(setLoading: Bool) {
+        decodeTask?.cancel()
+        if setLoading {
+            isDecoding = true
+        }
+
+        let token = tokenText
+        let secret = secretKey.isEmpty ? nil : secretKey
+        let jwtDebugger = jwtDebugger
+
+        decodeTask = Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                let inspection = try await jwtDebugger.inspect(token, secret)
+                await MainActor.run {
+                    isDecoding = false
+                    self.inspection = inspection
+                    errorMessage = nil
+                    outputText = inspection.payloadJSON
                 }
-                return decodeIfNeeded(state: &state, setLoading: false)
-
-            case .binding(\.secretKey):
-                guard state.autoDetect else {
-                    return .none
+            } catch {
+                if error is CancellationError {
+                    return
                 }
-                return decodeIfNeeded(state: &state, setLoading: false)
 
-            case .binding:
-                return .none
-
-            case .input:
-                state.errorMessage = nil
-                applyHighlight(to: &state)
-                guard state.autoDetect else {
-                    if state.isTokenEmpty {
-                        state.inspection = nil
-                    }
-                    return .none
+                await MainActor.run {
+                    isDecoding = false
+                    self.inspection = nil
+                    errorMessage = error.localizedDescription
+                    outputText = error.localizedDescription
                 }
-                return decodeIfNeeded(state: &state, setLoading: false)
-
-            case .decodeButtonTouched:
-                applyHighlight(to: &state)
-                return decode(state: &state, setLoading: true)
-
-            case let .decodeResponse(.success(inspection)):
-                state.isDecoding = false
-                state.inspection = inspection
-                state.errorMessage = nil
-                return .none
-
-            case let .decodeResponse(.failure(error)):
-                state.isDecoding = false
-                state.inspection = nil
-                state.errorMessage = error.localizedDescription
-                return .none
             }
         }
     }
 
-    private func decodeIfNeeded(state: inout State, setLoading: Bool) -> Effect<Action> {
-        guard looksLikeJwt(state.tokenText) else {
-            state.inspection = nil
-            return .none
-        }
-        return decode(state: &state, setLoading: setLoading)
-    }
+}
 
-    private func decode(state: inout State, setLoading: Bool) -> Effect<Action> {
-        if setLoading {
-            state.isDecoding = true
-        }
-
-        let token = state.tokenText
-        let secret = state.secretKey.isEmpty ? nil : state.secretKey
-
-        return .run { [jwtDebugger] send in
-            await send(
-                .decodeResponse(
-                    TaskResult {
-                        try await jwtDebugger.inspect(token, secret)
-                    }
-                )
-            )
-        }
-        .cancellable(id: CancelID.decodeRequest, cancelInFlight: true)
-    }
-
-    private func applyHighlight(to state: inout State) {
-        let highlighted = jwtHighlightedString(state.tokenText)
-        _ = state.input.updateText(highlighted)
+extension JwtDebuggerModel: Equatable {
+    public static func == (lhs: JwtDebuggerModel, rhs: JwtDebuggerModel) -> Bool {
+        lhs === rhs
     }
 }
 
-public struct JwtDebuggerView: View {
-    @Bindable var store: StoreOf<JwtDebuggerReducer>
+public struct JwtDebuggerModelView: View {
+    @Bindable var model: JwtDebuggerModel
 
-    public init(store: StoreOf<JwtDebuggerReducer>) {
-        self.store = store
+    public init(model: JwtDebuggerModel) {
+        self.model = model
     }
 
     public var body: some View {
         VStack(spacing: 0) {
             optionsView
 
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
             Divider()
 
-            InputAttributedEditorView(
-                store: store.scope(state: \.input, action: JwtDebuggerReducer.Action.input),
-                title: NSLocalizedString("Token", comment: "")
-            )
+            VStack(alignment: .leading, spacing: 6) {
+                Text(NSLocalizedString("Token", comment: ""))
+                    .font(.headline)
+                    .padding(.horizontal, 8)
+
+                TextEditor(text: $model.inputText)
+                    .font(.system(.body, design: .monospaced))
+                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, 8)
+            }
+            .onChange(of: model.inputText) { _, _ in
+                model.onInputChanged()
+            }
             .frame(minHeight: 140, idealHeight: 180, maxHeight: 240)
 
             Divider()
@@ -176,7 +181,10 @@ public struct JwtDebuggerView: View {
     // MARK: - Reusable Controls
 
     private var autoDetectToggle: some View {
-        Toggle("Auto-detect", isOn: $store.autoDetect)
+        Toggle("Auto-detect", isOn: $model.autoDetect)
+            .onChange(of: model.autoDetect) { _, value in
+                model.setAutoDetect(value)
+            }
             .help("Automatically decode when input looks like a JWT")
     }
 
@@ -186,7 +194,7 @@ public struct JwtDebuggerView: View {
             Text("Algorithm")
                 .font(.callout)
                 .foregroundStyle(.secondary)
-            Text(store.algorithmDisplay)
+            Text(model.algorithmDisplay)
                 .font(.callout)
                 .foregroundStyle(.secondary)
         }
@@ -195,7 +203,7 @@ public struct JwtDebuggerView: View {
     private var secretKeyField: some View {
         TextField(
             "Secret or public key (for signature verification)",
-            text: $store.secretKey
+            text: $model.secretKey
         )
         .font(.monospaced(.body)())
         .autocorrectionDisabled()
@@ -203,18 +211,21 @@ public struct JwtDebuggerView: View {
         .textInputAutocapitalization(.never)
         #endif
         .blissTextField()
+        .onChange(of: model.secretKey) { _, value in
+            model.setSecretKey(value)
+        }
     }
 
     private var decodeButton: some View {
         LoadingButton(
             NSLocalizedString("Decode", comment: ""),
-            isLoading: store.isDecoding
+            isLoading: model.isDecoding
         ) {
-            store.send(.decodeButtonTouched)
+            model.decodeButtonTouched()
         }
         .keyboardShortcut(.return, modifiers: [.command])
         .help(NSLocalizedString("Decode token (Command+Return)", comment: ""))
-        .disabled(store.isTokenEmpty)
+        .disabled(model.isTokenEmpty)
     }
 
     private var optionsView: some View {
@@ -245,7 +256,7 @@ public struct JwtDebuggerView: View {
 
     @ViewBuilder
     private var outputView: some View {
-        if let inspection = store.inspection {
+        if let inspection = model.inspection {
             ScrollView {
                 VStack(spacing: 16) {
                     JwtJsonCard(title: "Header", json: inspection.headerJSON, icon: "doc.text")
@@ -425,48 +436,6 @@ private func looksLikeJwt(_ token: String) -> Bool {
     return parts.count == 3
 }
 
-private func jwtHighlightedString(_ text: String) -> NSMutableAttributedString {
-    #if os(macOS)
-    let baseColor = NSColor(ThemeColor.Text.editedText)
-    let headerColor = NSColor.systemBlue
-    let payloadColor = NSColor.systemGreen
-    let signatureColor = NSColor.systemOrange
-    let font = ThemeFont.monospaceSytem
-    #else
-    let baseColor = UIColor(ThemeColor.Text.editedText)
-    let headerColor = UIColor.systemBlue
-    let payloadColor = UIColor.systemGreen
-    let signatureColor = UIColor.systemOrange
-    let font = ThemeFont.monospaceSytem
-    #endif
-
-    let attributes: [NSAttributedString.Key: Any] = [
-        .foregroundColor: baseColor,
-        .font: font,
-    ]
-
-    let attributed = NSMutableAttributedString(string: text, attributes: attributes)
-    let parts = text.split(separator: ".", omittingEmptySubsequences: false)
-
-    guard parts.count >= 2 else {
-        return attributed
-    }
-
-    let colors = [headerColor, payloadColor, signatureColor]
-    var location = 0
-    for (index, part) in parts.enumerated() {
-        let length = part.utf16.count
-        let color = colors[min(index, colors.count - 1)]
-        attributed.addAttribute(.foregroundColor, value: color, range: NSRange(location: location, length: length))
-        location += length
-        if index < parts.count - 1 {
-            location += 1
-        }
-    }
-
-    return attributed
-}
-
 private extension JwtSignatureVerification {
     var label: String {
         switch self {
@@ -513,13 +482,5 @@ private extension JwtSignatureVerification {
         case .invalidKey:
             return .orange
         }
-    }
-}
-
-// MARK: - Preview
-
-struct JwtDebuggerReducer_Previews: PreviewProvider {
-    static var previews: some View {
-        JwtDebuggerView(store: .init(initialState: .init()) { JwtDebuggerReducer() })
     }
 }

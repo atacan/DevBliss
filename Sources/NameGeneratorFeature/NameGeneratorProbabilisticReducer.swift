@@ -1,174 +1,133 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
-import NameGeneratorClient
+import Dependencies
+import Foundation
+import Observation
+import SharedModels
 import SwiftUI
 
-@Reducer
-public struct NameGeneratorProbabilisticReducer {
-    public init() {}
-    @ObservableState
-    public struct State: Equatable {
-        var vowelsInput: [LetterWeight]
-        var consonantsInput: [LetterWeight]
-        var minLength: Int
-        var maxLength: Int
-        var alternationProbability: Double
-        var numberOfNames: Int
-        var isGenerating: Bool = false
+@MainActor
+@Observable
+public final class NameGeneratorProbabilisticModel {
+    public var vowelsInput: [LetterWeight]
+    public var consonantsInput: [LetterWeight]
+    public var minLength: Int
+    public var maxLength: Int
+    public var alternationProbability: Double
+    public var numberOfNames: Int
 
-        public init(
-            vowelsInput: [LetterWeight] = [
-                LetterWeight(letter: "a", frequency: 8),
-                LetterWeight(letter: "e", frequency: 12),
-                LetterWeight(letter: "i", frequency: 7),
-                LetterWeight(letter: "o", frequency: 8),
-                LetterWeight(letter: "u", frequency: 3),
-            ],
-            consonantsInput: [LetterWeight] = [
-                LetterWeight(letter: "b", frequency: 1),
-                LetterWeight(letter: "c", frequency: 3),
-                LetterWeight(letter: "d", frequency: 4),
-                LetterWeight(letter: "f", frequency: 2),
-                LetterWeight(letter: "g", frequency: 2),
-                LetterWeight(letter: "h", frequency: 5),
-                LetterWeight(letter: "j", frequency: 1),
-                LetterWeight(letter: "k", frequency: 1),
-                LetterWeight(letter: "l", frequency: 4),
-                LetterWeight(letter: "m", frequency: 3),
-                LetterWeight(letter: "n", frequency: 7),
-                LetterWeight(letter: "p", frequency: 2),
-                LetterWeight(letter: "q", frequency: 1),
-                LetterWeight(letter: "r", frequency: 6),
-                LetterWeight(letter: "s", frequency: 6),
-                LetterWeight(letter: "t", frequency: 9),
-                LetterWeight(letter: "v", frequency: 1),
-                LetterWeight(letter: "w", frequency: 2),
-                LetterWeight(letter: "x", frequency: 1),
-                LetterWeight(letter: "y", frequency: 2),
-                LetterWeight(letter: "z", frequency: 1),
-            ],
-            minLength: Int = 3,
-            maxLength: Int = 10,
-            alternationProbability: Double = 0.5,
-            numberOfNames: Int = 10
+    @ObservationIgnored
+    @Dependency(\.nameGenerator) private var nameGenerator
 
-        ) {
-            self.vowelsInput = vowelsInput
-            self.consonantsInput = consonantsInput
-            self.minLength = minLength
-            self.maxLength = maxLength
-            self.alternationProbability = alternationProbability
-            self.numberOfNames = numberOfNames
-        }
+    public init(
+        vowelsInput: [LetterWeight] = [
+            LetterWeight(letter: "a", frequency: 8),
+            LetterWeight(letter: "e", frequency: 12),
+            LetterWeight(letter: "i", frequency: 7),
+            LetterWeight(letter: "o", frequency: 8),
+            LetterWeight(letter: "u", frequency: 3),
+        ],
+        consonantsInput: [LetterWeight] = [
+            LetterWeight(letter: "b", frequency: 1),
+            LetterWeight(letter: "c", frequency: 3),
+            LetterWeight(letter: "d", frequency: 4),
+            LetterWeight(letter: "f", frequency: 2),
+            LetterWeight(letter: "g", frequency: 2),
+            LetterWeight(letter: "h", frequency: 5),
+            LetterWeight(letter: "j", frequency: 1),
+            LetterWeight(letter: "k", frequency: 1),
+            LetterWeight(letter: "l", frequency: 4),
+            LetterWeight(letter: "m", frequency: 3),
+            LetterWeight(letter: "n", frequency: 7),
+            LetterWeight(letter: "p", frequency: 2),
+            LetterWeight(letter: "q", frequency: 1),
+            LetterWeight(letter: "r", frequency: 6),
+            LetterWeight(letter: "s", frequency: 6),
+            LetterWeight(letter: "t", frequency: 9),
+            LetterWeight(letter: "v", frequency: 1),
+            LetterWeight(letter: "w", frequency: 2),
+            LetterWeight(letter: "x", frequency: 1),
+            LetterWeight(letter: "y", frequency: 2),
+            LetterWeight(letter: "z", frequency: 1),
+        ],
+        minLength: Int = 3,
+        maxLength: Int = 10,
+        alternationProbability: Double = 0.5,
+        numberOfNames: Int = 10
+
+    ) {
+        self.vowelsInput = vowelsInput
+        self.consonantsInput = consonantsInput
+        self.minLength = minLength
+        self.maxLength = maxLength
+        self.alternationProbability = alternationProbability
+        self.numberOfNames = numberOfNames
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case generateButtonTouched
-        case generationResponse(TaskResult<String>)
-        case addVowelButtontouched
-        case addConsonantButtontouched
-        case deleteVowelButtontouched(LetterWeight.ID)
-        case deleteConsonantButtontouched(LetterWeight.ID)
+    public func addVowelButtontouched() {
+        vowelsInput.append(LetterWeight(letter: "?", frequency: 1))
     }
 
-    @Dependency(\.nameGenerator) var nameGenerator
-    private enum CancelID { case generationRequest }
+    public func addConsonantButtontouched() {
+        consonantsInput.append(LetterWeight(letter: "?", frequency: 1))
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .generateButtonTouched:
-                state.isGenerating = true
-                return
-                    .run {
-                        [
-                            vowels = state.vowelsInput, consonants = state.consonantsInput, minLength = state.minLength,
-                            maxLength = state.maxLength, alternationProbability = state.alternationProbability,
-                            numberOfNames = state.numberOfNames
-                        ] send in
-                        await send(
-                            .generationResponse(
-                                TaskResult {
-                                    await nameGenerator.generate(
-                                        probabilisticWith: .init(
-                                            vowels: vowels,
-                                            consonants: consonants,
-                                            minLength: minLength,
-                                            maxLength: maxLength,
-                                            alternationProbability: alternationProbability
-                                        ),
-                                        times: numberOfNames
-                                    )
-                                    .joined(separator: "\n")
-                                }
-                            )
-                        )
-                    }
-                    .cancellable(id: CancelID.generationRequest, cancelInFlight: true)
-            case .generationResponse(.success):
-                state.isGenerating = false
-                return .none
-            case .generationResponse(.failure):
-                state.isGenerating = false
-                return .none
+    public func deleteVowelButtontouched(id: LetterWeight.ID) {
+        vowelsInput.removeAll(where: { $0.id == id })
+    }
 
-            case .addVowelButtontouched:
-                state.vowelsInput.append(LetterWeight(letter: "?", frequency: 1))
-                return .none
-            case .addConsonantButtontouched:
-                state.consonantsInput.append(LetterWeight(letter: "?", frequency: 1))
-                return .none
+    public func deleteConsonantButtontouched(id: LetterWeight.ID) {
+        consonantsInput.removeAll(where: { $0.id == id })
+    }
 
-            case let .deleteVowelButtontouched(id):
-                state.vowelsInput.removeAll(where: { $0.id == id })
-                return .none
-            case let .deleteConsonantButtontouched(id):
-                state.consonantsInput.removeAll(where: { $0.id == id })
-                return .none
-            }
-        }
+    public func generate() async -> String {
+        let names = await nameGenerator.generate(
+            probabilisticWith: .init(
+                vowels: vowelsInput,
+                consonants: consonantsInput,
+                minLength: minLength,
+                maxLength: maxLength,
+                alternationProbability: alternationProbability
+            ),
+            times: numberOfNames
+        )
+        return names.joined(separator: "\n")
     }
 }
 
 public struct NameGeneratorProbabilisticView: View {
-    @Bindable var store: StoreOf<NameGeneratorProbabilisticReducer>
+    @Bindable var model: NameGeneratorProbabilisticModel
 
-    public init(store: StoreOf<NameGeneratorProbabilisticReducer>) {
-        self.store = store
+    public init(model: NameGeneratorProbabilisticModel) {
+        self.model = model
     }
 
     public var body: some View {
         ScrollView {
             VStack {
                 LetterWeightsInputView(
-                    vowelsInput: $store.vowelsInput,
+                    vowelsInput: $model.vowelsInput,
                     title: NSLocalizedString("Vowels", bundle: Bundle.module, comment: ""),
                     plustButtonAction: {
-                        store.send(.addVowelButtontouched)
+                        model.addVowelButtontouched()
                     },
                     deleteButtonAction: { id in
-                        store.send(.deleteVowelButtontouched(id))
+                        model.deleteVowelButtontouched(id: id)
                     }
                 )
                 LetterWeightsInputView(
-                    vowelsInput: $store.consonantsInput,
+                    vowelsInput: $model.consonantsInput,
                     title: NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""),
                     plustButtonAction: {
-                        store.send(.addConsonantButtontouched)
+                        model.addConsonantButtontouched()
                     },
                     deleteButtonAction: { id in
-                        store.send(.deleteConsonantButtontouched(id))
+                        model.deleteConsonantButtontouched(id: id)
                     }
                 )
                 HStack {
                     VStack {
                         Text(NSLocalizedString("Min. length", bundle: Bundle.module, comment: ""))
-                        IntegerTextField(value: $store.minLength, range: 1 ... 15)
+                        IntegerTextField(value: $model.minLength, range: 1 ... 15)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(
@@ -183,14 +142,14 @@ public struct NameGeneratorProbabilisticView: View {
                             "%d",
                             tableName: nil,
                             bundle: Bundle.module,
-                            value: "\(store.minLength)",
+                            value: "\(model.minLength)",
                             comment: "value of a numeric input value for voice-over"
                         )
                     )
 
                     VStack {
                         Text(NSLocalizedString("Max. length", bundle: Bundle.module, comment: ""))
-                        IntegerTextField(value: $store.maxLength, range: 1 ... 15)
+                        IntegerTextField(value: $model.maxLength, range: 1 ... 15)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(
@@ -205,7 +164,7 @@ public struct NameGeneratorProbabilisticView: View {
                             "%d",
                             tableName: nil,
                             bundle: Bundle.module,
-                            value: "\(store.maxLength)",
+                            value: "\(model.maxLength)",
                             comment: "value of a numeric input value for voice-over"
                         )
                     )
@@ -220,7 +179,7 @@ public struct NameGeneratorProbabilisticView: View {
                                     comment: ""
                                 )
                             )
-                        Slider(value: $store.alternationProbability, in: 0 ... 1)
+                        Slider(value: $model.alternationProbability, in: 0 ... 1)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(
@@ -238,13 +197,13 @@ public struct NameGeneratorProbabilisticView: View {
                                     bundle: Bundle.module,
                                     comment: "value of a numeric input value for voice-over"
                                 ),
-                            Int(store.alternationProbability * 100)
+                            Int(model.alternationProbability * 100)
                         )
                     )
 
                     VStack {
                         Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                        IntegerTextField(value: $store.numberOfNames, range: 1 ... 200)
+                        IntegerTextField(value: $model.numberOfNames, range: 1 ... 200)
                             .frame(maxWidth: 150)
                     }
                     .accessibilityLabel(NSLocalizedString("names to be generated", bundle: Bundle.module, comment: ""))
@@ -254,53 +213,37 @@ public struct NameGeneratorProbabilisticView: View {
                                 format: NSLocalizedString(
                                     "%d",
                                     bundle: Bundle.module,
-                                    comment: "value of a numeric input value for voice-over"
+                                    comment: ""
                                 ),
-                                store.numberOfNames
+                                model.numberOfNames
                             ),
                             bundle: Bundle.module,
                             comment: "value of a numeric input value for voice-over"
                         )
                     )
                 }
-
-                LoadingButton(
-                    NSLocalizedString("Generate", bundle: Bundle.module, comment: ""),
-                    isLoading: store.isGenerating
-                ) {
-                    store.send(.generateButtonTouched)
-                }
-                .keyboardShortcut(.return, modifiers: [.command])
-                .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
             }
         }
     }
 }
 
-// preview
 #if DEBUG
 
-    struct NameGeneratorProbabilisticView_Previews: PreviewProvider {
-        let vowelsMock = "aeiou"
-        let consonantsMock = "bcdfghjklmnpqrstvwxyz"
-
-        static var previews: some View {
-            NameGeneratorProbabilisticView(
-                store: Store(initialState: .init()) {
-                    NameGeneratorProbabilisticReducer()
-                }
-            )
-        }
+struct NameGeneratorProbabilisticView_Previews: PreviewProvider {
+    static var previews: some View {
+        NameGeneratorProbabilisticView(model: NameGeneratorProbabilisticModel())
     }
+}
+
 #endif
 
-struct LetterWeightsInputView: View {
+public struct LetterWeightsInputView: View {
     @Binding var vowelsInput: [LetterWeight]
     let title: String
     let plustButtonAction: () -> Void
     let deleteButtonAction: (LetterWeight.ID) -> Void
 
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading) {
             Text(title)
             ScrollView(.horizontal, showsIndicators: true) {
@@ -330,7 +273,7 @@ struct LetterWeightsInputView: View {
                                             comment: ""
                                         )
                                     )
-                            }  // <-Button
+                            }
                             .buttonStyle(.plain)
                         }
                     }
@@ -347,3 +290,4 @@ struct LetterWeightsInputView: View {
         }
     }
 }
+

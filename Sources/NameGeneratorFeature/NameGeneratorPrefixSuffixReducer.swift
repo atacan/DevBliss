@@ -1,137 +1,93 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
-import NameGeneratorClient
+import Dependencies
+import Foundation
+import Observation
 import SwiftUI
 
-@Reducer
-public struct NameGeneratorPrefixSuffixReducer {
-    public init() {}
-    @ObservableState
-    public struct State: Equatable {
-        var prefixesInput: String
-        var suffixesInput: String
-        var inputSeparator: String
-        var numberOfNames: Int
-        var isGenerating: Bool = false
+@MainActor
+@Observable
+public final class NameGeneratorPrefixSuffixModel {
+    public var prefixesInput: String
+    public var suffixesInput: String
+    public var inputSeparator: String
+    public var numberOfNames: Int
 
-        public init(
-            prefixesInput: String = [
-                "Jo", "Bel", "Har", "San", "Le", "Gra", "Mel", "Ed", "Ari", "Theo", "Lau", "Phil", "Mat", "Rach",
-                "Mich", "Chris",
-                "An", "Jes", "Zach", "Deb", "Rob", "Steph", "Bri", "Pat", "Sam", "Kat", "Vic", "Nico", "Alex", "El",
-                "Gab",
-            ]
-            .joined(separator: ";"),
-            suffixesInput: String = [
-                "na",
-                "la",
-                "ron",
-                "ton",
-                "ine",
-                "bell",
-                "dor",
-                "ber",
-                "lie",
-                "der",
-                "ney",
-                "dy",
-                "son",
-                "lan",
-                "th",
-                "ce",
-                "cie",
-                "cy",
-                "sy",
-                "ca",
-                "ty",
-                "ny",
-                "ris",
-                "is",
-                "sey",
-                "nie",
-                "len",
-                "ken",
-                "ben",
-                "den",
-                "men",
-                "jen",
-            ]
-            .joined(separator: ";"),
-            inputSeparator: String = ";",
-            numberOfNames: Int = 10
-        ) {
-            self.prefixesInput = prefixesInput
-            self.suffixesInput = suffixesInput
-            self.inputSeparator = inputSeparator
-            self.numberOfNames = numberOfNames
-        }
+    @ObservationIgnored
+    @Dependency(\.nameGenerator) private var nameGenerator
 
-        public var prefixes: [String] {
-            prefixesInput.components(separatedBy: inputSeparator)
-                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-        }
-
-        public var suffixes: [String] {
-            suffixesInput.components(separatedBy: inputSeparator)
-                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-        }
+    public init(
+        prefixesInput: String = [
+            "Jo", "Bel", "Har", "San", "Le", "Gra", "Mel", "Ed", "Ari", "Theo", "Lau", "Phil", "Mat", "Rach",
+            "Mich", "Chris",
+            "An", "Jes", "Zach", "Deb", "Rob", "Steph", "Bri", "Pat", "Sam", "Kat", "Vic", "Nico", "Alex", "El",
+            "Gab",
+        ]
+        .joined(separator: ";"),
+        suffixesInput: String = [
+            "na",
+            "la",
+            "ron",
+            "ton",
+            "ine",
+            "bell",
+            "dor",
+            "ber",
+            "lie",
+            "der",
+            "ney",
+            "dy",
+            "son",
+            "lan",
+            "th",
+            "ce",
+            "cie",
+            "cy",
+            "sy",
+            "ca",
+            "ty",
+            "ny",
+            "ris",
+            "is",
+            "sey",
+            "nie",
+            "len",
+            "ken",
+            "ben",
+            "den",
+            "men",
+            "jen",
+        ]
+        .joined(separator: ";"),
+        inputSeparator: String = ";",
+        numberOfNames: Int = 10
+    ) {
+        self.prefixesInput = prefixesInput
+        self.suffixesInput = suffixesInput
+        self.inputSeparator = inputSeparator
+        self.numberOfNames = numberOfNames
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case generateButtonTouched
-        case generationResponse(TaskResult<String>)
+    public var prefixes: [String] {
+        prefixesInput.components(separatedBy: inputSeparator)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
     }
 
-    @Dependency(\.nameGenerator) var nameGenerator
-    private enum CancelID { case generationRequest }
+    public var suffixes: [String] {
+        suffixesInput.components(separatedBy: inputSeparator)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .generateButtonTouched:
-                state.isGenerating = true
-                return
-                    .run {
-                        [
-                            prefixes = state.prefixes,
-                            suffixes = state.suffixes,
-                            numberOfNames = state.numberOfNames
-                        ] send in
-                        await send(
-                            .generationResponse(
-                                TaskResult {
-                                    await nameGenerator.generateUsing(
-                                        namePrefixes: prefixes,
-                                        nameSuffixes: suffixes,
-                                        times: numberOfNames
-                                    )
-                                    .joined(separator: "\n")
-                                }
-                            )
-                        )
-                    }
-                    .cancellable(id: CancelID.generationRequest, cancelInFlight: true)
-            case .generationResponse(.success):
-                state.isGenerating = false
-                return .none
-            case .generationResponse(.failure):
-                state.isGenerating = false
-                return .none
-            }
-        }
+    public func generate() async -> String {
+        let names = await nameGenerator.generateUsing(namePrefixes: prefixes, nameSuffixes: suffixes, times: numberOfNames)
+        return names.joined(separator: "\n")
     }
 }
 
 public struct NameGeneratorPrefixSuffixView: View {
-    @Bindable var store: StoreOf<NameGeneratorPrefixSuffixReducer>
+    @Bindable var model: NameGeneratorPrefixSuffixModel
 
-    public init(store: StoreOf<NameGeneratorPrefixSuffixReducer>) {
-        self.store = store
+    public init(model: NameGeneratorPrefixSuffixModel) {
+        self.model = model
     }
 
     public var body: some View {
@@ -141,16 +97,16 @@ public struct NameGeneratorPrefixSuffixView: View {
                     Text(NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""),
-                        text: $store.prefixesInput
+                        text: $model.prefixesInput
                     )
                     .textFieldStyle(.roundedBorder)
                     .font(.monospaced(.title3)())
-                    }  // <-VStack
-                    VStack(alignment: .leading) {
+                }
+                VStack(alignment: .leading) {
                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                        text: $store.inputSeparator
+                        text: $model.inputSeparator
                     )
                     .textFieldStyle(.roundedBorder)
                     .font(.monospaced(.title3)())
@@ -166,20 +122,20 @@ public struct NameGeneratorPrefixSuffixView: View {
             }
             HStack {
                 VStack(alignment: .leading) {
-                        Text(NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""))
-                        TextField(
-                            NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
-                            text: $store.suffixesInput
-                        )
-                        .font(.monospaced(.title3)())
-                        .textFieldStyle(.roundedBorder)
-                    }
-                    VStack(alignment: .leading) {
-                        Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
-                        TextField(
-                            NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                            text: $store.inputSeparator
-                        )
+                    Text(NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""))
+                    TextField(
+                        NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
+                        text: $model.suffixesInput
+                    )
+                    .font(.monospaced(.title3)())
+                    .textFieldStyle(.roundedBorder)
+                }
+                VStack(alignment: .leading) {
+                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
+                    TextField(
+                        NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
+                        text: $model.inputSeparator
+                    )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 60)
@@ -196,7 +152,7 @@ public struct NameGeneratorPrefixSuffixView: View {
             HStack(alignment: .bottom) {
                 VStack {
                     Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: $store.numberOfNames, range: 1 ... 200)
+                    IntegerTextField(value: $model.numberOfNames, range: 1 ... 200)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -208,19 +164,11 @@ public struct NameGeneratorPrefixSuffixView: View {
                 )
                 .accessibilityValue(
                     NSLocalizedString(
-                        "\(store.numberOfNames)",
+                        "\(model.numberOfNames)",
                         bundle: Bundle.module,
                         comment: "value of a numeric input value for voice-over"
                     )
                 )
-                LoadingButton(
-                    NSLocalizedString("Generate", bundle: Bundle.module, comment: ""),
-                    isLoading: store.isGenerating
-                ) {
-                    store.send(.generateButtonTouched)
-                }
-                .keyboardShortcut(.return, modifiers: [.command])
-                .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
             }  // <-HStack
         }
     }
@@ -229,29 +177,27 @@ public struct NameGeneratorPrefixSuffixView: View {
 // preview
 #if DEBUG
 
-    struct NameGeneratorPrefixSuffixView_Previews: PreviewProvider {
-        static var previews: some View {
-            let namePrefixesMock = [
-                "Jo", "Bel", "Har", "San", "Le", "Gra", "Mel", "Ed", "Ari", "Theo", "Lau", "Phil", "Mat", "Rach",
-                "Mich", "Chris",
-                "An", "Jes", "Zach", "Deb", "Rob", "Steph", "Bri", "Pat", "Sam", "Kat", "Vic", "Nico", "Alex", "El",
-                "Gab",
-            ]
-            let nameSuffixesMock = [
-                "na", "la", "ron", "ton", "ine", "bell", "dor", "ber", "lie", "der", "ney", "dy", "son", "lan", "th",
-                "ce", "cie",
-                "cy", "sy", "ca", "ty", "ny", "ris", "is", "sey", "nie", "len", "ken", "ben", "den", "men", "jen",
-            ]
-            return NameGeneratorPrefixSuffixView(
-                store: Store(
-                    initialState: .init(
-                        prefixesInput: namePrefixesMock.joined(separator: ";"),
-                        suffixesInput: nameSuffixesMock.joined(separator: ";")
-                    )
-                ) {
-                    NameGeneratorPrefixSuffixReducer()
-                }
+struct NameGeneratorPrefixSuffixView_Previews: PreviewProvider {
+    static var previews: some View {
+        let namePrefixesMock = [
+            "Jo", "Bel", "Har", "San", "Le", "Gra", "Mel", "Ed", "Ari", "Theo", "Lau", "Phil", "Mat", "Rach",
+            "Mich", "Chris",
+            "An", "Jes", "Zach", "Deb", "Rob", "Steph", "Bri", "Pat", "Sam", "Kat", "Vic", "Nico", "Alex", "El",
+            "Gab",
+        ]
+        let nameSuffixesMock = [
+            "na", "la", "ron", "ton", "ine", "bell", "dor", "ber", "lie", "der", "ney", "dy", "son", "lan", "th",
+            "ce", "cie",
+            "cy", "sy", "ca", "ty", "ny", "ris", "is", "sey", "nie", "len", "ken", "ben", "den", "men", "jen",
+        ]
+        return NameGeneratorPrefixSuffixView(
+            model: NameGeneratorPrefixSuffixModel(
+                prefixesInput: namePrefixesMock.joined(separator: ";"),
+                suffixesInput: nameSuffixesMock.joined(separator: ";")
             )
-        }
+        )
     }
+}
+
 #endif
+
