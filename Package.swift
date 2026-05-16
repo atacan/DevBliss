@@ -117,7 +117,7 @@ let package = Package(
         .package(url: "https://github.com/jpsim/Yams", from: "6.0.1"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.51.0"),
         .package(url: "https://github.com/nkristek/Highlight.git", branch: "master"),
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.23.1"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.25.5"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.10.0"),
         .package(url: "https://github.com/stevengharris/SplitView", from: "3.1.0"),
         .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", branch: "xcode26"),

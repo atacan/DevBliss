@@ -23,6 +23,11 @@ public struct OutputEditorReducer {
             self._text = Shared(value: text)
             self.outputControls = outputControls
         }
+
+        public var editorText: String {
+            get { text }
+            set { $text.withLock { $0 = newValue } }
+        }
     }
 
     public enum Action: BindableAction, Equatable {
@@ -109,7 +114,7 @@ public struct OutputEditorView: View {
             .padding(.vertical, 4)
 
             MyPlainTextEditor(
-                text: $store.text,
+                text: $store.editorText,
                 isActivitySheetPresented: $store.isActivitySheetPresented
             )
 

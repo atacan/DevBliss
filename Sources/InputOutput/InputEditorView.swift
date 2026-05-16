@@ -23,6 +23,11 @@ public struct InputEditorReducer {
             self._text = Shared(value: text)
             self.inputEditorDrop = inputEditorDrop
         }
+
+        public var editorText: String {
+            get { text }
+            set { $text.withLock { $0 = newValue } }
+        }
     }
 
     public enum Action: BindableAction, Equatable {
@@ -115,7 +120,7 @@ public struct InputEditorView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 4)
 
-            MyPlainTextEditor(text: $store.text, isActivitySheetPresented: .constant(false))
+            MyPlainTextEditor(text: $store.editorText, isActivitySheetPresented: .constant(false))
                 .overlay(content: {
                     InputEditorDropView(
                         store: store.scope(state: \.inputEditorDrop, action: InputEditorReducer.Action.inputEditorDrop)

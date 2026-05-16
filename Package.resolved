@@ -24,7 +24,7 @@
       "location" : "https://github.com/atacan/demark",
       "state" : {
         "branch" : "convert-url",
-        "revision" : "2170b58362c6b362284754c275658fa57c86b911"
+        "revision" : "eafd0ef86282df77a20bcf4e79b47b583b81244e"
       }
     },
     {
@@ -61,15 +61,6 @@
       "state" : {
         "branch" : "main",
         "revision" : "579334004f05d5f910639a07c3df6cb32051f2d9"
-      }
-    },
-    {
-      "identity" : "jsbeautify",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/atacan/JSBeautify.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "dd73e2ed6553e9240c1239efadb14898b07ea5d5"
       }
     },
     {
@@ -212,8 +203,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-composable-architecture",
       "state" : {
-        "revision" : "5b0890fabfd68a2d375d68502bc3f54a8548c494",
-        "version" : "1.23.1"
+        "revision" : "1eaa6fa2ee57ac42843283b9fd3457af408c858d",
+        "version" : "1.25.5"
       }
     },
     {
@@ -293,8 +284,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-navigation",
       "state" : {
-        "revision" : "bf498690e1f6b4af790260f542e8428a4ba10d78",
-        "version" : "2.6.0"
+        "revision" : "32f35241b8be0719c4c7f00eb27713b1cadb6248",
+        "version" : "2.8.0"
       }
     },
     {
@@ -358,15 +349,6 @@
       "state" : {
         "revision" : "d86f244ed497d48012782e2f59c985a55e77b3f5",
         "version" : "2.11.3"
-      }
-    },
-    {
-      "identity" : "tcaenchancements",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/atacan/TCAEnchancements",
-      "state" : {
-        "revision" : "9d08ce3a8f3fcf5f6ba2d510a573dcabeed44d93",
-        "version" : "1.1.5"
       }
     },
     {
