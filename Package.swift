@@ -160,6 +160,7 @@ let package = Package(
                 .product(name: "Sharing", package: "swift-sharing"),
                 "InputOutput",
                 "SharedModels",
+                "BlissTheme",
             ]
         ),
         .target(
@@ -311,6 +312,7 @@ let package = Package(
                 "CommandLineClient",
                 "InputOutput",
                 "FilesClient",
+                "BlissTheme",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "Sharing", package: "swift-sharing"),
             ]
@@ -346,6 +348,7 @@ let package = Package(
             dependencies: [
                 "InputOutput",
                 "SharedModels",
+                "BlissTheme",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 "SyntaxHighlightClient",
                 .product(name: "HtmlSwift", package: "html-swift"),
@@ -365,6 +368,7 @@ let package = Package(
             dependencies: [
                 "InputOutput",
                 "SharedModels",
+                "BlissTheme",
                 "SyntaxHighlightClient",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "Demark", package: "demark"),
@@ -405,6 +409,7 @@ let package = Package(
                 "HtmlToMarkdownFeature",
                 "InputOutput",
                 "SharedModels",
+                "BlissTheme",
                 "SyntaxHighlightClient",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "Demark", package: "demark"),
@@ -417,6 +422,7 @@ let package = Package(
             dependencies: [
                 "InputOutput",
                 "SharedModels",
+                "BlissTheme",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "Highlight", package: "Highlight"),
                 .product(name: "Sharing", package: "swift-sharing"),
@@ -628,6 +634,7 @@ let package = Package(
             dependencies: [
                 "InputOutput",
                 "SharedModels",
+                "BlissTheme",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
                 .product(name: "SwiftFormat", package: "SwiftFormat"),
@@ -644,6 +651,7 @@ let package = Package(
             dependencies: [
                 "InputOutput",
                 "SharedModels",
+                "BlissTheme",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
             ]
@@ -694,6 +702,7 @@ let package = Package(
                 .product(name: "JWTDecode", package: "JWTDecode.swift"),
                 "InputOutput",
                 "SharedModels",
+                "BlissTheme",
             ]
         ),
         .testTarget(
@@ -708,6 +717,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "Sharing", package: "swift-sharing"),
+                "BlissTheme",
             ]
         ),
         .target(

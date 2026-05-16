@@ -1,5 +1,4 @@
 import BlissTheme
-import ColorConverterClient
 import Dependencies
 import SharedModels
 import Sharing
