@@ -107,12 +107,6 @@ public final class Base64Model {
     }
 }
 
-extension Base64Model: Equatable {
-    public static func == (lhs: Base64Model, rhs: Base64Model) -> Bool {
-        lhs === rhs
-    }
-}
-
 // MARK: - Preview
 
 struct Base64Model_Previews: PreviewProvider {

@@ -85,12 +85,6 @@ public final class AsciiToHexModel {
     }
 }
 
-extension AsciiToHexModel: Equatable {
-    public static func == (lhs: AsciiToHexModel, rhs: AsciiToHexModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct AsciiToHexModelView: View {
     @Bindable var model: AsciiToHexModel
 

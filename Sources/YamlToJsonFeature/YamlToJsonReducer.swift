@@ -81,12 +81,6 @@ public final class YamlToJsonModel {
     }
 }
 
-extension YamlToJsonModel: Equatable {
-    public static func == (lhs: YamlToJsonModel, rhs: YamlToJsonModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 struct YamlToJsonView_Previews: PreviewProvider {
     static var previews: some View {
         YamlToJsonModelView(model: .init())

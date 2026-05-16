@@ -95,12 +95,6 @@ public final class StringDiffModel {
     }
 }
 
-extension StringDiffModel: Equatable {
-    public static func == (lhs: StringDiffModel, rhs: StringDiffModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct StringDiffModelView: View {
     @Bindable var model: StringDiffModel
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.StringDiff.splitViewFraction)

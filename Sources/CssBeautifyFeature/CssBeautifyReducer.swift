@@ -76,12 +76,6 @@ public final class CssBeautifyModel {
     }
 }
 
-extension CssBeautifyModel: Equatable {
-    public static func == (lhs: CssBeautifyModel, rhs: CssBeautifyModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 struct CssBeautifyView_Previews: PreviewProvider {
     static var previews: some View {
         CssBeautifyModelView(model: .init())

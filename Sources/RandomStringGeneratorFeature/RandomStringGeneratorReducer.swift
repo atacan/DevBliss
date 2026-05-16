@@ -82,12 +82,6 @@ public final class RandomStringGeneratorModel {
     }
 }
 
-extension RandomStringGeneratorModel: Equatable {
-    public static func == (lhs: RandomStringGeneratorModel, rhs: RandomStringGeneratorModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct RandomStringGeneratorModelView: View {
     @Bindable var model: RandomStringGeneratorModel
 

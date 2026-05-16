@@ -76,12 +76,6 @@ public final class JsBeautifyModel {
     }
 }
 
-extension JsBeautifyModel: Equatable {
-    public static func == (lhs: JsBeautifyModel, rhs: JsBeautifyModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 struct JsBeautifyView_Previews: PreviewProvider {
     static var previews: some View {
         JsBeautifyModelView(model: .init())

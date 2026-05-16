@@ -90,12 +90,6 @@ public final class RegexMatchesModel {
     }
 }
 
-extension RegexMatchesModel: Equatable {
-    public static func == (lhs: RegexMatchesModel, rhs: RegexMatchesModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct RegexMatchesModelView: View {
     @Bindable var model: RegexMatchesModel
 

@@ -99,12 +99,6 @@ public final class RegExpTesterModel {
     }
 }
 
-extension RegExpTesterModel: Equatable {
-    public static func == (lhs: RegExpTesterModel, rhs: RegExpTesterModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct RegExpTesterModelView: View {
     @Bindable var model: RegExpTesterModel
 

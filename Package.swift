@@ -70,7 +70,6 @@ let package = Package(
         .package(url: "https://github.com/atacan/demark", branch: "convert-url"),
         .package(url: "https://github.com/atacan/html-swift", branch: "main"),
         .package(url: "https://github.com/atacan/MacSwiftUI", branch: "main"),
-        .package(url: "https://github.com/atacan/PillPickerView", branch: "develop"),
         .package(url: "https://github.com/auth0/JWTDecode.swift", from: "3.0.0"),
         .package(url: "https://github.com/dagronf/DSFQuickActionBar", branch: "main"),
         .package(url: "https://github.com/dagronf/QRCode", from: "11.0.0"),

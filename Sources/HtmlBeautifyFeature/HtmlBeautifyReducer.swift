@@ -76,12 +76,6 @@ public final class HtmlBeautifyModel {
     }
 }
 
-extension HtmlBeautifyModel: Equatable {
-    public static func == (lhs: HtmlBeautifyModel, rhs: HtmlBeautifyModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 struct HtmlBeautifyView_Previews: PreviewProvider {
     static var previews: some View {
         HtmlBeautifyModelView(model: .init())

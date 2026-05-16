@@ -49,12 +49,6 @@ public final class HtmlPreviewModel {
     }
 }
 
-extension HtmlPreviewModel: Equatable {
-    public static func == (lhs: HtmlPreviewModel, rhs: HtmlPreviewModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct HtmlPreviewModelView: View {
     @Bindable var model: HtmlPreviewModel
     @StateObject private var webViewStore = HtmlPreviewWebViewStore()

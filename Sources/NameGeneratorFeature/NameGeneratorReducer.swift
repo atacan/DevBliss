@@ -86,12 +86,6 @@ public final class NameGeneratorModel {
     }
 }
 
-extension NameGeneratorModel: Equatable {
-    public static func == (lhs: NameGeneratorModel, rhs: NameGeneratorModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct NameGeneratorModelView: View {
     @Bindable var model: NameGeneratorModel
 

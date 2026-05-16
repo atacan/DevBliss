@@ -99,12 +99,6 @@ public final class UnixTimeModel {
     }
 }
 
-extension UnixTimeModel: Equatable {
-    public static func == (lhs: UnixTimeModel, rhs: UnixTimeModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct UnixTimeModelView: View {
     @Bindable var model: UnixTimeModel
 

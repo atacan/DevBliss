@@ -77,12 +77,6 @@ public final class SvgToCssModel {
     }
 }
 
-extension SvgToCssModel: Equatable {
-    public static func == (lhs: SvgToCssModel, rhs: SvgToCssModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct SvgToCssModelView: View {
     @Bindable var model: SvgToCssModel
 

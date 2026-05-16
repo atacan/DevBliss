@@ -91,12 +91,6 @@ public final class NumberBaseConverterModel {
     }
 }
 
-extension NumberBaseConverterModel: Equatable {
-    public static func == (lhs: NumberBaseConverterModel, rhs: NumberBaseConverterModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct NumberBaseConverterModelView: View {
     @Bindable var model: NumberBaseConverterModel
 

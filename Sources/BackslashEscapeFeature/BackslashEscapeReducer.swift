@@ -76,12 +76,6 @@ public final class BackslashEscapeModel {
     }
 }
 
-extension BackslashEscapeModel: Equatable {
-    public static func == (lhs: BackslashEscapeModel, rhs: BackslashEscapeModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct BackslashEscapeModelView: View {
     @Bindable var model: BackslashEscapeModel
 

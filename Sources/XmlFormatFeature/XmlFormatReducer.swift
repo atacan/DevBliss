@@ -76,12 +76,6 @@ public final class XmlFormatModel {
     }
 }
 
-extension XmlFormatModel: Equatable {
-    public static func == (lhs: XmlFormatModel, rhs: XmlFormatModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 struct XmlFormatView_Previews: PreviewProvider {
     static var previews: some View {
         XmlFormatModelView(model: .init())

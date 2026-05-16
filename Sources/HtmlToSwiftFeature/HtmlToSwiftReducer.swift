@@ -113,12 +113,6 @@ public final class HtmlToSwiftModel {
     }
 }
 
-extension HtmlToSwiftModel: Equatable {
-    public static func == (lhs: HtmlToSwiftModel, rhs: HtmlToSwiftModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct HtmlToSwiftModelView: View {
     @Bindable var model: HtmlToSwiftModel
 

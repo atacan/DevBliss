@@ -68,12 +68,6 @@ public final class JsonPrettyModel {
     }
 }
 
-extension JsonPrettyModel: Equatable {
-    public static func == (lhs: JsonPrettyModel, rhs: JsonPrettyModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct JsonPrettyModelView: View {
     @Bindable var model: JsonPrettyModel
 

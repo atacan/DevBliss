@@ -167,12 +167,6 @@ public final class UrlToMarkdownModel {
     }
 }
 
-extension UrlToMarkdownModel: Equatable {
-    public static func == (lhs: UrlToMarkdownModel, rhs: UrlToMarkdownModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct UrlToMarkdownModelView: View {
     @Bindable var model: UrlToMarkdownModel
 

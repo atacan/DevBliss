@@ -89,12 +89,6 @@ public final class HashGeneratorModel {
     }
 }
 
-extension HashGeneratorModel: Equatable {
-    public static func == (lhs: HashGeneratorModel, rhs: HashGeneratorModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 struct HashGeneratorView_Previews: PreviewProvider {
     static var previews: some View {
         HashGeneratorModelView(model: .init())

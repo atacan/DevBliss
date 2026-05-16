@@ -135,12 +135,6 @@ public final class JwtDebuggerModel {
 
 }
 
-extension JwtDebuggerModel: Equatable {
-    public static func == (lhs: JwtDebuggerModel, rhs: JwtDebuggerModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct JwtDebuggerModelView: View {
     @Bindable var model: JwtDebuggerModel
 

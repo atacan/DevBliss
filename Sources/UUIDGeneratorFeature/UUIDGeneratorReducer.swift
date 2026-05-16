@@ -72,12 +72,6 @@ public final class UUIDGeneratorModel {
     }
 }
 
-extension UUIDGeneratorModel: Equatable {
-    public static func == (lhs: UUIDGeneratorModel, rhs: UUIDGeneratorModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct UUIDGeneratorModelView: View {
     @Bindable var model: UUIDGeneratorModel
 

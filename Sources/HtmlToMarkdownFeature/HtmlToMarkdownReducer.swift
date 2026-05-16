@@ -121,12 +121,6 @@ public final class HtmlToMarkdownModel {
     }
 }
 
-extension HtmlToMarkdownModel: Equatable {
-    public static func == (lhs: HtmlToMarkdownModel, rhs: HtmlToMarkdownModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct HtmlToMarkdownModelView: View {
     @Bindable var model: HtmlToMarkdownModel
 

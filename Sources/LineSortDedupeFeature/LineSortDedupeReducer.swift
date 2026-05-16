@@ -106,12 +106,6 @@ public final class LineSortDedupeModel {
     }
 }
 
-extension LineSortDedupeModel: Equatable {
-    public static func == (lhs: LineSortDedupeModel, rhs: LineSortDedupeModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 struct LineSortDedupeView_Previews: PreviewProvider {
     static var previews: some View {
         LineSortDedupeModelView(model: .init())

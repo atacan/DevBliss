@@ -83,12 +83,6 @@ public final class SwiftPrettyModel {
     }
 }
 
-extension SwiftPrettyModel: Equatable {
-    public static func == (lhs: SwiftPrettyModel, rhs: SwiftPrettyModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct SwiftPrettyModelView: View {
     @Bindable var model: SwiftPrettyModel
     @State var configIsExpanded = true

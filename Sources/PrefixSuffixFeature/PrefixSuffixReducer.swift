@@ -120,12 +120,6 @@ public final class PrefixSuffixModel {
     }
 }
 
-extension PrefixSuffixModel: Equatable {
-    public static func == (lhs: PrefixSuffixModel, rhs: PrefixSuffixModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 // TODO: delete this file once all legacy App shell cases are fully migrated.
 
 public struct PrefixSuffixModelView: View {

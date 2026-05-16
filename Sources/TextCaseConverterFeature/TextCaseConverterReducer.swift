@@ -103,12 +103,6 @@ public final class TextCaseConverterModel {
     }
 }
 
-extension TextCaseConverterModel: Equatable {
-    public static func == (lhs: TextCaseConverterModel, rhs: TextCaseConverterModel) -> Bool {
-        lhs === rhs
-    }
-}
-
 public struct TextCaseConverterModelView: View {
     @Bindable var model: TextCaseConverterModel
 
