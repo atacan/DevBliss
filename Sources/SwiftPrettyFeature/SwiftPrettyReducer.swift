@@ -64,13 +64,13 @@ public final class SwiftPrettyModel {
                 let swiftCode = try await swiftPretty.convert(config, input)
                 await MainActor.run {
                     isConversionRequestInFlight = false
-                    outputText = swiftCode
+                    $outputText.withLock { $0 = swiftCode }
                 }
             } catch {
                 if error is CancellationError { return }
                 await MainActor.run {
                     isConversionRequestInFlight = false
-                    outputText = "\(error)"
+                    $outputText.withLock { $0 = "\(error)" }
                 }
             }
         }
@@ -118,9 +118,8 @@ public struct SwiftPrettyModelView: View {
             Split(primary: { inputEditor }, secondary: { outputEditor })
                 .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.SwiftPretty.splitViewFraction))
                 .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.SwiftPretty.splitViewLayout))
+                .styling(visibleThickness: 2)
         }
-        }
-        .styling(visibleThickness: 2)
     }
 
     var lockwoodEditor: some View {
@@ -149,7 +148,10 @@ public struct SwiftPrettyModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)
@@ -163,7 +165,10 @@ public struct SwiftPrettyModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.outputText)
+            TextEditor(text: Binding(
+                get: { model.outputText },
+                set: { newValue in model.$outputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)

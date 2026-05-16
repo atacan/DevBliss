@@ -3,6 +3,7 @@ import Dependencies
 import Observation
 import SharedModels
 import Sharing
+import SplitView
 import SwiftUI
 import WebKit
 #if os(macOS)
@@ -141,7 +142,10 @@ public struct HtmlPreviewModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .frame(minHeight: 140)
                 .scrollContentBackground(.hidden)
                 .padding(.horizontal, 8)

@@ -73,8 +73,8 @@ public final class NameGeneratorModel {
 
             await MainActor.run {
                 guard !Task.isCancelled else { return }
-                isConversionRequestInFlight = false
-                outputText = result
+                self.isConversionRequestInFlight = false
+                self.$outputText.withLock { $0 = result }
             }
         }
     }
@@ -141,7 +141,10 @@ public struct NameGeneratorModelView: View {
                     Text("Output")
                         .font(.headline)
                         .padding(.horizontal, 8)
-                    TextEditor(text: $model.outputText)
+                    TextEditor(text: Binding(
+                        get: { model.outputText },
+                        set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                    ))
                         .font(.system(.body, design: .monospaced))
                         .frame(minHeight: 180)
                         .scrollContentBackground(.hidden)

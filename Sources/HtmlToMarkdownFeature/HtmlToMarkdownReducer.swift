@@ -76,18 +76,42 @@ public final class HtmlToMarkdownModel {
             do {
                 let markdown = try await htmlToMarkdown.convert(input, config)
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = markdown
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = markdown }
                 }
             } catch {
                 if error is CancellationError { return }
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    errorMessage = error.localizedDescription
-                    outputText = error.localizedDescription
+                    self.isConversionRequestInFlight = false
+                    self.errorMessage = error.localizedDescription
+                    self.$outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
+    }
+
+    public func setEngine(_ engine: ConversionEngine) {
+        var configuration = configuration
+        configuration.engine = engine
+        $configuration.withLock { $0 = configuration }
+    }
+
+    public func setHeadingStyle(_ style: DemarkHeadingStyle) {
+        var configuration = configuration
+        configuration.headingStyle = style
+        $configuration.withLock { $0 = configuration }
+    }
+
+    public func setBulletListMarker(_ marker: String) {
+        var configuration = configuration
+        configuration.bulletListMarker = marker
+        $configuration.withLock { $0 = configuration }
+    }
+
+    public func setCodeBlockStyle(_ style: DemarkCodeBlockStyle) {
+        var configuration = configuration
+        configuration.codeBlockStyle = style
+        $configuration.withLock { $0 = configuration }
     }
 
     public func cancel() {
@@ -115,7 +139,13 @@ public struct HtmlToMarkdownModelView: View {
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
                     ConfigLabel("Engine")
-                    Picker("Engine", selection: $model.configuration.engine) {
+                    Picker(
+                        "Engine",
+                        selection: Binding(
+                            get: { model.configuration.engine },
+                            set: { model.setEngine($0) }
+                        )
+                    ) {
                         Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
                         Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
                     }
@@ -123,7 +153,13 @@ public struct HtmlToMarkdownModelView: View {
                     .help("Turndown for complex HTML, html-to-md for speed")
 
                     ConfigLabel("Heading Style")
-                    Picker("Heading Style", selection: $model.configuration.headingStyle) {
+                    Picker(
+                        "Heading Style",
+                        selection: Binding(
+                            get: { model.configuration.headingStyle },
+                            set: { model.setHeadingStyle($0) }
+                        )
+                    ) {
                         Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
                         Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
                     }
@@ -133,7 +169,13 @@ public struct HtmlToMarkdownModelView: View {
 
                 GridRow {
                     ConfigLabel("Bullet Marker")
-                    Picker("Bullet Marker", selection: $model.configuration.bulletListMarker) {
+                    Picker(
+                        "Bullet Marker",
+                        selection: Binding(
+                            get: { model.configuration.bulletListMarker },
+                            set: { model.setBulletListMarker($0) }
+                        )
+                    ) {
                         Text("Dash (-)").tag("-")
                         Text("Asterisk (*)").tag("*")
                         Text("Plus (+)").tag("+")
@@ -142,7 +184,13 @@ public struct HtmlToMarkdownModelView: View {
                     .help("Character for unordered list items")
 
                     ConfigLabel("Code Blocks")
-                    Picker("Code Blocks", selection: $model.configuration.codeBlockStyle) {
+                    Picker(
+                        "Code Blocks",
+                        selection: Binding(
+                            get: { model.configuration.codeBlockStyle },
+                            set: { model.setCodeBlockStyle($0) }
+                        )
+                    ) {
                         Text("Fenced (``` )").tag(DemarkCodeBlockStyle.fenced)
                         Text("Indented").tag(DemarkCodeBlockStyle.indented)
                     }
@@ -200,7 +248,10 @@ public struct HtmlToMarkdownModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)
@@ -214,7 +265,10 @@ public struct HtmlToMarkdownModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.outputText)
+            TextEditor(text: Binding(
+                get: { model.outputText },
+                set: { newValue in model.$outputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)

@@ -242,10 +242,10 @@ public struct AppModelView: View {
             StringInspectorModelView(model: model)
                 .padding(.top)
         case .certificateDecoder(let model):
-            CertificateDecoderModelView(model: model)
+            CertificateDecoderView(model: model)
                 .padding(.top)
         case .qrCodeTool(let model):
-            QrCodeToolModelView(model: model)
+            QrCodeToolView(model: model)
                 .padding(.top)
         case .jsonPretty(let model):
             JsonPrettyModelView(model: model)
@@ -329,5 +329,27 @@ public struct AppModelView: View {
         default:
             return "rectangle.grid.2x2"
         }
+    }
+}
+
+private extension String {
+    func fuzzyMatchScore(_ searchTerm: String) -> Int? {
+        let haystack = lowercased()
+        let needle = searchTerm.lowercased()
+        guard !needle.isEmpty else { return 0 }
+
+        var score = 0
+        var searchIndex = haystack.startIndex
+
+        for character in needle {
+            guard let matchIndex = haystack[searchIndex...].firstIndex(of: character) else {
+                return nil
+            }
+            score += haystack.distance(from: searchIndex, to: matchIndex)
+            searchIndex = haystack.index(after: matchIndex)
+        }
+
+        score += max(0, haystack.count - needle.count)
+        return score
     }
 }

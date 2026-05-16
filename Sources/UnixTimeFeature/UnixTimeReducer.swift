@@ -32,7 +32,7 @@ public final class UnixTimeModel {
     public var input: String {
         get { inputText }
         set {
-            inputText = newValue
+            $inputText.withLock { $0 = newValue }
             guard autoDetect else { return }
             let input = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
             if let _ = Double(input) {
@@ -52,7 +52,7 @@ public final class UnixTimeModel {
 
     public func nowButtonTouched() {
         mode = .unixToDate
-        inputText = String(Int(unixTime.currentTimestamp()))
+        $inputText.withLock { $0 = String(Int(unixTime.currentTimestamp())) }
         convertButtonTouched()
     }
 
@@ -64,7 +64,7 @@ public final class UnixTimeModel {
         guard !input.isEmpty else {
             errorMessage = "Please enter a value"
             result = nil
-            outputText = ""
+            $outputText.withLock { $0 = "" }
             isConversionRequestInFlight = false
             return
         }
@@ -78,7 +78,7 @@ public final class UnixTimeModel {
                 await MainActor.run {
                     isConversionRequestInFlight = false
                     result = output
-                    outputText = output.localTimeWithTimezone
+                    $outputText.withLock { $0 = output.localTimeWithTimezone }
                 }
             } catch {
                 if error is CancellationError { return }
@@ -86,7 +86,7 @@ public final class UnixTimeModel {
                     isConversionRequestInFlight = false
                     result = nil
                     errorMessage = error.localizedDescription
-                    outputText = ""
+                    $outputText.withLock { $0 = "" }
                 }
             }
         }

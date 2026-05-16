@@ -2,6 +2,7 @@ import BlissTheme
 import Dependencies
 import Foundation
 import SharedModels
+import Sharing
 import SwiftUI
 
 @MainActor
@@ -112,10 +113,10 @@ public final class JwtDebuggerModel {
             do {
                 let inspection = try await jwtDebugger.inspect(token, secret)
                 await MainActor.run {
-                    isDecoding = false
+                    self.isDecoding = false
                     self.inspection = inspection
-                    errorMessage = nil
-                    outputText = inspection.payloadJSON
+                    self.errorMessage = nil
+                    self.$outputText.withLock { $0 = inspection.payloadJSON }
                 }
             } catch {
                 if error is CancellationError {
@@ -123,10 +124,10 @@ public final class JwtDebuggerModel {
                 }
 
                 await MainActor.run {
-                    isDecoding = false
+                    self.isDecoding = false
                     self.inspection = nil
-                    errorMessage = error.localizedDescription
-                    outputText = error.localizedDescription
+                    self.errorMessage = error.localizedDescription
+                    self.$outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
@@ -162,7 +163,10 @@ public struct JwtDebuggerModelView: View {
                     .font(.headline)
                     .padding(.horizontal, 8)
 
-                TextEditor(text: $model.inputText)
+                TextEditor(text: Binding(
+                    get: { model.inputText },
+                    set: { newValue in model.$inputText.withLock { $0 = newValue } }
+                ))
                     .font(.system(.body, design: .monospaced))
                     .scrollContentBackground(.hidden)
                     .padding(.horizontal, 8)

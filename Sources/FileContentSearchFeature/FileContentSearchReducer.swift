@@ -75,7 +75,7 @@ public final class FileContentSearchModel {
                     isSearching = false
                     foundFiles = found
                     selectedFiles = []
-                    outputText = \"\\(found.count) files found.\"
+                    outputText = "\\(found.count) files found."
                 }
             } catch {
                 await MainActor.run {
@@ -142,13 +142,13 @@ public struct FileContentSearchView: View {
                 inputView
 
                 Table(model.foundFiles, selection: $model.selectedFiles, sortOrder: $sortOrder) {
-                    TableColumn(NSLocalizedString(\"File Path\", bundle: Bundle.module, comment: \"\"), value: \.fileURL.absoluteString)
+                    TableColumn(NSLocalizedString("File Path", bundle: Bundle.module, comment: ""), value: \.fileURL.absoluteString)
                         .width(min: nil, ideal: 400, max: nil)
-                    TableColumn(NSLocalizedString(\"Lines\", bundle: Bundle.module, comment: \"\"), value: \.lines)
+                    TableColumn(NSLocalizedString("Lines", bundle: Bundle.module, comment: ""), value: \.lines)
                         .width(min: nil, ideal: 80, max: nil)
-                    TableColumn(NSLocalizedString(\"Modified\", bundle: Bundle.module, comment: \"\"), value: \.modifiedTimeString)
+                    TableColumn(NSLocalizedString("Modified", bundle: Bundle.module, comment: ""), value: \.modifiedTimeString)
                         .width(min: nil, ideal: 100, max: nil)
-                    TableColumn(NSLocalizedString(\"Git User\", bundle: Bundle.module, comment: \"\"), value: \.gitUsernameCleaned)
+                    TableColumn(NSLocalizedString("Git User", bundle: Bundle.module, comment: ""), value: \.gitUsernameCleaned)
                         .width(min: nil, ideal: 100, max: nil)
                 }
                 .onChange(of: sortOrder) { _, newValue in
@@ -156,7 +156,7 @@ public struct FileContentSearchView: View {
                 }
             }
             VStack(alignment: .leading, spacing: 6) {
-                Text(NSLocalizedString(\"File Content\", bundle: Bundle.module, comment: \"\"))
+                Text(NSLocalizedString("File Content", bundle: Bundle.module, comment: ""))
                     .font(.headline)
                     .padding(.horizontal, 8)
 
@@ -172,23 +172,23 @@ public struct FileContentSearchView: View {
     var inputView: some View {
         VStack(alignment: .leading) {
             HStack(alignment: .center) {
-                Text(NSLocalizedString(\"Search Term\", bundle: Bundle.module, comment: \"\"))
+                Text(NSLocalizedString("Search Term", bundle: Bundle.module, comment: ""))
                 TextField(
-                    NSLocalizedString(\"term to search inside the file...\", bundle: Bundle.module, comment: \"\"),
+                    NSLocalizedString("term to search inside the file...", bundle: Bundle.module, comment: ""),
                     text: Binding(get: { model.searchOptions.term }, set: { model.setSearchTerm($0) })
                 )
             }
 
             HStack {
                 HStack(alignment: .center) {
-                    Text(NSLocalizedString(\"Directory\", bundle: Bundle.module, comment: \"\"))
+                    Text(NSLocalizedString("Directory", bundle: Bundle.module, comment: ""))
                     Button {
                         model.openFolderSelectionButtonTapped()
                     } label: {
-                        Image(systemName: \"folder.fill\")
+                        Image(systemName: "folder.fill")
                     }
-                    .keyboardShortcut(.init(\"o\"), modifiers: [.command])
-                    .help(NSLocalizedString(\"Choose directory (Cmd+O)\", bundle: Bundle.module, comment: \"\"))
+                    .keyboardShortcut(.init("o"), modifiers: [.command])
+                    .help(NSLocalizedString("Choose directory (Cmd+O)", bundle: Bundle.module, comment: ""))
                 }
                 .onTapGesture {
                     model.openFolderSelectionButtonTapped()
@@ -206,21 +206,21 @@ public struct FileContentSearchView: View {
             }
             .textFieldStyle(RoundedBorderTextFieldStyle())
 
-            Toggle(\"Search also hidden files and folders\", isOn: Binding(get: { model.searchOptions.searchHiddenFiles }, set: { model.setSearchHiddenFiles($0) }))
+            Toggle("Search also hidden files and folders", isOn: Binding(get: { model.searchOptions.searchHiddenFiles }, set: { model.setSearchHiddenFiles($0) }))
                 .toggleStyle(.checkbox)
-            Toggle(\"Search in sub-directories\", isOn: Binding(get: { model.searchOptions.searchInsideSubdirectories }, set: { model.setSearchInsideSubdirectories($0) }))
+            Toggle("Search in sub-directories", isOn: Binding(get: { model.searchOptions.searchInsideSubdirectories }, set: { model.setSearchInsideSubdirectories($0) }))
                 .toggleStyle(.checkbox)
-            Toggle(\"Search in packaged files\", isOn: Binding(get: { model.searchOptions.searchInsidePackages }, set: { model.setSearchInsidePackages($0) }))
+            Toggle("Search in packaged files", isOn: Binding(get: { model.searchOptions.searchInsidePackages }, set: { model.setSearchInsidePackages($0) }))
                 .toggleStyle(.checkbox)
 
             LoadingButton(
-                NSLocalizedString(\"Search\", bundle: Bundle.module, comment: \"\"),
+                NSLocalizedString("Search", bundle: Bundle.module, comment: ""),
                 isLoading: model.isSearching
             ) {
                 model.searchButtonTapped()
             }
             .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString(\"Start searching (Cmd+Return)\", bundle: Bundle.module, comment: \"\"))
+            .help(NSLocalizedString("Start searching (Cmd+Return)", bundle: Bundle.module, comment: ""))
             .padding(.bottom, 2)
         }
     }
@@ -263,16 +263,16 @@ public struct FoundFile: Equatable, Identifiable {
     }
 
     public var lines: String {
-        lineNumbers.map(String.init).joined(separator: \", \")
+        lineNumbers.map(String.init).joined(separator: ", ")
     }
 
     public var modifiedTimeString: String {
         let formatter = DateFormatter()
-        formatter.dateFormat = \"yyyy-MM-dd HH:mm:ss\"
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return formatter.string(from: modifiedTime)
     }
 
-    public var gitUsernameCleaned: String { gitUsername ?? \"\" }
+    public var gitUsernameCleaned: String { gitUsername ?? "" }
 }
 
 @MainActor
@@ -280,13 +280,13 @@ public struct FileContentSearchModelPreview: PreviewProvider {
     public static var previews: some View {
         FileContentSearchView(
             model: FileContentSearchModel(
-                searchOptions: .init(searchTerm: \"example\", searchFolder: \"/Users/example/projects\"),
+                searchOptions: .init(searchTerm: "example", searchFolder: "/Users/example/projects"),
                 foundFiles: [
                     FoundFile(
-                        fileURL: URL(string: \"Users/example/projects/file.swift\")!,
+                        fileURL: URL(string: "Users/example/projects/file.swift")!,
                         lineNumbers: [23, 34, 43],
                         modifiedTime: Date(timeIntervalSince1970: 12300),
-                        gitUsername: \"developer\"
+                        gitUsername: "developer"
                     )
                 ]
             )
@@ -370,14 +370,14 @@ private func grepFile(options: SearchOptions, fileUrl: URL) async throws -> Foun
 private func getModificationTime(for url: URL) throws -> Date {
     let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
     guard let date = attributes[.modificationDate] as? Date else {
-        throw NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: \"Failed to get modification time\"])
+        throw NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to get modification time"])
     }
     return date
 }
 
 private func getLastCommitAuthor(for fileURL: URL) async throws -> String? {
     @Dependency(\.commandLine) var commandLine
-    let command = \"cd \\(fileURL.deletingLastPathComponent().path) && git log -1 --pretty=format:%an -- \\(fileURL.lastPathComponent)\"
+    let command = "cd \\(fileURL.deletingLastPathComponent().path) && git log -1 --pretty=format:%an -- \\(fileURL.lastPathComponent)"
     let output = try await commandLine.run(command)
     return output.text.trimmingCharacters(in: .whitespacesAndNewlines)
 }
@@ -416,7 +416,7 @@ private class QFile {
     private var file: UnsafeMutablePointer<FILE>?
 
     func open() throws {
-        guard let f = fopen(fileURL.path, \"r\") else {
+        guard let f = fopen(fileURL.path, "r") else {
             throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil)
         }
         file = f
@@ -452,6 +452,6 @@ public final class FileContentSearchModel {
 
 public struct FileContentSearchView: View {
     public init(model: FileContentSearchModel) {}
-    public var body: some View { Text(\"File search is only available on macOS\") }
+    public var body: some View { Text("File search is only available on macOS") }
 }
 #endif

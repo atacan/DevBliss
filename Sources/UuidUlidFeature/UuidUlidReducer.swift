@@ -93,17 +93,17 @@ public final class UuidUlidModel {
                 do {
                     let result = try await uuidUlid.generate(type, count, lowercase)
                     await MainActor.run {
-                        isConversionRequestInFlight = false
+                        self.isConversionRequestInFlight = false
                         self.result = nil
-                        self.outputText = result
+                        self.$outputText.withLock { $0 = result }
                     }
                 }
                 catch {
                     if error is CancellationError { return }
                     await MainActor.run {
-                        isConversionRequestInFlight = false
-                        errorMessage = error.localizedDescription
-                        self.outputText = error.localizedDescription
+                        self.isConversionRequestInFlight = false
+                        self.errorMessage = error.localizedDescription
+                        self.$outputText.withLock { $0 = error.localizedDescription }
                     }
                 }
             }
@@ -114,18 +114,18 @@ public final class UuidUlidModel {
                 do {
                     let decoded = try await uuidUlid.decode(input)
                     await MainActor.run {
-                        isConversionRequestInFlight = false
-                        result = decoded
-                        self.outputText = decoded.summary
+                        self.isConversionRequestInFlight = false
+                        self.result = decoded
+                        self.$outputText.withLock { $0 = decoded.summary }
                     }
                 }
                 catch {
                     if error is CancellationError { return }
                     await MainActor.run {
-                        isConversionRequestInFlight = false
+                        self.isConversionRequestInFlight = false
                         self.result = nil
-                        errorMessage = error.localizedDescription
-                        self.outputText = error.localizedDescription
+                        self.errorMessage = error.localizedDescription
+                        self.$outputText.withLock { $0 = error.localizedDescription }
                     }
                 }
             }
@@ -249,7 +249,10 @@ public struct UuidUlidModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .frame(minHeight: 140)
                 .scrollContentBackground(.hidden)
                 .padding(.horizontal, 8)
@@ -284,7 +287,10 @@ public struct UuidUlidModelView: View {
                 Text("Output")
                     .font(.headline)
                     .padding(.horizontal, 8)
-                TextEditor(text: $model.outputText)
+                TextEditor(text: Binding(
+                    get: { model.outputText },
+                    set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                ))
                     .font(.system(.body, design: .monospaced))
                     .frame(minHeight: 120)
                     .scrollContentBackground(.hidden)

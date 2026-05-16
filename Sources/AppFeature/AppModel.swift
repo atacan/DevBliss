@@ -158,81 +158,80 @@ import StringInspectorFeature
     public func sendOutputToOtherTool(_ outputText: String, _ tool: Tool) {
         switch destination {
         case .jsonPretty(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .asciiToHex(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .hexToAscii(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .colorConverter(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .textCaseConverter(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .prefixSuffix(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .numberBaseConverter(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .base64(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .base64Image(let model):
-            model.base64String = outputText
             model.setBase64String(outputText)
         #if os(macOS)
         case .fileContentSearch:
         #endif
         case .htmlToSwift(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .backslashEscape(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .svgToCss(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .htmlPreview(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .urlEncode(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .urlParser(let model):
             model.setInputTextFromOtherTool(outputText)
         case .cssBeautify(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .htmlBeautify(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .hashGenerator(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .lineSortDedupe(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .jsBeautify(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .yamlToJson(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .jsonToYaml(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .xmlFormat(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .uuidUlid(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .regexMatches(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .regExpTester(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .stringDiff(let model):
             model.setOldText(outputText)
         case .nameGenerator(let model):
-            model.outputText = outputText
+            model.$outputText.withLock { $0 = outputText }
         case .certificateDecoder(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .qrCodeTool(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .randomStringGenerator:
             break
         case .htmlToMarkdown(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .urlToMarkdown(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .swiftPrettyLockwood(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .unixTime(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .jwtDebugger(let model):
-            model.inputText = outputText
+            model.$inputText.withLock { $0 = outputText }
         case .uuidGenerator:
             break
         case .stringInspector(let model):
@@ -292,7 +291,7 @@ import StringInspectorFeature
     }
 }
 
-public enum AppDestination: Equatable {
+public enum AppDestination {
     case none
     case base64(Base64Model)
     case base64Image(Base64ImageModel)

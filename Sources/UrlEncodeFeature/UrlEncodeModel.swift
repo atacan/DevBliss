@@ -1,6 +1,7 @@
 import Foundation
 import Sharing
 import Dependencies
+import SharedModels
 
 #if os(macOS)
 import AppKit
@@ -40,7 +41,7 @@ public final class UrlEncodeModel {
     }
 
     public func updateInput(_ newText: String) {
-        inputText = newText
+        $inputText.withLock { $0 = newText }
         if autoDetect {
             let input = newText.trimmingCharacters(in: .whitespacesAndNewlines)
             if urlEncode.looksEncoded(input) {
@@ -71,12 +72,12 @@ public final class UrlEncodeModel {
             result = urlEncode.decode(input, decodePlusAsSpace)
         }
 
-        outputText = result
+        $outputText.withLock { $0 = result }
     }
 
     public func useAsInputButtonTouched() {
         guard !result.isEmpty else { return }
-        inputText = result
+        $inputText.withLock { $0 = result }
         result = ""
         direction = direction == .encode ? .decode : .encode
     }
@@ -91,6 +92,6 @@ public final class UrlEncodeModel {
     }
 
     public func setInputTextFromOtherTool(_ text: String) {
-        inputText = text
+        $inputText.withLock { $0 = text }
     }
 }

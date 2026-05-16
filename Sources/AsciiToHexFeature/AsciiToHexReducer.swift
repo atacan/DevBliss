@@ -64,15 +64,15 @@ public final class AsciiToHexModel {
             do {
                 let result = try await asciiToHex.convert(input, config)
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = result
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = result }
                 }
             }
             catch {
                 if error is CancellationError { return }
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = error.localizedDescription
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
@@ -163,7 +163,10 @@ public struct AsciiToHexModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)
                 .padding(.horizontal, 8)
@@ -176,7 +179,10 @@ public struct AsciiToHexModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.outputText)
+            TextEditor(text: Binding(
+                get: { model.outputText },
+                set: { newValue in model.$outputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)

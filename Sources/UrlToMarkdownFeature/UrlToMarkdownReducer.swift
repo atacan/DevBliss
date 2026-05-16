@@ -62,7 +62,7 @@ public final class UrlToMarkdownModel {
 
     public var urlInput: String {
         get { inputText }
-        set { inputText = newValue }
+        set { setInputText(newValue) }
     }
 
     public init(
@@ -75,8 +75,8 @@ public final class UrlToMarkdownModel {
         self._outputText = outputText
         self.isConversionRequestInFlight = false
         self.showMarkdownPreview = false
-        self.configuration = configuration
-        self.loadingConfiguration = loadingConfiguration
+        self.$configuration.withLock { $0 = configuration }
+        self.$loadingConfiguration.withLock { $0 = loadingConfiguration }
     }
 
     public init(input: String, output: String = "") {
@@ -85,6 +85,40 @@ public final class UrlToMarkdownModel {
         self._outputText = outputText
         self.isConversionRequestInFlight = false
         self.showMarkdownPreview = false
+    }
+
+    public func setInputText(_ value: String) {
+        $inputText.withLock { $0 = value }
+    }
+
+    public func setEngine(_ value: ConversionEngine) {
+        var configuration = configuration
+        configuration.engine = value
+        $configuration.withLock { $0 = configuration }
+    }
+
+    public func setHeadingStyle(_ value: DemarkHeadingStyle) {
+        var configuration = configuration
+        configuration.headingStyle = value
+        $configuration.withLock { $0 = configuration }
+    }
+
+    public func setBulletListMarker(_ value: String) {
+        var configuration = configuration
+        configuration.bulletListMarker = value
+        $configuration.withLock { $0 = configuration }
+    }
+
+    public func setCodeBlockStyle(_ value: DemarkCodeBlockStyle) {
+        var configuration = configuration
+        configuration.codeBlockStyle = value
+        $configuration.withLock { $0 = configuration }
+    }
+
+    public func setContentSelector(_ value: String) {
+        var loadingConfiguration = loadingConfiguration
+        loadingConfiguration.contentSelector = value
+        $loadingConfiguration.withLock { $0 = loadingConfiguration }
     }
 
     public func convertButtonTouched() {
@@ -112,15 +146,15 @@ public final class UrlToMarkdownModel {
             do {
                 let markdown = try await urlToMarkdown.convert(url, config, loadingConfig)
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = markdown
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = markdown }
                 }
             } catch {
                 if error is CancellationError { return }
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    errorMessage = error.localizedDescription
-                    outputText = error.localizedDescription
+                    self.isConversionRequestInFlight = false
+                    self.errorMessage = error.localizedDescription
+                    self.$outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
@@ -149,7 +183,13 @@ public struct UrlToMarkdownModelView: View {
     public var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                TextField("Enter URL to convert", text: $model.urlInput)
+                TextField(
+                    "Enter URL to convert",
+                    text: Binding(
+                        get: { model.urlInput },
+                        set: { model.setInputText($0) }
+                    )
+                )
                     .blissTextField()
                     .onSubmit {
                         model.convertButtonTouched()
@@ -203,7 +243,10 @@ public struct UrlToMarkdownModelView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(ThemeColor.Background.textBackground)
                 } else {
-                    TextEditor(text: $model.outputText)
+                    TextEditor(text: Binding(
+                        get: { model.outputText },
+                        set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                    ))
                         .font(.system(.body, design: .monospaced))
                         .scrollContentBackground(.hidden)
                         .padding(.horizontal, 8)
@@ -213,7 +256,13 @@ public struct UrlToMarkdownModelView: View {
     }
 
     private var enginePicker: some View {
-        Picker("Engine", selection: $model.configuration.engine) {
+        Picker(
+            "Engine",
+            selection: Binding(
+                get: { model.configuration.engine },
+                set: { model.setEngine($0) }
+            )
+        ) {
             Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
             Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
         }
@@ -221,7 +270,13 @@ public struct UrlToMarkdownModelView: View {
     }
 
     private var headingStylePicker: some View {
-        Picker("Heading Style", selection: $model.configuration.headingStyle) {
+        Picker(
+            "Heading Style",
+            selection: Binding(
+                get: { model.configuration.headingStyle },
+                set: { model.setHeadingStyle($0) }
+            )
+        ) {
             Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
             Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
         }
@@ -229,7 +284,13 @@ public struct UrlToMarkdownModelView: View {
     }
 
     private var bulletMarkerPicker: some View {
-        Picker("Bullet Marker", selection: $model.configuration.bulletListMarker) {
+        Picker(
+            "Bullet Marker",
+            selection: Binding(
+                get: { model.configuration.bulletListMarker },
+                set: { model.setBulletListMarker($0) }
+            )
+        ) {
             Text("-").tag("-")
             Text("*").tag("*")
             Text("+").tag("+")
@@ -240,7 +301,13 @@ public struct UrlToMarkdownModelView: View {
     }
 
     private var codeBlockStylePicker: some View {
-        Picker("Code Block Style", selection: $model.configuration.codeBlockStyle) {
+        Picker(
+            "Code Block Style",
+            selection: Binding(
+                get: { model.configuration.codeBlockStyle },
+                set: { model.setCodeBlockStyle($0) }
+            )
+        ) {
             Text("Fenced (``` )").tag(DemarkCodeBlockStyle.fenced)
             Text("Indented").tag(DemarkCodeBlockStyle.indented)
         }
@@ -248,7 +315,13 @@ public struct UrlToMarkdownModelView: View {
     }
 
     private var contentSelectorField: some View {
-        TextField("e.g., article, main, .content", text: $model.loadingConfiguration.contentSelector)
+        TextField(
+            "e.g., article, main, .content",
+            text: Binding(
+                get: { model.loadingConfiguration.contentSelector },
+                set: { model.setContentSelector($0) }
+            )
+        )
             .blissCompactTextField()
             .help("CSS selector to extract specific content (leave empty for full page)")
     }

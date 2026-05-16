@@ -73,7 +73,7 @@ public final class ColorConverterModel {
                 await MainActor.run {
                     self.isConversionRequestInFlight = false
                     self.result = result
-                    self.outputText = result.summary
+                    self.$outputText.withLock { $0 = result.summary }
                 }
             } catch {
                 if error is CancellationError {
@@ -83,7 +83,7 @@ public final class ColorConverterModel {
                     self.isConversionRequestInFlight = false
                     self.result = nil
                     self.errorMessage = error.localizedDescription
-                    self.outputText = error.localizedDescription
+                    self.$outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
@@ -108,7 +108,13 @@ public struct ColorConverterView: View {
     }
 
     private var inputField: some View {
-        TextField("Enter a color value (hex or rgb)", text: $model.inputText)
+        TextField(
+            "Enter a color value (hex or rgb)",
+            text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            )
+        )
             .blissTextField()
             .onSubmit {
                 model.convertButtonTouched()
@@ -196,7 +202,10 @@ public struct ColorConverterView: View {
                 Text("Summary")
                     .font(.headline)
                     .padding(.horizontal, 8)
-                TextEditor(text: $model.outputText)
+                TextEditor(text: Binding(
+                    get: { model.outputText },
+                    set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                ))
                     .font(.system(.body, design: .monospaced))
                     .lineSpacing(3)
                     .scrollContentBackground(.hidden)

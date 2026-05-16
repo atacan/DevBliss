@@ -44,12 +44,12 @@ public final class StringDiffModel {
     }
 
     public func setOldText(_ value: String) {
-        oldText = value
+        $oldText.withLock { $0 = value }
         scheduleDiff()
     }
 
     public func setNewText(_ value: String) {
-        newText = value
+        $newText.withLock { $0 = value }
         scheduleDiff()
     }
 

@@ -1,10 +1,12 @@
 import BlissTheme
 import Dependencies
+import DependenciesAdditions
 import Foundation
 import HtmlSwift
 import Observation
 import SharedModels
 import Sharing
+import SplitView
 import SwiftUI
 import SyntaxHighlightClient
 
@@ -91,14 +93,14 @@ public final class HtmlToSwiftModel {
             do {
                 let swiftCode = try await converter.convert(input, for: dsl, output: component)
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = swiftCode
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = swiftCode }
                 }
             } catch {
                 if error is CancellationError { return }
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = error.localizedDescription
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
@@ -190,7 +192,10 @@ public struct HtmlToSwiftModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)
@@ -204,7 +209,10 @@ public struct HtmlToSwiftModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.outputText)
+            TextEditor(text: Binding(
+                get: { model.outputText },
+                set: { newValue in model.$outputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)

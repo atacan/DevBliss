@@ -60,7 +60,7 @@ public final class CertificateDecoderModel {
                 await MainActor.run {
                     self.result = result
                     self.isConversionRequestInFlight = false
-                    self.outputText = result.summary
+                    self.$outputText.withLock { $0 = result.summary }
                 }
             }
             catch {
@@ -69,7 +69,7 @@ public final class CertificateDecoderModel {
                     self.result = nil
                     self.isConversionRequestInFlight = false
                     self.errorMessage = error.localizedDescription
-                    self.outputText = error.localizedDescription
+                    self.$outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
@@ -129,7 +129,7 @@ public struct CertificateDecoderView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(model.$inputText))
                 .frame(minHeight: 140)
                 .scrollContentBackground(.hidden)
                 .padding(.horizontal, 8)
@@ -165,7 +165,10 @@ public struct CertificateDecoderView: View {
                 Text("Summary")
                     .font(.headline)
                     .padding(.horizontal, 8)
-                TextEditor(text: $model.outputText)
+                TextEditor(text: Binding(
+                    get: { model.outputText },
+                    set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                ))
                     .font(.system(.body, design: .monospaced))
                     .frame(minHeight: 180)
                     .scrollContentBackground(.hidden)

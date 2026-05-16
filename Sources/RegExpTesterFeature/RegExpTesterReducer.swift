@@ -65,18 +65,18 @@ public final class RegExpTesterModel {
             do {
                 let result = try regExpTester.test(request)
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    matches = result.matches
-                    selectedMatchIndex = result.matches.isEmpty ? 0 : min(selectedMatchIndex, result.matches.count - 1)
-                    outputText = result.replacedText
+                    self.isConversionRequestInFlight = false
+                    self.matches = result.matches
+                    self.selectedMatchIndex = result.matches.isEmpty ? 0 : min(self.selectedMatchIndex, result.matches.count - 1)
+                    self.$outputText.withLock { $0 = result.replacedText }
                 }
             } catch {
                 if error is CancellationError { return }
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    matches = []
-                    errorMessage = error.localizedDescription
-                    outputText = error.localizedDescription
+                    self.isConversionRequestInFlight = false
+                    self.matches = []
+                    self.errorMessage = error.localizedDescription
+                    self.$outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
@@ -256,7 +256,10 @@ public struct RegExpTesterModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .frame(minHeight: 140)
                 .scrollContentBackground(.hidden)
                 .padding(.horizontal, 8)
@@ -300,7 +303,10 @@ public struct RegExpTesterModelView: View {
                     .font(.headline)
                     .padding(.horizontal, 8)
 
-                TextEditor(text: $model.outputText)
+                TextEditor(text: Binding(
+                    get: { model.outputText },
+                    set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                ))
                     .font(.system(.body, design: .monospaced))
                     .frame(minHeight: 140)
                     .scrollContentBackground(.hidden)

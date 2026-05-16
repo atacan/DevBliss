@@ -56,20 +56,20 @@ public final class TextCaseConverterModel {
 
     public func switchCases() {
         let oldSource = sourceCase
-        sourceCase = targetCase
-        targetCase = oldSource
+        $sourceCase.withLock { $0 = targetCase }
+        $targetCase.withLock { $0 = oldSource }
     }
 
     public func setSourceCase(_ value: WordGroupCase) {
-        sourceCase = value
+        $sourceCase.withLock { $0 = value }
     }
 
     public func setTargetCase(_ value: WordGroupCase) {
-        targetCase = value
+        $targetCase.withLock { $0 = value }
     }
 
     public func setTextSeperator(_ value: WordGroupSeperator) {
-        textSeperator = value
+        $textSeperator.withLock { $0 = value }
     }
 
     public func convertButtonTouched() {
@@ -83,14 +83,14 @@ public final class TextCaseConverterModel {
             do {
                 let result = try await textCaseConverter.convert(input, .newLine, sourceCase, targetCase)
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = result
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = result }
                 }
             } catch {
                 if error is CancellationError { return }
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = error.localizedDescription
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
@@ -112,6 +112,10 @@ extension TextCaseConverterModel: Equatable {
 public struct TextCaseConverterModelView: View {
     @Bindable var model: TextCaseConverterModel
 
+    public init(model: TextCaseConverterModel) {
+        self.model = model
+    }
+
     #if os(iOS)
         private let pickerTitleSpace: CGFloat = 0
     #elseif os(macOS)
@@ -121,7 +125,10 @@ public struct TextCaseConverterModelView: View {
     private var sourceCasePicker: some View {
         Picker(
             NSLocalizedString("From", bundle: Bundle.module, comment: ""),
-            selection: $model.sourceCase
+            selection: Binding(
+                get: { model.sourceCase },
+                set: { model.setSourceCase($0) }
+            )
         ) {
             ForEach(WordGroupCase.allCases) { sourceCase in
                 Text(sourceCase.rawValue)
@@ -133,7 +140,10 @@ public struct TextCaseConverterModelView: View {
     private var targetCasePicker: some View {
         Picker(
             NSLocalizedString("To", bundle: Bundle.module, comment: ""),
-            selection: $model.targetCase
+            selection: Binding(
+                get: { model.targetCase },
+                set: { model.setTargetCase($0) }
+            )
         ) {
             ForEach(WordGroupCase.allCases) { targetCase in
                 Text(targetCase.rawValue)
@@ -145,7 +155,10 @@ public struct TextCaseConverterModelView: View {
     private var separatorPicker: some View {
         Picker(
             NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""),
-            selection: $model.textSeperator
+            selection: Binding(
+                get: { model.textSeperator },
+                set: { model.setTextSeperator($0) }
+            )
         ) {
             ForEach(WordGroupSeperator.allCases) { (seperator: WordGroupSeperator) in
                 Text(seperator == .newLine ? "New Line" : "Space")
@@ -254,7 +267,10 @@ public struct TextCaseConverterModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)
@@ -268,7 +284,10 @@ public struct TextCaseConverterModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.outputText)
+            TextEditor(text: Binding(
+                get: { model.outputText },
+                set: { newValue in model.$outputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)

@@ -48,14 +48,14 @@ public final class JsonPrettyModel {
             do {
                 let result = try await prettyClient.convert(input)
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = result
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = result.string }
                 }
             } catch {
                 if error is CancellationError { return }
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = "\(error)"
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = "\(error)" }
                 }
             }
         }
@@ -108,7 +108,10 @@ public struct JsonPrettyModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)
@@ -122,7 +125,10 @@ public struct JsonPrettyModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.outputText)
+            TextEditor(text: Binding(
+                get: { model.outputText },
+                set: { newValue in model.$outputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 220)
                 .scrollContentBackground(.hidden)

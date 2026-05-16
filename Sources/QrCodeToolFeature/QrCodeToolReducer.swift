@@ -74,14 +74,14 @@ public final class QrCodeToolModel {
                     await MainActor.run {
                         self.isConversionRequestInFlight = false
                         self.decodedMessages = []
-                        self.outputText = result.base64PNG
+                        self.$outputText.withLock { $0 = result.base64PNG }
                     }
                 } else {
                     let messages = try await qrCodeTool.decode(input)
                     await MainActor.run {
                         self.isConversionRequestInFlight = false
                         self.decodedMessages = messages
-                        self.outputText = messages.joined(separator: "\n")
+                        self.$outputText.withLock { $0 = messages.joined(separator: "\n") }
                     }
                 }
             } catch {
@@ -92,7 +92,7 @@ public final class QrCodeToolModel {
                         self.decodedMessages = []
                     }
                     self.errorMessage = error.localizedDescription
-                    self.outputText = error.localizedDescription
+                    self.$outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
@@ -209,7 +209,10 @@ public struct QrCodeToolView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .frame(minHeight: 140)
                 .scrollContentBackground(.hidden)
                 .padding(.horizontal, 8)
@@ -250,7 +253,10 @@ public struct QrCodeToolView: View {
                 Text("Output")
                     .font(.headline)
                     .padding(.horizontal, 8)
-                TextEditor(text: $model.outputText)
+                TextEditor(text: Binding(
+                    get: { model.outputText },
+                    set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                ))
                     .font(.system(.body, design: .monospaced))
                     .frame(minHeight: 120)
                     .scrollContentBackground(.hidden)

@@ -61,7 +61,7 @@ public final class RandomStringGeneratorModel {
                     let result = try await randomStringGenerator.generate(length, config)
                     await MainActor.run {
                         isConversionRequestInFlight = false
-                        outputText = result
+                        $outputText.withLock { $0 = result }
                     }
                 }
                 catch {
@@ -69,7 +69,7 @@ public final class RandomStringGeneratorModel {
                 await MainActor.run {
                     isConversionRequestInFlight = false
                     errorMessage = error.localizedDescription
-                    outputText = error.localizedDescription
+                    $outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
@@ -183,7 +183,10 @@ public struct RandomStringGeneratorModelView: View {
                     .font(.headline)
                     .padding(.horizontal, 8)
 
-                TextEditor(text: $model.outputText)
+                TextEditor(text: Binding(
+                    get: { model.outputText },
+                    set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                ))
                     .font(.system(.body, design: .monospaced))
                     .frame(minHeight: 180)
                     .scrollContentBackground(.hidden)

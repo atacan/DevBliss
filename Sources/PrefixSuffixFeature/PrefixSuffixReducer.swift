@@ -57,13 +57,13 @@ public final class PrefixSuffixModel {
             )
         }
         set {
-            prefixReplace = newValue.prefixReplace
-            prefixReplaceWith = newValue.prefixReplaceWith
-            prefixAdd = newValue.prefixAdd
-            suffixReplace = newValue.suffixReplace
-            suffixReplaceWith = newValue.suffixReplaceWith
-            suffixAdd = newValue.suffixAdd
-            trimWhiteSpace = newValue.trimWhiteSpace
+            $prefixReplace.withLock { $0 = newValue.prefixReplace }
+            $prefixReplaceWith.withLock { $0 = newValue.prefixReplaceWith }
+            $prefixAdd.withLock { $0 = newValue.prefixAdd }
+            $suffixReplace.withLock { $0 = newValue.suffixReplace }
+            $suffixReplaceWith.withLock { $0 = newValue.suffixReplaceWith }
+            $suffixAdd.withLock { $0 = newValue.suffixAdd }
+            $trimWhiteSpace.withLock { $0 = newValue.trimWhiteSpace }
         }
     }
 
@@ -100,14 +100,14 @@ public final class PrefixSuffixModel {
             do {
                 let result = try await prefixSuffix.convert(input, config)
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = result
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = result }
                 }
             } catch {
                 if error is CancellationError { return }
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = error.localizedDescription
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = error.localizedDescription }
                 }
             }
         }
@@ -165,7 +165,10 @@ public struct PrefixSuffixModelView: View {
                     Group {
                         TextField(
                             NSLocalizedString("Replace prefix", bundle: Bundle.module, comment: ""),
-                            text: $model.prefixReplace
+                            text: Binding(
+                                get: { model.prefixReplace },
+                                set: { newValue in model.$prefixReplace.withLock { $0 = newValue } }
+                            )
                         )
                         .focused($focusedField, equals: .prefixReplace)
                         .onSubmit { focusNextField($focusedField) }
@@ -173,7 +176,10 @@ public struct PrefixSuffixModelView: View {
 
                         TextField(
                             NSLocalizedString("with", bundle: Bundle.module, comment: ""),
-                            text: $model.prefixReplaceWith
+                            text: Binding(
+                                get: { model.prefixReplaceWith },
+                                set: { newValue in model.$prefixReplaceWith.withLock { $0 = newValue } }
+                            )
                         )
                         .focused($focusedField, equals: .prefixReplaceWith)
                         .onSubmit { focusNextField($focusedField) }
@@ -187,7 +193,10 @@ public struct PrefixSuffixModelView: View {
 
                         TextField(
                             NSLocalizedString("Then add Prefix", bundle: Bundle.module, comment: ""),
-                            text: $model.prefixAdd
+                            text: Binding(
+                                get: { model.prefixAdd },
+                                set: { newValue in model.$prefixAdd.withLock { $0 = newValue } }
+                            )
                         )
                         .focused($focusedField, equals: .prefixAdd)
                         .onSubmit { focusNextField($focusedField) }
@@ -215,7 +224,10 @@ public struct PrefixSuffixModelView: View {
                     Group {
                          TextField(
                              NSLocalizedString("Replace suffix", bundle: Bundle.module, comment: ""),
-                             text: $model.suffixReplace
+                             text: Binding(
+                                 get: { model.suffixReplace },
+                                 set: { newValue in model.$suffixReplace.withLock { $0 = newValue } }
+                             )
                          )
                          .focused($focusedField, equals: .suffixReplace)
                          .onSubmit { focusNextField($focusedField) }
@@ -223,7 +235,10 @@ public struct PrefixSuffixModelView: View {
 
                          TextField(
                              NSLocalizedString("with", bundle: Bundle.module, comment: ""),
-                             text: $model.suffixReplaceWith
+                             text: Binding(
+                                 get: { model.suffixReplaceWith },
+                                 set: { newValue in model.$suffixReplaceWith.withLock { $0 = newValue } }
+                             )
                          )
                          .focused($focusedField, equals: .suffixReplaceWith)
                          .onSubmit { focusNextField($focusedField) }
@@ -237,7 +252,10 @@ public struct PrefixSuffixModelView: View {
 
                          TextField(
                              NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""),
-                             text: $model.suffixAdd
+                             text: Binding(
+                                 get: { model.suffixAdd },
+                                 set: { newValue in model.$suffixAdd.withLock { $0 = newValue } }
+                             )
                          )
                         .focused($focusedField, equals: .suffixAdd)
                         .onSubmit { focusNextField($focusedField) }
@@ -250,7 +268,13 @@ public struct PrefixSuffixModelView: View {
             .padding(.horizontal, 16)
             .frame(maxWidth: 850)
 
-            Toggle(NSLocalizedString("Trim whitespace", bundle: Bundle.module, comment: ""), isOn: $model.trimWhiteSpace)
+            Toggle(
+                NSLocalizedString("Trim whitespace", bundle: Bundle.module, comment: ""),
+                isOn: Binding(
+                    get: { model.trimWhiteSpace },
+                    set: { newValue in model.$trimWhiteSpace.withLock { $0 = newValue } }
+                )
+            )
 
             LoadingButton(
                 NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
@@ -279,7 +303,10 @@ public struct PrefixSuffixModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .frame(minHeight: 140)
                 .scrollContentBackground(.hidden)
                 .padding(.horizontal, 8)
@@ -292,7 +319,10 @@ public struct PrefixSuffixModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.outputText)
+            TextEditor(text: Binding(
+                get: { model.outputText },
+                set: { newValue in model.$outputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 140)
                 .scrollContentBackground(.hidden)

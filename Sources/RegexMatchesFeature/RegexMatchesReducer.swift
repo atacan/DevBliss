@@ -5,6 +5,7 @@ import DependenciesAdditions
 import Observation
 import SharedModels
 import Sharing
+import SplitView
 import SwiftUI
 
 @MainActor
@@ -63,20 +64,20 @@ public final class RegexMatchesModel {
                     wholeMatchColor: ThemeColor.Text.highlightedTextSecondary,
                     capturedGroupColor: ThemeColor.Text.highlightedTextPrimary
                 )
-                let result = try await regexMatches.matches(input, regexPattern, config)
+                let result = try await regexMatches.matches(NSAttributedString(string: input), regexPattern, config)
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = result.output.flatMap(\.capturedGroups).joined(separator: "\n")
-                    outputSecondText = result.output.map(\.wholeMatch).joined(separator: "\n")
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = result.output.flatMap(\.capturedGroups).joined(separator: "\n") }
+                    self.$outputSecondText.withLock { $0 = result.output.map(\.wholeMatch).joined(separator: "\n") }
                 }
             } catch {
                 if error is CancellationError {
                     return
                 }
                 await MainActor.run {
-                    isConversionRequestInFlight = false
-                    outputText = "\(error)"
-                    outputSecondText = ""
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = "\(error)" }
+                    self.$outputSecondText.withLock { $0 = "" }
                 }
             }
         }
@@ -137,8 +138,8 @@ public struct RegexMatchesModelView: View {
             Divider()
 
             Split(primary: { inputEditor }, secondary: { outputEditors })
-                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.regexMatchesSplitViewFraction))
-                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.regexMatchesSplitViewLayout))
+                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.regexMatchesSplitViewFraction.rawValue))
+                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.regexMatchesSplitViewLayout.rawValue))
                 .styling(visibleThickness: 2)
         }
         .onAppear {
@@ -152,7 +153,10 @@ public struct RegexMatchesModelView: View {
                 .font(.headline)
                 .padding(.horizontal, 8)
 
-            TextEditor(text: $model.inputText)
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
                 .font(.system(.body, design: .monospaced))
                 .scrollContentBackground(.hidden)
                 .padding(.horizontal, 8)
@@ -166,7 +170,10 @@ public struct RegexMatchesModelView: View {
                     .font(.headline)
                     .padding(.horizontal, 8)
 
-                TextEditor(text: $model.outputText)
+                TextEditor(text: Binding(
+                    get: { model.outputText },
+                    set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                ))
                     .font(.system(.body, design: .monospaced))
                     .scrollContentBackground(.hidden)
                     .padding(.horizontal, 8)
@@ -179,7 +186,10 @@ public struct RegexMatchesModelView: View {
                     .font(.headline)
                     .padding(.horizontal, 8)
 
-                TextEditor(text: $model.outputSecondText)
+                TextEditor(text: Binding(
+                    get: { model.outputSecondText },
+                    set: { newValue in model.$outputSecondText.withLock { $0 = newValue } }
+                ))
                     .font(.system(.body, design: .monospaced))
                     .scrollContentBackground(.hidden)
                     .padding(.horizontal, 8)

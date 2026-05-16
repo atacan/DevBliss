@@ -50,7 +50,7 @@ public struct StringInspectorClient {
     public static let liveValue = Self(
         inspect: { input in
             let words = input.split { $0.isWhitespace }.count
-            let lines = input.split(omittingEmptySubsequences: false, whereSeparator: \\.isNewline).count
+            let lines = input.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline).count
             let whitespace = input.filter { $0.isWhitespace }.count
             let isASCII = input.unicodeScalars.allSatisfy { $0.value <= 0x7F }
 
@@ -81,26 +81,35 @@ extension DependencyValues {
 @Observable
 public final class StringInspectorModel {
     @ObservationIgnored
-    @Shared(.toolInput("stringInspector")) public var inputText = \"\"
+    @Shared(.toolInput("stringInspector")) public var inputText = ""
 
     @ObservationIgnored
-    @Shared(.toolOutput("stringInspector")) public var outputText = \"\"
+    @Shared(.toolOutput("stringInspector")) public var outputText = ""
 
     @ObservationIgnored
-    @Dependency(\\.stringInspector) private var stringInspector
+    @Dependency(\.stringInspector) private var stringInspector
 
-    public var result: StringInspectorResult
+    public var result = StringInspectorResult(
+        characters: 0,
+        unicodeScalars: 0,
+        words: 0,
+        lines: 0,
+        bytesUTF8: 0,
+        whitespace: 0,
+        isASCII: true,
+        isEmpty: true
+    )
 
-    public init(inputText: String = \"\") {
-        let input = Shared(wrappedValue: inputText, .toolInput(\"stringInspector\"))
-        let output = Shared(wrappedValue: \"\", .toolOutput(\"stringInspector\"))
+    public init(inputText: String = "") {
+        let input = Shared(wrappedValue: inputText, .toolInput("stringInspector"))
+        let output = Shared(wrappedValue: "", .toolOutput("stringInspector"))
         self._inputText = input
         self._outputText = output
         self.result = stringInspector.inspect(inputText)
     }
 
     public func setInputText(_ text: String) {
-        inputText = text
+        $inputText.withLock { $0 = text }
         result = stringInspector.inspect(text)
     }
 }
@@ -122,14 +131,14 @@ public struct StringInspectorModelView: View {
 
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 200, maximum: 400), spacing: 16)], spacing: 16) {
-                    resultCard(title: \"Characters\", value: \"\\(model.result.characters)\", icon: \"textformat\")
-                    resultCard(title: \"Unicode Scalars\", value: \"\\(model.result.unicodeScalars)\", icon: \"number\")
-                    resultCard(title: \"Words\", value: \"\\(model.result.words)\", icon: \"text.word.spacing\")
-                    resultCard(title: \"Lines\", value: \"\\(model.result.lines)\", icon: \"list.bullet\")
-                    resultCard(title: \"UTF-8 Bytes\", value: \"\\(model.result.bytesUTF8)\", icon: \"tray.full\")
-                    resultCard(title: \"Whitespace\", value: \"\\(model.result.whitespace)\", icon: \"space\")
-                    resultCard(title: \"ASCII\", value: model.result.isASCII ? \"Yes\" : \"No\", icon: \"character\")
-                    resultCard(title: \"Empty\", value: model.result.isEmpty ? \"Yes\" : \"No\", icon: model.result.isEmpty ? \"circle\" : \"circle.fill\")
+                    resultCard(title: "Characters", value: "\(model.result.characters)", icon: "textformat")
+                    resultCard(title: "Unicode Scalars", value: "\(model.result.unicodeScalars)", icon: "number")
+                    resultCard(title: "Words", value: "\(model.result.words)", icon: "text.word.spacing")
+                    resultCard(title: "Lines", value: "\(model.result.lines)", icon: "list.bullet")
+                    resultCard(title: "UTF-8 Bytes", value: "\(model.result.bytesUTF8)", icon: "tray.full")
+                    resultCard(title: "Whitespace", value: "\(model.result.whitespace)", icon: "space")
+                    resultCard(title: "ASCII", value: model.result.isASCII ? "Yes" : "No", icon: "character")
+                    resultCard(title: "Empty", value: model.result.isEmpty ? "Yes" : "No", icon: model.result.isEmpty ? "circle" : "circle.fill")
                 }
                 .padding()
             }
@@ -139,7 +148,7 @@ public struct StringInspectorModelView: View {
     private func resultCard(title: String, value: String, icon: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Image(systemName: icon).foregroundStyle(.accent)
+                Image(systemName: icon).foregroundStyle(Color.accentColor)
                 Text(title).font(.caption).foregroundStyle(.secondary)
                 Spacer()
                 Button {
@@ -150,7 +159,7 @@ public struct StringInspectorModelView: View {
                     UIPasteboard.general.string = value
                     #endif
                 } label: {
-                    Image(systemName: \"doc.on.doc\")
+                    Image(systemName: "doc.on.doc")
                         .font(.caption)
                 }
                 .buttonStyle(.borderless)

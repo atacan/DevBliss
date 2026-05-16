@@ -268,7 +268,7 @@ public struct Base64ImageModelView: View {
 
             HStack {
                 Spacer()
-                Button("Copy") {
+                Button {
                     model.copyBase64Tapped()
                 } label: {
                     Label("Copy", systemImage: "doc.on.doc")
@@ -501,7 +501,7 @@ private func detectMimeTypeFromData(_ data: Data) -> String {
 }
 
 private func removeDataURLPrefix(from input: String) -> String {
-    let pattern = #"^data:[^;,]*;?base64,"
+    let pattern = #"^data:[^;,]*;?base64,"#
     if let range = input.range(of: pattern, options: .regularExpression) {
         return String(input[range.upperBound...])
     }

@@ -23,7 +23,7 @@ public final class UrlParserModel {
 
     public var input: String {
         get { inputText }
-        set { inputText = newValue }
+        set { $inputText.withLock { $0 = newValue } }
     }
 
     public init() {}
@@ -33,7 +33,7 @@ public final class UrlParserModel {
     }
 
     public func parseInputChanged(_ newValue: String) {
-        inputText = newValue
+        $inputText.withLock { $0 = newValue }
         guard autoDetect, shouldAutoParse else { return }
         parseButtonTouched()
     }
@@ -51,19 +51,19 @@ public final class UrlParserModel {
         do {
             result = try urlParser.parse(trimmedInput)
             if let result {
-                outputText = result.queryJSON
+                $outputText.withLock { $0 = result.queryJSON }
             } else {
-                outputText = ""
+                $outputText.withLock { $0 = "" }
             }
         } catch {
             result = nil
             errorMessage = error.localizedDescription
-            outputText = ""
+            $outputText.withLock { $0 = "" }
         }
     }
 
     public func setInputTextFromOtherTool(_ text: String) {
-        inputText = text
+        $inputText.withLock { $0 = text }
         if autoDetect, shouldAutoParse {
             parseButtonTouched()
         }
