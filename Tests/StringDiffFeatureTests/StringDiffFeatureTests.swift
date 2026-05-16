@@ -6,30 +6,38 @@ import XCTest
 @MainActor
 final class StringDiffFeatureTests: XCTestCase {
     func testDiffComputationUpdatesChangesWhenInputsChange() async {
-        let model = StringDiffModel()
-        model.convertButtonTouched()
+        await withDependencies {
+            $0.stringDiff = .liveValue
+        } operation: {
+            let model = StringDiffModel()
+            model.convertButtonTouched()
 
-        model.setOldText("hello")
-        model.setNewText("world")
+            model.setOldText("hello")
+            model.setNewText("world")
 
-        while model.isComputing {
-            try? await Task.sleep(nanoseconds: 10_000_000)
+            while model.isComputing {
+                try? await Task.sleep(nanoseconds: 10_000_000)
+            }
+
+            XCTAssertFalse(model.changes.isEmpty)
         }
-
-        XCTAssertFalse(model.changes.isEmpty)
     }
 
     func testChangeDiffTypeCancelsAndRecomputes() async {
-        let model = StringDiffModel(oldText: "hello world", newText: "hello swift world")
-        model.convertButtonTouched()
-        model.setDiffType(.words)
+        await withDependencies {
+            $0.stringDiff = .liveValue
+        } operation: {
+            let model = StringDiffModel(oldText: "hello world", newText: "hello swift world")
+            model.convertButtonTouched()
+            model.setDiffType(.words)
 
-        while model.isComputing {
-            try? await Task.sleep(nanoseconds: 10_000_000)
+            while model.isComputing {
+                try? await Task.sleep(nanoseconds: 10_000_000)
+            }
+
+            XCTAssertEqual(model.diffType, .words)
+            XCTAssertFalse(model.isComputing)
         }
-
-        XCTAssertEqual(model.diffType, .words)
-        XCTAssertFalse(model.changes.isEmpty)
     }
 
     func testDefaultInitKeepsStoredTextKeys() {

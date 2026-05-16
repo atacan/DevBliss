@@ -12,6 +12,7 @@ final class HtmlToSwiftFeatureTests: XCTestCase {
                 binaryBirds: { _, _ in "Binary Birds" },
                 pointfreeco: { _, _ in "should not be used" }
             )
+            $0.userDefaults = .standard
         } operation: {
             let model = HtmlToSwiftModel()
             model.$inputText.withLock { $0 = "<html><body></body></html>" }
@@ -30,6 +31,7 @@ final class HtmlToSwiftFeatureTests: XCTestCase {
                 binaryBirds: { _, _ in "wrong" },
                 pointfreeco: { _, _ in "Point-Free Swift" }
             )
+            $0.userDefaults = .standard
         } operation: {
             let model = HtmlToSwiftModel()
             model.$inputText.withLock { $0 = "<html><body></body></html>" }

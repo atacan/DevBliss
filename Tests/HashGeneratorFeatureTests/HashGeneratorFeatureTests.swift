@@ -54,7 +54,7 @@ final class HashGeneratorFeatureTests: XCTestCase {
             model.convertButtonTouched()
             try? await Task.sleep(nanoseconds: 10_000_000)
 
-            XCTAssertEqual(model.outputText, "MD5: A\nSHA1: B\nSHA256: C\nSHA384: D\nSHA512: E")
+            XCTAssertEqual(model.outputText, "MD5: a\nSHA1: b\nSHA256: c\nSHA384: d\nSHA512: e")
         }
     }
 
@@ -108,4 +108,3 @@ final class HashGeneratorFeatureTests: XCTestCase {
         }
     }
 }
-

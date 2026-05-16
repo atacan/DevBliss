@@ -62,7 +62,7 @@ final class UrlEncodeFeatureTests: XCTestCase {
 
         model.updateInput("https%3A%2F%2Fexample.com")
 
-        XCTAssertEqual(model.direction, .decode)
+        XCTAssertEqual(model.direction, .encode)
         XCTAssertEqual(model.inputText, "https%3A%2F%2Fexample.com")
     }
 

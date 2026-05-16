@@ -29,7 +29,7 @@ final class JwtDebuggerFeatureTests: XCTestCase {
             model.$inputText.withLock { $0 = "header." }
             model.onInputChanged()
 
-            XCTAssertNil(model.errorMessage)
+            XCTAssertEqual(model.errorMessage, "JWT must have 3 parts, got 2")
             XCTAssertNil(model.inspection)
             XCTAssertEqual(model.inputText, "header.")
         }
