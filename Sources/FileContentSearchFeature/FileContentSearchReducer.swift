@@ -72,16 +72,16 @@ public final class FileContentSearchModel {
                 let found = try await fileContentSearch.run(options)
                 await MainActor.run {
                     guard let self else { return }
-                    isSearching = false
-                    foundFiles = found
-                    selectedFiles = []
-                    outputText = "\\(found.count) files found."
+                    self.isSearching = false
+                    self.foundFiles = found
+                    self.selectedFiles = []
+                    self.outputText = "\\(found.count) files found."
                 }
             } catch {
                 await MainActor.run {
                     guard let self else { return }
-                    isSearching = false
-                    outputText = error.localizedDescription
+                    self.isSearching = false
+                    self.outputText = error.localizedDescription
                 }
             }
         }
@@ -114,14 +114,14 @@ public final class FileContentSearchModel {
                 let content = try await filesClient.read(file.fileURL)
                 await MainActor.run {
                     guard let self else { return }
-                    isReadingFile = false
-                    outputText = content
+                    self.isReadingFile = false
+                    self.outputText = content
                 }
             } catch {
                 await MainActor.run {
                     guard let self else { return }
-                    isReadingFile = false
-                    outputText = error.localizedDescription
+                    self.isReadingFile = false
+                    self.outputText = error.localizedDescription
                 }
             }
         }
