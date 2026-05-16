@@ -18,7 +18,7 @@ final class TextCaseConverterFeatureTests: XCTestCase {
             )
         } operation: {
             let model = TextCaseConverterModel()
-            model.inputText = "foo bar"
+            model.$inputText.withLock { $0 = "foo bar" }
             model.setSourceCase(.kebab)
             model.setTargetCase(.snake)
             model.convertButtonTouched()
@@ -46,7 +46,7 @@ final class TextCaseConverterFeatureTests: XCTestCase {
             )
         } operation: {
             let model = TextCaseConverterModel()
-            model.inputText = "bad-input"
+            model.$inputText.withLock { $0 = "bad-input" }
             model.convertButtonTouched()
             try? await Task.sleep(nanoseconds: 10_000_000)
 
@@ -65,7 +65,7 @@ final class TextCaseConverterFeatureTests: XCTestCase {
             )
         } operation: {
             let model = TextCaseConverterModel()
-            model.inputText = "foo"
+            model.$inputText.withLock { $0 = "foo" }
             model.convertButtonTouched()
             model.cancel()
             try? await Task.sleep(nanoseconds: 10_000_000)

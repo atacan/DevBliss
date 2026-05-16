@@ -1,6 +1,7 @@
 import NameGeneratorFeature
 import XCTest
 
+@MainActor
 final class NameGeneratorFeatureTests: XCTestCase {
     func testDefaultModelInitializes() {
         let model = NameGeneratorModel()
@@ -12,4 +13,3 @@ final class NameGeneratorFeatureTests: XCTestCase {
         XCTAssertEqual(model.probabilistic.minLength, 3)
     }
 }
-

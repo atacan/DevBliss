@@ -6,15 +6,25 @@ import XCTest
 @MainActor
 final class Base64FeatureTests: XCTestCase {
     func testEncodeModeUsesDependencyAndUpdatesOutput() async {
-        let model = Base64Model()
-        model.inputText = "hello"
-        model.mode = .encode
+        await withDependencies {
+            $0.base64 = Base64Client(
+                encode: { input in
+                    input.data(using: .utf8)?.base64EncodedString() ?? ""
+                },
+                decode: { _, _ in "" },
+                isValidBase64: { _ in true }
+            )
+        } operation: {
+            let model = Base64Model()
+            model.$inputText.withLock { $0 = "hello" }
+            model.mode = .encode
 
-        model.convertButtonTouched()
-        try? await Task.sleep(nanoseconds: 10_000_000)
+            model.convertButtonTouched()
+            try? await Task.sleep(nanoseconds: 10_000_000)
 
-        XCTAssertFalse(model.isConversionRequestInFlight)
-        XCTAssertEqual(model.outputText, "aGVsbG8=")
+            XCTAssertFalse(model.isConversionRequestInFlight)
+            XCTAssertEqual(model.outputText, "aGVsbG8=")
+        }
     }
 
     func testDecodeModeShowsErrorForInvalidBase64() async {
@@ -30,7 +40,7 @@ final class Base64FeatureTests: XCTestCase {
             )
         } operation: {
             let model = Base64Model()
-            model.inputText = "not base64"
+            model.$inputText.withLock { $0 = "not base64" }
             model.mode = .decode
 
             model.convertButtonTouched()
@@ -56,7 +66,7 @@ final class Base64FeatureTests: XCTestCase {
             )
         } operation: {
             let model = Base64Model()
-            model.inputText = "hello"
+            model.$inputText.withLock { $0 = "hello" }
 
             model.convertButtonTouched()
             model.cancel()

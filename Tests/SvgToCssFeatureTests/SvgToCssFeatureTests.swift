@@ -7,7 +7,7 @@ import Dependencies
 final class SvgToCssFeatureTests: XCTestCase {
     func testConvertButtonTouchedWrapsCss() async {
         let model = SvgToCssModel()
-        model.inputText = "<svg xmlns=\"x\"/>"
+        model.$inputText.withLock { $0 = "<svg xmlns=\"x\"/>" }
         model.includeDataPrefix = true
         model.wrapWithCss = true
 
@@ -20,7 +20,7 @@ final class SvgToCssFeatureTests: XCTestCase {
 
     func testConvertShowsErrorMessage() async {
         let model = SvgToCssModel()
-        model.inputText = "   \n"
+        model.$inputText.withLock { $0 = "   \n" }
 
         model.convertButtonTouched()
         try? await Task.sleep(nanoseconds: 10_000_000)
@@ -39,7 +39,7 @@ final class SvgToCssFeatureTests: XCTestCase {
             )
         } operation: {
             let model = SvgToCssModel()
-            model.inputText = "<svg/>"
+            model.$inputText.withLock { $0 = "<svg/>" }
             model.convertButtonTouched()
             model.cancel()
 

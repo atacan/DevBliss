@@ -14,7 +14,7 @@ final class HexToAsciiFeatureTests: XCTestCase {
             )
         } operation: {
             let model = HexToAsciiModel()
-            model.inputText = "2a"
+            model.$inputText.withLock { $0 = "2a" }
             model.setAllowSeparators(true)
 
             model.convertButtonTouched()
@@ -39,7 +39,7 @@ final class HexToAsciiFeatureTests: XCTestCase {
             )
         } operation: {
             let model = HexToAsciiModel()
-            model.inputText = "zz"
+            model.$inputText.withLock { $0 = "zz" }
 
             model.convertButtonTouched()
             try? await Task.sleep(nanoseconds: 10_000_000)
@@ -58,7 +58,7 @@ final class HexToAsciiFeatureTests: XCTestCase {
             )
         } operation: {
             let model = HexToAsciiModel()
-            model.inputText = "2a"
+            model.$inputText.withLock { $0 = "2a" }
             model.convertButtonTouched()
             model.cancel()
 

@@ -16,7 +16,7 @@ final class AsciiToHexFeatureTests: XCTestCase {
             let model = AsciiToHexModel()
             model.setUppercase(true)
             model.setSeparator(.space)
-            model.inputText = "ab"
+            model.$inputText.withLock { $0 = "ab" }
 
             model.convertButtonTouched()
             try? await Task.sleep(nanoseconds: 10_000_000)
@@ -36,7 +36,7 @@ final class AsciiToHexFeatureTests: XCTestCase {
             let model = AsciiToHexModel()
             model.setUppercase(false)
             model.setSeparator(.space)
-            model.inputText = "a b"
+            model.$inputText.withLock { $0 = "a b" }
 
             model.convertButtonTouched()
             try? await Task.sleep(nanoseconds: 10_000_000)
@@ -59,7 +59,7 @@ final class AsciiToHexFeatureTests: XCTestCase {
             )
         } operation: {
             let model = AsciiToHexModel()
-            model.inputText = "bad"
+            model.$inputText.withLock { $0 = "bad" }
 
             model.convertButtonTouched()
             try? await Task.sleep(nanoseconds: 10_000_000)
@@ -78,7 +78,7 @@ final class AsciiToHexFeatureTests: XCTestCase {
             )
         } operation: {
             let model = AsciiToHexModel()
-            model.inputText = "ab"
+            model.$inputText.withLock { $0 = "ab" }
             model.convertButtonTouched()
             model.cancel()
             try? await Task.sleep(nanoseconds: 10_000_000)

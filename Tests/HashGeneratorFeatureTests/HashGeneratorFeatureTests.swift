@@ -21,7 +21,7 @@ final class HashGeneratorFeatureTests: XCTestCase {
             )
         } operation: {
             let model = HashGeneratorModel()
-            model.inputText = "dev"
+            model.$inputText.withLock { $0 = "dev" }
             model.setUppercase(false)
 
             model.convertButtonTouched()
@@ -48,7 +48,7 @@ final class HashGeneratorFeatureTests: XCTestCase {
             )
         } operation: {
             let model = HashGeneratorModel()
-            model.inputText = "abc"
+            model.$inputText.withLock { $0 = "abc" }
             model.setUppercase(true)
 
             model.convertButtonTouched()
@@ -72,7 +72,7 @@ final class HashGeneratorFeatureTests: XCTestCase {
             )
         } operation: {
             let model = HashGeneratorModel()
-            model.inputText = "abc"
+            model.$inputText.withLock { $0 = "abc" }
 
             model.convertButtonTouched()
             try? await Task.sleep(nanoseconds: 10_000_000)
@@ -98,7 +98,7 @@ final class HashGeneratorFeatureTests: XCTestCase {
             )
         } operation: {
             let model = HashGeneratorModel()
-            model.inputText = "abc"
+            model.$inputText.withLock { $0 = "abc" }
 
             model.convertButtonTouched()
             model.cancel()

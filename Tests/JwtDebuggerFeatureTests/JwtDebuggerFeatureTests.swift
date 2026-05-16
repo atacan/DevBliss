@@ -13,7 +13,7 @@ final class JwtDebuggerFeatureTests: XCTestCase {
             }
         } operation: {
             let model = JwtDebuggerModel()
-            model.inputText = "header.payload"
+            model.$inputText.withLock { $0 = "header.payload" }
             model.onInputChanged()
 
             XCTAssertEqual(model.inputText, "header.payload")
@@ -26,7 +26,7 @@ final class JwtDebuggerFeatureTests: XCTestCase {
             XCTAssertNil(model.inspection)
             XCTAssertEqual(model.errorMessage, "JWT must have 3 parts, got 2")
 
-            model.inputText = "header."
+            model.$inputText.withLock { $0 = "header." }
             model.onInputChanged()
 
             XCTAssertNil(model.errorMessage)
@@ -50,7 +50,7 @@ final class JwtDebuggerFeatureTests: XCTestCase {
             }
         } operation: {
             let model = JwtDebuggerModel()
-            model.inputText = "header.payload.signature"
+            model.$inputText.withLock { $0 = "header.payload.signature" }
 
             model.decodeButtonTouched()
             try? await Task.sleep(nanoseconds: 10_000_000)
@@ -71,7 +71,7 @@ final class JwtDebuggerFeatureTests: XCTestCase {
         } operation: {
             let model = JwtDebuggerModel()
             model.autoDetect = true
-            model.inputText = "hello"
+            model.$inputText.withLock { $0 = "hello" }
             model.onInputChanged()
 
             XCTAssertNil(model.inspection)
@@ -86,6 +86,8 @@ final class JwtDebuggerFeatureTests: XCTestCase {
         } catch let error as JwtDebuggerError {
             XCTAssertEqual(error, .invalidPartCount(2))
             XCTAssertEqual(error.localizedDescription, "JWT must have 3 parts, got 2")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
         }
     }
 }

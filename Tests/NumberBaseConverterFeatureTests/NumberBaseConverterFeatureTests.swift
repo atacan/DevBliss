@@ -20,7 +20,7 @@ final class NumberBaseConverterFeatureTests: XCTestCase {
             )
         } operation: {
             let model = NumberBaseConverterModel()
-            model.inputText = "10"
+            model.$inputText.withLock { $0 = "10" }
             model.setFromBase(.decimal)
 
             model.convertButtonTouched()
@@ -46,7 +46,7 @@ final class NumberBaseConverterFeatureTests: XCTestCase {
             )
         } operation: {
             let model = NumberBaseConverterModel()
-            model.inputText = "zzz"
+            model.$inputText.withLock { $0 = "zzz" }
 
             model.convertButtonTouched()
             try? await Task.sleep(nanoseconds: 10_000_000)
@@ -72,7 +72,7 @@ final class NumberBaseConverterFeatureTests: XCTestCase {
             )
         } operation: {
             let model = NumberBaseConverterModel()
-            model.inputText = "10"
+            model.$inputText.withLock { $0 = "10" }
             model.convertButtonTouched()
             model.cancel()
 
@@ -81,4 +81,3 @@ final class NumberBaseConverterFeatureTests: XCTestCase {
         }
     }
 }
-

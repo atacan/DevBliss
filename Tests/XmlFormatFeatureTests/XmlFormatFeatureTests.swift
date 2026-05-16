@@ -17,7 +17,7 @@ final class XmlFormatFeatureTests: XCTestCase {
             )
         } operation: {
             let model = XmlFormatModel()
-            model.inputText = "<x/>"
+            model.$inputText.withLock { $0 = "<x/>" }
             model.mode = .beautify
 
             model.convertButtonTouched()
@@ -33,14 +33,14 @@ final class XmlFormatFeatureTests: XCTestCase {
             $0.xmlFormat = XmlFormatClient(
                 format: { input, mode in
                     if mode == .minify {
-                        return "<minified>\(input.replacingOccurrences(of: \" \", with: \"\"))</minified>"
+                        return "<minified>\(input.replacingOccurrences(of: " ", with: ""))</minified>"
                     }
                     return "unexpected:\(input)"
                 }
             )
         } operation: {
             let model = XmlFormatModel()
-            model.inputText = "<x> 1 </x>"
+            model.$inputText.withLock { $0 = "<x> 1 </x>" }
             model.mode = .minify
 
             model.convertButtonTouched()
@@ -64,7 +64,7 @@ final class XmlFormatFeatureTests: XCTestCase {
             )
         } operation: {
             let model = XmlFormatModel()
-            model.inputText = "<x/>"
+            model.$inputText.withLock { $0 = "<x/>" }
 
             model.convertButtonTouched()
             try? await Task.sleep(nanoseconds: 10_000_000)
@@ -84,7 +84,7 @@ final class XmlFormatFeatureTests: XCTestCase {
             )
         } operation: {
             let model = XmlFormatModel()
-            model.inputText = "<x/>"
+            model.$inputText.withLock { $0 = "<x/>" }
 
             model.convertButtonTouched()
             model.cancel()

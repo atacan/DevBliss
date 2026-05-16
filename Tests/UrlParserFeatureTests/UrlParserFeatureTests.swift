@@ -24,7 +24,7 @@ final class UrlParserFeatureTests: XCTestCase {
             )
         } operation: {
             let model = UrlParserModel()
-            model.inputText = "https://example.com/?q=value"
+            model.$inputText.withLock { $0 = "https://example.com/?q=value" }
 
             model.parseButtonTouched()
 
@@ -42,7 +42,7 @@ final class UrlParserFeatureTests: XCTestCase {
             )
         } operation: {
             let model = UrlParserModel()
-            model.inputText = "not a url"
+            model.$inputText.withLock { $0 = "not a url" }
 
             model.parseButtonTouched()
 

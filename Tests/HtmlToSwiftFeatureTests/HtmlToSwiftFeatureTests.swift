@@ -14,7 +14,7 @@ final class HtmlToSwiftFeatureTests: XCTestCase {
             )
         } operation: {
             let model = HtmlToSwiftModel()
-            model.inputText = "<html><body></body></html>"
+            model.$inputText.withLock { $0 = "<html><body></body></html>" }
             model.dsl = .binaryBirds
             model.convertButtonTouched()
 
@@ -32,7 +32,7 @@ final class HtmlToSwiftFeatureTests: XCTestCase {
             )
         } operation: {
             let model = HtmlToSwiftModel()
-            model.inputText = "<html><body></body></html>"
+            model.$inputText.withLock { $0 = "<html><body></body></html>" }
             model.dsl = .pointFree
             model.convertButtonTouched()
 
