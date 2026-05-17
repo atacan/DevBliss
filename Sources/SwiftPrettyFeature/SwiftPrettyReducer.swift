@@ -3,7 +3,7 @@ import Dependencies
 import Observation
 import SharedModels
 import Sharing
-import SplitView
+import InputOutput
 import SwiftUI
 
 @MainActor
@@ -86,33 +86,43 @@ public final class SwiftPrettyModel {
 public struct SwiftPrettyModelView: View {
     @Bindable var model: SwiftPrettyModel
     @State var configIsExpanded = true
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(model: SwiftPrettyModel) {
+    public init(
+        model: SwiftPrettyModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
         self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
     public var body: some View {
-        VSplit {
-            VStack {
-                lockwoodEditor
-                    .padding(.horizontal)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                LoadingButton(
-                    NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
-                    isLoading: model.isConversionRequestInFlight
-                ) {
-                    model.convertButtonTouched()
-                }
-                .padding(.bottom)
-                .keyboardShortcut(.return, modifiers: [.command])
-                .help(NSLocalizedString("Format code (Cmd+Return)", bundle: Bundle.module, comment: ""))
-            }
-        } bottom: {
-            Split(primary: { inputEditor }, secondary: { outputEditor })
-                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.SwiftPretty.splitViewFraction))
-                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.SwiftPretty.splitViewLayout))
-                .styling(visibleThickness: 2)
+        TwoPaneToolView(
+            actionTitle: NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
+            actionHelp: NSLocalizedString("Format code (Cmd+Return)", bundle: Bundle.module, comment: ""),
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.SwiftPretty.splitViewFraction,
+                layoutKey: SettingsKey.SwiftPretty.splitViewLayout,
+                primaryLabel: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
+                secondaryLabel: NSLocalizedString("Pretty", bundle: Bundle.module, comment: "")
+            )
+        ) {
+            lockwoodEditor
+                .padding(.horizontal)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+        } primary: {
+            PlainInputTextPane(
+                title: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
+                text: inputTextBinding
+            )
+        } secondary: {
+            PlainOutputTextPane(
+                title: NSLocalizedString("Pretty", bundle: Bundle.module, comment: ""),
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
+            )
         }
     }
 
@@ -136,38 +146,28 @@ public struct SwiftPrettyModelView: View {
         }
     }
 
-    private var inputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(NSLocalizedString("Raw", bundle: Bundle.module, comment: ""))
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else {
+            return nil
+        }
 
-            TextEditor(text: Binding(
-                get: { model.inputText },
-                set: { newValue in model.$inputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
+        return { tool in
+            onSendOutputToTool(model.outputText, tool)
         }
     }
 
-    private var outputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(NSLocalizedString("Pretty", bundle: Bundle.module, comment: ""))
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
 
-            TextEditor(text: Binding(
-                get: { model.outputText },
-                set: { newValue in model.$outputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }
 

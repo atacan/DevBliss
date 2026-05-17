@@ -3,7 +3,7 @@ import Dependencies
 import Observation
 import SharedModels
 import Sharing
-import SplitView
+import InputOutput
 import SwiftUI
 
 @MainActor
@@ -87,101 +87,71 @@ public final class AsciiToHexModel {
 
 public struct AsciiToHexModelView: View {
     @Bindable var model: AsciiToHexModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(model: AsciiToHexModel) {
+    public init(
+        model: AsciiToHexModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
         self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
-    private var separatorPicker: some View {
-        Picker("Separator", selection: $model.separator) {
-            ForEach(HexSeparator.allCases) { separator in
-                Text(separator.rawValue)
-                    .tag(separator)
-            }
-        }
-    }
-
-    private var uppercaseToggle: some View {
-        Toggle("Uppercase", isOn: $model.uppercase)
-    }
-
-    private var convertButton: some View {
-        LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
-            model.convertButtonTouched()
-        }
-        .keyboardShortcut(.return, modifiers: [.command])
-        .help("Convert (⌘ Return)")
-    }
-
-    public var body: some View {
-        VStack(spacing: 0) {
-            #if os(iOS)
-            VStack(spacing: 10) {
-                separatorPicker
-                uppercaseToggle
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            convertButton
-                .padding(.vertical, 8)
-            #else
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel("Separator")
-                    separatorPicker
-                        .blissMenuPicker(width: 120)
-                    uppercaseToggle
-                        .toggleStyle(.checkbox)
+    private var configurationView: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            GridRow {
+                ConfigLabel("Separator")
+                Picker("Separator", selection: $model.separator) {
+                    ForEach(HexSeparator.allCases) { separator in Text(separator.rawValue).tag(separator) }
                 }
+                .blissMenuPicker(width: 120)
+                Toggle("Uppercase", isOn: $model.uppercase).toggleStyle(.checkbox)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            convertButton
-                .padding(.vertical, 8)
-            #endif
-
-            Divider()
-
-            Split(primary: { inputEditor }, secondary: { outputEditor })
-                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.AsciiToHex.splitViewFraction))
-                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.AsciiToHex.splitViewLayout))
-                .styling(visibleThickness: 2)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+    }
+    public var body: some View {
+        TwoPaneToolView(
+            actionTitle: "Convert",
+            actionHelp: "Convert (⌘ Return)",
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.AsciiToHex.splitViewFraction,
+                layoutKey: SettingsKey.AsciiToHex.splitViewLayout,
+                primaryLabel: "ASCII",
+                secondaryLabel: "Hex"
+            )
+        ) {
+            configurationView
+        } primary: {
+            PlainInputTextPane(title: "ASCII", text: inputTextBinding)
+        } secondary: {
+            PlainOutputTextPane(
+                title: "Hex",
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
+            )
         }
     }
-
-    private var inputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("ASCII")
-                .font(.headline)
-                .padding(.horizontal, 8)
-
-            TextEditor(text: Binding(
-                get: { model.inputText },
-                set: { newValue in model.$inputText.withLock { $0 = newValue } }
-            ))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else { return nil }
+        return { tool in onSendOutputToTool(model.outputText, tool) }
     }
 
-    private var outputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Hex")
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
 
-            TextEditor(text: Binding(
-                get: { model.outputText },
-                set: { newValue in model.$outputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }
 

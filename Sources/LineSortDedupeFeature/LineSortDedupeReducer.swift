@@ -3,7 +3,7 @@ import Dependencies
 import Observation
 import SharedModels
 import Sharing
-import SplitView
+import InputOutput
 import SwiftUI
 
 @MainActor
@@ -114,128 +114,78 @@ struct LineSortDedupeView_Previews: PreviewProvider {
 
 public struct LineSortDedupeModelView: View {
     @Bindable var model: LineSortDedupeModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(model: LineSortDedupeModel) {
+    public init(
+        model: LineSortDedupeModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
         self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
-    private var sortOrderPicker: some View {
-        Picker("Order", selection: $model.sortOrder) {
-            ForEach(LineSortOrder.allCases) { order in
-                Text(order.rawValue)
-                    .tag(order)
+    private var configurationView: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            GridRow {
+                ConfigLabel("Sort by")
+                Picker("Order", selection: $model.sortOrder) {
+                    ForEach(LineSortOrder.allCases) { order in Text(order.rawValue).tag(order) }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .frame(width: 200)
+                Toggle("Case-insensitive", isOn: $model.caseInsensitive).toggleStyle(.checkbox)
+                Toggle("Trim whitespace", isOn: $model.trimWhitespace).toggleStyle(.checkbox)
+            }
+            GridRow {
+                ConfigLabel("Options")
+                Toggle("Remove duplicates", isOn: $model.removeDuplicates).toggleStyle(.checkbox)
+                Toggle("Remove empty lines", isOn: $model.removeEmptyLines).toggleStyle(.checkbox)
             }
         }
-        .pickerStyle(.segmented)
-        .labelsHidden()
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
-
-    private var caseInsensitiveToggle: some View {
-        Toggle("Case-insensitive", isOn: $model.caseInsensitive)
-    }
-
-    private var trimWhitespaceToggle: some View {
-        Toggle("Trim whitespace", isOn: $model.trimWhitespace)
-    }
-
-    private var removeDuplicatesToggle: some View {
-        Toggle("Remove duplicates", isOn: $model.removeDuplicates)
-    }
-
-    private var removeEmptyLinesToggle: some View {
-        Toggle("Remove empty lines", isOn: $model.removeEmptyLines)
-    }
-
-    private var processButton: some View {
-        LoadingButton("Process", isLoading: model.isConversionRequestInFlight) {
-            model.convertButtonTouched()
-        }
-        .keyboardShortcut(.return, modifiers: [.command])
-        .help("Process (⌘ Return)")
-    }
-
     public var body: some View {
-        VStack(spacing: 0) {
-            #if os(iOS)
-            VStack(spacing: 10) {
-                sortOrderPicker
-                caseInsensitiveToggle
-                trimWhitespaceToggle
-                removeDuplicatesToggle
-                removeEmptyLinesToggle
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            processButton
-                .padding(.vertical, 8)
-            #else
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel("Sort by")
-                    sortOrderPicker
-                        .frame(width: 200)
-                    caseInsensitiveToggle
-                        .toggleStyle(.checkbox)
-                    trimWhitespaceToggle
-                        .toggleStyle(.checkbox)
-                }
-
-                GridRow {
-                    ConfigLabel("Options")
-                    removeDuplicatesToggle
-                        .toggleStyle(.checkbox)
-                    removeEmptyLinesToggle
-                        .toggleStyle(.checkbox)
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            processButton
-                .padding(.vertical, 8)
-            #endif
-
-            Divider()
-
-            Split(primary: { inputEditor }, secondary: { outputEditor })
-                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.LineSortDedupe.splitViewFraction))
-                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.LineSortDedupe.splitViewLayout))
-                .styling(visibleThickness: 2)
+        TwoPaneToolView(
+            actionTitle: "Process",
+            actionHelp: "Process (⌘ Return)",
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.LineSortDedupe.splitViewFraction,
+                layoutKey: SettingsKey.LineSortDedupe.splitViewLayout,
+                primaryLabel: "Input",
+                secondaryLabel: "Output"
+            )
+        ) {
+            configurationView
+        } primary: {
+            PlainInputTextPane(title: "Input", text: inputTextBinding)
+        } secondary: {
+            PlainOutputTextPane(
+                title: "Output",
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
+            )
         }
     }
-
-    private var inputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Input")
-                .font(.headline)
-                .padding(.horizontal, 8)
-
-            TextEditor(text: Binding(
-                get: { model.inputText },
-                set: { newValue in model.$inputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else { return nil }
+        return { tool in onSendOutputToTool(model.outputText, tool) }
     }
 
-    private var outputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Output")
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
 
-            TextEditor(text: Binding(
-                get: { model.outputText },
-                set: { newValue in model.$outputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }

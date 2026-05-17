@@ -3,7 +3,7 @@ import Dependencies
 import Observation
 import SharedModels
 import Sharing
-import SplitView
+import InputOutput
 import SwiftUI
 
 @MainActor
@@ -82,87 +82,56 @@ public final class HexToAsciiModel {
 
 public struct HexToAsciiModelView: View {
     @Bindable var model: HexToAsciiModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(model: HexToAsciiModel) {
+    public init(
+        model: HexToAsciiModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
         self.model = model
-    }
-
-    private var convertButton: some View {
-        LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
-            model.convertButtonTouched()
-        }
-        .keyboardShortcut(.return, modifiers: [.command])
-        .help("Convert (⌘ Return)")
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            #if os(iOS)
-            VStack(spacing: 10) {
-                Toggle("Allow separators", isOn: $model.allowSeparators)
-                    .help("Allow spaces, commas, colons, and 0x prefixes")
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            convertButton
-                .padding(.vertical, 8)
-            #else
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    Toggle("Allow separators", isOn: $model.allowSeparators)
-                        .help("Allow spaces, commas, colons, and 0x prefixes")
-                        .gridCellColumns(3)
-                        .toggleStyle(.checkbox)
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            convertButton
-                .padding(.vertical, 8)
-            #endif
-
-            Divider()
-
-            Split(primary: { inputEditor }, secondary: { outputEditor })
-                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.HexToAscii.splitViewFraction))
-                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.HexToAscii.splitViewLayout))
-                .styling(visibleThickness: 2)
+        TwoPaneToolView(
+            actionTitle: "Convert",
+            actionHelp: "Convert (Cmd Return)",
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.HexToAscii.splitViewFraction,
+                layoutKey: SettingsKey.HexToAscii.splitViewLayout,
+                primaryLabel: "Hex",
+                secondaryLabel: "ASCII"
+            )
+        ) {
+            PlainInputTextPane(title: "Hex", text: inputTextBinding)
+        } secondary: {
+            PlainOutputTextPane(
+                title: "ASCII",
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
+            )
         }
     }
 
-    private var inputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("ASCII")
-                .font(.headline)
-                .padding(.horizontal, 8)
-
-            TextEditor(text: Binding(
-                get: { model.inputText },
-                set: { newValue in model.$inputText.withLock { $0 = newValue } }
-            ))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else { return nil }
+        return { tool in onSendOutputToTool(model.outputText, tool) }
     }
 
-    private var outputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Hex")
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
 
-            TextEditor(text: Binding(
-                get: { model.outputText },
-                set: { newValue in model.$outputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }
 

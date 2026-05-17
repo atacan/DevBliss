@@ -3,7 +3,7 @@ import Demark
 import Dependencies
 import MarkdownUI
 import SharedModels
-import SplitView
+import InputOutput
 import SwiftUI
 import SyntaxHighlightClient
 import Sharing
@@ -123,9 +123,14 @@ public final class HtmlToMarkdownModel {
 
 public struct HtmlToMarkdownModelView: View {
     @Bindable var model: HtmlToMarkdownModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(model: HtmlToMarkdownModel) {
+    public init(
+        model: HtmlToMarkdownModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
         self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
     public var body: some View {
@@ -217,10 +222,20 @@ public struct HtmlToMarkdownModelView: View {
             if model.showMarkdownPreview {
                 markdownPreviewSplitView
             } else {
-                Split(primary: { inputEditor }, secondary: { outputEditor })
-                    .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.HtmlToMarkdown.splitViewFraction))
-                    .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.HtmlToMarkdown.splitViewLayout))
-                    .styling(visibleThickness: 2)
+                SideBySideView(
+                    fractionKey: SettingsKey.HtmlToMarkdown.splitViewFraction,
+                    layoutKey: SettingsKey.HtmlToMarkdown.splitViewLayout,
+                    primaryLabel: "HTML Input",
+                    secondaryLabel: "Markdown Output"
+                ) {
+                    PlainInputTextPane(title: "HTML Input", text: inputTextBinding)
+                } secondary: {
+                    PlainOutputTextPane(
+                        title: "Markdown Output",
+                        text: outputTextBinding,
+                        onSendToTool: sendOutputToTool
+                    )
+                }
             }
         }
     }
@@ -236,38 +251,28 @@ public struct HtmlToMarkdownModelView: View {
         .background(ThemeColor.Background.textBackground)
     }
 
-    private var inputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("HTML Input")
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else {
+            return nil
+        }
 
-            TextEditor(text: Binding(
-                get: { model.inputText },
-                set: { newValue in model.$inputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
+        return { tool in
+            onSendOutputToTool(model.outputText, tool)
         }
     }
 
-    private var outputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Markdown Output")
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
 
-            TextEditor(text: Binding(
-                get: { model.outputText },
-                set: { newValue in model.$outputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }
 

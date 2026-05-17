@@ -5,7 +5,7 @@ import SharedModels
 import Sharing
 import SwiftUI
 import Observation
-import SplitView
+import InputOutput
 
 @MainActor
 @Observable
@@ -93,60 +93,55 @@ struct JsonToYamlView_Previews: PreviewProvider {
 
 public struct JsonToYamlModelView: View {
     @Bindable var model: JsonToYamlModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(model: JsonToYamlModel) {
+    public init(
+        model: JsonToYamlModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
         self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
-                model.convertButtonTouched()
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Convert (⌘ Return)")
-            .padding(.vertical, 8)
-
-            Divider()
-
-            Split(primary: { inputEditor }, secondary: { outputEditor })
-                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.JsonToYaml.splitViewFraction))
-                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.JsonToYaml.splitViewLayout))
-                .styling(visibleThickness: 2)
+        TwoPaneToolView(
+            actionTitle: "Convert",
+            actionHelp: "Convert (Cmd Return)",
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.JsonToYaml.splitViewFraction,
+                layoutKey: SettingsKey.JsonToYaml.splitViewLayout,
+                primaryLabel: "JSON",
+                secondaryLabel: "YAML"
+            )
+        ) {
+            PlainInputTextPane(title: "JSON", text: inputTextBinding)
+        } secondary: {
+            PlainOutputTextPane(
+                title: "YAML",
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
+            )
         }
     }
 
-    private var inputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("JSON")
-                .font(.headline)
-                .padding(.horizontal, 8)
-
-            TextEditor(text: Binding(
-                get: { model.inputText },
-                set: { newValue in model.$inputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else { return nil }
+        return { tool in onSendOutputToTool(model.outputText, tool) }
     }
 
-    private var outputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("YAML")
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
 
-            TextEditor(text: Binding(
-                get: { model.outputText },
-                set: { newValue in model.$outputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }

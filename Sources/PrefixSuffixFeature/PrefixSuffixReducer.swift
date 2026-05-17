@@ -3,7 +3,7 @@ import Dependencies
 import Observation
 import SharedModels
 import Sharing
-import SplitView
+import InputOutput
 import SwiftUI
 
 @MainActor
@@ -124,204 +124,71 @@ public final class PrefixSuffixModel {
 
 public struct PrefixSuffixModelView: View {
     @Bindable var model: PrefixSuffixModel
-
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
     @FocusState private var focusedField: Field?
-    enum Field: Int, Hashable {
-        case prefixReplace
-        case prefixReplaceWith
-        case prefixAdd
-        case suffixReplace
-        case suffixReplaceWith
-        case suffixAdd
-    }
 
-    public init(model: PrefixSuffixModel) {
+    enum Field: Int, Hashable { case prefixReplace, prefixReplaceWith, prefixAdd, suffixReplace, suffixReplaceWith, suffixAdd }
+
+    public init(model: PrefixSuffixModel, onSendOutputToTool: ((String, Tool) -> Void)? = nil) {
         self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
-    private let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.PrefixSuffix.splitViewFraction)
-    @StateObject private var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.PrefixSuffix.splitViewLayout)
-    @StateObject private var hide = SideHolder()
-
-    public var body: some View {
+    private var configurationView: some View {
         VStack {
             HStack(alignment: .center) {
-                Image(systemName: "arrow.forward")
-                    .help(
-                        NSLocalizedString(
-                            "It first starts applying the prefix changes",
-                            bundle: Bundle.module,
-                            comment: ""
-                        )
-                    )
                 VStack {
                     Text(NSLocalizedString("Prefix", bundle: Bundle.module, comment: ""))
-                    Group {
-                        TextField(
-                            NSLocalizedString("Replace prefix", bundle: Bundle.module, comment: ""),
-                            text: Binding(
-                                get: { model.prefixReplace },
-                                set: { newValue in model.$prefixReplace.withLock { $0 = newValue } }
-                            )
-                        )
-                        .focused($focusedField, equals: .prefixReplace)
-                        .onSubmit { focusNextField($focusedField) }
-                        .help(NSLocalizedString("Replace prefix if available", bundle: Bundle.module, comment: ""))
-
-                        TextField(
-                            NSLocalizedString("with", bundle: Bundle.module, comment: ""),
-                            text: Binding(
-                                get: { model.prefixReplaceWith },
-                                set: { newValue in model.$prefixReplaceWith.withLock { $0 = newValue } }
-                            )
-                        )
-                        .focused($focusedField, equals: .prefixReplaceWith)
-                        .onSubmit { focusNextField($focusedField) }
-                        .help(
-                            NSLocalizedString(
-                                "the prefix written previously will be replaced with this",
-                                bundle: Bundle.module,
-                                comment: ""
-                            )
-                        )
-
-                        TextField(
-                            NSLocalizedString("Then add Prefix", bundle: Bundle.module, comment: ""),
-                            text: Binding(
-                                get: { model.prefixAdd },
-                                set: { newValue in model.$prefixAdd.withLock { $0 = newValue } }
-                            )
-                        )
-                        .focused($focusedField, equals: .prefixAdd)
-                        .onSubmit { focusNextField($focusedField) }
-                        .help(NSLocalizedString("Then add Prefix", bundle: Bundle.module, comment: ""))
-                    }  // <-Group
-                    .font(.monospaced(.body)())
-                    .textFieldStyle(.roundedBorder)
+                    TextField(NSLocalizedString("Replace prefix", bundle: Bundle.module, comment: ""), text: Binding(get: { model.prefixReplace }, set: { newValue in model.$prefixReplace.withLock { $0 = newValue } }))
+                    TextField(NSLocalizedString("with", bundle: Bundle.module, comment: ""), text: Binding(get: { model.prefixReplaceWith }, set: { newValue in model.$prefixReplaceWith.withLock { $0 = newValue } }))
+                    TextField(NSLocalizedString("Then add Prefix", bundle: Bundle.module, comment: ""), text: Binding(get: { model.prefixAdd }, set: { newValue in model.$prefixAdd.withLock { $0 = newValue } }))
                 }
-                Image(systemName: "arrow.forward.square.fill")
-                    .help(
-                        NSLocalizedString(
-                            "Then it applies the suffix manipulation",
-                            bundle: Bundle.module,
-                            comment: ""
-                        )
-                    )
                 VStack {
-                    Text(
-                        NSLocalizedString(
-                            "Suffix",
-                            bundle: Bundle.module,
-                            comment: "title of the suffix manipulation input fields"
-                        )
-                    )
-                    Group {
-                         TextField(
-                             NSLocalizedString("Replace suffix", bundle: Bundle.module, comment: ""),
-                             text: Binding(
-                                 get: { model.suffixReplace },
-                                 set: { newValue in model.$suffixReplace.withLock { $0 = newValue } }
-                             )
-                         )
-                         .focused($focusedField, equals: .suffixReplace)
-                         .onSubmit { focusNextField($focusedField) }
-                         .help(NSLocalizedString("Replace suffix if available", bundle: Bundle.module, comment: ""))
-
-                         TextField(
-                             NSLocalizedString("with", bundle: Bundle.module, comment: ""),
-                             text: Binding(
-                                 get: { model.suffixReplaceWith },
-                                 set: { newValue in model.$suffixReplaceWith.withLock { $0 = newValue } }
-                             )
-                         )
-                         .focused($focusedField, equals: .suffixReplaceWith)
-                         .onSubmit { focusNextField($focusedField) }
-                         .help(
-                             NSLocalizedString(
-                                 "the suffix written previously will be replaced with this",
-                                 bundle: Bundle.module,
-                                 comment: ""
-                             )
-                         )
-
-                         TextField(
-                             NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""),
-                             text: Binding(
-                                 get: { model.suffixAdd },
-                                 set: { newValue in model.$suffixAdd.withLock { $0 = newValue } }
-                             )
-                         )
-                        .focused($focusedField, equals: .suffixAdd)
-                        .onSubmit { focusNextField($focusedField) }
-                        .help(NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""))
-                    }
-                    .font(.monospaced(.body)())
-                    .textFieldStyle(.roundedBorder)
+                    Text(NSLocalizedString("Suffix", bundle: Bundle.module, comment: ""))
+                    TextField(NSLocalizedString("Replace suffix", bundle: Bundle.module, comment: ""), text: Binding(get: { model.suffixReplace }, set: { newValue in model.$suffixReplace.withLock { $0 = newValue } }))
+                    TextField(NSLocalizedString("with", bundle: Bundle.module, comment: ""), text: Binding(get: { model.suffixReplaceWith }, set: { newValue in model.$suffixReplaceWith.withLock { $0 = newValue } }))
+                    TextField(NSLocalizedString("Then add Suffix", bundle: Bundle.module, comment: ""), text: Binding(get: { model.suffixAdd }, set: { newValue in model.$suffixAdd.withLock { $0 = newValue } }))
                 }
             }
+            .font(.monospaced(.body)())
+            .textFieldStyle(.roundedBorder)
             .padding(.horizontal, 16)
             .frame(maxWidth: 850)
-
-            Toggle(
-                NSLocalizedString("Trim whitespace", bundle: Bundle.module, comment: ""),
-                isOn: Binding(
-                    get: { model.trimWhiteSpace },
-                    set: { newValue in model.$trimWhiteSpace.withLock { $0 = newValue } }
-                )
-            )
-
-            LoadingButton(
-                NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
-                isLoading: model.isConversionRequestInFlight
-            ) {
-                model.convertButtonTouched()
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Convert (Cmd+Return)", bundle: Bundle.module, comment: ""))
-            .padding(.top)
-
-            Split(primary: { inputEditor }, secondary: { outputEditor })
-                .fraction(fraction)
-                .layout(layout)
-                .hide(hide)
-                .styling(visibleThickness: 2)
-        }
-        .onAppear {
-            focusedField = .prefixReplace
+            Toggle(NSLocalizedString("Trim whitespace", bundle: Bundle.module, comment: ""), isOn: Binding(get: { model.trimWhiteSpace }, set: { newValue in model.$trimWhiteSpace.withLock { $0 = newValue } }))
         }
     }
 
-    private var inputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Input")
-                .font(.headline)
-                .padding(.horizontal, 8)
-
-            TextEditor(text: Binding(
-                get: { model.inputText },
-                set: { newValue in model.$inputText.withLock { $0 = newValue } }
-            ))
-                .frame(minHeight: 140)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
+    public var body: some View {
+        TwoPaneToolView(
+            actionTitle: NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
+            actionHelp: NSLocalizedString("Convert (Cmd+Return)", bundle: Bundle.module, comment: ""),
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(fractionKey: SettingsKey.PrefixSuffix.splitViewFraction, layoutKey: SettingsKey.PrefixSuffix.splitViewLayout, primaryLabel: "Input", secondaryLabel: "Output")
+        ) { configurationView } primary: {
+            PlainInputTextPane(title: "Input", text: inputTextBinding, minHeight: 140)
+        } secondary: {
+            PlainOutputTextPane(title: "Output", text: outputTextBinding, minHeight: 140, onSendToTool: sendOutputToTool)
         }
+        .onAppear { focusedField = .prefixReplace }
+    }
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else { return nil }
+        return { tool in onSendOutputToTool(model.outputText, tool) }
     }
 
-    private var outputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Output")
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
 
-            TextEditor(text: Binding(
-                get: { model.outputText },
-                set: { newValue in model.$outputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 140)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }
 

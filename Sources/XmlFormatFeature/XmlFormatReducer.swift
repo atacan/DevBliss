@@ -3,7 +3,7 @@ import Dependencies
 import Observation
 import SharedModels
 import Sharing
-import SplitView
+import InputOutput
 import SwiftUI
 
 @MainActor
@@ -84,77 +84,73 @@ struct XmlFormatView_Previews: PreviewProvider {
 
 public struct XmlFormatModelView: View {
     @Bindable var model: XmlFormatModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(model: XmlFormatModel) {
+    public init(
+        model: XmlFormatModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
         self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
-    public var body: some View {
-        VStack(spacing: 0) {
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    Picker("Mode", selection: $model.mode) {
-                        ForEach(XmlFormatMode.allCases) { mode in
-                            Text(mode.rawValue)
-                                .tag(mode)
-                        }
+    private var configurationView: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            GridRow {
+                Picker("Mode", selection: $model.mode) {
+                    ForEach(XmlFormatMode.allCases) { mode in
+                        Text(mode.rawValue).tag(mode)
                     }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(width: 200)
                 }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+                .frame(width: 200)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            LoadingButton("Format", isLoading: model.isConversionRequestInFlight) {
-                model.convertButtonTouched()
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Format (⌘ Return)")
-            .padding(.vertical, 8)
-
-            Divider()
-
-            Split(primary: { inputEditor }, secondary: { outputEditor })
-                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.XmlFormat.splitViewFraction))
-                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.XmlFormat.splitViewLayout))
-                .styling(visibleThickness: 2)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+    }
+    public var body: some View {
+        TwoPaneToolView(
+            actionTitle: "Format",
+            actionHelp: "Format (⌘ Return)",
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.XmlFormat.splitViewFraction,
+                layoutKey: SettingsKey.XmlFormat.splitViewLayout,
+                primaryLabel: "XML",
+                secondaryLabel: "Result"
+            )
+        ) {
+            configurationView
+        } primary: {
+            PlainInputTextPane(title: "XML", text: inputTextBinding)
+        } secondary: {
+            PlainOutputTextPane(
+                title: "Result",
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
+            )
         }
     }
-
-    private var inputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("XML")
-                .font(.headline)
-                .padding(.horizontal, 8)
-
-            TextEditor(text: Binding(
-                get: { model.inputText },
-                set: { newValue in model.$inputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else { return nil }
+        return { tool in onSendOutputToTool(model.outputText, tool) }
     }
 
-    private var outputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Result")
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
 
-            TextEditor(text: Binding(
-                get: { model.outputText },
-                set: { newValue in model.$outputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }
 

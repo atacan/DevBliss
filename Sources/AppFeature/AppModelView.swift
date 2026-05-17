@@ -143,19 +143,19 @@ public struct AppModelView: View {
             UrlParserModelView(model: model)
                 .padding(.top)
         case .base64(let model):
-            Base64ModelView(model: model)
+            Base64ModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .asciiToHex(let model):
-            AsciiToHexModelView(model: model)
+            AsciiToHexModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .hexToAscii(let model):
-            HexToAsciiModelView(model: model)
+            HexToAsciiModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .cssBeautify(let model):
-            CssBeautifyModelView(model: model)
+            CssBeautifyModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .htmlBeautify(let model):
-            HtmlBeautifyModelView(model: model)
+            HtmlBeautifyModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .hashGenerator(let model):
             HashGeneratorModelView(model: model)
@@ -164,37 +164,37 @@ public struct AppModelView: View {
             ColorConverterView(model: model)
                 .padding(.top)
         case .lineSortDedupe(let model):
-            LineSortDedupeModelView(model: model)
+            LineSortDedupeModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .numberBaseConverter(let model):
             NumberBaseConverterModelView(model: model)
                 .padding(.top)
         case .textCaseConverter(let model):
-            TextCaseConverterModelView(model: model)
+            TextCaseConverterModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .prefixSuffix(let model):
-            PrefixSuffixModelView(model: model)
+            PrefixSuffixModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .yamlToJson(let model):
-            YamlToJsonModelView(model: model)
+            YamlToJsonModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .jsonToYaml(let model):
-            JsonToYamlModelView(model: model)
+            JsonToYamlModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .jsBeautify(let model):
-            JsBeautifyModelView(model: model)
+            JsBeautifyModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .xmlFormat(let model):
-            XmlFormatModelView(model: model)
+            XmlFormatModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .svgToCss(let model):
-            SvgToCssModelView(model: model)
+            SvgToCssModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .htmlPreview(let model):
             HtmlPreviewModelView(model: model)
                 .padding(.top)
         case .htmlToMarkdown(let model):
-            HtmlToMarkdownModelView(model: model)
+            HtmlToMarkdownModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .urlToMarkdown(let model):
             UrlToMarkdownModelView(model: model)
@@ -203,13 +203,13 @@ public struct AppModelView: View {
             HtmlToSwiftModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .swiftPrettyLockwood(let model):
-            SwiftPrettyModelView(model: model)
+            SwiftPrettyModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .jwtDebugger(let model):
             JwtDebuggerModelView(model: model)
                 .padding(.top)
         case .backslashEscape(let model):
-            BackslashEscapeModelView(model: model)
+            BackslashEscapeModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .uuidUlid(let model):
             UuidUlidModelView(model: model)
