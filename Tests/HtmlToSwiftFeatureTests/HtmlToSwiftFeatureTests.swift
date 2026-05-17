@@ -43,4 +43,25 @@ final class HtmlToSwiftFeatureTests: XCTestCase {
             XCTAssertFalse(model.isConversionRequestInFlight)
         }
     }
+
+    func testHighlightsConvertedSwiftOutput() async {
+        await withDependencies {
+            $0.htmlToSwift = HtmlToSwiftClient(
+                binaryBirds: { _, _ in "Text(\"Hello\")" },
+                pointfreeco: { _, _ in "wrong" }
+            )
+            $0.syntaxHighlight.highlightSwift = { swiftCode in
+                NSAttributedString(string: "highlighted: \(swiftCode)")
+            }
+            $0.userDefaults = .standard
+        } operation: {
+            let model = HtmlToSwiftModel()
+            model.dsl = .binaryBirds
+            model.convertButtonTouched()
+
+            try? await Task.sleep(for: .milliseconds(50))
+            XCTAssertEqual(model.outputText, "Text(\"Hello\")")
+            XCTAssertEqual(model.outputAttributedText.string, "highlighted: Text(\"Hello\")")
+        }
+    }
 }
