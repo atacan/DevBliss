@@ -436,6 +436,13 @@ let package = Package(
                 .product(name: "Sharing", package: "swift-sharing"),
             ]
         ),
+        .testTarget(
+            name: "JsonPrettyFeatureTests",
+            dependencies: [
+                "JsonPrettyFeature",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
         .target(
             name: "HtmlBeautifyFeature",
             dependencies: [

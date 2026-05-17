@@ -1,9 +1,10 @@
 import BlissTheme
 import Dependencies
+import Foundation
+import InputOutput
 import Observation
 import SharedModels
 import Sharing
-import SplitView
 import SwiftUI
 
 @MainActor
@@ -18,6 +19,7 @@ public final class JsonPrettyModel {
     public var outputText = ""
 
     public var isConversionRequestInFlight = false
+    public var outputAttributedText = NSMutableAttributedString()
 
     @ObservationIgnored
     @Dependency(\.jsonPretty)
@@ -31,6 +33,7 @@ public final class JsonPrettyModel {
         let outputText = Shared(wrappedValue: "", .toolOutput("jsonPretty"))
         self._inputText = inputText
         self._outputText = outputText
+        self.outputAttributedText = .init(attributedString: EditorAttributedStrings.regular(outputText.wrappedValue))
     }
 
     public init(input: String, output: String = "") {
@@ -38,6 +41,7 @@ public final class JsonPrettyModel {
         let outputText = Shared(wrappedValue: output, .toolOutput("jsonPretty"))
         self._inputText = inputText
         self._outputText = outputText
+        self.outputAttributedText = .init(attributedString: EditorAttributedStrings.regular(outputText.wrappedValue))
     }
 
     public func convertButtonTouched() {
@@ -49,16 +53,24 @@ public final class JsonPrettyModel {
                 let result = try await prettyClient.convert(input)
                 await MainActor.run {
                     self.isConversionRequestInFlight = false
-                    self.$outputText.withLock { $0 = result.string }
+                    self.updateOutput(result.string, attributedText: result)
                 }
             } catch {
                 if error is CancellationError { return }
                 await MainActor.run {
                     self.isConversionRequestInFlight = false
-                    self.$outputText.withLock { $0 = "\(error)" }
+                    self.updateOutput(
+                        "\(error)",
+                        attributedText: EditorAttributedStrings.error("\(error)")
+                    )
                 }
             }
         }
+    }
+
+    public func setOutputAttributedText(_ value: NSMutableAttributedString) {
+        outputAttributedText = value
+        $outputText.withLock { $0 = value.string }
     }
 
     public func cancel() {
@@ -66,68 +78,74 @@ public final class JsonPrettyModel {
         conversionTask = nil
         isConversionRequestInFlight = false
     }
+
+    private func updateOutput(_ text: String, attributedText: NSAttributedString? = nil) {
+        $outputText.withLock { $0 = text }
+        outputAttributedText = .init(attributedString: attributedText ?? EditorAttributedStrings.regular(text))
+    }
 }
 
 public struct JsonPrettyModelView: View {
     @Bindable var model: JsonPrettyModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(model: JsonPrettyModel) {
+    public init(
+        model: JsonPrettyModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
         self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            LoadingButton(
-                NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
-                isLoading: model.isConversionRequestInFlight
-            ) {
-                model.convertButtonTouched()
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Format code (⌘ Return)", bundle: Bundle.module, comment: ""))
-            .padding(.vertical, 8)
-
-            Divider()
-
-            Split(primary: { inputEditor }, secondary: { outputEditor })
-                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.JsonPretty.splitViewFraction))
-                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.JsonPretty.splitViewLayout))
-                .styling(visibleThickness: 2)
+        TwoPaneToolView(
+            actionTitle: NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
+            actionHelp: NSLocalizedString("Format code (⌘ Return)", bundle: Bundle.module, comment: ""),
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.JsonPretty.splitViewFraction,
+                layoutKey: SettingsKey.JsonPretty.splitViewLayout,
+                primaryLabel: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
+                secondaryLabel: NSLocalizedString("Pretty", bundle: Bundle.module, comment: "")
+            )
+        ) {
+            PlainInputTextPane(
+                title: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
+                text: inputTextBinding
+            )
+        } secondary: {
+            AttributedOutputTextPane(
+                title: NSLocalizedString("Pretty", bundle: Bundle.module, comment: ""),
+                attributedText: outputAttributedTextBinding,
+                plainText: { model.outputText },
+                onSendToTool: sendOutputToTool
+            )
         }
     }
 
-    private var inputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(NSLocalizedString("Raw", bundle: Bundle.module, comment: ""))
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else {
+            return nil
+        }
 
-            TextEditor(text: Binding(
-                get: { model.inputText },
-                set: { newValue in model.$inputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
+        return { tool in
+            onSendOutputToTool(model.outputText, tool)
         }
     }
 
-    private var outputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(NSLocalizedString("Pretty", bundle: Bundle.module, comment: ""))
-                .font(.headline)
-                .padding(.horizontal, 8)
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
 
-            TextEditor(text: Binding(
-                get: { model.outputText },
-                set: { newValue in model.$outputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
-                .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-        }
+    private var outputAttributedTextBinding: Binding<NSMutableAttributedString> {
+        Binding(
+            get: { model.outputAttributedText },
+            set: { model.setOutputAttributedText($0) }
+        )
     }
 }
 

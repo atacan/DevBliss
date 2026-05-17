@@ -248,7 +248,7 @@ public struct AppModelView: View {
             QrCodeToolView(model: model)
                 .padding(.top)
         case .jsonPretty(let model):
-            JsonPrettyModelView(model: model)
+            JsonPrettyModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         #if os(macOS)
         case .fileContentSearch(let model):
