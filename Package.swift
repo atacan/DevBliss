@@ -289,6 +289,7 @@ let package = Package(
                 "BlissTheme",
                 "SharedModels",
                 "FilePanelsClient",
+                .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "SplitView", package: "SplitView"),
                 .product(name: "MacSwiftUI", package: "MacSwiftUI"),
             ]

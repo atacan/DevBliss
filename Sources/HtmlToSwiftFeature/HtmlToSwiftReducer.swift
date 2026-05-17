@@ -3,10 +3,10 @@ import Dependencies
 import DependenciesAdditions
 import Foundation
 import HtmlSwift
+import InputOutput
 import Observation
 import SharedModels
 import Sharing
-import SplitView
 import SwiftUI
 import SyntaxHighlightClient
 
@@ -170,10 +170,16 @@ public struct HtmlToSwiftModelView: View {
 
             Divider()
 
-            Split(primary: { inputEditor }, secondary: { outputEditor })
-                .fraction(FractionHolder.usingUserDefaults(0.5, key: SettingsKey.HtmlToSwift.splitViewFraction))
-                .layout(LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.HtmlToSwift.splitViewLayout))
-                .styling(visibleThickness: 2)
+            SideBySideView(
+                fractionKey: SettingsKey.HtmlToSwift.splitViewFraction,
+                layoutKey: SettingsKey.HtmlToSwift.splitViewLayout,
+                primaryLabel: NSLocalizedString("Html", bundle: Bundle.module, comment: ""),
+                secondaryLabel: NSLocalizedString("Swift", bundle: Bundle.module, comment: "")
+            ) {
+                inputEditor
+            } secondary: {
+                outputEditor
+            }
         }
         .onAppear {
             model.observeSettings()
@@ -181,37 +187,49 @@ public struct HtmlToSwiftModelView: View {
     }
 
     private var inputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Html")
-                .font(.headline)
-                .padding(.horizontal, 8)
-
-            TextEditor(text: Binding(
-                get: { model.inputText },
-                set: { newValue in model.$inputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
+        PaneView(
+            title: NSLocalizedString("Html", bundle: Bundle.module, comment: "")
+        ) {
+            PlainTextEditorView(text: inputTextBinding)
                 .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
                 .padding(.horizontal, 8)
+        } leadingActions: {
+            PasteFromClipboardButton { pastedText in
+                model.$inputText.withLock { $0 = pastedText }
+            }
         }
     }
 
     private var outputEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Swift")
-                .font(.headline)
-                .padding(.horizontal, 8)
-
-            TextEditor(text: Binding(
-                get: { model.outputText },
-                set: { newValue in model.$outputText.withLock { $0 = newValue } }
-            ))
-                .font(.system(.body, design: .monospaced))
+        PaneView(
+            title: NSLocalizedString("Swift", bundle: Bundle.module, comment: "")
+        ) {
+            PlainTextEditorView(text: outputTextBinding)
                 .frame(minHeight: 220)
-                .scrollContentBackground(.hidden)
                 .padding(.horizontal, 8)
+        } trailingActions: {
+            CopyToClipboardButton {
+                model.outputText
+            }
+
+            SaveTextButton(text: {
+                model.outputText
+            })
         }
+    }
+
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
+
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 
     private func dslLibraryName(for dsl: SwiftDSL) -> String {
