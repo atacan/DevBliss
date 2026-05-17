@@ -76,6 +76,17 @@ public struct AppModelView: View {
             quickActionBarView
         }
         .toolbar {
+            #if DEBUG
+            ToolbarItem(placement: .automatic) {
+                Button {
+                    model.resetToolsWithDebugSamples()
+                } label: {
+                    Label("Load Sample Inputs", systemImage: "wand.and.stars")
+                }
+                .help("Reset all tools with debug sample inputs")
+            }
+            #endif
+
             ToolbarItem(placement: .automatic) {
                 Button {
                     model.isQuickActionBarVisible = true

@@ -1,5 +1,6 @@
 import BlissTheme
 import Dependencies
+import Foundation
 import Observation
 import SharedModels
 import Sharing
@@ -34,6 +35,8 @@ public final class RegExpTesterModel {
         let outputText = Shared(wrappedValue: "", .toolOutput("regExpTester"))
         self._inputText = inputText
         self._outputText = outputText
+        self.pattern = UserDefaults.standard.string(forKey: "RegExpTester_pattern") ?? ""
+        self.replacement = UserDefaults.standard.string(forKey: "RegExpTester_replacement") ?? ""
     }
 
     public init(inputText: String, outputText: String = "") {
@@ -41,6 +44,16 @@ public final class RegExpTesterModel {
         let output = Shared(wrappedValue: outputText, .toolOutput("regExpTester"))
         self._inputText = input
         self._outputText = output
+    }
+
+    public func setPattern(_ pattern: String) {
+        self.pattern = pattern
+        UserDefaults.standard.set(pattern, forKey: "RegExpTester_pattern")
+    }
+
+    public func setReplacement(_ replacement: String) {
+        self.replacement = replacement
+        UserDefaults.standard.set(replacement, forKey: "RegExpTester_replacement")
     }
 
     var selectedMatch: RegExpMatch? {
@@ -113,7 +126,13 @@ public struct RegExpTesterModelView: View {
     // MARK: - Reusable Controls
 
     private var patternField: some View {
-        TextField("Enter regex pattern", text: $model.pattern)
+        TextField(
+            "Enter regex pattern",
+            text: Binding(
+                get: { model.pattern },
+                set: { model.setPattern($0) }
+            )
+        )
             .blissTextField()
     }
 
@@ -126,7 +145,13 @@ public struct RegExpTesterModelView: View {
     }
 
     private var replacementField: some View {
-        TextField("Replacement pattern", text: $model.replacement)
+        TextField(
+            "Replacement pattern",
+            text: Binding(
+                get: { model.replacement },
+                set: { model.setReplacement($0) }
+            )
+        )
             .blissTextField()
     }
 

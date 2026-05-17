@@ -155,6 +155,21 @@ import StringInspectorFeature
         destination = destinationForTool(tool)
     }
 
+    #if DEBUG
+    public func resetToolsWithDebugSamples() {
+        let selectedTool = currentTool
+
+        do {
+            try ToolDebugSamples.resetAllSamples()
+            if let selectedTool {
+                destination = destinationForTool(selectedTool)
+            }
+        } catch {
+            assertionFailure("Failed to reset debug samples: \(error)")
+        }
+    }
+    #endif
+
     public func sendOutputToOtherTool(_ outputText: String, _ tool: Tool) {
         guard tool.isActive, tool.isInputtable else {
             return
