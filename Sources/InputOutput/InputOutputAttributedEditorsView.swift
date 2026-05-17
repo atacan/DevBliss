@@ -1,1 +1,230 @@
-// Legacy editor implementation removed during Observation migration.
+import BlissTheme
+import ClipboardClient
+import ComposableArchitecture
+import SplitView
+import SwiftUI
+
+@Reducer
+public struct InputOutputAttributedEditorsReducer {
+    public init() {}
+    @ObservableState
+    public struct State: Equatable {
+        public var input: InputEditorReducer.State
+        public var output: OutputAttributedEditorReducer.State
+
+        // New initializer for persistence
+        public init(inputText: Shared<String>, outputRawText: Shared<String>) {
+            self.input = InputEditorReducer.State(text: inputText)
+            self.output = OutputAttributedEditorReducer.State(rawText: outputRawText)
+        }
+
+        // Convenience for non-persisted use
+        public init(input: InputEditorReducer.State = .init(), output: OutputAttributedEditorReducer.State = .init()) {
+            self.input = input
+            self.output = output
+        }
+    }
+
+    public enum Action: BindableAction, Equatable {
+        case binding(BindingAction<State>)
+        case input(InputEditorReducer.Action)
+        case output(OutputAttributedEditorReducer.Action)
+    }
+
+    public var body: some Reducer<State, Action> {
+        BindingReducer()
+        Reduce<State, Action> { state, action in
+            switch action {
+            case .binding:
+                return .none
+            case .input:
+                return .none
+            case .output:
+                return .none
+            }
+        }
+
+        Scope(state: \.input, action: \.input) {
+            InputEditorReducer()
+        }
+
+        Scope(state: \.output, action: \.output) {
+            OutputAttributedEditorReducer()
+        }
+    }
+}
+
+public struct InputOutputAttributedEditorsView: View {
+    @Bindable var store: StoreOf<InputOutputAttributedEditorsReducer>
+
+    let inputEditorTitle: String
+    let outputEditorTitle: String
+    let keyForFraction: String
+    let keyForLayout: String
+
+    let fraction: FractionHolder
+    @ObservedObject var layout: LayoutHolder
+    //    @StateObject var layout = LayoutHolder(.vertical)
+    //    @StateObject var hide = SideHolder.usingUserDefaults(key: "inputOutputSplitSide")
+    @StateObject var hide = SideHolder()
+
+    public init(
+        store: StoreOf<InputOutputAttributedEditorsReducer>,
+        inputEditorTitle: String,
+        outputEditorTitle: String,
+        keyForFraction: String = "inputOutputSplitFraction",
+        keyForLayout: String = "inputOutputSplitLayout"
+    ) {
+        self.store = store
+        self.fraction = FractionHolder.usingUserDefaults(0.5, key: keyForFraction)
+        self.layout = LayoutHolder.usingUserDefaults(.horizontal, key: keyForLayout)
+
+        self.inputEditorTitle = inputEditorTitle
+        self.outputEditorTitle = outputEditorTitle
+        self.keyForFraction = keyForFraction
+        self.keyForLayout = keyForLayout
+    }
+
+    public var body: some View {
+        Split(primary: { inputEditor }, secondary: { outputEditor })
+            .fraction(fraction)
+            .layout(layout)
+            .hide(hide)
+            .styling(visibleThickness: 2)
+            .toolbar {
+                ToolbarItemGroup {
+                    InputOutputToolbarSplitItems(layout: layout, hide: hide)
+                }
+            }
+    }
+
+    var inputEditor: some View {
+        InputEditorView(
+            store: store.scope(
+                state: \.input,
+                action: InputOutputAttributedEditorsReducer.Action.input
+            ),
+            title: inputEditorTitle
+        )
+    }
+
+    var outputEditor: some View {
+        OutputAttributedEditorView(
+            store: store.scope(
+                state: \.output,
+                action: InputOutputAttributedEditorsReducer.Action.output
+            ),
+            title: outputEditorTitle
+        )
+    }
+}
+
+struct InputOutputAttributedEditorsView_Previews: PreviewProvider {
+    static var previews: some View {
+        InputOutputAttributedEditorsView(
+            store: Store(
+                initialState: .init()
+            ) {
+                InputOutputAttributedEditorsReducer()
+            },
+            inputEditorTitle: "Input",
+            outputEditorTitle: "Output"
+        )
+    }
+}
+
+struct InputOutputToolbarSplitItems: View {
+    @ObservedObject var layout: LayoutHolder
+    @ObservedObject var hide: SideHolder
+
+    var body: some View {
+        Group {
+            Button(
+                action: {
+                    withAnimation {
+                        layout.toggle()
+                    }
+                },
+                label: {
+                    layout
+                        .isHorizontal
+                        ? Image(systemName: "rectangle.split.1x2") : Image(systemName: "rectangle.split.2x1")
+                }
+            )
+            .keyboardShortcut(KeyEquivalent("a"), modifiers: [.command, .shift])
+            .disabled(hide.side != nil)
+            .help(
+                layout
+                    .isHorizontal
+                    ? NSLocalizedString("Vertical split", bundle: Bundle.module, comment: "")
+                    : NSLocalizedString("Horizontal split", bundle: Bundle.module, comment: "")
+            )
+            .accessibilityLabel(
+                layout
+                    .isHorizontal
+                    ? NSLocalizedString("vertical split", bundle: Bundle.module, comment: "")
+                    : NSLocalizedString("horizontal split", bundle: Bundle.module, comment: "")
+            )
+            .accessibilityHint(
+                layout
+                    .isHorizontal
+                    ? NSLocalizedString(
+                        "the input and output editor will be positioned next to each other",
+                        bundle: Bundle.module,
+                        comment: ""
+                    )
+                    : NSLocalizedString(
+                        "the input and output editor will be positioned underneath each other",
+                        bundle: Bundle.module,
+                        comment: ""
+                    )
+            )
+
+            Button(
+                action: {
+                    withAnimation {
+                        //                                hide.toggle()
+                        if hide.side == nil {
+                            hide.hide(.primary)
+                        }
+                        else {
+                            hide.toggle()
+                        }
+                    }
+
+                },
+                label: {
+                    if hide.side == nil {
+                        layout
+                            .isHorizontal
+                            ? Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left")
+                            : Image(systemName: "dock.arrow.up.rectangle")
+                    }
+                    else {
+                        layout
+                            .isHorizontal
+                            ? Image(systemName: "rectangle.righthalf.inset.filled.arrow.right")
+                            : Image(systemName: "dock.arrow.down.rectangle")
+                    }
+                }
+            )
+            .keyboardShortcut(KeyEquivalent("l"), modifiers: [.command, .option])
+            .help(
+                hide
+                    .side == nil
+                    ? NSLocalizedString("Hide input editor", bundle: Bundle.module, comment: "")
+                    : NSLocalizedString("Show input editor", bundle: Bundle.module, comment: "")
+            )
+            .accessibilityLabel(
+                hide.side == nil
+                    ? NSLocalizedString(
+                        "Hide input editor",
+                        bundle: Bundle.module,
+                        comment: ""
+                    ) : NSLocalizedString("Show input editor", bundle: Bundle.module, comment: "")
+            )
+        }
+    }
+}
+
+extension NSAttributedString: @unchecked Sendable {}

@@ -1,1 +1,231 @@
-// Legacy editor implementation removed during Observation migration.
+import BlissTheme
+import ClipboardClient
+import ComposableArchitecture
+import SwiftUI
+
+#if os(macOS)
+    import MacSwiftUI
+#endif
+
+@Reducer
+public struct InputAttributedEditorReducer {
+    public init() {}
+    @ObservableState
+    public struct State: Equatable {
+        @Shared public var rawText: String  // Persisted
+        public var text: NSMutableAttributedString  // Display (not persisted directly)
+        var pasteButtonAnimating: Bool = false
+        var inputEditorDrop: InputEditorDropReducer.State
+
+        // New initializer for persistence
+        public init(rawText: Shared<String>, inputEditorDrop: InputEditorDropReducer.State = .init()) {
+            self._rawText = rawText
+            self.text = NSMutableAttributedString(attributedString: regularAttributedString(rawText.wrappedValue))
+            self.inputEditorDrop = inputEditorDrop
+        }
+
+        // Convenience initializer
+        public init(
+            text: NSMutableAttributedString = .init(),
+            inputEditorDrop: InputEditorDropReducer.State = .init()
+        ) {
+            self._rawText = Shared(value: text.string)
+            self.text = text
+            self.inputEditorDrop = inputEditorDrop
+        }
+    }
+
+    public enum Action: BindableAction, Equatable {
+        case binding(BindingAction<State>)
+        case pasteButtonTouched
+        case pasteButtonAnimationEnded
+        case inputEditorDrop(InputEditorDropReducer.Action)
+    }
+
+    @Dependency(\.mainQueue) var mainQueue
+    @Dependency(\.clipboard) var clipboard
+
+    public var body: some Reducer<State, Action> {
+        BindingReducer()
+
+        Reduce<State, Action> { state, action in
+            switch action {
+            case .binding(\.text):
+                state.$rawText.withLock { $0 = state.text.string }
+                return .none
+            case .binding:
+                return .none
+            case .pasteButtonTouched:
+                state.pasteButtonAnimating = true
+                if let clip = clipboard.getString() {
+                    _ = state.updateText(clip)
+                }
+                return .run { send in
+                    try await mainQueue.sleep(for: .milliseconds(200))
+                    await send(.pasteButtonAnimationEnded)
+                }
+            case .pasteButtonAnimationEnded:
+                state.pasteButtonAnimating = false
+                return .none
+            case let .inputEditorDrop(.droppedFileContent(content)):
+                return state.updateText(content)
+            case .inputEditorDrop:
+                return .none
+            }
+        }
+        Scope(state: \.inputEditorDrop, action: \.inputEditorDrop) {
+            InputEditorDropReducer()
+        }
+    }
+}
+
+extension InputAttributedEditorReducer.State {
+    public mutating func updateText(_ newText: String) -> Effect<InputAttributedEditorReducer.Action> {
+        text = .init(attributedString: regularAttributedString(newText))
+        return .none
+    }
+
+    public mutating func updateText(
+        _ newText: NSMutableAttributedString
+    )
+        -> Effect<InputAttributedEditorReducer.Action>
+    {
+        text = newText
+        return .none
+    }
+
+    public mutating func updateText(_ newText: NSAttributedString) -> Effect<InputAttributedEditorReducer.Action> {
+        text = .init(attributedString: newText)
+        return .none
+    }
+
+    public mutating func removeColorFromAttributedString() {
+        text.enumerateAttributes(in: NSRange(location: 0, length: text.length), options: []) { attributes, range, _ in
+            if let _ = attributes[NSAttributedString.Key.backgroundColor] {
+                text.removeAttribute(NSAttributedString.Key.backgroundColor, range: range)
+            }
+        }
+    }
+}
+
+public struct InputAttributedEditorView: View {
+    @Bindable var store: StoreOf<InputAttributedEditorReducer>
+
+    let title: String
+    let pasteButtonTitle: String
+
+    public init(
+        store: StoreOf<InputAttributedEditorReducer>,
+        title: String = "Output",
+        pasteButtonTitle: String = "Paste"
+    ) {
+        self.store = store
+        self.title = title
+        self.pasteButtonTitle = pasteButtonTitle
+    }
+
+    public var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text(title)
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+
+            #if os(macOS)
+                MacEditorView(text: $store.text, hasHorizontalScroll: false)
+                    .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
+                    .overlay(content: {
+                        InputEditorDropView(
+                            store: store.scope(
+                                state: \.inputEditorDrop,
+                                action: InputAttributedEditorReducer.Action.inputEditorDrop
+                            )
+                        )
+                    })
+            #elseif os(iOS)
+                TextEditor(
+                    text: Binding(
+                        get: {
+                            store.text.string
+                        },
+                        set: { newValue in
+                            store.send(.binding(.set(\.text, .init(string: newValue))))
+                        }
+                    )
+                )
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .font(
+                    .init(
+                        UIFont.monospacedSystemFont(
+                            ofSize: UIFont.systemFontSize,
+                            weight: UIFont.Weight.regular
+                        )
+                    )
+                )
+                .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
+                .overlay(content: {
+                    InputEditorDropView(
+                        store: store.scope(
+                            state: \.inputEditorDrop,
+                            action: InputAttributedEditorReducer.Action.inputEditorDrop
+                        )
+                    )
+                })
+            #endif
+
+            EditorFooterBar {
+                EditorFooterButton(
+                    pasteButtonTitle,
+                    systemImage: "doc.on.clipboard.fill",
+                    isAnimating: store.pasteButtonAnimating
+                ) {
+                    store.send(.pasteButtonTouched)
+                }
+                .keyboardShortcut("p", modifiers: [.command, .shift])
+                .help(NSLocalizedString("Paste from clipboard (Command+Shift+P)", bundle: Bundle.module, comment: ""))
+                .accessibilityLabel(NSLocalizedString("Paste from clipboard", bundle: Bundle.module, comment: ""))
+
+                Spacer()
+            }
+        }
+    }
+}
+
+// SwiftUI preview
+struct InputAttributedEditorView_Previews: PreviewProvider {
+    static var previews: some View {
+        InputAttributedEditorView(
+            store: Store(
+                initialState: InputAttributedEditorReducer.State()
+            ) {
+                InputAttributedEditorReducer()
+            }
+        )
+    }
+}
+
+func regularAttributedString(_ error: String) -> NSAttributedString {
+    #if os(macOS)
+        let textColor = NSColor(ThemeColor.Text.editedText)
+        let attributes = [
+            NSAttributedString.Key.foregroundColor: textColor,
+            NSAttributedString.Key.font:
+                NSFont
+                .monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: NSFont.Weight.regular),
+        ]
+        let attributedString = NSAttributedString(string: error, attributes: attributes)
+    #else
+        let attributes = [
+            NSAttributedString.Key.foregroundColor: UIColor(ThemeColor.Text.editedText),
+            NSAttributedString.Key.font: UIFont.monospacedSystemFont(
+                ofSize: UIFont.systemFontSize,
+                weight: UIFont.Weight.regular
+            ),
+        ]
+        let attributedString = NSAttributedString(string: error, attributes: attributes)
+    #endif
+    return attributedString
+}
