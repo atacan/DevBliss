@@ -133,6 +133,13 @@ let package = Package(
                 "YamlToJsonFeature",
             ]
         ),
+        .testTarget(
+            name: "AppFeatureTests",
+            dependencies: [
+                "AppFeature",
+                "SharedModels",
+            ]
+        ),
         .target(
             name: "AsciiToHexFeature",
             dependencies: [

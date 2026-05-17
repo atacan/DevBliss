@@ -10,12 +10,6 @@ import Sharing
 import SwiftUI
 import SyntaxHighlightClient
 
-#if os(macOS)
-    import AppKit
-#elseif os(iOS)
-    import UIKit
-#endif
-
 @MainActor
 @Observable
 public final class HtmlToSwiftModel {
@@ -48,7 +42,7 @@ public final class HtmlToSwiftModel {
         self._outputText = outputText
         self.dsl = dsl
         self.component = component
-        self.outputAttributedText = .init(attributedString: regularAttributedString(outputText.wrappedValue))
+        self.outputAttributedText = .init(attributedString: EditorAttributedStrings.regular(outputText.wrappedValue))
         observeSettings()
     }
 
@@ -57,7 +51,7 @@ public final class HtmlToSwiftModel {
         let outputText = Shared(wrappedValue: output, .toolOutput("htmlToSwift"))
         self._inputText = inputText
         self._outputText = outputText
-        self.outputAttributedText = .init(attributedString: regularAttributedString(outputText.wrappedValue))
+        self.outputAttributedText = .init(attributedString: EditorAttributedStrings.regular(outputText.wrappedValue))
         observeSettings()
     }
 
@@ -114,7 +108,10 @@ public final class HtmlToSwiftModel {
                 if error is CancellationError { return }
                 await MainActor.run {
                     self.isConversionRequestInFlight = false
-                    self.updateOutput(error.localizedDescription, attributedText: errorAttributedString(error.localizedDescription))
+                    self.updateOutput(
+                        error.localizedDescription,
+                        attributedText: EditorAttributedStrings.error(error.localizedDescription)
+                    )
                 }
             }
         }
@@ -135,7 +132,7 @@ public final class HtmlToSwiftModel {
 
     private func updateOutput(_ text: String, attributedText: NSAttributedString? = nil) {
         $outputText.withLock { $0 = text }
-        outputAttributedText = .init(attributedString: attributedText ?? regularAttributedString(text))
+        outputAttributedText = .init(attributedString: attributedText ?? EditorAttributedStrings.regular(text))
     }
 
     private func highlightOutputIfNeeded(_ swiftCode: String) {
@@ -164,9 +161,14 @@ public final class HtmlToSwiftModel {
 
 public struct HtmlToSwiftModelView: View {
     @Bindable var model: HtmlToSwiftModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(model: HtmlToSwiftModel) {
+    public init(
+        model: HtmlToSwiftModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
         self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
     #if os(iOS)
@@ -242,6 +244,11 @@ public struct HtmlToSwiftModelView: View {
             PlainTextEditorView(text: inputTextBinding)
                 .frame(minHeight: 220)
                 .padding(.horizontal, 8)
+                .overlay {
+                    DroppedTextFileOverlay { droppedText in
+                        model.$inputText.withLock { $0 = droppedText }
+                    }
+                }
         } leadingActions: {
             PasteFromClipboardButton { pastedText in
                 model.$inputText.withLock { $0 = pastedText }
@@ -264,6 +271,12 @@ public struct HtmlToSwiftModelView: View {
             SaveTextButton(text: {
                 model.outputText
             })
+
+            if let onSendOutputToTool {
+                SendToToolButton { tool in
+                    onSendOutputToTool(model.outputText, tool)
+                }
+            }
         }
     }
 
@@ -320,42 +333,6 @@ public struct HtmlToSwiftModelView: View {
             )
         }
     }
-}
-
-private func regularAttributedString(_ string: String) -> NSAttributedString {
-    let attributes: [NSAttributedString.Key: Any]
-
-    #if os(macOS)
-        attributes = [
-            .foregroundColor: NSColor(ThemeColor.Text.editedText),
-            .font: NSFont.monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular),
-        ]
-    #elseif os(iOS)
-        attributes = [
-            .foregroundColor: UIColor(ThemeColor.Text.editedText),
-            .font: UIFont.monospacedSystemFont(ofSize: UIFont.systemFontSize, weight: .regular),
-        ]
-    #endif
-
-    return NSAttributedString(string: string, attributes: attributes)
-}
-
-private func errorAttributedString(_ string: String) -> NSAttributedString {
-    let attributes: [NSAttributedString.Key: Any]
-
-    #if os(macOS)
-        attributes = [
-            .foregroundColor: NSColor(ThemeColor.Text.failure),
-            .font: NSFont.monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular),
-        ]
-    #elseif os(iOS)
-        attributes = [
-            .foregroundColor: UIColor(ThemeColor.Text.failure),
-            .font: UIFont.monospacedSystemFont(ofSize: UIFont.systemFontSize, weight: .regular),
-        ]
-    #endif
-
-    return NSAttributedString(string: string, attributes: attributes)
 }
 
 struct HtmlToSwiftReducer_Previews: PreviewProvider {

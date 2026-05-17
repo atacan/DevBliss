@@ -156,6 +156,12 @@ import StringInspectorFeature
     }
 
     public func sendOutputToOtherTool(_ outputText: String, _ tool: Tool) {
+        guard tool.isActive, tool.isInputtable else {
+            return
+        }
+
+        destination = destinationForTool(tool)
+
         switch destination {
         case .jsonPretty(let model):
             model.$inputText.withLock { $0 = outputText }
@@ -177,6 +183,7 @@ import StringInspectorFeature
             model.setBase64String(outputText)
         #if os(macOS)
         case .fileContentSearch:
+            break
         #endif
         case .htmlToSwift(let model):
             model.$inputText.withLock { $0 = outputText }
@@ -214,17 +221,11 @@ import StringInspectorFeature
             model.$inputText.withLock { $0 = outputText }
         case .stringDiff(let model):
             model.setOldText(outputText)
-        case .nameGenerator(let model):
-            model.$outputText.withLock { $0 = outputText }
         case .certificateDecoder(let model):
             model.$inputText.withLock { $0 = outputText }
         case .qrCodeTool(let model):
             model.$inputText.withLock { $0 = outputText }
-        case .randomStringGenerator:
-            break
         case .htmlToMarkdown(let model):
-            model.$inputText.withLock { $0 = outputText }
-        case .urlToMarkdown(let model):
             model.$inputText.withLock { $0 = outputText }
         case .swiftPrettyLockwood(let model):
             model.$inputText.withLock { $0 = outputText }
@@ -232,11 +233,11 @@ import StringInspectorFeature
             model.$inputText.withLock { $0 = outputText }
         case .jwtDebugger(let model):
             model.$inputText.withLock { $0 = outputText }
-        case .uuidGenerator:
-            break
         case .stringInspector(let model):
             model.setInputText(outputText)
         case .none:
+            break
+        case .nameGenerator, .randomStringGenerator, .urlToMarkdown, .uuidGenerator:
             break
         }
     }

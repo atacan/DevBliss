@@ -64,4 +64,40 @@ final class HtmlToSwiftFeatureTests: XCTestCase {
             XCTAssertEqual(model.outputAttributedText.string, "highlighted: Text(\"Hello\")")
         }
     }
+
+    func testLargeConvertedSwiftOutputSkipsHighlighting() async {
+        let largeOutput = String(repeating: "a", count: 100_001)
+
+        await withDependencies {
+            $0.htmlToSwift = HtmlToSwiftClient(
+                binaryBirds: { _, _ in largeOutput },
+                pointfreeco: { _, _ in "wrong" }
+            )
+            $0.syntaxHighlight.highlightSwift = { swiftCode in
+                NSAttributedString(string: "highlighted: \(swiftCode)")
+            }
+            $0.userDefaults = .standard
+        } operation: {
+            let model = HtmlToSwiftModel()
+            model.dsl = .binaryBirds
+            model.convertButtonTouched()
+
+            try? await Task.sleep(for: .milliseconds(50))
+            XCTAssertEqual(model.outputText, largeOutput)
+            XCTAssertEqual(model.outputAttributedText.string, largeOutput)
+        }
+    }
+
+    func testEditingAttributedOutputSyncsRawOutputText() {
+        withDependencies {
+            $0.userDefaults = .standard
+        } operation: {
+            let model = HtmlToSwiftModel(input: "", output: "initial")
+
+            model.setOutputAttributedText(NSMutableAttributedString(string: "edited output"))
+
+            XCTAssertEqual(model.outputText, "edited output")
+            XCTAssertEqual(model.outputAttributedText.string, "edited output")
+        }
+    }
 }

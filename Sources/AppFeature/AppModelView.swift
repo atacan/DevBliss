@@ -200,7 +200,7 @@ public struct AppModelView: View {
             UrlToMarkdownModelView(model: model)
                 .padding(.top)
         case .htmlToSwift(let model):
-            HtmlToSwiftModelView(model: model)
+            HtmlToSwiftModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         case .swiftPrettyLockwood(let model):
             SwiftPrettyModelView(model: model)

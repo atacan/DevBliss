@@ -21,13 +21,28 @@ public struct AttributedTextEditorView: View {
             MacEditorView(text: $text, hasHorizontalScroll: false, isEditable: isEditable)
                 .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
         #elseif os(iOS)
-            ScrollView {
-                Text(AttributedString(text))
-                    .font(.monospaced(.body)())
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(8)
-                    .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
+            if isEditable {
+                TextEditor(
+                    text: Binding(
+                        get: { text.string },
+                        set: { text = .init(attributedString: EditorAttributedStrings.regular($0)) }
+                    )
+                )
+                .font(.monospaced(.body)())
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .scrollContentBackground(.hidden)
+                .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
+            }
+            else {
+                ScrollView {
+                    Text(AttributedString(text))
+                        .font(.monospaced(.body)())
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(8)
+                        .accessibilityTextContentType(SwiftUI.AccessibilityTextContentType.sourceCode)
+                }
             }
         #endif
     }
