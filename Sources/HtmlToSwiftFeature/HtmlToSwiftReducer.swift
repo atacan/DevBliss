@@ -171,112 +171,83 @@ public struct HtmlToSwiftModelView: View {
         self.onSendOutputToTool = onSendOutputToTool
     }
 
-    #if os(iOS)
-        private let pickerTitleSpace: CGFloat = 0
-    #elseif os(macOS)
-        private let pickerTitleSpace: CGFloat = 4
-    #endif
-
     public var body: some View {
-        VStack(spacing: 0) {
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
-                        selection: $model.dsl
-                    ) {
-                        ForEach(SwiftDSL.allCases) { dsl in
-                            Text(dslLibraryName(for: dsl))
-                                .tag(dsl)
-                        }
-                    }
-                    .blissMenuPicker(width: 180)
-
-                    ConfigLabel(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
-                        selection: $model.component
-                    ) {
-                        ForEach(HtmlOutputComponent.allCases) { component in
-                            Text(outputComponentPickerName(for: component))
-                                .tag(component)
-                        }
-                    }
-                    .blissMenuPicker(width: 160)
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            LoadingButton(
-                NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
-                isLoading: model.isConversionRequestInFlight
-            ) {
-                model.convertButtonTouched()
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Convert code (⌘ Return)", bundle: Bundle.module, comment: ""))
-            .padding(.vertical, 8)
-
-            Divider()
-
-            SideBySideView(
+        TwoPaneToolView(
+            actionTitle: NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
+            actionHelp: NSLocalizedString("Convert code (⌘ Return)", bundle: Bundle.module, comment: ""),
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
                 fractionKey: SettingsKey.HtmlToSwift.splitViewFraction,
                 layoutKey: SettingsKey.HtmlToSwift.splitViewLayout,
                 primaryLabel: NSLocalizedString("Html", bundle: Bundle.module, comment: ""),
                 secondaryLabel: NSLocalizedString("Swift", bundle: Bundle.module, comment: "")
-            ) {
-                inputEditor
-            } secondary: {
-                outputEditor
-            }
+            )
+        ) {
+            configurationView
+        } primary: {
+            PlainInputTextPane(
+                title: NSLocalizedString("Html", bundle: Bundle.module, comment: ""),
+                text: inputTextBinding
+            )
+        } secondary: {
+            AttributedOutputTextPane(
+                title: NSLocalizedString("Swift", bundle: Bundle.module, comment: ""),
+                attributedText: outputAttributedTextBinding,
+                plainText: { model.outputText },
+                onSendToTool: sendOutputToTool
+            )
         }
         .onAppear {
             model.observeSettings()
         }
     }
 
-    private var inputEditor: some View {
-        PaneView(
-            title: NSLocalizedString("Html", bundle: Bundle.module, comment: "")
-        ) {
-            PlainTextEditorView(text: inputTextBinding)
-                .frame(minHeight: 220)
-                .padding(.horizontal, 8)
-                .overlay {
-                    DroppedTextFileOverlay { droppedText in
-                        model.$inputText.withLock { $0 = droppedText }
+    private var configurationView: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            GridRow {
+                ConfigLabel(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
+                Picker(
+                    NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
+                    selection: Binding(
+                        get: { model.dsl },
+                        set: { model.setDsl($0) }
+                    )
+                ) {
+                    ForEach(SwiftDSL.allCases) { dsl in
+                        Text(dslLibraryName(for: dsl))
+                            .tag(dsl)
                     }
                 }
-        } leadingActions: {
-            PasteFromClipboardButton { pastedText in
-                model.$inputText.withLock { $0 = pastedText }
+                .blissMenuPicker(width: 180)
+
+                ConfigLabel(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
+                Picker(
+                    NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
+                    selection: Binding(
+                        get: { model.component },
+                        set: { model.setComponent($0) }
+                    )
+                ) {
+                    ForEach(HtmlOutputComponent.allCases) { component in
+                        Text(outputComponentPickerName(for: component))
+                            .tag(component)
+                    }
+                }
+                .blissMenuPicker(width: 160)
             }
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 
-    private var outputEditor: some View {
-        PaneView(
-            title: NSLocalizedString("Swift", bundle: Bundle.module, comment: "")
-        ) {
-            AttributedTextEditorView(text: outputAttributedTextBinding)
-                .frame(minHeight: 220)
-                .padding(.horizontal, 8)
-        } trailingActions: {
-            CopyToClipboardButton {
-                model.outputText
-            }
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else {
+            return nil
+        }
 
-            SaveTextButton(text: {
-                model.outputText
-            })
-
-            if let onSendOutputToTool {
-                SendToToolButton { tool in
-                    onSendOutputToTool(model.outputText, tool)
-                }
-            }
+        return { tool in
+            onSendOutputToTool(model.outputText, tool)
         }
     }
 
