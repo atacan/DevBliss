@@ -134,13 +134,13 @@ public struct LineSortDedupeModelView: View {
                 .pickerStyle(.segmented)
                 .labelsHidden()
                 .frame(width: 200)
-                Toggle("Case-insensitive", isOn: $model.caseInsensitive).toggleStyle(.checkbox)
-                Toggle("Trim whitespace", isOn: $model.trimWhitespace).toggleStyle(.checkbox)
+                Toggle("Case-insensitive", isOn: $model.caseInsensitive).toggleStyle(.automatic)
+                Toggle("Trim whitespace", isOn: $model.trimWhitespace).toggleStyle(.automatic)
             }
             GridRow {
                 ConfigLabel("Options")
-                Toggle("Remove duplicates", isOn: $model.removeDuplicates).toggleStyle(.checkbox)
-                Toggle("Remove empty lines", isOn: $model.removeEmptyLines).toggleStyle(.checkbox)
+                Toggle("Remove duplicates", isOn: $model.removeDuplicates).toggleStyle(.automatic)
+                Toggle("Remove empty lines", isOn: $model.removeEmptyLines).toggleStyle(.automatic)
             }
         }
         .padding(.horizontal, 16)

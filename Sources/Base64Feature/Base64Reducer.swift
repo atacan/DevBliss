@@ -140,7 +140,7 @@ public struct Base64ModelView: View {
                 Toggle("Strip data URL", isOn: $model.autoRemoveDataURLPrefix).help("Remove data:...;base64, prefix when decoding")
                 Toggle("Strip null bytes", isOn: $model.autoRemoveNullBytes).help("Remove null bytes at the end of decoded string")
             }
-            .toggleStyle(.checkbox)
+            .toggleStyle(.automatic)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)

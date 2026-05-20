@@ -55,7 +55,9 @@ public struct AppModelView: View {
     }
 
     private var activeTools: [Tool] {
-        Tool.allCases.filter(\.isActive)
+        Tool.allCases
+            .filter(\.isActive)
+            .sortedByName()
     }
 
     public var body: some View {
@@ -118,7 +120,7 @@ public struct AppModelView: View {
                     let searchTerm = task.searchTerm
                     let results: [Tool]
                     if searchTerm.isEmpty {
-                        results = Tool.allCases.filter(\.isActive)
+                        results = activeTools
                     } else {
                         results = Tool.allCases
                             .filter(\.isActive)
@@ -339,6 +341,14 @@ public struct AppModelView: View {
             return "clock"
         default:
             return "rectangle.grid.2x2"
+        }
+    }
+}
+
+private extension Array where Element == Tool {
+    func sortedByName() -> Self {
+        sorted {
+            $0.name.localizedStandardCompare($1.name) == .orderedAscending
         }
     }
 }

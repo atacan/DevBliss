@@ -105,7 +105,7 @@ public struct AsciiToHexModelView: View {
                     ForEach(HexSeparator.allCases) { separator in Text(separator.rawValue).tag(separator) }
                 }
                 .blissMenuPicker(width: 120)
-                Toggle("Uppercase", isOn: $model.uppercase).toggleStyle(.checkbox)
+                Toggle("Uppercase", isOn: $model.uppercase).toggleStyle(.automatic)
             }
         }
         .padding(.horizontal, 16)
