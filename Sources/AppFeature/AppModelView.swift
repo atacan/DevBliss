@@ -65,7 +65,7 @@ public struct AppModelView: View {
             List(selection: $model.currentTool) {
                 ForEach(activeTools, id: \.self) { tool in
                     NavigationLink(value: tool) {
-                        Label(tool.name, systemImage: icon(for: tool))
+                        toolLabel(for: tool)
                     }
                 }
             }
@@ -271,76 +271,127 @@ public struct AppModelView: View {
         }
     }
 
-    private func icon(for tool: Tool) -> String {
+    private func toolLabel(for tool: Tool) -> some View {
+        Label {
+            Text(tool.name)
+        } icon: {
+            toolIcon(for: tool)
+                .frame(width: 22, height: 18)
+        }
+    }
+
+    @ViewBuilder
+    private func toolIcon(for tool: Tool) -> some View {
         switch tool {
-        case .urlEncode:
-            return "link"
-        case .urlParser:
-            return "magnifyingglass"
-        case .base64:
-            return "tray.full"
         case .asciiToHex:
-            return "number"
-        case .hexToAscii:
-            return "textformat.123"
-        case .cssBeautify:
-            return "paintbrush"
-        case .base64Image:
-            return "photo"
-        case .stringInspector:
-            return "text.magnifyingglass"
-        case .htmlBeautify:
-            return "doc.plaintext"
-        case .jsBeautify:
-            return "chevron.left.forwardslash.chevron.right"
-        case .svgToCss:
-            return "paintbrush"
-        case .hashGenerator:
-            return "number"
-        case .htmlPreview:
-            return "safari"
-        case .htmlToMarkdown:
-            return "doc.text"
-        case .swiftPrettyLockwood:
-            return "swift"
-        case .htmlToSwift:
-            return "swift"
-        case .urlToMarkdown:
-            return "link"
-        case .lineSortDedupe:
-            return "line.3.horizontal"
-        case .numberBaseConverter:
-            return "plus.forwardslash.minus"
-#if os(macOS)
-        case .fileContentSearch:
-            return "doc.text.magnifyingglass"
-#endif
+            Text("0x")
+                .font(.system(size: 10, design: .monospaced))
         case .backslashEscape:
-            return "slash.square"
-        case .textCaseConverter:
-            return "textformat"
-        case .prefixSuffix:
-            return "text.append"
-        case .nameGenerator:
-            return "person"
-        case .yamlToJson:
-            return "arrow.left.arrow.right"
+            Text("\\\\")
+                .font(.system(size: 10, design: .monospaced))
+        case .base64:
+            Text("B64")
+                .font(.system(size: 10, design: .monospaced))
+        case .base64Image:
+            Image(systemName: "photo")
+        case .certificateDecoder:
+            Image(systemName: "shield.checkered")
+        case .colorConverter:
+            Image(systemName: "paintpalette")
+        case .cssBeautify:
+            Text("CSS")
+                .font(.system(size: 8, design: .monospaced))
+        case .fileContentSearch:
+            Image(systemName: "doc.text.magnifyingglass")
+        case .hashGenerator:
+            Image(systemName: "lock.shield")
+        case .hexToAscii:
+            Text("x→A")
+                .font(.system(size: 8, design: .monospaced))
+        case .htmlBeautify:
+            Text("HTML")
+                .font(.system(size: 8, design: .monospaced))
+        case .htmlPreview:
+            Image(systemName: "safari")
+        case .htmlToMarkdown:
+            Text("H→M")
+                .font(.system(size: 8, design: .monospaced))
+        case .htmlToSwift:
+            ZStack(alignment: .leading) {
+                Image(systemName: "swift")
+                    .offset(CGSize(width: 5, height: 0))
+                Text("<>")
+                    .font(.monospaced(Font.system(size: 14))())
+                    .fontWeight(.thin)
+                    .offset(CGSize(width: 0, height: -7))
+            }
+        case .jsBeautify:
+            Text("JS")
+                .font(.system(size: 10, design: .monospaced))
         case .jsonToYaml:
-            return "arrow.2.squarepath"
-        case .xmlFormat:
-            return "doc.text"
-        case .uuidGenerator:
-            return "number"
+            Text("J→Y")
+                .font(.system(size: 8, design: .monospaced))
+        case .jsonPretty:
+            Text("{.,}")
+                .font(.system(size: 8, design: .monospaced))
+        case .jwtDebugger:
+            Image(systemName: "signature")
+        case .lineSortDedupe:
+            Image(systemName: "arrow.up.arrow.down")
+        case .nameGenerator:
+            Image(systemName: "person")
+        case .numberBaseConverter:
+            Image(systemName: "number")
+        case .prefixSuffix:
+            Image(systemName: "arrow.right.and.line.vertical.and.arrow.left")
+        case .qrCodeTool:
+            Image(systemName: "qrcode")
+        case .randomStringGenerator:
+            Image(systemName: "shuffle")
         case .regExpTester:
-            return "magnifyingglass"
+            Text(".*")
+                .font(.system(size: 10, design: .monospaced))
         case .regexMatches:
-            return "list.bullet"
+            Text("(.*)")
+                .font(.system(size: 8, design: .monospaced))
         case .stringDiff:
-            return "doc.text"
+            Image(systemName: "arrow.triangle.2.circlepath")
+        case .stringInspector:
+            Image(systemName: "text.magnifyingglass")
+        case .svgToCss:
+            Image(systemName: "square.and.arrow.down")
+        case .swiftPrettyLockwood:
+            Image(systemName: "swift")
+        case .textCaseConverter:
+            Text("Aa")
         case .unixTime:
-            return "clock"
-        default:
-            return "rectangle.grid.2x2"
+            Image(systemName: "clock")
+        case .urlEncode:
+            Text("%")
+                .font(.system(size: 12, design: .monospaced))
+        case .urlParser:
+            Image(systemName: "link.badge.plus")
+        case .urlToMarkdown:
+            ZStack(alignment: .leading) {
+                Text("M↓")
+                    .font(.monospaced(Font.system(size: 14))())
+                    .fontWeight(.medium)
+                    .offset(CGSize(width: 5, height: 0))
+                Image(systemName: "link")
+                    .font(.system(size: 10))
+                    .offset(CGSize(width: 0, height: -7))
+            }
+        case .uuidGenerator:
+            Text("ID")
+                .font(.system(size: 10, design: .monospaced))
+        case .uuidUlid:
+            Image(systemName: "number.circle")
+        case .xmlFormat:
+            Text("</>")
+                .font(.system(size: 8, design: .monospaced))
+        case .yamlToJson:
+            Text("Y→J")
+                .font(.system(size: 8, design: .monospaced))
         }
     }
 }
