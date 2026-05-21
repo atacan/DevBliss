@@ -314,8 +314,16 @@ public struct AppModelView: View {
         case .htmlPreview:
             Image(systemName: "safari")
         case .htmlToMarkdown:
-            Text("H→M")
-                .font(.system(size: 8, design: .monospaced))
+            ZStack(alignment: .leading) {
+                Text("M↓")
+                    .font(.monospaced(Font.system(size: 14))())
+                    .fontWeight(.medium)
+                    .offset(CGSize(width: 5, height: 0))
+                Text("<>")
+                    .font(.monospaced(Font.system(size: 14))())
+                    .fontWeight(.thin)
+                    .offset(CGSize(width: 0, height: -7))
+            }
         case .htmlToSwift:
             ZStack(alignment: .leading) {
                 Image(systemName: "swift")
