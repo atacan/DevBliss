@@ -135,70 +135,7 @@ public struct HtmlToMarkdownModelView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel("Engine")
-                    Picker(
-                        "Engine",
-                        selection: Binding(
-                            get: { model.configuration.engine },
-                            set: { model.setEngine($0) }
-                        )
-                    ) {
-                        Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
-                        Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
-                    }
-                    .blissMenuPicker(width: 180)
-                    .help("Turndown for complex HTML, html-to-md for speed")
-
-                    ConfigLabel("Heading Style")
-                    Picker(
-                        "Heading Style",
-                        selection: Binding(
-                            get: { model.configuration.headingStyle },
-                            set: { model.setHeadingStyle($0) }
-                        )
-                    ) {
-                        Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
-                        Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
-                    }
-                    .blissMenuPicker(width: 160)
-                    .help("ATX uses # prefix, Setext uses underlines")
-                }
-
-                GridRow {
-                    ConfigLabel("Bullet Marker")
-                    Picker(
-                        "Bullet Marker",
-                        selection: Binding(
-                            get: { model.configuration.bulletListMarker },
-                            set: { model.setBulletListMarker($0) }
-                        )
-                    ) {
-                        Text("Dash (-)").tag("-")
-                        Text("Asterisk (*)").tag("*")
-                        Text("Plus (+)").tag("+")
-                    }
-                    .blissMenuPicker(width: 180)
-                    .help("Character for unordered list items")
-
-                    ConfigLabel("Code Blocks")
-                    Picker(
-                        "Code Blocks",
-                        selection: Binding(
-                            get: { model.configuration.codeBlockStyle },
-                            set: { model.setCodeBlockStyle($0) }
-                        )
-                    ) {
-                        Text("Fenced (``` )").tag(DemarkCodeBlockStyle.fenced)
-                        Text("Indented").tag(DemarkCodeBlockStyle.indented)
-                    }
-                    .blissMenuPicker(width: 160)
-                    .help("Fenced uses triple backticks, Indented uses 4 spaces")
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+            configurationView
 
             LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
                 model.convertButtonTouched()
@@ -238,6 +175,130 @@ public struct HtmlToMarkdownModelView: View {
                 }
             }
         }
+    }
+
+    private var configurationView: some View {
+        ViewThatFits(in: .horizontal) {
+            regularConfigurationView
+            compactConfigurationView
+        }
+        .padding(.horizontal, configurationHorizontalPadding)
+        .padding(.vertical, configurationVerticalPadding)
+    }
+
+    private var regularConfigurationView: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            GridRow {
+                ConfigLabel("Engine")
+                enginePicker
+                    .blissMenuPicker(width: 180)
+
+                ConfigLabel("Heading Style")
+                headingStylePicker
+                    .blissMenuPicker(width: 160)
+            }
+
+            GridRow {
+                ConfigLabel("Bullet Marker")
+                bulletMarkerPicker
+                    .blissMenuPicker(width: 180)
+
+                ConfigLabel("Code Blocks")
+                codeBlockStylePicker
+                    .blissMenuPicker(width: 160)
+            }
+        }
+    }
+
+    private var compactConfigurationView: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                enginePicker
+                    .blissMenuPicker(width: 152)
+                headingStylePicker
+                    .blissMenuPicker(width: 152)
+            }
+
+            HStack(spacing: 8) {
+                bulletMarkerPicker
+                    .blissMenuPicker(width: 152)
+                codeBlockStylePicker
+                    .blissMenuPicker(width: 152)
+            }
+        }
+    }
+
+    private var enginePicker: some View {
+        Picker(
+            "Engine",
+            selection: Binding(
+                get: { model.configuration.engine },
+                set: { model.setEngine($0) }
+            )
+        ) {
+            Text("Turndown").tag(ConversionEngine.turndown)
+            Text("html-to-md").tag(ConversionEngine.htmlToMd)
+        }
+        .help("Turndown for complex HTML, html-to-md for speed")
+    }
+
+    private var headingStylePicker: some View {
+        Picker(
+            "Heading Style",
+            selection: Binding(
+                get: { model.configuration.headingStyle },
+                set: { model.setHeadingStyle($0) }
+            )
+        ) {
+            Text("ATX (#)").tag(DemarkHeadingStyle.atx)
+            Text("Setext").tag(DemarkHeadingStyle.setext)
+        }
+        .help("ATX uses # prefix, Setext uses underlines")
+    }
+
+    private var bulletMarkerPicker: some View {
+        Picker(
+            "Bullet Marker",
+            selection: Binding(
+                get: { model.configuration.bulletListMarker },
+                set: { model.setBulletListMarker($0) }
+            )
+        ) {
+            Text("Dash (-)").tag("-")
+            Text("Asterisk (*)").tag("*")
+            Text("Plus (+)").tag("+")
+        }
+        .help("Character for unordered list items")
+    }
+
+    private var codeBlockStylePicker: some View {
+        Picker(
+            "Code Blocks",
+            selection: Binding(
+                get: { model.configuration.codeBlockStyle },
+                set: { model.setCodeBlockStyle($0) }
+            )
+        ) {
+            Text("Fenced").tag(DemarkCodeBlockStyle.fenced)
+            Text("Indented").tag(DemarkCodeBlockStyle.indented)
+        }
+        .help("Fenced uses triple backticks, Indented uses 4 spaces")
+    }
+
+    private var configurationHorizontalPadding: CGFloat {
+        #if os(iOS)
+            return 10
+        #else
+            return 16
+        #endif
+    }
+
+    private var configurationVerticalPadding: CGFloat {
+        #if os(iOS)
+            return 6
+        #else
+            return 8
+        #endif
     }
 
     @ViewBuilder

@@ -23,21 +23,71 @@ public struct PaneView<Content: View, LeadingActions: View, TrailingActions: Vie
         VStack(spacing: 0) {
             HStack {
                 Text(title)
-                    .font(.headline)
+                    .font(titleFont)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .allowsTightening(true)
+                    .padding(.top, titleTextTopPadding)
                 Spacer()
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 4)
+            .padding(.horizontal, titleHorizontalPadding)
+            .padding(.vertical, titleVerticalPadding)
+            .frame(minHeight: titleMinHeight, alignment: .center)
+            .fixedSize(horizontal: false, vertical: true)
+            .layoutPriority(1)
 
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .layoutPriority(0)
 
             EditorFooterBar {
                 leadingActions
                 Spacer()
                 trailingActions
             }
+            .fixedSize(horizontal: false, vertical: true)
+            .layoutPriority(1)
         }
+    }
+
+    private var titleHorizontalPadding: CGFloat {
+        #if os(iOS)
+            return 8
+        #else
+            return 16
+        #endif
+    }
+
+    private var titleVerticalPadding: CGFloat {
+        #if os(iOS)
+            return 8
+        #else
+            return 4
+        #endif
+    }
+
+    private var titleMinHeight: CGFloat {
+        #if os(iOS)
+            return 40
+        #else
+            return 0
+        #endif
+    }
+
+    private var titleTextTopPadding: CGFloat {
+        #if os(iOS)
+            return 4
+        #else
+            return 0
+        #endif
+    }
+
+    private var titleFont: Font {
+        #if os(iOS)
+            return .subheadline.weight(.semibold)
+        #else
+            return .headline
+        #endif
     }
 }
 

@@ -29,13 +29,21 @@ public struct TextPane<Editor: View, LeadingActions: View, TrailingActions: View
     public var body: some View {
         PaneView(title: title) {
             editor
-                .frame(minHeight: minHeight)
+                .frame(minHeight: effectiveEditorMinHeight)
                 .padding(.horizontal, horizontalPadding)
         } leadingActions: {
             leadingActions
         } trailingActions: {
             trailingActions
         }
+    }
+
+    private var effectiveEditorMinHeight: CGFloat {
+        #if os(iOS)
+            min(minHeight, 96)
+        #else
+            minHeight
+        #endif
     }
 }
 

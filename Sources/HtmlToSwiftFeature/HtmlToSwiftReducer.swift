@@ -180,6 +180,7 @@ public struct HtmlToSwiftModelView: View {
             splitSettings: .init(
                 fractionKey: SettingsKey.HtmlToSwift.splitViewFraction,
                 layoutKey: SettingsKey.HtmlToSwift.splitViewLayout,
+                defaultLayout: defaultSplitLayout,
                 primaryLabel: NSLocalizedString("Html", bundle: Bundle.module, comment: ""),
                 secondaryLabel: NSLocalizedString("Swift", bundle: Bundle.module, comment: "")
             )
@@ -204,41 +205,89 @@ public struct HtmlToSwiftModelView: View {
     }
 
     private var configurationView: some View {
-        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-            GridRow {
-                ConfigLabel(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
-                Picker(
-                    NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
-                    selection: Binding(
-                        get: { model.dsl },
-                        set: { model.setDsl($0) }
-                    )
-                ) {
-                    ForEach(SwiftDSL.allCases) { dsl in
-                        Text(dslLibraryName(for: dsl))
-                            .tag(dsl)
-                    }
-                }
-                .blissMenuPicker(width: 180)
+        ViewThatFits(in: .horizontal) {
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    ConfigLabel(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
+                    dslPicker
+                        .blissMenuPicker(width: 180)
 
-                ConfigLabel(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
-                Picker(
-                    NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
-                    selection: Binding(
-                        get: { model.component },
-                        set: { model.setComponent($0) }
-                    )
-                ) {
-                    ForEach(HtmlOutputComponent.allCases) { component in
-                        Text(outputComponentPickerName(for: component))
-                            .tag(component)
-                    }
+                    ConfigLabel(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
+                    componentPicker
+                        .blissMenuPicker(width: 160)
                 }
-                .blissMenuPicker(width: 160)
+            }
+
+            Grid(horizontalSpacing: 8, verticalSpacing: 6) {
+                GridRow {
+                    ConfigLabel(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
+                    dslPicker
+                        .blissMenuPicker(width: 170)
+                }
+
+                GridRow {
+                    ConfigLabel(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
+                    componentPicker
+                        .blissMenuPicker(width: 170)
+                }
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.horizontal, configurationHorizontalPadding)
+        .padding(.vertical, configurationVerticalPadding)
+    }
+
+    private var dslPicker: some View {
+        Picker(
+            NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
+            selection: Binding(
+                get: { model.dsl },
+                set: { model.setDsl($0) }
+            )
+        ) {
+            ForEach(SwiftDSL.allCases) { dsl in
+                Text(dslLibraryName(for: dsl))
+                    .tag(dsl)
+            }
+        }
+    }
+
+    private var componentPicker: some View {
+        Picker(
+            NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
+            selection: Binding(
+                get: { model.component },
+                set: { model.setComponent($0) }
+            )
+        ) {
+            ForEach(HtmlOutputComponent.allCases) { component in
+                Text(outputComponentPickerName(for: component))
+                    .tag(component)
+            }
+        }
+    }
+
+    private var defaultSplitLayout: SideBySideLayout {
+        #if os(iOS)
+            return .vertical
+        #else
+            return .horizontal
+        #endif
+    }
+
+    private var configurationHorizontalPadding: CGFloat {
+        #if os(iOS)
+            return 12
+        #else
+            return 16
+        #endif
+    }
+
+    private var configurationVerticalPadding: CGFloat {
+        #if os(iOS)
+            return 6
+        #else
+            return 8
+        #endif
     }
 
     private var sendOutputToTool: ((Tool) -> Void)? {

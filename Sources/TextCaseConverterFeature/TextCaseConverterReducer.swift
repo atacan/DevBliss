@@ -116,29 +116,111 @@ public struct TextCaseConverterModelView: View {
     }
 
     private var configurationView: some View {
-        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+        ViewThatFits(in: .horizontal) {
+            regularConfigurationView
+            compactConfigurationView
+        }
+        .padding(.horizontal, configurationHorizontalPadding)
+        .padding(.vertical, configurationVerticalPadding)
+    }
+
+    private var regularConfigurationView: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 10) {
             GridRow {
                 ConfigLabel(NSLocalizedString("From", bundle: Bundle.module, comment: ""))
-                Picker(NSLocalizedString("From", bundle: Bundle.module, comment: ""), selection: Binding(get: { model.sourceCase }, set: { model.setSourceCase($0) })) {
-                    ForEach(WordGroupCase.allCases) { Text($0.rawValue).tag($0) }
-                }.blissMenuPicker(width: 140)
+                sourceCasePicker
+                    .blissMenuPicker(width: 140)
+
+                switchCasesButton
+
                 ConfigLabel(NSLocalizedString("To", bundle: Bundle.module, comment: ""))
-                Picker(NSLocalizedString("To", bundle: Bundle.module, comment: ""), selection: Binding(get: { model.targetCase }, set: { model.setTargetCase($0) })) {
-                    ForEach(WordGroupCase.allCases) { Text($0.rawValue).tag($0) }
-                }.blissMenuPicker(width: 140)
-                Button { model.switchCases() } label: { Label(NSLocalizedString("Switch Cases", bundle: Bundle.module, comment: ""), systemImage: "arrow.left.and.right") }
-                    .buttonStyle(.bordered)
-                    .keyboardShortcut("w", modifiers: [.command, .shift])
+                targetCasePicker
+                    .blissMenuPicker(width: 140)
             }
+
             GridRow {
                 ConfigLabel(NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""))
-                Picker(NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""), selection: Binding(get: { model.textSeperator }, set: { model.setTextSeperator($0) })) {
-                    ForEach(WordGroupSeperator.allCases) { Text($0 == .newLine ? "New Line" : "Space").tag($0) }
-                }.blissMenuPicker(width: 140).gridCellColumns(3)
+                separatorPicker
+                    .blissMenuPicker(width: 140)
+                    .gridCellColumns(4)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+    }
+
+    private var compactConfigurationView: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                sourceCasePicker
+                    .blissMenuPicker(width: 128)
+
+                switchCasesButton
+
+                targetCasePicker
+                    .blissMenuPicker(width: 128)
+            }
+
+            HStack(spacing: 8) {
+                ConfigLabel(NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""))
+                separatorPicker
+                    .blissMenuPicker(width: 150)
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+        }
+    }
+
+    private var sourceCasePicker: some View {
+        Picker(
+            NSLocalizedString("From", bundle: Bundle.module, comment: ""),
+            selection: Binding(get: { model.sourceCase }, set: { model.setSourceCase($0) })
+        ) {
+            ForEach(WordGroupCase.allCases) { Text($0.rawValue).tag($0) }
+        }
+    }
+
+    private var targetCasePicker: some View {
+        Picker(
+            NSLocalizedString("To", bundle: Bundle.module, comment: ""),
+            selection: Binding(get: { model.targetCase }, set: { model.setTargetCase($0) })
+        ) {
+            ForEach(WordGroupCase.allCases) { Text($0.rawValue).tag($0) }
+        }
+    }
+
+    private var separatorPicker: some View {
+        Picker(
+            NSLocalizedString("Seperator", bundle: Bundle.module, comment: ""),
+            selection: Binding(get: { model.textSeperator }, set: { model.setTextSeperator($0) })
+        ) {
+            ForEach(WordGroupSeperator.allCases) { Text($0 == .newLine ? "New Line" : "Space").tag($0) }
+        }
+    }
+
+    private var switchCasesButton: some View {
+        Button { model.switchCases() } label: {
+            Image(systemName: "arrow.left.and.right")
+                .frame(width: 30, height: 30)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.bordered)
+        .keyboardShortcut("w", modifiers: [.command, .shift])
+        .help(NSLocalizedString("Switch Cases", bundle: Bundle.module, comment: ""))
+        .accessibilityLabel(NSLocalizedString("Switch Cases", bundle: Bundle.module, comment: ""))
+    }
+
+    private var configurationHorizontalPadding: CGFloat {
+        #if os(iOS)
+            return 10
+        #else
+            return 16
+        #endif
+    }
+
+    private var configurationVerticalPadding: CGFloat {
+        #if os(iOS)
+            return 6
+        #else
+            return 8
+        #endif
     }
 
     public var body: some View {
