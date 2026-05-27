@@ -1,27 +1,6 @@
 /* No comment provided by engineer. */
-"Convert" = "変換する";
-
-/* No comment provided by engineer. */
-"Convert cases (Cmd+Return)" = "ケースを変換する (Cmd+Return)";
-
-/* No comment provided by engineer. */
-"From" = "から";
-
-/* No comment provided by engineer. */
-"Input" = "入力";
-
-/* No comment provided by engineer. */
-"New Line" = "新しいライン";
-
-/* No comment provided by engineer. */
-"Output" = "出力";
-
-/* No comment provided by engineer. */
-"Separator" = "セパレーター";
+"New Line" = "改行";
 
 /* No comment provided by engineer. */
 "Space" = "スペース";
-
-/* No comment provided by engineer. */
-"To" = "まで";
 

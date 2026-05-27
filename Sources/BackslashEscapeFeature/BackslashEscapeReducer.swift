@@ -1,144 +1,138 @@
-import BackslashEscapeClient
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import InputOutput
 import SwiftUI
 
-@Reducer
-public struct BackslashEscapeReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class BackslashEscapeModel {
+    @ObservationIgnored
+    @Shared(.toolInput("backslashEscape"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("backslashEscape")) public var inputText = ""
-        @Shared(.toolOutput("backslashEscape")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var mode: BackslashEscapeMode = .escape
+    @ObservationIgnored
+    @Shared(.toolOutput("backslashEscape"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("backslashEscape"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("backslashEscape"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var mode: BackslashEscapeMode = .escape
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("backslashEscape"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("backslashEscape"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Dependency(\.backslashEscape) private var backslashEscape
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("backslashEscape"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("backslashEscape"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("backslashEscape"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("backslashEscape"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.backslashEscape) var backslashEscape
-    private enum CancelID { case conversionRequest }
+    public func setMode(_ mode: BackslashEscapeMode) {
+        self.mode = mode
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let mode = state.mode
-                return .run { [backslashEscape] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await backslashEscape.convert(input, mode)
-                            }
-                        )
-                    )
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let mode = self.mode
+
+        conversionTask = Task { [weak self, input = input, mode = mode, backslashEscape = backslashEscape] in
+            guard let self else { return }
+            do {
+                let result = try await backslashEscape.convert(input, mode)
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = result }
                 }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+            }
+            catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = error.localizedDescription }
+                }
             }
         }
+    }
 
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct BackslashEscapeView: View {
-    @Bindable var store: StoreOf<BackslashEscapeReducer>
+public struct BackslashEscapeModelView: View {
+    @Bindable var model: BackslashEscapeModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(store: StoreOf<BackslashEscapeReducer>) {
-        self.store = store
+    public init(
+        model: BackslashEscapeModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
+        self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 12) {
-//                ConfigLabel("Mode")
-                Picker("Mode", selection: $store.mode) {
-                    ForEach(BackslashEscapeMode.allCases) { mode in
-                        Text(mode.rawValue)
-                            .tag(mode)
-                    }
-                }
-                .labelsHidden()
-                .pickerStyle(.segmented)
-                .frame(width: 200)
-                .help("Escape adds backslashes, Unescape removes them")
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Convert (⌘ Return)")
-            .padding(.vertical, 8)
-
-            Divider()
-
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "Input",
-                outputEditorTitle: "Output",
-                keyForFraction: SettingsKey.BackslashEscape.splitViewFraction,
-                keyForLayout: SettingsKey.BackslashEscape.splitViewLayout
+        TwoPaneToolView(
+            actionTitle: "Convert",
+            actionHelp: "Convert (Cmd Return)",
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.BackslashEscape.splitViewFraction,
+                layoutKey: SettingsKey.BackslashEscape.splitViewLayout,
+                primaryLabel: "Input",
+                secondaryLabel: "Output"
+            )
+        ) {
+            PlainInputTextPane(title: "Input", text: inputTextBinding)
+        } secondary: {
+            PlainOutputTextPane(
+                title: "Output",
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
             )
         }
+    }
+
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else { return nil }
+        return { tool in onSendOutputToTool(model.outputText, tool) }
+    }
+
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
+
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }
 
 struct BackslashEscapeView_Previews: PreviewProvider {
     static var previews: some View {
-        BackslashEscapeView(store: .init(initialState: .init()) { BackslashEscapeReducer() })
+        BackslashEscapeModelView(model: .init())
     }
 }

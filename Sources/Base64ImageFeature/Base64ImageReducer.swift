@@ -1,331 +1,245 @@
-import Base64ImageClient
-import BlissTheme
-import ComposableArchitecture
+import Dependencies
+import Foundation
+import Observation
+import Sharing
 import SharedModels
+import BlissTheme
 import SwiftUI
 import UniformTypeIdentifiers
 
 #if os(macOS)
 import AppKit
+#else
+import UIKit
 #endif
 
-// MARK: - Reducer
+@MainActor
+@Observable
+public final class Base64ImageModel {
+    @ObservationIgnored
+    @Shared(.base64ImageString) public var base64StringStorage = ""
 
-@Reducer
-public struct Base64ImageReducer {
-    public init() {}
+    @ObservationIgnored
+    @Shared(.base64ImageMeta) public var meta = Base64ImageMeta()
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.base64ImageString) public var base64StringStorage = ""
-        @Shared(.base64ImageMeta) public var meta = Base64ImageMeta()
-        public var base64String: String = ""
-        public var imageData: Data?
-        public var imageInfo: Base64ImageInfo?
-        public var outputFormat: Base64ImageOutputFormat = .dataURL
-        public var errorMessage: String?
-        public var isProcessing: Bool = false
+    @ObservationIgnored
+    @Dependency(\.base64Image) private var base64Image
 
-        public init() {
-            self.base64String = base64StringStorage
-            if let data = meta.imageData {
-                self.imageData = data
-            }
-            self.outputFormat = meta.outputFormat
-        }
+    @ObservationIgnored
+    private var decodeTask: Task<Void, Never>?
 
-        public var hasImage: Bool {
-            imageData != nil
-        }
+    public var base64String: String = ""
+    public var imageData: Data?
+    public var imageInfo: Base64ImageInfo?
+    public var outputFormat: Base64ImageOutputFormat = .dataURL
+    public var errorMessage: String?
+    public var isProcessing = false
 
-        public var outputText: String? {
-            base64String.isEmpty ? nil : base64String
+    public var hasImage: Bool { imageData != nil }
+    public var outputText: String? { base64String.isEmpty ? nil : base64String }
+
+    public init() {
+        base64String = base64StringStorage
+        outputFormat = meta.outputFormat
+
+        if let data = meta.imageData {
+            imageData = data
+            imageInfo = base64Image.getImageInfo(data)
         }
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case base64StringChanged(String)
-        case outputFormatChanged(Base64ImageOutputFormat)
-        case loadFileButtonTapped
-        case pasteImageFromClipboardTapped
-        case clearImageTapped
-        case saveImageTapped
-        case copyImageTapped
-        case copyBase64Tapped
-        case imageLoaded(Data)
-        case decodeBase64Response(TaskResult<Data>)
-        case encodeImageResponse(String)
-    }
+    public func setBase64String(_ input: String) {
+        base64String = input
+        errorMessage = nil
+        $base64StringStorage.withLock { $0 = input }
 
-    @Dependency(\.base64Image) var base64Image
-    private enum CancelID { case decodeRequest }
+        guard !input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            imageData = nil
+            imageInfo = nil
+            $meta.withLock { $0.imageData = nil }
+            decodeTask?.cancel()
+            isProcessing = false
+            return
+        }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-
-            case let .base64StringChanged(newString):
-                state.base64String = newString
-                state.errorMessage = nil
-
-                // Save to storage
-                state.$base64StringStorage.withLock { $0 = newString }
-
-                // If empty, clear everything
-                guard !newString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                    state.imageData = nil
-                    state.imageInfo = nil
-                    state.$meta.withLock { $0.imageData = nil }
-                    return .none
+        isProcessing = true
+        decodeTask?.cancel()
+        decodeTask = Task { [weak self, input = input, base64Image = base64Image] in
+            do {
+                let data = try base64Image.decodeFromBase64(input)
+                await MainActor.run {
+                    guard let self else { return }
+                    isProcessing = false
+                    imageData = data
+                    imageInfo = base64Image.getImageInfo(data)
+                    $meta.withLock { $0.imageData = data }
                 }
-
-                // Try to auto-decode if it looks like valid Base64 image
-                state.isProcessing = true
-                return .run { [base64Image] send in
-                    await send(
-                        .decodeBase64Response(
-                            TaskResult {
-                                try base64Image.decodeFromBase64(newString)
-                            }
-                        )
-                    )
-                }
-                .cancellable(id: CancelID.decodeRequest, cancelInFlight: true)
-
-            case let .outputFormatChanged(format):
-                state.outputFormat = format
-                state.$meta.withLock { $0.outputFormat = format }
-
-                // Re-encode with new format if we have image data
-                if let imageData = state.imageData {
-                    let encoded = base64Image.encodeToBase64(imageData, format)
-                    state.base64String = encoded
-                    state.$base64StringStorage.withLock { $0 = encoded }
-                }
-                return .none
-
-            case .loadFileButtonTapped:
-                #if os(macOS)
-                let panel = NSOpenPanel()
-                panel.allowedContentTypes = [.png, .jpeg, .gif, .webP, .bmp, .tiff, .ico]
-                panel.allowsMultipleSelection = false
-                panel.canChooseDirectories = false
-
-                guard panel.runModal() == .OK, let url = panel.url else {
-                    return .none
-                }
-
-                do {
-                    let data = try Data(contentsOf: url)
-                    return .send(.imageLoaded(data))
-                } catch {
-                    state.errorMessage = "Failed to load file: \(error.localizedDescription)"
-                    return .none
-                }
-                #else
-                return .none
-                #endif
-
-            case .pasteImageFromClipboardTapped:
-                #if os(macOS)
-                let pasteboard = NSPasteboard.general
-                if let data = pasteboard.data(forType: .png) {
-                    return .send(.imageLoaded(data))
-                } else if let data = pasteboard.data(forType: .tiff) {
-                    // Convert TIFF to PNG
-                    if let image = NSImage(data: data),
-                       let tiffData = image.tiffRepresentation,
-                       let bitmap = NSBitmapImageRep(data: tiffData),
-                       let pngData = bitmap.representation(using: .png, properties: [:]) {
-                        return .send(.imageLoaded(pngData))
+            } catch {
+                await MainActor.run {
+                    guard let self else { return }
+                    isProcessing = false
+                    let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if trimmed.count > 50 || trimmed.hasPrefix("data:") {
+                        errorMessage = error.localizedDescription
                     }
-                } else if let string = pasteboard.string(forType: .string),
-                          base64Image.isValidBase64Image(string) {
-                    // Handle pasted Base64 string
-                    return .send(.base64StringChanged(string))
+                    imageData = nil
+                    imageInfo = nil
+                    $meta.withLock { $0.imageData = nil }
                 }
-                state.errorMessage = "No image found in clipboard"
-                #endif
-                return .none
-
-            case .clearImageTapped:
-                state.imageData = nil
-                state.imageInfo = nil
-                state.base64String = ""
-                state.errorMessage = nil
-                state.$meta.withLock { $0.imageData = nil }
-                state.$base64StringStorage.withLock { $0 = "" }
-                return .none
-
-            case .saveImageTapped:
-                #if os(macOS)
-                guard let imageData = state.imageData else { return .none }
-
-                let panel = NSSavePanel()
-                let mimeType = base64Image.detectMimeType(imageData)
-                let defaultExtension: String
-                let allowedType: UTType
-
-                switch mimeType {
-                case "image/png":
-                    defaultExtension = "png"
-                    allowedType = .png
-                case "image/jpeg":
-                    defaultExtension = "jpg"
-                    allowedType = .jpeg
-                case "image/gif":
-                    defaultExtension = "gif"
-                    allowedType = .gif
-                case "image/webp":
-                    defaultExtension = "webp"
-                    allowedType = .webP
-                default:
-                    defaultExtension = "png"
-                    allowedType = .png
-                }
-
-                panel.allowedContentTypes = [allowedType]
-                panel.nameFieldStringValue = "image.\(defaultExtension)"
-
-                guard panel.runModal() == .OK, let url = panel.url else {
-                    return .none
-                }
-
-                do {
-                    try imageData.write(to: url)
-                } catch {
-                    state.errorMessage = "Failed to save file: \(error.localizedDescription)"
-                }
-                #endif
-                return .none
-
-            case .copyImageTapped:
-                #if os(macOS)
-                guard let imageData = state.imageData,
-                      let image = NSImage(data: imageData) else {
-                    return .none
-                }
-
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.writeObjects([image])
-                #endif
-                return .none
-
-            case .copyBase64Tapped:
-                #if os(macOS)
-                guard !state.base64String.isEmpty else { return .none }
-
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.setString(state.base64String, forType: .string)
-                #endif
-                return .none
-
-            case let .imageLoaded(data):
-                state.imageData = data
-                state.imageInfo = base64Image.getImageInfo(data)
-                state.errorMessage = nil
-
-                // Encode to Base64 with current format
-                let encoded = base64Image.encodeToBase64(data, state.outputFormat)
-                state.base64String = encoded
-
-                // Save to storage
-                state.$meta.withLock { $0.imageData = data }
-                state.$base64StringStorage.withLock { $0 = encoded }
-                return .none
-
-            case let .decodeBase64Response(.success(data)):
-                state.isProcessing = false
-                state.imageData = data
-                state.imageInfo = base64Image.getImageInfo(data)
-                state.errorMessage = nil
-                state.$meta.withLock { $0.imageData = data }
-                return .none
-
-            case let .decodeBase64Response(.failure(error)):
-                state.isProcessing = false
-                // Don't show error for every invalid input - only if it looks like an attempt
-                let trimmed = state.base64String.trimmingCharacters(in: .whitespacesAndNewlines)
-                if trimmed.count > 50 || trimmed.hasPrefix("data:") {
-                    state.errorMessage = error.localizedDescription
-                }
-                state.imageData = nil
-                state.imageInfo = nil
-                state.$meta.withLock { $0.imageData = nil }
-                return .none
-
-            case let .encodeImageResponse(encoded):
-                state.base64String = encoded
-                state.$base64StringStorage.withLock { $0 = encoded }
-                return .none
             }
         }
+    }
+
+    public func setOutputFormat(_ format: Base64ImageOutputFormat) {
+        outputFormat = format
+        $meta.withLock { $0.outputFormat = format }
+
+        if let imageData {
+            let encoded = base64Image.encodeToBase64(imageData, format)
+            base64String = encoded
+            $base64StringStorage.withLock { $0 = encoded }
+        }
+    }
+
+    public func loadFileButtonTapped() {
+        #if os(macOS)
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.png, .jpeg, .gif, .webP, .bmp, .tiff, .ico]
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+
+        do {
+            let data = try Data(contentsOf: url)
+            loadImage(data)
+        } catch {
+            errorMessage = "Failed to load file: \\(error.localizedDescription)"
+        }
+        #endif
+    }
+
+    public func pasteImageFromClipboardTapped() {
+        #if os(macOS)
+        let pasteboard = NSPasteboard.general
+        if let data = pasteboard.data(forType: .png) {
+            loadImage(data)
+        } else if let data = pasteboard.data(forType: .tiff),
+                  let image = NSImage(data: data),
+                  let tiffData = image.tiffRepresentation,
+                  let bitmap = NSBitmapImageRep(data: tiffData),
+                  let pngData = bitmap.representation(using: .png, properties: [:]) {
+            loadImage(pngData)
+        } else if let string = pasteboard.string(forType: .string),
+                  base64Image.isValidBase64Image(string) {
+            setBase64String(string)
+        } else {
+            errorMessage = "No image found in clipboard"
+        }
+        #endif
+    }
+
+    public func clearImageTapped() {
+        imageData = nil
+        imageInfo = nil
+        base64String = ""
+        errorMessage = nil
+        $meta.withLock { $0.imageData = nil }
+        $base64StringStorage.withLock { $0 = "" }
+        decodeTask?.cancel()
+        isProcessing = false
+    }
+
+    public func saveImageTapped() {
+        #if os(macOS)
+        guard let imageData else { return }
+        let panel = NSSavePanel()
+        let mimeType = base64Image.detectMimeType(imageData)
+        let (defaultExtension, allowedType): (String, UTType) = {
+            switch mimeType {
+            case "image/png": return ("png", .png)
+            case "image/jpeg": return ("jpg", .jpeg)
+            case "image/gif": return ("gif", .gif)
+            case "image/webp": return ("webp", .webP)
+            default: return ("png", .png)
+            }
+        }()
+        panel.allowedContentTypes = [allowedType]
+        panel.nameFieldStringValue = "image.\\(defaultExtension)"
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+
+        do {
+            try imageData.write(to: url)
+        } catch {
+            errorMessage = "Failed to save file: \\(error.localizedDescription)"
+        }
+        #endif
+    }
+
+    public func copyImageTapped() {
+        #if os(macOS)
+        guard let imageData, let image = NSImage(data: imageData) else { return }
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.writeObjects([image])
+        #else
+        guard let imageData else { return }
+        if let image = UIImage(data: imageData) {
+            UIPasteboard.general.image = image
+        }
+        #endif
+    }
+
+    public func copyBase64Tapped() {
+        guard !base64String.isEmpty else { return }
+        #if os(macOS)
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(base64String, forType: .string)
+        #else
+        UIPasteboard.general.string = base64String
+        #endif
+    }
+
+    private func loadImage(_ data: Data) {
+        imageData = data
+        imageInfo = base64Image.getImageInfo(data)
+        errorMessage = nil
+
+        let encoded = base64Image.encodeToBase64(data, outputFormat)
+        base64String = encoded
+        $base64StringStorage.withLock { $0 = encoded }
+        $meta.withLock { $0.imageData = data }
     }
 }
 
-// MARK: - View
+public struct Base64ImageModelView: View {
+    @Bindable var model: Base64ImageModel
 
-public struct Base64ImageView: View {
-    @Bindable var store: StoreOf<Base64ImageReducer>
-
-    public init(store: StoreOf<Base64ImageReducer>) {
-        self.store = store
+    public init(model: Base64ImageModel) {
+        self.model = model
     }
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Error message
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
-
-            // Main content
             #if os(macOS)
-            HSplitView {
-                // Left: Base64 String Section
-                stringSection
-                    .frame(minWidth: 300)
-
-                // Right: Image Section
-                imageSection
-                    .frame(minWidth: 300)
-            }
+            HSplitView { leftColumn; rightColumn }
             #else
-            VStack(spacing: 0) {
-                // Top: Base64 String Section
-                stringSection
-
-                Divider()
-
-                // Bottom: Image Section
-                imageSection
-            }
+            VStack(spacing: 0) { leftColumn; Divider(); rightColumn }
             #endif
         }
     }
 
-    // MARK: - String Section
-
-    @ViewBuilder
-    private var stringSection: some View {
+    private var leftColumn: some View {
         VStack(spacing: 8) {
-            // Header with output format picker
             HStack {
                 Text("Base64 String")
                     .font(.headline)
-
                 Spacer()
-
-                Picker("Format", selection: Binding(
-                    get: { store.outputFormat },
-                    set: { store.send(.outputFormatChanged($0)) }
-                )) {
+                Picker("Format", selection: Binding(get: { model.outputFormat }, set: { model.setOutputFormat($0) })) {
                     ForEach(Base64ImageOutputFormat.allCases) { format in
                         Text(format.rawValue).tag(format)
                     }
@@ -337,78 +251,62 @@ public struct Base64ImageView: View {
             .padding(.horizontal, 12)
             .padding(.top, 8)
 
-            // Text editor for Base64
-            TextEditor(text: Binding(
-                get: { store.base64String },
-                set: { store.send(.base64StringChanged($0)) }
-            ))
-            .font(.system(.body, design: .monospaced))
-            .scrollContentBackground(.hidden)
-            #if os(macOS)
-            .background(ThemeColor.Background.textBackground)
-            #endif
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    #if os(macOS)
-                    .stroke(ThemeColor.Background.separator, lineWidth: 1)
-                    #endif
-            )
-            .padding(.horizontal, 12)
+            TextEditor(text: Binding(get: { model.base64String }, set: { model.setBase64String($0) }))
+                .font(.system(.body, design: .monospaced))
+                .scrollContentBackground(.hidden)
+                #if os(macOS)
+                .background(ThemeColor.Background.textBackground)
+                #endif
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        #if os(macOS)
+                        .stroke(ThemeColor.Background.separator, lineWidth: 1)
+                        #endif
+                )
+                .padding(.horizontal, 12)
 
-            // Copy button
             HStack {
                 Spacer()
-
                 Button {
-                    store.send(.copyBase64Tapped)
+                    model.copyBase64Tapped()
                 } label: {
                     Label("Copy", systemImage: "doc.on.doc")
                 }
-                .disabled(store.base64String.isEmpty)
+                .disabled(model.base64String.isEmpty)
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
         }
     }
 
-    // MARK: - Image Section
-
-    @ViewBuilder
-    private var imageSection: some View {
+    private var rightColumn: some View {
         VStack(spacing: 8) {
-            // Header with buttons
             HStack {
-                Text("Image")
-                    .font(.headline)
-
+                Text("Image").font(.headline)
                 Spacer()
-
                 HStack(spacing: 8) {
                     Button {
-                        store.send(.loadFileButtonTapped)
+                        model.loadFileButtonTapped()
                     } label: {
                         Label("Load File…", systemImage: "folder")
                     }
-
                     Button {
-                        store.send(.pasteImageFromClipboardTapped)
+                        model.pasteImageFromClipboardTapped()
                     } label: {
                         Label("Paste", systemImage: "clipboard")
                     }
-
                     Button {
-                        store.send(.clearImageTapped)
+                        model.clearImageTapped()
                     } label: {
                         Label("Clear", systemImage: "xmark")
                     }
-                    .disabled(!store.hasImage)
+                    .disabled(!model.hasImage)
                 }
             }
             .padding(.horizontal, 12)
             .padding(.top, 8)
 
-            // Image preview area
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
                     #if os(macOS)
@@ -421,7 +319,7 @@ public struct Base64ImageView: View {
                             #endif
                     )
 
-                if let imageData = store.imageData {
+                if let imageData = model.imageData {
                     #if os(macOS)
                     if let nsImage = NSImage(data: imageData) {
                         Image(nsImage: nsImage)
@@ -452,35 +350,31 @@ public struct Base64ImageView: View {
                     }
                 }
 
-                if store.isProcessing {
-                    ProgressView()
-                        .controlSize(.large)
+                if model.isProcessing {
+                    ProgressView().controlSize(.large)
                 }
             }
             .padding(.horizontal, 12)
 
-            // Action buttons
             HStack(spacing: 12) {
                 Button {
-                    store.send(.saveImageTapped)
+                    model.saveImageTapped()
                 } label: {
                     Label("Save", systemImage: "square.and.arrow.down")
                 }
-                .disabled(!store.hasImage)
-
+                .disabled(!model.hasImage)
                 Button {
-                    store.send(.copyImageTapped)
+                    model.copyImageTapped()
                 } label: {
                     Label("Copy Image", systemImage: "photo.on.rectangle")
                 }
-                .disabled(!store.hasImage)
+                .disabled(!model.hasImage)
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
-            
-            // Image info
-            if let info = store.imageInfo {
-                Text("\(info.dimensionsString) - \(info.formattedSize)")
+
+            if let info = model.imageInfo {
+                Text("\\(info.dimensionsString) - \\(info.formattedSize)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -488,11 +382,134 @@ public struct Base64ImageView: View {
     }
 }
 
-// MARK: - Preview
+public struct Base64ImageInfo: Equatable {
+    public let width: Int
+    public let height: Int
+    public let fileSize: Int
+    public let mimeType: String
 
-struct Base64ImageReducer_Previews: PreviewProvider {
+    public init(width: Int, height: Int, fileSize: Int, mimeType: String) {
+        self.width = width
+        self.height = height
+        self.fileSize = fileSize
+        self.mimeType = mimeType
+    }
+
+    public var formattedSize: String {
+        let formatter = ByteCountFormatter()
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: Int64(fileSize))
+    }
+
+    public var dimensionsString: String {
+        "\\(width) x \\(height) px"
+    }
+}
+
+public struct Base64ImageClient {
+    public var encodeToBase64: @Sendable (Data, Base64ImageOutputFormat) -> String
+    public var decodeFromBase64: @Sendable (String) throws -> Data
+    public var getImageInfo: @Sendable (Data) -> Base64ImageInfo?
+    public var detectMimeType: @Sendable (Data) -> String
+    public var isValidBase64Image: @Sendable (String) -> Bool
+
+    public static let liveValue = Self(
+        encodeToBase64: { data, format in
+            let base64String = data.base64EncodedString()
+            let mimeType = detectMimeTypeFromData(data)
+            switch format {
+            case .rawString:
+                return base64String
+            case .dataURL:
+                return "data:\\(mimeType);base64,\\(base64String)"
+            case .cssAttribute:
+                return "background-image: url('data:\\(mimeType);base64,\\(base64String)');"
+            }
+        },
+        decodeFromBase64: { input in
+            let processedInput = removeDataURLPrefix(from: input.trimmingCharacters(in: .whitespacesAndNewlines))
+            guard let data = Data(base64Encoded: processedInput, options: .ignoreUnknownCharacters) else {
+                throw Base64ImageError.invalidBase64
+            }
+            let mimeType = detectMimeTypeFromData(data)
+            guard mimeType.hasPrefix("image/") else {
+                throw Base64ImageError.notImageData
+            }
+            return data
+        },
+        getImageInfo: { data in
+            let mimeType = detectMimeTypeFromData(data)
+            #if os(macOS)
+            guard let image = NSImage(data: data), let rep = image.representations.first else {
+                return nil
+            }
+            return Base64ImageInfo(width: rep.pixelsWide, height: rep.pixelsHigh, fileSize: data.count, mimeType: mimeType)
+            #else
+            guard let image = UIImage(data: data) else { return nil }
+            return Base64ImageInfo(width: Int(image.size.width * image.scale), height: Int(image.size.height * image.scale), fileSize: data.count, mimeType: mimeType)
+            #endif
+        },
+        detectMimeType: { data in
+            detectMimeTypeFromData(data)
+        },
+        isValidBase64Image: { input in
+            let processedInput = removeDataURLPrefix(from: input.trimmingCharacters(in: .whitespacesAndNewlines))
+            guard let data = Data(base64Encoded: processedInput, options: .ignoreUnknownCharacters) else {
+                return false
+            }
+            let mimeType = detectMimeTypeFromData(data)
+            return mimeType.hasPrefix("image/")
+        }
+    )
+}
+
+extension Base64ImageClient: DependencyKey {}
+
+extension Base64ImageClient: Sendable {}
+
+extension DependencyValues {
+    public var base64Image: Base64ImageClient {
+        get { self[Base64ImageClient.self] }
+        set { self[Base64ImageClient.self] = newValue }
+    }
+}
+
+public enum Base64ImageError: LocalizedError {
+    case invalidBase64
+    case notImageData
+    case encodingFailed
+    case decodingFailed
+}
+
+private func detectMimeTypeFromData(_ data: Data) -> String {
+    guard data.count >= 8 else { return "application/octet-stream" }
+    let bytes = [UInt8](data.prefix(12))
+
+    if bytes.starts(with: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]) { return "image/png" }
+    if bytes.starts(with: [0xFF, 0xD8, 0xFF]) { return "image/jpeg" }
+    if bytes.starts(with: [0x47, 0x49, 0x46, 0x38]) { return "image/gif" }
+    if bytes.starts(with: [0x52, 0x49, 0x46, 0x46]) && data.count >= 12 {
+        let webpSignature = [UInt8](data[8..<12])
+        if webpSignature == [0x57, 0x45, 0x42, 0x50] { return "image/webp" }
+    }
+    if bytes.starts(with: [0x42, 0x4D]) { return "image/bmp" }
+    if bytes.starts(with: [0x00, 0x00, 0x01, 0x00]) { return "image/x-icon" }
+    if bytes.starts(with: [0x49, 0x49, 0x2A, 0x00]) || bytes.starts(with: [0x4D, 0x4D, 0x00, 0x2A]) {
+        return "image/tiff"
+    }
+    return "application/octet-stream"
+}
+
+private func removeDataURLPrefix(from input: String) -> String {
+    let pattern = #"^data:[^;,]*;?base64,"#
+    if let range = input.range(of: pattern, options: .regularExpression) {
+        return String(input[range.upperBound...])
+    }
+    return input
+}
+
+struct Base64ImageModelView_Previews: PreviewProvider {
     static var previews: some View {
-        Base64ImageView(store: .init(initialState: .init()) { Base64ImageReducer() })
-            .frame(width: 800, height: 500)
+        Base64ImageModelView(model: .init())
     }
 }

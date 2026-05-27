@@ -1,111 +1,90 @@
 import BlissTheme
-import ComposableArchitecture
-import HtmlPreviewClient
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
 import SplitView
 import SwiftUI
 import WebKit
 #if os(macOS)
 import AppKit
-#endif
-#if os(iOS)
+#else
 import UIKit
 #endif
 
-@Reducer
-public struct HtmlPreviewReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class HtmlPreviewModel {
+    @ObservationIgnored
+    @Shared(.toolInput("htmlPreview")) public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("htmlPreview")) public var inputText = ""
-        @Shared(.toolOutput("htmlPreview")) public var outputText = ""
-        var input: InputEditorReducer.State
-        var enableJavaScript: Bool = true
-        var allowLinkNavigation: Bool = true
-        var allowNetwork: Bool = false
+    @ObservationIgnored
+    @Shared(.toolOutput("htmlPreview")) public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("htmlPreview"))
-            self._inputText = inputText
-            self.input = InputEditorReducer.State(text: inputText.projectedValue)
-        }
+    public var enableJavaScript: Bool = true
+    public var allowLinkNavigation: Bool = true
+    public var allowNetwork: Bool = false
 
-        public init(inputText: String) {
-            let input = Shared(wrappedValue: inputText, .toolInput("htmlPreview"))
-            self._inputText = input
-            self.input = InputEditorReducer.State(text: input.projectedValue)
-        }
+    @ObservationIgnored
+    @Dependency(\.htmlPreview) private var htmlPreview
 
-        public var normalizedHTML: String {
-            inputText
-        }
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("htmlPreview"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("htmlPreview"))
+
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case input(InputEditorReducer.Action)
+    public init(inputText: String, outputText: String = "") {
+        let input = Shared(wrappedValue: inputText, .toolInput("htmlPreview"))
+        let output = Shared(wrappedValue: outputText, .toolOutput("htmlPreview"))
+
+        self._inputText = input
+        self._outputText = output
     }
 
-    @Dependency(\.htmlPreview) var htmlPreview
-
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .input:
-                let normalized = htmlPreview.normalize(state.input.text)
-                state.input.$text.withLock { $0 = normalized }
-                state.$inputText.withLock { $0 = normalized }
-                return .none
-            }
-        }
-
-        Scope(state: \.input, action: \.input) {
-            InputEditorReducer()
-        }
+    public var normalizedHTML: String {
+        htmlPreview.normalize(inputText)
     }
 }
 
-public struct HtmlPreviewView: View {
-    @Bindable var store: StoreOf<HtmlPreviewReducer>
+public struct HtmlPreviewModelView: View {
+    @Bindable var model: HtmlPreviewModel
     @StateObject private var webViewStore = HtmlPreviewWebViewStore()
 
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.HtmlPreview.splitViewFraction)
     @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.HtmlPreview.splitViewLayout)
     @StateObject var hide = SideHolder()
 
-    public init(store: StoreOf<HtmlPreviewReducer>) {
-        self.store = store
+    public init(model: HtmlPreviewModel) {
+        self.model = model
     }
 
     // MARK: - Reusable Controls
 
     private var enableJavaScriptToggle: some View {
-        Toggle("Enable JavaScript", isOn: $store.enableJavaScript)
+        Toggle("Enable JavaScript", isOn: $model.enableJavaScript)
     }
 
     private var allowLinkNavigationToggle: some View {
-        Toggle("Allow link navigation", isOn: $store.allowLinkNavigation)
+        Toggle("Allow link navigation", isOn: $model.allowLinkNavigation)
     }
 
     private var allowNetworkToggle: some View {
-        Toggle("Allow network", isOn: $store.allowNetwork)
+        Toggle("Allow network", isOn: $model.allowNetwork)
     }
 
     private var openInBrowserButton: some View {
         LoadingButton("Open in Browser", isLoading: false) {
-            openInBrowser(store.input.text)
+            openInBrowser(model.inputText)
         }
         .buttonStyle(.bordered)
     }
 
     private var reloadButton: some View {
         LoadingButton("Reload", isLoading: false) {
-            webViewStore.reload(html: store.input.text)
+            webViewStore.reload(html: model.inputText)
         }
     }
 
@@ -152,18 +131,30 @@ public struct HtmlPreviewView: View {
     }
 
     private var inputEditor: some View {
-        InputEditorView(store: store.scope(state: \.input, action: \.input), title: "HTML")
+        VStack(alignment: .leading, spacing: 6) {
+            Text("HTML")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
+                .frame(minHeight: 140)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
     }
 
     private var previewPane: some View {
         let settings = HtmlPreviewWebViewSettings(
-            javaScriptEnabled: store.enableJavaScript,
-            allowLinkNavigation: store.allowLinkNavigation,
-            allowNetwork: store.allowNetwork
+            javaScriptEnabled: model.enableJavaScript,
+            allowLinkNavigation: model.allowLinkNavigation,
+            allowNetwork: model.allowNetwork
         )
 
         return HtmlPreviewWebView(
-            html: store.input.text,
+            html: model.inputText,
             settings: settings,
             webViewStore: webViewStore
         )
@@ -191,9 +182,9 @@ public struct HtmlPreviewView: View {
     }
 }
 
-struct HtmlPreviewView_Previews: PreviewProvider {
+struct HtmlPreviewModelView_Previews: PreviewProvider {
     static var previews: some View {
-        HtmlPreviewView(store: .init(initialState: .init()) { HtmlPreviewReducer() })
+        HtmlPreviewModelView(model: .init())
     }
 }
 

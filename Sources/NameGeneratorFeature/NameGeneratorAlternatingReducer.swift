@@ -1,104 +1,66 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
-import NameGeneratorClient
+import Dependencies
+import Foundation
+import Observation
+import SharedModels
 import SwiftUI
 
-@Reducer
-public struct NameGeneratorAlternatingReducer {
-    public init() {}
-    @ObservableState
-    public struct State: Equatable {
-        var vowelsInput: String
-        var consonantsInput: String
-        var inputSeparator: String
-        var minLength: Int
-        var maxLength: Int
-        var numberOfNames: Int
-        var isGenerating: Bool = false
+@MainActor
+@Observable
+public final class NameGeneratorAlternatingModel {
+    public var vowelsInput: String
+    public var consonantsInput: String
+    public var inputSeparator: String
+    public var minLength: Int
+    public var maxLength: Int
+    public var numberOfNames: Int
 
-        public init(
-            vowelsInput: String = "aeiou",
-            consonantsInput: String = "bcdfghjklmnpqrstvwxyz",
-            inputSeparator: String = "",
-            minLength: Int = 3,
-            maxLength: Int = 10,
-            numberOfNames: Int = 10
-        ) {
-            self.vowelsInput = vowelsInput
-            self.consonantsInput = consonantsInput
-            self.inputSeparator = inputSeparator
-            self.minLength = minLength
-            self.maxLength = maxLength
-            self.numberOfNames = numberOfNames
-        }
+    @ObservationIgnored
+    @Dependency(\.nameGenerator) private var nameGenerator
 
-        public var vowels: [String] {
-            vowelsInput.components(separatedBy: inputSeparator)
-                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-        }
-
-        public var consonants: [String] {
-            consonantsInput.components(separatedBy: inputSeparator)
-                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-        }
+    public init(
+        vowelsInput: String = "aeiou",
+        consonantsInput: String = "bcdfghjklmnpqrstvwxyz",
+        inputSeparator: String = "",
+        minLength: Int = 3,
+        maxLength: Int = 10,
+        numberOfNames: Int = 10
+    ) {
+        self.vowelsInput = vowelsInput
+        self.consonantsInput = consonantsInput
+        self.inputSeparator = inputSeparator
+        self.minLength = minLength
+        self.maxLength = maxLength
+        self.numberOfNames = numberOfNames
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case generateButtonTouched
-        case generationResponse(TaskResult<String>)
+    public var vowels: [String] {
+        vowelsInput.components(separatedBy: inputSeparator)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
     }
 
-    @Dependency(\.nameGenerator) var nameGenerator
-    private enum CancelID { case generationRequest }
+    public var consonants: [String] {
+        consonantsInput.components(separatedBy: inputSeparator)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .generateButtonTouched:
-                state.isGenerating = true
-                return
-                    .run {
-                        [
-                            vowels = state.vowelsInput, consonants = state.consonantsInput, minLength = state.minLength,
-                            maxLength = state.maxLength, numberOfNames = state.numberOfNames
-                        ] send in
-                        await send(
-                            .generationResponse(
-                                TaskResult {
-                                    await nameGenerator.generateAlternating(
-                                        vowels: vowels,
-                                        consonants: consonants,
-                                        minLength: minLength,
-                                        maxLength: maxLength,
-                                        times: numberOfNames
-                                    )
-                                    .joined(separator: "\n")
-                                }
-                            )
-                        )
-                    }
-                    .cancellable(id: CancelID.generationRequest, cancelInFlight: true)
-            case .generationResponse(.success(_)):
-                state.isGenerating = false
-                return .none
-            case .generationResponse(.failure):
-                state.isGenerating = false
-                return .none
-            }
-        }
+    public func generate() async -> String {
+        let names = await nameGenerator.generateAlternating(
+            vowels: vowelsInput,
+            consonants: consonantsInput,
+            minLength: minLength,
+            maxLength: maxLength,
+            times: numberOfNames
+        )
+        return names.joined(separator: "\n")
     }
 }
 
 public struct NameGeneratorAlternatingView: View {
-    @Bindable var store: StoreOf<NameGeneratorAlternatingReducer>
+    @Bindable var model: NameGeneratorAlternatingModel
 
-    public init(store: StoreOf<NameGeneratorAlternatingReducer>) {
-        self.store = store
+    public init(model: NameGeneratorAlternatingModel) {
+        self.model = model
     }
 
     public var body: some View {
@@ -108,17 +70,17 @@ public struct NameGeneratorAlternatingView: View {
                     Text(NSLocalizedString("Vowels", bundle: Bundle.module, comment: ""))
                     TextField(
                         NSLocalizedString("Prefixes", bundle: Bundle.module, comment: ""),
-                        text: $store.vowelsInput
+                        text: $model.vowelsInput
                     )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
-                    }  // <-VStack
-                    VStack(alignment: .leading) {
-                     Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
-                     TextField(
-                         NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                         text: $store.inputSeparator
-                     )
+                }
+                VStack(alignment: .leading) {
+                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: ""))
+                    TextField(
+                        NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
+                        text: $model.inputSeparator
+                    )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 60)
@@ -126,20 +88,20 @@ public struct NameGeneratorAlternatingView: View {
             }
             HStack {
                 VStack(alignment: .leading) {
-                        Text(NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""))
-                        TextField(
-                            NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
-                            text: $store.consonantsInput
-                        )
-                        .font(.monospaced(.title3)())
-                        .textFieldStyle(.roundedBorder)
-                    }
-                    VStack(alignment: .leading) {
-                        Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
-                        TextField(
-                            NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
-                            text: $store.inputSeparator
-                        )
+                    Text(NSLocalizedString("Consonants", bundle: Bundle.module, comment: ""))
+                    TextField(
+                        NSLocalizedString("Suffixes", bundle: Bundle.module, comment: ""),
+                        text: $model.consonantsInput
+                    )
+                    .font(.monospaced(.title3)())
+                    .textFieldStyle(.roundedBorder)
+                }
+                VStack(alignment: .leading) {
+                    Text(NSLocalizedString("Separator", bundle: Bundle.module, comment: "")).foregroundColor(.clear)
+                    TextField(
+                        NSLocalizedString("Separator", bundle: Bundle.module, comment: ""),
+                        text: $model.inputSeparator
+                    )
                     .font(.monospaced(.title3)())
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 60)
@@ -149,7 +111,7 @@ public struct NameGeneratorAlternatingView: View {
             HStack {
                 VStack {
                     Text(NSLocalizedString("Min. length", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: $store.minLength, range: 1 ... 15)
+                    IntegerTextField(value: $model.minLength, range: 1 ... 15)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -161,7 +123,7 @@ public struct NameGeneratorAlternatingView: View {
                 )
                 .accessibilityValue(
                     NSLocalizedString(
-                        "\(store.minLength)",
+                        "\(model.minLength)",
                         bundle: Bundle.module,
                         comment: "value of a numeric input value for voice-over"
                     )
@@ -169,7 +131,7 @@ public struct NameGeneratorAlternatingView: View {
 
                 VStack {
                     Text(NSLocalizedString("Max. length", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: $store.maxLength, range: 1 ... 15)
+                    IntegerTextField(value: $model.maxLength, range: 1 ... 15)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -181,7 +143,7 @@ public struct NameGeneratorAlternatingView: View {
                 )
                 .accessibilityValue(
                     NSLocalizedString(
-                        "\(store.maxLength)",
+                        "\(model.maxLength)",
                         bundle: Bundle.module,
                         comment: "value of a numeric input value for voice-over"
                     )
@@ -189,7 +151,7 @@ public struct NameGeneratorAlternatingView: View {
 
                 VStack {
                     Text(NSLocalizedString("Count", bundle: Bundle.module, comment: ""))
-                    IntegerTextField(value: $store.numberOfNames, range: 1 ... 200)
+                    IntegerTextField(value: $model.numberOfNames, range: 1 ... 200)
                         .frame(maxWidth: 150)
                 }
                 .accessibilityLabel(
@@ -206,46 +168,28 @@ public struct NameGeneratorAlternatingView: View {
                             bundle: Bundle.module,
                             comment: "value of a numeric input value for voice-over"
                         ),
-                        store.numberOfNames
+                        model.numberOfNames
                     )
                 )
             }
-
-            LoadingButton(
-                NSLocalizedString("Generate", bundle: Bundle.module, comment: ""),
-                isLoading: store.isGenerating
-            ) {
-                store.send(.generateButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
         }
     }
 }
 
-// preview
 #if DEBUG
-
-    struct NameGeneratorAlternatingView_Previews: PreviewProvider {
-        let vowelsMock = "aeiou"
-        let consonantsMock = "bcdfghjklmnpqrstvwxyz"
-
-        static var previews: some View {
-            NameGeneratorAlternatingView(
-                store: Store(initialState: .init()) {
-                    NameGeneratorAlternatingReducer()
-                }
-            )
-        }
+struct NameGeneratorAlternatingView_Previews: PreviewProvider {
+    static var previews: some View {
+        NameGeneratorAlternatingView(model: NameGeneratorAlternatingModel())
     }
+}
 #endif
 
 // BUG: on macOS although the value stays 1+, the text field shows zero
-struct IntegerTextField: View {
+public struct IntegerTextField: View {
     @Binding var value: Int
     let range: ClosedRange<Int>
 
-    var body: some View {
+    public var body: some View {
         HStack {
             Stepper(
                 value: Binding(
@@ -276,3 +220,4 @@ extension Comparable {
         min(max(self, range.lowerBound), range.upperBound)
     }
 }
+

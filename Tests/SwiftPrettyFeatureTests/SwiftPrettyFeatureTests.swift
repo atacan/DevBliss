@@ -1,5 +1,4 @@
-import ComposableArchitecture
-import SharedModels
+import Dependencies
 import XCTest
 
 @testable import SwiftPrettyFeature
@@ -7,20 +6,13 @@ import XCTest
 @MainActor
 final class SwiftPrettyFeatureTests: XCTestCase {
     func testLockwoodConfigBinding() async {
-        let config = "some config"
-
-        let store = TestStore(initialState: SwiftPrettyReducer.State()) {
-            SwiftPrettyReducer()
-        } withDependencies: {
-            $0.userDefaults = .ephemeral()
+        await withDependencies {
+            $0.swiftPretty = .testValue
+        } operation: {
+            let model = SwiftPrettyModel()
+            let config = "some config"
+            model.setLockwoodConfig(config)
+            XCTAssertEqual(model.lockwoodConfig, config)
         }
-
-        // user changed the lockwood config text field
-        await store.send(.lockwoodConfig(.binding(.set(\.text, config)))) {
-            $0.lockwoodConfig.$text.withLock { $0 = config }
-        }
-
-        // verify the state was updated
-        XCTAssertEqual(store.state.lockwoodConfig.text, config)
     }
 }

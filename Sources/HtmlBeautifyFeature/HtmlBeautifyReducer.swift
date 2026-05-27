@@ -1,146 +1,138 @@
 import BlissTheme
-import ComposableArchitecture
-import HtmlBeautifyClient
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import InputOutput
 import SwiftUI
 
-@Reducer
-public struct HtmlBeautifyReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class HtmlBeautifyModel {
+    @ObservationIgnored
+    @Shared(.toolInput("htmlBeautify"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("htmlBeautify")) public var inputText = ""
-        @Shared(.toolOutput("htmlBeautify")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var mode: HtmlBeautifyMode = .beautify
+    @ObservationIgnored
+    @Shared(.toolOutput("htmlBeautify"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("htmlBeautify"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("htmlBeautify"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var mode: HtmlBeautifyMode = .beautify
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("htmlBeautify"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("htmlBeautify"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Dependency(\.htmlBeautify) private var htmlBeautify
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("htmlBeautify"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("htmlBeautify"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("htmlBeautify"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("htmlBeautify"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.htmlBeautify) var htmlBeautify
-    private enum CancelID { case conversionRequest }
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let mode = self.mode
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let mode = state.mode
-                return .run { [htmlBeautify] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await htmlBeautify.format(input, mode)
-                            }
-                        )
-                    )
+        conversionTask = Task { [weak self, input = input, mode = mode, htmlBeautify = htmlBeautify] in
+            guard let self else { return }
+            do {
+                let result = try await htmlBeautify.format(input, mode)
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = result }
                 }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+            }
+            catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = error.localizedDescription }
+                }
             }
         }
-
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
-    }
-}
-
-public struct HtmlBeautifyView: View {
-    @Bindable var store: StoreOf<HtmlBeautifyReducer>
-
-    public init(store: StoreOf<HtmlBeautifyReducer>) {
-        self.store = store
     }
 
-    public var body: some View {
-        VStack(spacing: 0) {
-//            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-//                GridRow {
-//                    ConfigLabel("Mode")
-//                    Picker("Mode", selection: $store.mode) {
-//                        ForEach(HtmlBeautifyMode.allCases) { mode in
-//                            Text(mode.rawValue)
-//                                .tag(mode)
-//                        }
-//                    }
-//                    .pickerStyle(.segmented)
-//                    .frame(width: 200)
-//
-//                    Spacer()
-//                }
-//            }
-//            .padding(.horizontal, 16)
-//            .padding(.vertical, 8)
+    public func setMode(_ mode: HtmlBeautifyMode) {
+        self.mode = mode
+    }
 
-            LoadingButton(store.mode == .beautify ? "Format" : "Minify", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Format (Cmd Return)")
-            .padding(.vertical, 8)
-
-            Divider()
-
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "HTML",
-                outputEditorTitle: "Result",
-                keyForFraction: SettingsKey.HtmlBeautify.splitViewFraction,
-                keyForLayout: SettingsKey.HtmlBeautify.splitViewLayout
-            )
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
 struct HtmlBeautifyView_Previews: PreviewProvider {
     static var previews: some View {
-        HtmlBeautifyView(store: .init(initialState: .init()) { HtmlBeautifyReducer() })
+        HtmlBeautifyModelView(model: .init())
+    }
+}
+
+public struct HtmlBeautifyModelView: View {
+    @Bindable var model: HtmlBeautifyModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
+
+    public init(
+        model: HtmlBeautifyModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
+        self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
+    }
+
+    public var body: some View {
+        TwoPaneToolView(
+            actionTitle: model.mode == .beautify ? "Format" : "Minify",
+            actionHelp: "Format (Cmd Return)",
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.HtmlBeautify.splitViewFraction,
+                layoutKey: SettingsKey.HtmlBeautify.splitViewLayout,
+                primaryLabel: "HTML",
+                secondaryLabel: "Result"
+            )
+        ) {
+            PlainInputTextPane(title: "HTML", text: inputTextBinding)
+        } secondary: {
+            PlainOutputTextPane(
+                title: "Result",
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
+            )
+        }
+    }
+
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else { return nil }
+        return { tool in onSendOutputToTool(model.outputText, tool) }
+    }
+
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
+
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }

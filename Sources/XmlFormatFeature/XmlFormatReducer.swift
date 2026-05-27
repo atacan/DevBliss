@@ -1,145 +1,161 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import InputOutput
 import SwiftUI
-import XmlFormatClient
 
-@Reducer
-public struct XmlFormatReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class XmlFormatModel {
+    @ObservationIgnored
+    @Shared(.toolInput("xmlFormat"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("xmlFormat")) public var inputText = ""
-        @Shared(.toolOutput("xmlFormat")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var mode: XmlFormatMode = .beautify
+    @ObservationIgnored
+    @Shared(.toolOutput("xmlFormat"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("xmlFormat"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("xmlFormat"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var mode: XmlFormatMode = .beautify
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("xmlFormat"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("xmlFormat"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Dependency(\.xmlFormat) private var xmlFormat
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("xmlFormat"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("xmlFormat"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("xmlFormat"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("xmlFormat"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.xmlFormat) var xmlFormat
-    private enum CancelID { case conversionRequest }
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let mode = self.mode
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let mode = state.mode
-                return .run { [xmlFormat] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await xmlFormat.format(input, mode)
-                            }
-                        )
-                    )
-                }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
-            }
-        }
-
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
-    }
-}
-
-public struct XmlFormatView: View {
-    @Bindable var store: StoreOf<XmlFormatReducer>
-
-    public init(store: StoreOf<XmlFormatReducer>) {
-        self.store = store
-    }
-
-    public var body: some View {
-        VStack(spacing: 0) {
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-//                    ConfigLabel("Mode")
-                    Picker("Mode", selection: $store.mode) {
-                        ForEach(XmlFormatMode.allCases) { mode in
-                            Text(mode.rawValue)
-                                .tag(mode)
-                        }
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .frame(width: 200)
+        conversionTask = Task { [weak self, input = input, mode = mode, xmlFormat = xmlFormat] in
+            guard let self else { return }
+            do {
+                let result = try await xmlFormat.format(input, mode)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    $outputText.withLock { $0 = result }
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            LoadingButton("Format", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
+            catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    $outputText.withLock { $0 = error.localizedDescription }
+                }
             }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Format (⌘ Return)")
-            .padding(.vertical, 8)
-
-            Divider()
-
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "XML",
-                outputEditorTitle: "Result",
-                keyForFraction: SettingsKey.XmlFormat.splitViewFraction,
-                keyForLayout: SettingsKey.XmlFormat.splitViewLayout
-            )
         }
+    }
+
+    public func setMode(_ mode: XmlFormatMode) {
+        self.mode = mode
+    }
+
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
 struct XmlFormatView_Previews: PreviewProvider {
     static var previews: some View {
-        XmlFormatView(store: .init(initialState: .init()) { XmlFormatReducer() })
+        XmlFormatModelView(model: .init())
+    }
+}
+
+public struct XmlFormatModelView: View {
+    @Bindable var model: XmlFormatModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
+
+    public init(
+        model: XmlFormatModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
+        self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
+    }
+
+    private var configurationView: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            GridRow {
+                Picker("Mode", selection: $model.mode) {
+                    ForEach(XmlFormatMode.allCases) { mode in
+                        Text(mode.rawValue).tag(mode)
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+                .frame(width: 200)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+    }
+    public var body: some View {
+        TwoPaneToolView(
+            actionTitle: "Format",
+            actionHelp: "Format (⌘ Return)",
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.XmlFormat.splitViewFraction,
+                layoutKey: SettingsKey.XmlFormat.splitViewLayout,
+                primaryLabel: "XML",
+                secondaryLabel: "Result"
+            )
+        ) {
+            configurationView
+        } primary: {
+            PlainInputTextPane(title: "XML", text: inputTextBinding)
+        } secondary: {
+            PlainOutputTextPane(
+                title: "Result",
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
+            )
+        }
+    }
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else { return nil }
+        return { tool in onSendOutputToTool(model.outputText, tool) }
+    }
+
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
+
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
+    }
+}
+
+struct XmlFormatModelView_Previews: PreviewProvider {
+    static var previews: some View {
+        XmlFormatModelView(model: .init())
     }
 }

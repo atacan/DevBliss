@@ -1,145 +1,143 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import InputOutput
 import SwiftUI
-import YamlToJsonClient
 
-@Reducer
-public struct YamlToJsonReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class YamlToJsonModel {
+    @ObservationIgnored
+    @Shared(.toolInput("yamlToJson"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("yamlToJson")) public var inputText = ""
-        @Shared(.toolOutput("yamlToJson")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var prettyPrinted: Bool = true
+    @ObservationIgnored
+    @Shared(.toolOutput("yamlToJson"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("yamlToJson"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("yamlToJson"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var prettyPrinted: Bool = true
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("yamlToJson"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("yamlToJson"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
-
-        var config: YamlToJsonConfig {
-            YamlToJsonConfig(prettyPrinted: prettyPrinted)
-        }
+    public var config: YamlToJsonConfig {
+        YamlToJsonConfig(prettyPrinted: prettyPrinted)
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    @ObservationIgnored
+    @Dependency(\.yamlToJson) private var yamlToJson
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("yamlToJson"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("yamlToJson"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.yamlToJson) var yamlToJson
-    private enum CancelID { case conversionRequest }
+    public init(
+        input: String,
+        output: String = ""
+    ) {
+        let inputText = Shared(wrappedValue: input, .toolInput("yamlToJson"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("yamlToJson"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let config = state.config
-                return .run { [yamlToJson] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await yamlToJson.convert(input, config)
-                            }
-                        )
-                    )
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let config = self.config
+        conversionTask = Task { [weak self, input = input, config = config, yamlToJson = yamlToJson] in
+            guard let self else { return }
+            do {
+                let result = try await yamlToJson.convert(input, config)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    $outputText.withLock { $0 = result }
                 }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    $outputText.withLock { $0 = error.localizedDescription }
+                }
             }
         }
-
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
-    }
-}
-
-public struct YamlToJsonView: View {
-    @Bindable var store: StoreOf<YamlToJsonReducer>
-
-    public init(store: StoreOf<YamlToJsonReducer>) {
-        self.store = store
     }
 
-    public var body: some View {
-        VStack(spacing: 0) {
-//            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-//                GridRow {
-//                    ConfigLabel("Options")
-//                    Toggle("Pretty printed", isOn: $store.prettyPrinted)
-#if os(macOS)
-//                        .toggleStyle(.checkbox)
-#endif
-//                    Spacer()
-//                }
-//            }
-//            .padding(.horizontal, 16)
-//            .padding(.vertical, 8)
+    public func setPrettyPrinted(_ value: Bool) {
+        prettyPrinted = value
+    }
 
-            LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help("Convert (⌘ Return)")
-            .padding(.vertical, 8)
-
-            Divider()
-
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "YAML",
-                outputEditorTitle: "JSON",
-                keyForFraction: SettingsKey.YamlToJson.splitViewFraction,
-                keyForLayout: SettingsKey.YamlToJson.splitViewLayout
-            )
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
 struct YamlToJsonView_Previews: PreviewProvider {
     static var previews: some View {
-        YamlToJsonView(store: .init(initialState: .init()) { YamlToJsonReducer() })
+        YamlToJsonModelView(model: .init())
+    }
+}
+
+public struct YamlToJsonModelView: View {
+    @Bindable var model: YamlToJsonModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
+
+    public init(
+        model: YamlToJsonModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
+        self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
+    }
+
+    public var body: some View {
+        TwoPaneToolView(
+            actionTitle: "Convert",
+            actionHelp: "Convert (Cmd Return)",
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.YamlToJson.splitViewFraction,
+                layoutKey: SettingsKey.YamlToJson.splitViewLayout,
+                primaryLabel: "YAML",
+                secondaryLabel: "JSON"
+            )
+        ) {
+            PlainInputTextPane(title: "YAML", text: inputTextBinding)
+        } secondary: {
+            PlainOutputTextPane(
+                title: "JSON",
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
+            )
+        }
+    }
+
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else { return nil }
+        return { tool in onSendOutputToTool(model.outputText, tool) }
+    }
+
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
+
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }

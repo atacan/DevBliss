@@ -1,191 +1,180 @@
 import BlissTheme
-import ComposableArchitecture
 import Dependencies
-import DependenciesAdditions
-import InputOutput
+import Observation
 import SharedModels
-import SplitView
-import SwiftPrettyClient
+import Sharing
+import InputOutput
 import SwiftUI
 
-@Reducer
-public struct SwiftPrettyReducer {
-    public init() {}
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("swiftPretty")) public var inputText = ""
-        @Shared(.toolOutput("swiftPretty")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var lockwoodConfig: InputEditorReducer.State
-        var useLockwood: Bool
+@MainActor
+@Observable
+public final class SwiftPrettyModel {
+    @ObservationIgnored
+    @Shared(.toolInput("swiftPretty")) public var inputText = ""
 
-        public init(
-            lockwoodConfig: InputEditorReducer.State = .init(text: blissConfigLockwood),
-            useLockwood: Bool = true
-        ) {
-            let inputText = Shared(wrappedValue: "", .toolInput("swiftPretty"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("swiftPretty"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-            self.lockwoodConfig = lockwoodConfig
-            self.useLockwood = useLockwood
-        }
+    @ObservationIgnored
+    @Shared(.toolOutput("swiftPretty")) public var outputText = ""
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("swiftPretty"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("swiftPretty"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-            self.lockwoodConfig = .init(text: blissConfigLockwood)
-            self.useLockwood = true
-        }
+    public var lockwoodConfig = blissConfigLockwood
+    public var useLockwood: Bool
+    public var isConversionRequestInFlight = false
+
+    @ObservationIgnored
+    @Dependency(\.swiftPretty) private var swiftPretty
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init(lockwoodConfig: String = blissConfigLockwood, useLockwood: Bool = true) {
+        let inputText = Shared(wrappedValue: "", .toolInput("swiftPretty"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("swiftPretty"))
+        self._inputText = inputText
+        self._outputText = outputText
+        self.lockwoodConfig = lockwoodConfig
+        self.useLockwood = useLockwood
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
-        case lockwoodConfig(InputEditorReducer.Action)
+    public init(
+        input: String,
+        output: String = "",
+        lockwoodConfig: String = blissConfigLockwood,
+        useLockwood: Bool = true
+    ) {
+        let inputText = Shared(wrappedValue: input, .toolInput("swiftPretty"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("swiftPretty"))
+        self._inputText = inputText
+        self._outputText = outputText
+        self.lockwoodConfig = lockwoodConfig
+        self.useLockwood = useLockwood
     }
 
-    @Dependency(\.swiftPretty) var swiftPretty
-    private enum CancelID { case conversionRequest }
+    public func setLockwoodConfig(_ value: String) {
+        lockwoodConfig = value
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched: 
-                state.isConversionRequestInFlight = true
-                return
-                    .run { [config = state.lockwoodConfig.text, input = state.inputOutput.input] send in
-                        await send(
-                            .conversionResponse(
-                                TaskResult {
-                                    try await swiftPretty.convert(config, input.text)
-                                }
-                            )
-                        )
-                    }
-                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let config = lockwoodConfig
 
-            case let .conversionResponse(.success(swiftCode)):
-                state.isConversionRequestInFlight = false
-                // https://github.com/pointfreeco/swift-composable-architecture/discussions/1952#discussioncomment-5167956
-                return state.inputOutput.output.updateText(swiftCode)
-                    .map { Action.inputOutput(.output($0)) }
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                let attributedString = errorAttributedString("\(error)")
-                return state.inputOutput.output.updateText(attributedString)
-                    .map { Action.inputOutput(.output($0)) }
-            case .inputOutput:
-                return .none
-            // case let .lockwoodConfig(.binding(action)):
-            //     return setPreferences(for: action, from: state)
-            case .lockwoodConfig:
-                return .none
+        conversionTask = Task { [weak self, input = input, config = config, swiftPretty = swiftPretty] in
+            guard let self else { return }
+            do {
+                let swiftCode = try await swiftPretty.convert(config, input)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    $outputText.withLock { $0 = swiftCode }
+                }
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    $outputText.withLock { $0 = "\(error)" }
+                }
             }
         }
-
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
-
-        Scope(state: \.lockwoodConfig, action: \.lockwoodConfig) {
-            InputEditorReducer()
-        }
     }
 
-    //    @Dependency(\.userDefaults) var userDefaults
-
-    // private func setPreferences(
-    //     for action: BindingAction<InputEditorReducer.State>,
-    //     from state: State
-    // ) -> Effect<Action> {
-    //     switch action {
-    //     case \.$text:
-    //         // userDefaults.set(state.lockwoodConfig.text, forKey: SettingsKey.SwiftPretty.lockwoodConfig)
-    //         UserDefaults.standard.set(state.lockwoodConfig.text, forKey: SettingsKey.SwiftPretty.lockwoodConfig)
-    //         // userDefaults.set(state.lockwoodConfig.text.data(using: .utf8), forKey:
-    //         /SettingsKey.SwiftPretty.lockwoodConfig)
-    //         return .none
-    //     default:
-    //         return .none
-    //     }
-    // }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
+    }
 }
 
-public struct SwiftPrettyView: View {
-    @Bindable var store: StoreOf<SwiftPrettyReducer>
-
+public struct SwiftPrettyModelView: View {
+    @Bindable var model: SwiftPrettyModel
     @State var configIsExpanded = true
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(store: StoreOf<SwiftPrettyReducer>) {
-        self.store = store
+    public init(
+        model: SwiftPrettyModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
+        self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
     public var body: some View {
-        VSplit {
-            VStack {
-                // DisclosureGroup("Configuration", isExpanded: $configIsExpanded) {
-                //     Toggle("Use Lockwood", isOn: store.binding(\.$useLockwood))
-                //         .toggleStyle(.automatic)
-                //         .frame(width: .nan)
-                lockwoodEditor
-                    .padding(.horizontal)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                // }
-
-                LoadingButton(
-                    NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
-                    isLoading: store.isConversionRequestInFlight
-                ) {
-                    store.send(.convertButtonTouched)
-                }
-                .padding(.bottom)
-                .keyboardShortcut(.return, modifiers: [.command])
-                .help(NSLocalizedString("Format code (Cmd+Return)", bundle: Bundle.module, comment: ""))
-            }
-        } bottom: {
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: SwiftPrettyReducer.Action.inputOutput),
-                inputEditorTitle: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
-                outputEditorTitle: NSLocalizedString("Pretty", bundle: Bundle.module, comment: ""),
-                keyForFraction: SettingsKey.SwiftPretty.splitViewFraction,
-                keyForLayout: SettingsKey.SwiftPretty.splitViewLayout
+        TwoPaneToolView(
+            actionTitle: NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
+            actionHelp: NSLocalizedString("Format code (Cmd+Return)", bundle: Bundle.module, comment: ""),
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.SwiftPretty.splitViewFraction,
+                layoutKey: SettingsKey.SwiftPretty.splitViewLayout,
+                primaryLabel: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
+                secondaryLabel: NSLocalizedString("Pretty", bundle: Bundle.module, comment: "")
+            )
+        ) {
+            lockwoodEditor
+                .padding(.horizontal)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+        } primary: {
+            PlainInputTextPane(
+                title: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
+                text: inputTextBinding
+            )
+        } secondary: {
+            PlainOutputTextPane(
+                title: NSLocalizedString("Pretty", bundle: Bundle.module, comment: ""),
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
             )
         }
-        .styling(visibleThickness: 2)
     }
 
     var lockwoodEditor: some View {
-        InputEditorView(
-            store: store.scope(
-                state: \.lockwoodConfig,
-                action: SwiftPrettyReducer.Action.lockwoodConfig
-            ),
-            title: NSLocalizedString("nicklockwood/SwiftFormat Config", bundle: Bundle.module, comment: "")
+        VStack(alignment: .leading, spacing: 8) {
+            Text(NSLocalizedString("nicklockwood/SwiftFormat Config", bundle: Bundle.module, comment: ""))
+                .font(.headline)
+
+            TextEditor(text: Binding(
+                get: { model.lockwoodConfig },
+                set: { model.setLockwoodConfig($0) }
+            ))
+            .font(.system(.body, design: .monospaced))
+            .padding(4)
+            .frame(minHeight: 120)
+            .background(ThemeColor.Background.textBackground)
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(ThemeColor.Background.separator, lineWidth: 1)
+            )
+        }
+    }
+
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else {
+            return nil
+        }
+
+        return { tool in
+            onSendOutputToTool(model.outputText, tool)
+        }
+    }
+
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
+
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
         )
     }
 }
 
 // preview
-struct SwiftPrettyReducer_Previews: PreviewProvider {
+struct SwiftPrettyModel_Previews: PreviewProvider {
     static var previews: some View {
-        SwiftPrettyView(store: .init(initialState: .init()) { SwiftPrettyReducer() })
+        SwiftPrettyModelView(model: .init())
     }
 }
 
@@ -273,26 +262,4 @@ public let blissConfigLockwood = """
     --yodaswap always
     --disable enumNamespaces,unusedArguments,wrapMultilineStatementBraces
     --enable blankLineAfterImports,isEmpty,sortedSwitchCases,wrapConditionalBodies,wrapEnumCases,wrapSwitchCases
-    """
-
-#if DEBUG
-     public struct SwiftPrettyApp: App {
-         public init() {}
- 
-         public var body: some Scene {
-             WindowGroup {
-                 SwiftPrettyView(
-                     store: Store(initialState: .init()) {
-                         SwiftPrettyReducer()
-                             ._printChanges()
-                     }
-                 )
-            }
-            #if os(macOS)
-                .windowStyle(.titleBar)
-                .windowToolbarStyle(.unified(showsTitle: true))
-            #endif
-        }
-    }
-
-#endif
+"""

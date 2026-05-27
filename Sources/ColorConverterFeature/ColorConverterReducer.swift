@@ -1,8 +1,7 @@
 import BlissTheme
-import ColorConverterClient
-import ComposableArchitecture
-import InputOutput
+import Dependencies
 import SharedModels
+import Sharing
 import SwiftUI
 
 #if os(macOS)
@@ -11,129 +10,130 @@ import AppKit
 import UIKit
 #endif
 
-@Reducer
-public struct ColorConverterReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class ColorConverterModel {
+    @ObservationIgnored
+    @Shared(.toolInput("colorConverter"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("colorConverter")) public var inputText = ""
-        @Shared(.toolOutput("colorConverter")) public var outputText = ""
-        var output: OutputEditorReducer.State
-        var uppercaseHex: Bool = true
-        var includeAlpha: Bool = false
-        var result: ColorConversionResult?
-        var errorMessage: String?
+    @ObservationIgnored
+    @Shared(.toolOutput("colorConverter"))
+    public var outputText = ""
 
-        public var input: String {
-            get { inputText }
-            set { $inputText.withLock { $0 = newValue } }
-        }
-
-        public init() {
-            let outputText = Shared(wrappedValue: "", .toolOutput("colorConverter"))
-            self._outputText = outputText
-            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
-        }
-
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("colorConverter"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("colorConverter"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
-        }
-
-        var config: ColorConverterConfig {
-            ColorConverterConfig(uppercaseHex: uppercaseHex, includeAlpha: includeAlpha)
-        }
+    public var uppercaseHex: Bool = true
+    public var includeAlpha: Bool = false
+    public var isConversionRequestInFlight = false
+    public var result: ColorConversionResult?
+    public var errorMessage: String?
+    public var input: String {
+        get { inputText }
+        set { $inputText.withLock { $0 = newValue } }
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<ColorConversionResult>)
-        case output(OutputEditorReducer.Action)
+    private var config: ColorConverterConfig {
+        ColorConverterConfig(uppercaseHex: uppercaseHex, includeAlpha: includeAlpha)
     }
 
-    @Dependency(\.colorConverter) var colorConverter
-    private enum CancelID { case conversionRequest }
+    @ObservationIgnored
+    @Dependency(\.colorConverter) private var colorConverter
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
 
-            case .convertButtonTouched:
-                state.errorMessage = nil
-                let input = state.input
-                let config = state.config
-                return .run { [colorConverter] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try colorConverter.convert(input, config)
-                            }
-                        )
-                    )
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("colorConverter"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("colorConverter"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
+
+    public init(inputText: String, outputText: String = "") {
+        let inputText = Shared(wrappedValue: inputText, .toolInput("colorConverter"))
+        let outputText = Shared(wrappedValue: outputText, .toolOutput("colorConverter"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
+
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = true
+        errorMessage = nil
+
+        let input = inputText
+        let config = config
+        let colorConverter = colorConverter
+
+        conversionTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                let result = try await colorConverter.convert(input, config)
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.result = result
+                    self.$outputText.withLock { $0 = result.summary }
                 }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.result = result
-                return state.output.updateText(result.summary)
-                    .map { Action.output($0) }
-
-            case let .conversionResponse(.failure(error)):
-                state.result = nil
-                state.errorMessage = error.localizedDescription
-                return state.output.updateText(error.localizedDescription)
-                    .map { Action.output($0) }
-
-            case .output:
-                return .none
+            } catch {
+                if error is CancellationError {
+                    return
+                }
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.result = nil
+                    self.errorMessage = error.localizedDescription
+                    self.$outputText.withLock { $0 = error.localizedDescription }
+                }
             }
         }
+    }
 
-        Scope(state: \.output, action: \.output) {
-            OutputEditorReducer()
-        }
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
+    }
+
+    deinit {
+        conversionTask?.cancel()
     }
 }
 
 public struct ColorConverterView: View {
-    @Bindable var store: StoreOf<ColorConverterReducer>
+    @Bindable var model: ColorConverterModel
 
-    public init(store: StoreOf<ColorConverterReducer>) {
-        self.store = store
+    public init(model: ColorConverterModel) {
+        self.model = model
     }
 
-    // MARK: - Reusable Controls
-
     private var inputField: some View {
-        TextField("Enter a color value (hex or rgb)", text: $store.input)
+        TextField(
+            "Enter a color value (hex or rgb)",
+            text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            )
+        )
             .blissTextField()
             .onSubmit {
-                store.send(.convertButtonTouched)
+                model.convertButtonTouched()
             }
     }
 
     private var convertButton: some View {
-        LoadingButton("Convert", isLoading: false) {
-            store.send(.convertButtonTouched)
+        LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
+            model.convertButtonTouched()
         }
         .keyboardShortcut(.return, modifiers: [.command])
         .help("Convert (⌘ Return)")
     }
 
     private var uppercaseHexToggle: some View {
-        Toggle("Uppercase hex", isOn: $store.uppercaseHex)
+        Toggle("Uppercase hex", isOn: $model.uppercaseHex)
     }
 
     private var includeAlphaToggle: some View {
-        Toggle("Include alpha", isOn: $store.includeAlpha)
+        Toggle("Include alpha", isOn: $model.includeAlpha)
     }
 
     public var body: some View {
@@ -168,14 +168,14 @@ public struct ColorConverterView: View {
             .padding(.vertical, 8)
             #endif
 
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
             Divider()
 
             ScrollView {
-                if let result = store.result {
+                if let result = model.result {
                     VStack(spacing: 16) {
                         ColorPreviewCard(result: result)
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 220, maximum: 420), spacing: 16)], spacing: 16) {
@@ -197,10 +197,20 @@ public struct ColorConverterView: View {
 
             Divider()
 
-            OutputEditorView(
-                store: store.scope(state: \.output, action: \.output),
-                title: "Summary"
-            )
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Summary")
+                    .font(.headline)
+                    .padding(.horizontal, 8)
+                TextEditor(text: Binding(
+                    get: { model.outputText },
+                    set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                ))
+                    .font(.system(.body, design: .monospaced))
+                    .lineSpacing(3)
+                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, 8)
+                    .frame(minHeight: 180)
+            }
             .frame(minHeight: 180)
         }
     }
@@ -276,6 +286,6 @@ private struct ResultCard: View {
 
 struct ColorConverterView_Previews: PreviewProvider {
     static var previews: some View {
-        ColorConverterView(store: .init(initialState: .init()) { ColorConverterReducer() })
+        ColorConverterView(model: .init())
     }
 }

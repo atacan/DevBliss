@@ -1,15 +1,11 @@
-import ComposableArchitecture
 import SharedModels
 import SwiftUI
 
 struct AppContentView: View {
+    @State private var model = AppModel()
+
     var body: some View {
-        AppView(
-            store: Store(initialState: .init()) {
-                AppReducer()
-                    //                    ._printChanges()
-            }
-        )
+        AppModelView(model: model)
     }
 }
 

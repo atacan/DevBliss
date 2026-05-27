@@ -1,5 +1,5 @@
 import Foundation
-import ComposableArchitecture
+import Sharing
 
 // MARK: - Storage Models
 
@@ -265,3 +265,161 @@ public enum ToolStorageMigration {
         } catch {}
     }
 }
+
+#if DEBUG
+public enum ToolDebugSamples {
+    public static func resetAllSamples() throws {
+        try FileManager.default.createDirectory(
+            at: URL.toolStorageDirectory,
+            withIntermediateDirectories: true
+        )
+
+        for sample in singleOutputSamples {
+            try write(sample.input, tool: sample.tool, field: "input")
+            try write("", tool: sample.tool, field: "output")
+        }
+
+        try write(regexMatchesInput, tool: "regexMatches", field: "input")
+        try write("", tool: "regexMatches", field: "output")
+        try write("", tool: "regexMatches", field: "outputSecond")
+
+        try write(stringDiffOldText, tool: "stringDiff", field: "input")
+        try write(stringDiffNewText, tool: "stringDiff", field: "output")
+
+        try write(base64ImageSample, to: URL.plainTextStorage("base64Image", "string"))
+        let base64ImageMeta = Base64ImageMeta(imageData: nil, outputFormat: .dataURL)
+        try JSONEncoder().encode(base64ImageMeta).write(to: URL.toolStorage("base64ImageMeta"))
+
+        UserDefaults.standard.set(#"\b[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}\b"#, forKey: "RegexMatches_regexPattern")
+        UserDefaults.standard.set(#"\b[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}\b"#, forKey: "RegExpTester_pattern")
+        UserDefaults.standard.set("[email]", forKey: "RegExpTester_replacement")
+    }
+
+    private static let singleOutputSamples: [(tool: String, input: String)] = [
+        ("htmlToSwift", """
+        <article class="card">
+          <h1>DevBliss</h1>
+          <p>Convert HTML into SwiftUI views.</p>
+          <a href="https://example.com">Read more</a>
+        </article>
+        """),
+        ("htmlToMarkdown", """
+        <h1>Release Notes</h1>
+        <p>DevBliss now includes <strong>sample inputs</strong>.</p>
+        <ul><li>Open a tool</li><li>Press convert</li></ul>
+        """),
+        ("urlToMarkdown", "https://example.com/articles/devbliss-samples"),
+        ("textCaseConverter", "sample HTTP response parser"),
+        ("prefixSuffix", """
+        alpha
+        beta
+        gamma
+        """),
+        ("jsonPretty", #"{"app":"DevBliss","features":["format","convert","inspect"],"debug":true}"#),
+        ("htmlBeautify", #"<main><h1>DevBliss</h1><p>Beautify compact HTML.</p></main>"#),
+        ("cssBeautify", #"body{font:16px system-ui;color:#222}.card{padding:16px;border:1px solid #ddd}"#),
+        ("jsBeautify", #"const tools=["json","base64","regex"];tools.forEach((tool)=>console.log(tool));"#),
+        ("swiftPretty", #"struct User{let id:UUID;let name:String;func greeting()->String{"Hello, \(name)"}}"#),
+        ("lineSortDedupe", """
+        beta
+        alpha
+        gamma
+        alpha
+        beta
+        """),
+        ("asciiToHex", "DevBliss"),
+        ("hexToAscii", "44 65 76 42 6c 69 73 73"),
+        ("colorConverter", "#2F80ED"),
+        ("svgToCss", """
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <path fill="#2F80ED" d="M12 2l9 5v10l-9 5-9-5V7z"/>
+        </svg>
+        """),
+        ("backslashEscape", "Line 1\n\"Quoted\" path: C:\\DevBliss\\Samples"),
+        ("xmlFormat", #"<catalog><tool id="json"><name>JSON Formatter</name></tool></catalog>"#),
+        ("randomStringGenerator", "debug sample"),
+        ("hashGenerator", "Hash this DevBliss sample"),
+        ("stringInspector", "DevBliss 👩‍💻\nTabs\tSpaces  Unicode"),
+        ("numberBaseConverter", "255"),
+        ("certificateDecoder", sampleCertificate),
+        ("qrCodeTool", "https://devbliss.example/tools?debug=true"),
+        ("jsonToYaml", #"{"name":"DevBliss","tools":[{"id":"json","active":true},{"id":"base64","active":true}]}"#),
+        ("yamlToJson", """
+        name: DevBliss
+        tools:
+          - id: yaml
+            active: true
+          - id: json
+            active: true
+        """),
+        ("uuidUlid", "550e8400-e29b-41d4-a716-446655440000"),
+        ("urlParser", "https://docs.example.com:8443/tools/json?format=pretty&debug=true#samples"),
+        ("regExpTester", """
+        Regex samples:
+        user@example.com
+        support@devbliss.app
+        invalid-email
+        """),
+        ("htmlPreview", """
+        <!doctype html>
+        <html>
+          <body><h1>Preview</h1><button>Sample Button</button></body>
+        </html>
+        """),
+        ("base64", "DevBliss sample text"),
+        ("unixTime", "1704067200"),
+        ("urlEncode", "https://example.com/search?q=dev bliss&sort=latest"),
+        ("jwtDebugger", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZXZibGlzcyIsIm5hbWUiOiJEZWJ1ZyBTYW1wbGUiLCJpYXQiOjE3MDQwNjcyMDB9.signature")
+    ]
+
+    private static let regexMatchesInput = """
+    Pattern: \\b[\\w.%+-]+@[\\w.-]+\\.[A-Za-z]{2,}\\b
+
+    Contact alex@example.com, sam@devbliss.app, or invalid-email for details.
+    """
+
+    private static let stringDiffOldText = """
+    DevBliss formats JSON.
+    DevBliss converts Base64.
+    DevBliss tests regular expressions.
+    """
+
+    private static let stringDiffNewText = """
+    DevBliss formats JSON and YAML.
+    DevBliss converts Base64.
+    DevBliss previews HTML.
+    """
+
+    private static let base64ImageSample = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAFgwJ/lbQCJwAAAABJRU5ErkJggg=="
+
+    private static let sampleCertificate = """
+    -----BEGIN CERTIFICATE-----
+    MIIDITCCAgmgAwIBAgIUf04wFuy2ZBTIrsm5dhQG8bNuXkMwDQYJKoZIhvcNAQEL
+    BQAwIDEeMBwGA1UEAwwVRGV2Qmxpc3MgRGVidWcgU2FtcGxlMB4XDTI2MDUxNzEz
+    MTQxOVoXDTI3MDUxNzEzMTQxOVowIDEeMBwGA1UEAwwVRGV2Qmxpc3MgRGVidWcg
+    U2FtcGxlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyzAprzJO4syT
+    K2EwdvmNCO6d9OFHSqaJATyytiX7+EAg62tcWZG2S51qBBBSOcc3UCytiGOtIPm1
+    +fGyh8O3AthJ2CyEawBAv5V8RCZwjoXkvSx7FxjZgY6lWeuAKkmoSfHz3PPBY9yY
+    Knqtdy44e0Ea9oJxakxLTGQK5TnQIv0OUWPgLo9BWQiSnhQCVdvGinVN79Itb9At
+    82nerzc8qUhOwoaK+Dq9TFKpO5WEprq/yfCtO9+1929LHsg1jsBPMsqEoPXGoXB8
+    ME2PvkfqW908QSpuUWWMNlSE+BWC3cgWA+rbbMdpisJtSwjfj5xCPx4lcnj+6HLk
+    yBrijokgzQIDAQABo1MwUTAdBgNVHQ4EFgQUNoYFZqtnbs85T9h5dKbCF5PTrmcw
+    HwYDVR0jBBgwFoAUNoYFZqtnbs85T9h5dKbCF5PTrmcwDwYDVR0TAQH/BAUwAwEB
+    /zANBgkqhkiG9w0BAQsFAAOCAQEAZEYJW0hmYIfQK98MYyRclIifOF1xEJA8Uuxu
+    CHoh8IFL4OgAbemJKYJmB0gTGGWgC1kOsSA2OiqTL9BncYALkPku/D3KEvyA+VKt
+    zefFdyED9qVDHLahvEBD+6cBRH5cLpt8lOdDARYBq1LJiLYVrOa55e6J8zEwWu22
+    zkzsheIQIMLhy7np/V3YBZqgUbtFxnKAEEjI5v1c3I2no60slxV6AWsE/wCvsmg/
+    Rvf1O/nBFrEsJXzi1nPIqNXCDojzHksGCSbTZCIvg8tMb9A/udTRD5LA7GNj0Y+I
+    BQyliUaICFveVeJJnH7vhZMSB+II+Up9qDsuK15W85O0m8J4rw==
+    -----END CERTIFICATE-----
+    """
+
+    private static func write(_ value: String, tool: String, field: String) throws {
+        try write(value, to: URL.plainTextStorage(tool, field))
+    }
+
+    private static func write(_ value: String, to url: URL) throws {
+        try Data(value.utf8).write(to: url, options: .atomic)
+    }
+}
+#endif

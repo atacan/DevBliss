@@ -1,165 +1,164 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
-import RegExpTesterClient
+import Dependencies
+import Foundation
+import Observation
 import SharedModels
+import Sharing
 import SplitView
 import SwiftUI
 
-@Reducer
-public struct RegExpTesterReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class RegExpTesterModel {
+    @ObservationIgnored
+    @Shared(.toolInput("regExpTester")) public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("regExpTester")) public var inputText = ""
-        @Shared(.toolOutput("regExpTester")) public var outputText = ""
-        var input: InputEditorReducer.State
-        var output: OutputEditorReducer.State
-        var pattern: String = ""
-        var replacement: String = ""
-        var options: RegExpOptions = .init()
-        var matches: [RegExpMatch] = []
-        var selectedMatchIndex: Int = 0
-        var errorMessage: String?
+    @ObservationIgnored
+    @Shared(.toolOutput("regExpTester")) public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("regExpTester"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("regExpTester"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.input = InputEditorReducer.State(text: inputText.projectedValue)
-            self.output = OutputEditorReducer.State(text: outputText.projectedValue)
-        }
+    public var pattern: String = ""
+    public var replacement: String = ""
+    public var options: RegExpOptions = .init()
+    public var matches: [RegExpMatch] = []
+    public var selectedMatchIndex: Int = 0
+    public var errorMessage: String?
+    public var isConversionRequestInFlight = false
 
-        public init(inputText: String, outputText: String = "") {
-            let input = Shared(wrappedValue: inputText, .toolInput("regExpTester"))
-            let output = Shared(wrappedValue: outputText, .toolOutput("regExpTester"))
-            self._inputText = input
-            self._outputText = output
-            self.input = InputEditorReducer.State(text: input.projectedValue)
-            self.output = OutputEditorReducer.State(text: output.projectedValue)
-        }
+    @ObservationIgnored
+    @Dependency(\.regExpTester) private var regExpTester
 
-        var selectedMatch: RegExpMatch? {
-            guard !matches.isEmpty else { return nil }
-            let index = min(max(selectedMatchIndex, 0), matches.count - 1)
-            return matches[index]
-        }
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("regExpTester"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("regExpTester"))
+        self._inputText = inputText
+        self._outputText = outputText
+        self.pattern = UserDefaults.standard.string(forKey: "RegExpTester_pattern") ?? ""
+        self.replacement = UserDefaults.standard.string(forKey: "RegExpTester_replacement") ?? ""
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case input(InputEditorReducer.Action)
-        case output(OutputEditorReducer.Action)
-        case testButtonTouched
-        case testResponse(TaskResult<RegExpTestResult>)
-        case nextMatchButtonTouched
-        case previousMatchButtonTouched
+    public init(inputText: String, outputText: String = "") {
+        let input = Shared(wrappedValue: inputText, .toolInput("regExpTester"))
+        let output = Shared(wrappedValue: outputText, .toolOutput("regExpTester"))
+        self._inputText = input
+        self._outputText = output
     }
 
-    @Dependency(\.regExpTester) var regExpTester
-    private enum CancelID { case testRequest }
+    public func setPattern(_ pattern: String) {
+        self.pattern = pattern
+        UserDefaults.standard.set(pattern, forKey: "RegExpTester_pattern")
+    }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .input:
-                return .none
-            case .output:
-                return .none
+    public func setReplacement(_ replacement: String) {
+        self.replacement = replacement
+        UserDefaults.standard.set(replacement, forKey: "RegExpTester_replacement")
+    }
 
-            case .testButtonTouched:
-                state.errorMessage = nil
-                let request = RegExpTestRequest(
-                    pattern: state.pattern,
-                    text: state.input.text,
-                    replacement: state.replacement,
-                    options: state.options
-                )
-                return .run { [regExpTester] send in
-                    await send(
-                        .testResponse(
-                            TaskResult {
-                                try regExpTester.test(request)
-                            }
-                        )
-                    )
+    var selectedMatch: RegExpMatch? {
+        guard !matches.isEmpty else { return nil }
+        let index = min(max(selectedMatchIndex, 0), matches.count - 1)
+        return matches[index]
+    }
+
+    public func testButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        errorMessage = nil
+        let request = RegExpTestRequest(
+            pattern: pattern,
+            text: inputText,
+            replacement: replacement,
+            options: options
+        )
+
+        conversionTask = Task { [weak self, request = request, regExpTester = regExpTester] in
+            guard let self else { return }
+            do {
+                let result = try regExpTester.test(request)
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.matches = result.matches
+                    self.selectedMatchIndex = result.matches.isEmpty ? 0 : min(self.selectedMatchIndex, result.matches.count - 1)
+                    self.$outputText.withLock { $0 = result.replacedText }
                 }
-                .cancellable(id: CancelID.testRequest, cancelInFlight: true)
-
-            case let .testResponse(.success(result)):
-                state.matches = result.matches
-                state.selectedMatchIndex = result.matches.isEmpty ? 0 : min(state.selectedMatchIndex, result.matches.count - 1)
-                return state.output.updateText(result.replacedText)
-                    .map { Action.output($0) }
-
-            case let .testResponse(.failure(error)):
-                state.matches = []
-                state.errorMessage = error.localizedDescription
-                return state.output.updateText(error.localizedDescription)
-                    .map { Action.output($0) }
-
-            case .nextMatchButtonTouched:
-                guard !state.matches.isEmpty else { return .none }
-                state.selectedMatchIndex = (state.selectedMatchIndex + 1) % state.matches.count
-                return .none
-
-            case .previousMatchButtonTouched:
-                guard !state.matches.isEmpty else { return .none }
-                state.selectedMatchIndex = (state.selectedMatchIndex - 1 + state.matches.count) % state.matches.count
-                return .none
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.matches = []
+                    self.errorMessage = error.localizedDescription
+                    self.$outputText.withLock { $0 = error.localizedDescription }
+                }
             }
         }
+    }
 
-        Scope(state: \.input, action: \.input) {
-            InputEditorReducer()
-        }
+    public func nextMatchButtonTouched() {
+        guard !matches.isEmpty else { return }
+        selectedMatchIndex = (selectedMatchIndex + 1) % matches.count
+    }
 
-        Scope(state: \.output, action: \.output) {
-            OutputEditorReducer()
-        }
+    public func previousMatchButtonTouched() {
+        guard !matches.isEmpty else { return }
+        selectedMatchIndex = (selectedMatchIndex - 1 + matches.count) % matches.count
+    }
+
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct RegExpTesterView: View {
-    @Bindable var store: StoreOf<RegExpTesterReducer>
+public struct RegExpTesterModelView: View {
+    @Bindable var model: RegExpTesterModel
 
     let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.RegExpTester.splitViewFraction)
     @StateObject var layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.RegExpTester.splitViewLayout)
     @StateObject var hide = SideHolder()
 
-    public init(store: StoreOf<RegExpTesterReducer>) {
-        self.store = store
+    public init(model: RegExpTesterModel) {
+        self.model = model
     }
 
     // MARK: - Reusable Controls
 
     private var patternField: some View {
-        TextField("Enter regex pattern", text: $store.pattern)
+        TextField(
+            "Enter regex pattern",
+            text: Binding(
+                get: { model.pattern },
+                set: { model.setPattern($0) }
+            )
+        )
             .blissTextField()
     }
 
     private var testButton: some View {
-        LoadingButton("Test", isLoading: false) {
-            store.send(.testButtonTouched)
+        LoadingButton("Test", isLoading: model.isConversionRequestInFlight) {
+            model.testButtonTouched()
         }
         .keyboardShortcut(.return, modifiers: [.command])
         .help("Test (⌘ Return)")
     }
 
     private var replacementField: some View {
-        TextField("Replacement pattern", text: $store.replacement)
+        TextField(
+            "Replacement pattern",
+            text: Binding(
+                get: { model.replacement },
+                set: { model.setReplacement($0) }
+            )
+        )
             .blissTextField()
     }
 
     private var matchNavigation: some View {
         HStack(spacing: 8) {
             Button {
-                store.send(.previousMatchButtonTouched)
+                model.previousMatchButtonTouched()
             } label: {
                 Image(systemName: "chevron.left")
             }
@@ -170,7 +169,7 @@ public struct RegExpTesterView: View {
                 .foregroundColor(.secondary)
 
             Button {
-                store.send(.nextMatchButtonTouched)
+                model.nextMatchButtonTouched()
             } label: {
                 Image(systemName: "chevron.right")
             }
@@ -179,23 +178,23 @@ public struct RegExpTesterView: View {
     }
 
     private var caseInsensitiveToggle: some View {
-        Toggle("Case insensitive", isOn: $store.options.caseInsensitive)
+        Toggle("Case insensitive", isOn: $model.options.caseInsensitive)
     }
 
     private var allowCommentsToggle: some View {
-        Toggle("Allow comments", isOn: $store.options.allowCommentsAndWhitespace)
+        Toggle("Allow comments", isOn: $model.options.allowCommentsAndWhitespace)
     }
 
     private var dotMatchesToggle: some View {
-        Toggle("Dot matches newlines", isOn: $store.options.dotMatchesLineSeparators)
+        Toggle("Dot matches newlines", isOn: $model.options.dotMatchesLineSeparators)
     }
 
     private var multilineToggle: some View {
-        Toggle("Multiline", isOn: $store.options.anchorsMatchLines)
+        Toggle("Multiline", isOn: $model.options.anchorsMatchLines)
     }
 
     private var unicodeBoundariesToggle: some View {
-        Toggle("Unicode boundaries", isOn: $store.options.useUnicodeWordBoundaries)
+        Toggle("Unicode boundaries", isOn: $model.options.useUnicodeWordBoundaries)
     }
 
     public var body: some View {
@@ -256,7 +255,7 @@ public struct RegExpTesterView: View {
             .padding(.vertical, 8)
             #endif
 
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
@@ -271,7 +270,19 @@ public struct RegExpTesterView: View {
     }
 
     private var inputEditor: some View {
-        InputEditorView(store: store.scope(state: \.input, action: \.input), title: "Test Text")
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Test Text")
+                .font(.headline)
+                .padding(.horizontal, 8)
+
+            TextEditor(text: Binding(
+                get: { model.inputText },
+                set: { newValue in model.$inputText.withLock { $0 = newValue } }
+            ))
+                .frame(minHeight: 140)
+                .scrollContentBackground(.hidden)
+                .padding(.horizontal, 8)
+        }
     }
 
     private var outputPane: some View {
@@ -285,17 +296,17 @@ public struct RegExpTesterView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 6) {
-                    if store.matches.isEmpty {
+                    if model.matches.isEmpty {
                         Text("No matches")
                             .foregroundColor(.secondary)
                             .font(.caption)
                     } else {
-                        ForEach(store.matches) { match in
+                        ForEach(model.matches) { match in
                             Text(matchLine(for: match))
                                 .font(.system(.body, design: .monospaced))
                                 .padding(6)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(match.id == store.selectedMatchIndex ? Color.accentColor.opacity(0.15) : Color.clear)
+                                .background(match.id == model.selectedMatchIndex ? Color.accentColor.opacity(0.15) : Color.clear)
                                 .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                         }
                     }
@@ -306,16 +317,26 @@ public struct RegExpTesterView: View {
 
             Divider()
 
-            OutputEditorView(
-                store: store.scope(state: \.output, action: \.output),
-                title: "Replaced Text"
-            )
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Replaced Text")
+                    .font(.headline)
+                    .padding(.horizontal, 8)
+
+                TextEditor(text: Binding(
+                    get: { model.outputText },
+                    set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                ))
+                    .font(.system(.body, design: .monospaced))
+                    .frame(minHeight: 140)
+                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, 8)
+            }
         }
     }
 
     private var matchCounterText: String {
-        guard !store.matches.isEmpty else { return "0 matches" }
-        return "\(store.selectedMatchIndex + 1) of \(store.matches.count)"
+        guard !model.matches.isEmpty else { return "0 matches" }
+        return "\(model.selectedMatchIndex + 1) of \(model.matches.count)"
     }
 
     private func matchLine(for match: RegExpMatch) -> String {
@@ -323,8 +344,11 @@ public struct RegExpTesterView: View {
     }
 }
 
-struct RegExpTesterView_Previews: PreviewProvider {
+// preview
+struct RegExpTesterModel_Previews: PreviewProvider {
     static var previews: some View {
-        RegExpTesterView(store: .init(initialState: .init()) { RegExpTesterReducer() })
+        RegExpTesterModelView(model: .init())
     }
 }
+
+public typealias RegExpTesterView = RegExpTesterModelView

@@ -1,6 +1,9 @@
-import ComposableArchitecture
-import InputOutput
-import NameGeneratorClient
+import BlissTheme
+import Dependencies
+import Foundation
+import Observation
+import SharedModels
+import Sharing
 import SplitView
 import SwiftUI
 
@@ -10,105 +13,91 @@ public enum GenerationType {
     case probabilistic
 }
 
-@Reducer
-public struct NameGeneratorReducer {
-    public init() {}
-    @ObservableState
-    public struct State: Equatable {
-        var generationType: GenerationType
-        var prefixSuffix: NameGeneratorPrefixSuffixReducer.State
-        var alternatingVowelsConsonants: NameGeneratorAlternatingReducer.State
-        var probabilistic: NameGeneratorProbabilisticReducer.State
-        var output: OutputEditorReducer.State
+@MainActor
+@Observable
+public final class NameGeneratorModel {
+    public var generationType: GenerationType = .alternatingVowelsConsonants
+    public var prefixSuffix: NameGeneratorPrefixSuffixModel
+    public var alternatingVowelsConsonants: NameGeneratorAlternatingModel
+    public var probabilistic: NameGeneratorProbabilisticModel
 
-        public init(
-            generationType: GenerationType = .alternatingVowelsConsonants,
-            prefixSuffix: NameGeneratorPrefixSuffixReducer.State = .init(),
-            alternatingVowelsConsonants: NameGeneratorAlternatingReducer.State = .init(),
-            probabilistic: NameGeneratorProbabilisticReducer.State = .init(),
-            output: OutputEditorReducer.State = .init()
-        ) {
-            self.generationType = generationType
-            self.prefixSuffix = prefixSuffix
-            self.alternatingVowelsConsonants = alternatingVowelsConsonants
-            self.probabilistic = probabilistic
-            self.output = output
-        }
+    @ObservationIgnored
+    @Shared(.toolOutput("nameGenerator"))
+    public var outputText = ""
 
-        public var outputText: String {
-            output.text
-        }
+    public var isConversionRequestInFlight = false
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let outputText = Shared(wrappedValue: "", .toolOutput("nameGenerator"))
+
+        self._outputText = outputText
+        self.prefixSuffix = NameGeneratorPrefixSuffixModel()
+        self.alternatingVowelsConsonants = NameGeneratorAlternatingModel()
+        self.probabilistic = NameGeneratorProbabilisticModel()
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case prefixSuffix(NameGeneratorPrefixSuffixReducer.Action)
-        case alternatingVowelsConsonants(NameGeneratorAlternatingReducer.Action)
-        case probabilistic(NameGeneratorProbabilisticReducer.Action)
-        case output(OutputEditorReducer.Action)
+    public init(output: String) {
+        let outputText = Shared(wrappedValue: output, .toolOutput("nameGenerator"))
+
+        self._outputText = outputText
+        self.prefixSuffix = NameGeneratorPrefixSuffixModel()
+        self.alternatingVowelsConsonants = NameGeneratorAlternatingModel()
+        self.probabilistic = NameGeneratorProbabilisticModel()
     }
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case let .prefixSuffix(.generationResponse(.success(names))):
-                return state.output.updateText(names)
-                    .map { Action.output($0) }
-            case let .prefixSuffix(.generationResponse(.failure(error))):
-                return state.output.updateText(error.localizedDescription)
-                    .map { Action.output($0) }
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+
+        let generationType = generationType
+        let prefixSuffix = self.prefixSuffix
+        let alternating = self.alternatingVowelsConsonants
+        let probabilistic = self.probabilistic
+
+        conversionTask = Task { [weak self] in
+            guard let self else { return }
+
+            let result = switch generationType {
             case .prefixSuffix:
-                return .none
-            case let .alternatingVowelsConsonants(.generationResponse(.success(names))):
-                return state.output.updateText(names)
-                    .map { Action.output($0) }
-            case let .alternatingVowelsConsonants(.generationResponse(.failure(error))):
-                return state.output.updateText(error.localizedDescription)
-                    .map { Action.output($0) }
+                await prefixSuffix.generate()
             case .alternatingVowelsConsonants:
-                return .none
-            case let .probabilistic(.generationResponse(.success(names))):
-                return state.output.updateText(names)
-                    .map { Action.output($0) }
-            case let .probabilistic(.generationResponse(.failure(error))):
-                return state.output.updateText(error.localizedDescription)
-                    .map { Action.output($0) }
+                await alternating.generate()
             case .probabilistic:
-                return .none
-            case .output:
-                return .none
+                await probabilistic.generate()
+            }
+
+            if Task.isCancelled { return }
+
+            await MainActor.run {
+                guard !Task.isCancelled else { return }
+                self.isConversionRequestInFlight = false
+                self.$outputText.withLock { $0 = result }
             }
         }
-        Scope(state: \.prefixSuffix, action: \.prefixSuffix) {
-            NameGeneratorPrefixSuffixReducer()
-        }
-        Scope(state: \.alternatingVowelsConsonants, action: \.alternatingVowelsConsonants) {
-            NameGeneratorAlternatingReducer()
-        }
-        Scope(state: \.probabilistic, action: \.probabilistic) {
-            NameGeneratorProbabilisticReducer()
-        }
-        Scope(state: \.output, action: \.output) {
-            OutputEditorReducer()
-        }
+    }
+
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct NameGeneratorView: View {
-    @Bindable var store: StoreOf<NameGeneratorReducer>
+public struct NameGeneratorModelView: View {
+    @Bindable var model: NameGeneratorModel
 
-    public init(store: StoreOf<NameGeneratorReducer>) {
-        self.store = store
+    public init(model: NameGeneratorModel) {
+        self.model = model
     }
 
     public var body: some View {
         VStack {
             Picker(
                 "Generation Type",
-                selection: $store.generationType
+                selection: $model.generationType
             ) {
                 Text(NSLocalizedString("Prefix Suffix", bundle: Bundle.module, comment: ""))
                     .tag(GenerationType.prefixSuffix)
@@ -120,56 +109,50 @@ public struct NameGeneratorView: View {
             .pickerStyle(SegmentedPickerStyle())
             .labelsHidden()
 
+            LoadingButton(
+                NSLocalizedString("Generate", bundle: Bundle.module, comment: ""),
+                isLoading: model.isConversionRequestInFlight
+            ) {
+                model.convertButtonTouched()
+            }
+            .keyboardShortcut(.return, modifiers: [.command])
+            .help(NSLocalizedString("Generate names (Cmd+Return)", bundle: Bundle.module, comment: ""))
+
             VSplit {
                 Group {
-                    switch store.generationType {
+                    switch model.generationType {
                     case .prefixSuffix:
-                        NameGeneratorPrefixSuffixView(
-                            store: store.scope(
-                                state: \.prefixSuffix,
-                                action: NameGeneratorReducer.Action.prefixSuffix
-                            )
-                        )
+                        NameGeneratorPrefixSuffixView(model: model.prefixSuffix)
                     case .alternatingVowelsConsonants:
-                        NameGeneratorAlternatingView(
-                            store: store.scope(
-                                state: \.alternatingVowelsConsonants,
-                                action: NameGeneratorReducer.Action.alternatingVowelsConsonants
-                            )
-                        )
+                        NameGeneratorAlternatingView(model: model.alternatingVowelsConsonants)
                     case .probabilistic:
-
-                        NameGeneratorProbabilisticView(
-                            store: store.scope(
-                                state: \.probabilistic,
-                                action: NameGeneratorReducer.Action.probabilistic
-                            )
-                        )
+                        NameGeneratorProbabilisticView(model: model.probabilistic)
                     }
                 }
                 .padding()
-
             } bottom: {
-                OutputEditorView(
-                    store: store.scope(
-                        state: \.output,
-                        action: NameGeneratorReducer.Action.output
-                    )
-                )
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Output")
+                        .font(.headline)
+                        .padding(.horizontal, 8)
+                    TextEditor(text: Binding(
+                        get: { model.outputText },
+                        set: { newValue in model.$outputText.withLock { $0 = newValue } }
+                    ))
+                        .font(.system(.body, design: .monospaced))
+                        .frame(minHeight: 180)
+                        .scrollContentBackground(.hidden)
+                        .padding(.horizontal, 8)
+                }
             }
         }
     }
 }
 
-// preview
-#if DEBUG
-    struct NameGeneratorView_Previews: PreviewProvider {
-        static var previews: some View {
-            NameGeneratorView(
-               store: Store(initialState: .init()) {
-                   NameGeneratorReducer()
-               }
-            )
-        }
+public typealias NameGeneratorView = NameGeneratorModelView
+
+struct NameGeneratorModelView_Previews: PreviewProvider {
+    static var previews: some View {
+        NameGeneratorModelView(model: .init())
     }
-#endif
+}

@@ -1,244 +1,317 @@
 import BlissTheme
-import ComposableArchitecture
 import Dependencies
 import DependenciesAdditions
 import Foundation
 import HtmlSwift
-import HtmlToSwiftClient
 import InputOutput
+import Observation
 import SharedModels
+import Sharing
 import SwiftUI
 import SyntaxHighlightClient
 
-@Reducer
-public struct HtmlToSwiftReducer {
-    public init() {}
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("htmlToSwift")) public var inputText = ""
-        @Shared(.toolOutput("htmlToSwift")) public var outputText = ""
-        var inputOutput: InputOutputAttributedEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var dsl: SwiftDSL = .binaryBirds
-        var component: HtmlOutputComponent = .fullHtml
+@MainActor
+@Observable
+public final class HtmlToSwiftModel {
+    @ObservationIgnored
+    @Shared(.toolInput("htmlToSwift")) public var inputText = ""
 
-        public init(
-            inputOutput: InputOutputAttributedEditorsReducer.State = .init(),
-            dsl: SwiftDSL = .binaryBirds,
-            component: HtmlOutputComponent = .fullHtml
-        ) {
-            let inputText = Shared(wrappedValue: "", .toolInput("htmlToSwift"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("htmlToSwift"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputRawText: outputText.projectedValue
-            )
-            self.dsl = dsl
-            self.component = component
-        }
+    @ObservationIgnored
+    @Shared(.toolOutput("htmlToSwift")) public var outputText = ""
 
-        public init(inputOutput: InputOutputAttributedEditorsReducer.State = .init()) {
-            let inputText = Shared(wrappedValue: "", .toolInput("htmlToSwift"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("htmlToSwift"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputRawText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var dsl: SwiftDSL = .binaryBirds
+    public var component: HtmlOutputComponent = .fullHtml
+    public var outputAttributedText = NSMutableAttributedString()
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("htmlToSwift"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("htmlToSwift"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputRawText: outputText.projectedValue
-            )
-            // Config (dsl, component) loaded via observeSettings action
-        }
+    @ObservationIgnored
+    @Dependency(\.htmlToSwift) private var htmlToSwift
+    @ObservationIgnored
+    @Dependency(\.syntaxHighlight) private var syntaxHighlight
+    @ObservationIgnored
+    @Dependency(\.userDefaults) private var userDefaults
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("htmlToSwift"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("htmlToSwift"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputRawText: outputText.projectedValue
-            )
-        }
-    }
-
-    public enum Action: BindableAction, Equatable {
-        case observeSettings
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case highlightResponse(NSAttributedString)
-        case inputOutput(InputOutputAttributedEditorsReducer.Action)
-    }
-
-    @Dependency(\.htmlToSwift) var htmlToSwift
-    @Dependency(\.syntaxHighlight) var syntaxHighlight
-    private enum CancelID { case conversionRequest, highlightRequest }
+    private var conversionTask: Task<Void, Never>?
+    private var highlightTask: Task<Void, Never>?
     private static let maxHighlightCharacters = 100_000
-    @Dependency(\.userDefaults) var userDefaults
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .observeSettings:
-                return observeSettings(&state)
-            case let .binding(action):
-                return setPreferences(for: action, from: state)
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                return
-                    .run { [input = state.inputOutput.input, dsl = state.dsl, component = state.component] send in
-                        await send(
-                            .conversionResponse(
-                                TaskResult {
-                                    try await htmlToSwift.convert(input.text, for: dsl, output: component)
-                                }
-                            )
-                        )
-                    }
-                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
+    public init(dsl: SwiftDSL = .binaryBirds, component: HtmlOutputComponent = .fullHtml) {
+        let inputText = Shared(wrappedValue: "", .toolInput("htmlToSwift"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("htmlToSwift"))
+        self._inputText = inputText
+        self._outputText = outputText
+        self.dsl = dsl
+        self.component = component
+        self.outputAttributedText = .init(attributedString: EditorAttributedStrings.regular(outputText.wrappedValue))
+        observeSettings()
+    }
 
-            case let .conversionResponse(.success(swiftCode)):
-                state.isConversionRequestInFlight = false
-                let showPlainText = state.inputOutput.output.updateText(swiftCode)
-                    .map { Action.inputOutput(.output($0)) }
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("htmlToSwift"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("htmlToSwift"))
+        self._inputText = inputText
+        self._outputText = outputText
+        self.outputAttributedText = .init(attributedString: EditorAttributedStrings.regular(outputText.wrappedValue))
+        observeSettings()
+    }
 
-                guard swiftCode.count <= Self.maxHighlightCharacters else {
-                    return showPlainText
+    public var outputString: String {
+        outputText
+    }
+
+    public func observeSettings() {
+        if let newDsl: SwiftDSL = userDefaults.rawRepresentable(forKey: SettingsKey.HtmlToSwift.dsl) {
+            dsl = newDsl
+        }
+        if let newComponent: HtmlOutputComponent = userDefaults.rawRepresentable(forKey: SettingsKey.HtmlToSwift.component) {
+            component = newComponent
+        }
+    }
+
+    private func persistSettings() {
+        userDefaults.set(dsl, forKey: SettingsKey.HtmlToSwift.dsl)
+        userDefaults.set(component, forKey: SettingsKey.HtmlToSwift.component)
+    }
+
+    public func setDsl(_ value: SwiftDSL) {
+        dsl = value
+        persistSettings()
+    }
+
+    public func setComponent(_ value: HtmlOutputComponent) {
+        component = value
+        persistSettings()
+    }
+
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        highlightTask?.cancel()
+        highlightTask = nil
+
+        isConversionRequestInFlight = true
+        let input = inputText
+        let dsl = self.dsl
+        let component = self.component
+        let converter = htmlToSwift
+
+        conversionTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                let swiftCode = try await converter.convert(input, for: dsl, output: component)
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.updateOutput(swiftCode)
+                    self.highlightOutputIfNeeded(swiftCode)
                 }
-
-                return .merge(
-                    showPlainText,
-                    .run { [syntaxHighlight] send in
-                        let highlighted = await syntaxHighlight.highlightSwift(swiftCode)
-                        if highlighted.length > 0 {
-                            await send(.highlightResponse(highlighted))
-                        }
-                    }
-                    .cancellable(id: CancelID.highlightRequest, cancelInFlight: true)
-                )
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(errorAttributedString(error.localizedDescription))
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .highlightResponse(highlighted):
-                return state.inputOutput.output.updateText(highlighted)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.updateOutput(
+                        error.localizedDescription,
+                        attributedText: EditorAttributedStrings.error(error.localizedDescription)
+                    )
+                }
             }
         }
-
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputAttributedEditorsReducer()
-        }
     }
 
-    private func observeSettings(_ state: inout State) -> Effect<Action> {
-        if let newDsl: SwiftDSL = userDefaults.rawRepresentable(forKey: SettingsKey.HtmlToSwift.dsl) {
-            state.dsl = newDsl
-        }
-        if let newComponent: HtmlOutputComponent =
-            userDefaults
-            .rawRepresentable(forKey: SettingsKey.HtmlToSwift.component)
-        {
-            state.component = newComponent
-        }
-        return .none
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        highlightTask?.cancel()
+        highlightTask = nil
+        isConversionRequestInFlight = false
     }
 
-    private func setPreferences(for action: BindingAction<State>, from state: State) -> Effect<Action> {
-        // Store preferences whenever bindings change
-        userDefaults.set(state.dsl, forKey: SettingsKey.HtmlToSwift.dsl)
-        userDefaults.set(state.component, forKey: SettingsKey.HtmlToSwift.component)
-        return .none
+    public func setOutputAttributedText(_ value: NSMutableAttributedString) {
+        outputAttributedText = value
+        $outputText.withLock { $0 = value.string }
+    }
+
+    private func updateOutput(_ text: String, attributedText: NSAttributedString? = nil) {
+        $outputText.withLock { $0 = text }
+        outputAttributedText = .init(attributedString: attributedText ?? EditorAttributedStrings.regular(text))
+    }
+
+    private func highlightOutputIfNeeded(_ swiftCode: String) {
+        guard swiftCode.count <= Self.maxHighlightCharacters else {
+            return
+        }
+
+        let highlighter = syntaxHighlight
+        highlightTask?.cancel()
+        highlightTask = Task { [weak self] in
+            guard let self else { return }
+            let highlighted = await highlighter.highlightSwift(swiftCode)
+            guard !Task.isCancelled, highlighted.length > 0 else {
+                return
+            }
+
+            await MainActor.run {
+                guard self.outputText == swiftCode else {
+                    return
+                }
+                self.outputAttributedText = .init(attributedString: highlighted)
+            }
+        }
     }
 }
 
-public struct HtmlToSwiftView: View {
-    @Bindable var store: StoreOf<HtmlToSwiftReducer>
+public struct HtmlToSwiftModelView: View {
+    @Bindable var model: HtmlToSwiftModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(store: StoreOf<HtmlToSwiftReducer>) {
-        self.store = store
+    public init(
+        model: HtmlToSwiftModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
+        self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
-    #if os(iOS)
-        private let pickerTitleSpace: CGFloat = 0
-    #elseif os(macOS)
-        private let pickerTitleSpace: CGFloat = 4
-    #endif
-
     public var body: some View {
-        VStack(spacing: 0) {
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
-                        selection: $store.dsl
-                    ) {
-                        ForEach(SwiftDSL.allCases) { dsl in
-                            Text(dslLibraryName(for: dsl))
-                                .tag(dsl)
-                        }
-                    }
-                    .blissMenuPicker(width: 180)
-
-                    ConfigLabel(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
-                    Picker(
-                        NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
-                        selection: $store.component
-                    ) {
-                        ForEach(HtmlOutputComponent.allCases) { component in
-                            Text(outputComponentPickerName(for: component))
-                                .tag(component)
-                        }
-                    }
-                    .blissMenuPicker(width: 160)
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            LoadingButton(
-                NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
-                isLoading: store.isConversionRequestInFlight
-            ) {
-                store.send(.convertButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Convert code (⌘ Return)", bundle: Bundle.module, comment: ""))
-            .padding(.vertical, 8)
-
-            Divider()
-
-            InputOutputAttributedEditorsView(
-                store: store.scope(state: \.inputOutput, action: HtmlToSwiftReducer.Action.inputOutput),
-                inputEditorTitle: "Html",
-                outputEditorTitle: "Swift",
-                keyForFraction: SettingsKey.HtmlToSwift.splitViewFraction,
-                keyForLayout: SettingsKey.HtmlToSwift.splitViewLayout
+        TwoPaneToolView(
+            actionTitle: NSLocalizedString("Convert", bundle: Bundle.module, comment: ""),
+            actionHelp: NSLocalizedString("Convert code (⌘ Return)", bundle: Bundle.module, comment: ""),
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.HtmlToSwift.splitViewFraction,
+                layoutKey: SettingsKey.HtmlToSwift.splitViewLayout,
+                defaultLayout: defaultSplitLayout,
+                primaryLabel: NSLocalizedString("Html", bundle: Bundle.module, comment: ""),
+                secondaryLabel: NSLocalizedString("Swift", bundle: Bundle.module, comment: "")
+            )
+        ) {
+            configurationView
+        } primary: {
+            PlainInputTextPane(
+                title: NSLocalizedString("Html", bundle: Bundle.module, comment: ""),
+                text: inputTextBinding
+            )
+        } secondary: {
+            AttributedOutputTextPane(
+                title: NSLocalizedString("Swift", bundle: Bundle.module, comment: ""),
+                attributedText: outputAttributedTextBinding,
+                plainText: { model.outputText },
+                onSendToTool: sendOutputToTool
             )
         }
         .onAppear {
-            store.send(.observeSettings)
+            model.observeSettings()
         }
+    }
+
+    private var configurationView: some View {
+        ViewThatFits(in: .horizontal) {
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    ConfigLabel(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
+                    dslPicker
+                        .blissMenuPicker(width: 180)
+
+                    ConfigLabel(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
+                    componentPicker
+                        .blissMenuPicker(width: 160)
+                }
+            }
+
+            Grid(horizontalSpacing: 8, verticalSpacing: 6) {
+                GridRow {
+                    ConfigLabel(NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""))
+                    dslPicker
+                        .blissMenuPicker(width: 170)
+                }
+
+                GridRow {
+                    ConfigLabel(NSLocalizedString("Component", bundle: Bundle.module, comment: ""))
+                    componentPicker
+                        .blissMenuPicker(width: 170)
+                }
+            }
+        }
+        .padding(.horizontal, configurationHorizontalPadding)
+        .padding(.vertical, configurationVerticalPadding)
+    }
+
+    private var dslPicker: some View {
+        Picker(
+            NSLocalizedString("DSL Library", bundle: Bundle.module, comment: ""),
+            selection: Binding(
+                get: { model.dsl },
+                set: { model.setDsl($0) }
+            )
+        ) {
+            ForEach(SwiftDSL.allCases) { dsl in
+                Text(dslLibraryName(for: dsl))
+                    .tag(dsl)
+            }
+        }
+    }
+
+    private var componentPicker: some View {
+        Picker(
+            NSLocalizedString("Component", bundle: Bundle.module, comment: ""),
+            selection: Binding(
+                get: { model.component },
+                set: { model.setComponent($0) }
+            )
+        ) {
+            ForEach(HtmlOutputComponent.allCases) { component in
+                Text(outputComponentPickerName(for: component))
+                    .tag(component)
+            }
+        }
+    }
+
+    private var defaultSplitLayout: SideBySideLayout {
+        #if os(iOS)
+            return .vertical
+        #else
+            return .horizontal
+        #endif
+    }
+
+    private var configurationHorizontalPadding: CGFloat {
+        #if os(iOS)
+            return 12
+        #else
+            return 16
+        #endif
+    }
+
+    private var configurationVerticalPadding: CGFloat {
+        #if os(iOS)
+            return 6
+        #else
+            return 8
+        #endif
+    }
+
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else {
+            return nil
+        }
+
+        return { tool in
+            onSendOutputToTool(model.outputText, tool)
+        }
+    }
+
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
+
+    private var outputAttributedTextBinding: Binding<NSMutableAttributedString> {
+        Binding(
+            get: { model.outputAttributedText },
+            set: { model.setOutputAttributedText($0) }
+        )
     }
 
     private func dslLibraryName(for dsl: SwiftDSL) -> String {
@@ -282,10 +355,9 @@ public struct HtmlToSwiftView: View {
     }
 }
 
-// preview
 struct HtmlToSwiftReducer_Previews: PreviewProvider {
     static var previews: some View {
-        HtmlToSwiftView(store: .init(initialState: .init()) { HtmlToSwiftReducer() })
+        HtmlToSwiftModelView(model: .init())
     }
 }
 
@@ -295,14 +367,7 @@ struct HtmlToSwiftReducer_Previews: PreviewProvider {
 
         public var body: some Scene {
             WindowGroup {
-                HtmlToSwiftView(
-                    store: Store(
-                        initialState: .init()
-                    ) {
-                        HtmlToSwiftReducer()
-                            ._printChanges()
-                    }
-                )
+                HtmlToSwiftModelView(model: .init())
             }
             #if os(macOS)
                 .windowStyle(.titleBar)

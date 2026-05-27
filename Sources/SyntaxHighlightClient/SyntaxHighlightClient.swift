@@ -71,8 +71,8 @@ extension DependencyValues {
 
 extension SyntaxHighlightClient: TestDependencyKey {
     public static var testValue = Self(
-        highlightSwift: unimplemented("\(Self.self).highlightSwift"),
-        highlightMarkdown: unimplemented("\(Self.self).highlightMarkdown"),
-        highlightYaml: unimplemented("\(Self.self).highlightYaml")
+        highlightSwift: { _ in NSAttributedString(string: "") },
+        highlightMarkdown: { _ in NSAttributedString(string: "") },
+        highlightYaml: { _ in NSAttributedString(string: "") }
     )
 }

@@ -1,130 +1,158 @@
 import BlissTheme
-import ComposableArchitecture
 import Dependencies
+import Foundation
 import InputOutput
-import JsonPrettyClient
+import Observation
 import SharedModels
+import Sharing
 import SwiftUI
 
-@Reducer
-public struct JsonPrettyReducer {
-    public init() {}
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("jsonPretty")) public var inputText = ""
-        @Shared(.toolOutput("jsonPretty")) public var outputText = ""
-        var inputOutput: InputOutputAttributedEditorsReducer.State
-        var isConversionRequestInFlight = false
+@MainActor
+@Observable
+public final class JsonPrettyModel {
+    @ObservationIgnored
+    @Shared(.toolInput("jsonPretty"))
+    public var inputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("jsonPretty"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("jsonPretty"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputRawText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Shared(.toolOutput("jsonPretty"))
+    public var outputText = ""
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("jsonPretty"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("jsonPretty"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputRawText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var outputAttributedText = NSMutableAttributedString()
+
+    @ObservationIgnored
+    @Dependency(\.jsonPretty)
+    private var jsonPretty
+
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("jsonPretty"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("jsonPretty"))
+        self._inputText = inputText
+        self._outputText = outputText
+        self.outputAttributedText = .init(attributedString: EditorAttributedStrings.regular(outputText.wrappedValue))
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<NSAttributedString>)
-        case inputOutput(InputOutputAttributedEditorsReducer.Action)
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("jsonPretty"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("jsonPretty"))
+        self._inputText = inputText
+        self._outputText = outputText
+        self.outputAttributedText = .init(attributedString: EditorAttributedStrings.regular(outputText.wrappedValue))
     }
 
-    @Dependency(\.jsonPretty) var jsonPretty
-    private enum CancelID { case conversionRequest }
-
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                return
-                    .run { [input = state.inputOutput.input] send in
-                        await send(
-                            .conversionResponse(
-                                TaskResult {
-                                    try await jsonPretty.convert(input.text)
-                                }
-                            )
-                        )
-                    }
-                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(swiftCode)):
-                state.isConversionRequestInFlight = false
-                // https://github.com/pointfreeco/swift-composable-architecture/discussions/1952#discussioncomment-5167956
-                return state.inputOutput.output.updateText(swiftCode)
-                    .map { Action.inputOutput(.output($0)) }
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                let attributedString = errorAttributedString("\(error)")
-                return state.inputOutput.output.updateText(attributedString)
-                    .map { Action.inputOutput(.output($0)) }
-            case .inputOutput:
-                return .none
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        conversionTask = Task { [weak self, input = inputText, prettyClient = jsonPretty] in
+            guard let self else { return }
+            do {
+                let result = try await prettyClient.convert(input)
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.updateOutput(result.string, attributedText: result)
+                }
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.updateOutput(
+                        "\(error)",
+                        attributedText: EditorAttributedStrings.error("\(error)")
+                    )
+                }
             }
         }
+    }
 
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputAttributedEditorsReducer()
-        }
+    public func setOutputAttributedText(_ value: NSMutableAttributedString) {
+        outputAttributedText = value
+        $outputText.withLock { $0 = value.string }
+    }
+
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
+    }
+
+    private func updateOutput(_ text: String, attributedText: NSAttributedString? = nil) {
+        $outputText.withLock { $0 = text }
+        outputAttributedText = .init(attributedString: attributedText ?? EditorAttributedStrings.regular(text))
     }
 }
 
-public struct JsonPrettyView: View {
-    @Bindable var store: StoreOf<JsonPrettyReducer>
+public struct JsonPrettyModelView: View {
+    @Bindable var model: JsonPrettyModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(store: StoreOf<JsonPrettyReducer>) {
-        self.store = store
+    public init(
+        model: JsonPrettyModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
+        self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            LoadingButton(
-                NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
-                isLoading: store.isConversionRequestInFlight
-            ) {
-                store.send(.convertButtonTouched)
-            }
-            .keyboardShortcut(.return, modifiers: [.command])
-            .help(NSLocalizedString("Format code (⌘ Return)", bundle: Bundle.module, comment: ""))
-            .padding(.vertical, 8)
-
-            Divider()
-
-            InputOutputAttributedEditorsView(
-                store: store.scope(state: \.inputOutput, action: JsonPrettyReducer.Action.inputOutput),
-                inputEditorTitle: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
-                outputEditorTitle: NSLocalizedString("Pretty", bundle: Bundle.module, comment: ""),
-                keyForFraction: SettingsKey.JsonPretty.splitViewFraction,
-                keyForLayout: SettingsKey.JsonPretty.splitViewLayout
+        TwoPaneToolView(
+            actionTitle: NSLocalizedString("Format", bundle: Bundle.module, comment: ""),
+            actionHelp: NSLocalizedString("Format code (⌘ Return)", bundle: Bundle.module, comment: ""),
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.JsonPretty.splitViewFraction,
+                layoutKey: SettingsKey.JsonPretty.splitViewLayout,
+                primaryLabel: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
+                secondaryLabel: NSLocalizedString("Pretty", bundle: Bundle.module, comment: "")
+            )
+        ) {
+            PlainInputTextPane(
+                title: NSLocalizedString("Raw", bundle: Bundle.module, comment: ""),
+                text: inputTextBinding
+            )
+        } secondary: {
+            AttributedOutputTextPane(
+                title: NSLocalizedString("Pretty", bundle: Bundle.module, comment: ""),
+                attributedText: outputAttributedTextBinding,
+                plainText: { model.outputText },
+                onSendToTool: sendOutputToTool
             )
         }
     }
+
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else {
+            return nil
+        }
+
+        return { tool in
+            onSendOutputToTool(model.outputText, tool)
+        }
+    }
+
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
+
+    private var outputAttributedTextBinding: Binding<NSMutableAttributedString> {
+        Binding(
+            get: { model.outputAttributedText },
+            set: { model.setOutputAttributedText($0) }
+        )
+    }
 }
 
-// preview
-struct JsonPrettyReducer_Previews: PreviewProvider {
+public typealias JsonPrettyView = JsonPrettyModelView
+
+struct JsonPrettyView_Previews: PreviewProvider {
     static var previews: some View {
-        JsonPrettyView(store: .init(initialState: .init()) { JsonPrettyReducer() })
+        JsonPrettyModelView(model: .init())
     }
 }

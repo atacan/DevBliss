@@ -24,7 +24,7 @@
       "location" : "https://github.com/atacan/demark",
       "state" : {
         "branch" : "convert-url",
-        "revision" : "2170b58362c6b362284754c275658fa57c86b911"
+        "revision" : "eafd0ef86282df77a20bcf4e79b47b583b81244e"
       }
     },
     {
@@ -64,15 +64,6 @@
       }
     },
     {
-      "identity" : "jsbeautify",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/atacan/JSBeautify.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "dd73e2ed6553e9240c1239efadb14898b07ea5d5"
-      }
-    },
-    {
       "identity" : "jwtdecode.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/auth0/JWTDecode.swift",
@@ -106,15 +97,6 @@
       "state" : {
         "revision" : "2849f5323265386e200484b0d0f896e73c3411b9",
         "version" : "6.0.1"
-      }
-    },
-    {
-      "identity" : "pillpickerview",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/atacan/PillPickerView",
-      "state" : {
-        "branch" : "develop",
-        "revision" : "aab5b025282cee68a9bac8636a546db8eb4679f5"
       }
     },
     {
@@ -163,15 +145,6 @@
       }
     },
     {
-      "identity" : "swift-case-paths",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-case-paths",
-      "state" : {
-        "revision" : "6989976265be3f8d2b5802c722f9ba168e227c71",
-        "version" : "1.7.2"
-      }
-    },
-    {
       "identity" : "swift-certificates",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-certificates",
@@ -205,15 +178,6 @@
       "state" : {
         "revision" : "7b847a3b7008b2dc2f47ca3110d8c782fb2e5c7e",
         "version" : "1.3.0"
-      }
-    },
-    {
-      "identity" : "swift-composable-architecture",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-composable-architecture",
-      "state" : {
-        "revision" : "5b0890fabfd68a2d375d68502bc3f54a8548c494",
-        "version" : "1.23.1"
       }
     },
     {
@@ -289,21 +253,12 @@
       }
     },
     {
-      "identity" : "swift-navigation",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-navigation",
-      "state" : {
-        "revision" : "bf498690e1f6b4af790260f542e8428a4ba10d78",
-        "version" : "2.6.0"
-      }
-    },
-    {
       "identity" : "swift-perception",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-perception",
       "state" : {
-        "revision" : "4f47ebafed5f0b0172cf5c661454fa8e28fb2ac4",
-        "version" : "2.0.9"
+        "revision" : "d924c62a70fca5f43872f286dbd7cef0957f1c01",
+        "version" : "1.6.0"
       }
     },
     {
@@ -320,8 +275,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-sharing",
       "state" : {
-        "revision" : "3bfc408cc2d0bee2287c174da6b1c76768377818",
-        "version" : "2.7.4"
+        "revision" : "55d2fef5008b054420f90d745ea0520850955462",
+        "version" : "1.1.3"
       }
     },
     {
@@ -338,8 +293,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-syntax",
       "state" : {
-        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
-        "version" : "602.0.0"
+        "revision" : "f99ae8aa18f0cf0d53481901f88a0991dc3bd4a2",
+        "version" : "601.0.1"
       }
     },
     {
@@ -358,15 +313,6 @@
       "state" : {
         "revision" : "d86f244ed497d48012782e2f59c985a55e77b3f5",
         "version" : "2.11.3"
-      }
-    },
-    {
-      "identity" : "tcaenchancements",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/atacan/TCAEnchancements",
-      "state" : {
-        "revision" : "9d08ce3a8f3fcf5f6ba2d510a573dcabeed44d93",
-        "version" : "1.1.5"
       }
     },
     {

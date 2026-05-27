@@ -1,212 +1,191 @@
 import BlissTheme
-import ComposableArchitecture
-import InputOutput
-import LineSortDedupeClient
+import Dependencies
+import Observation
 import SharedModels
+import Sharing
+import InputOutput
 import SwiftUI
 
-@Reducer
-public struct LineSortDedupeReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class LineSortDedupeModel {
+    @ObservationIgnored
+    @Shared(.toolInput("lineSortDedupe"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("lineSortDedupe")) public var inputText = ""
-        @Shared(.toolOutput("lineSortDedupe")) public var outputText = ""
-        var inputOutput: InputOutputEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var sortOrder: LineSortOrder = .ascending
-        var removeDuplicates: Bool = true
-        var caseInsensitive: Bool = true
-        var trimWhitespace: Bool = true
-        var removeEmptyLines: Bool = true
+    @ObservationIgnored
+    @Shared(.toolOutput("lineSortDedupe"))
+    public var outputText = ""
 
-        public init() {
-            let inputText = Shared(wrappedValue: "", .toolInput("lineSortDedupe"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("lineSortDedupe"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    public var isConversionRequestInFlight = false
+    public var sortOrder: LineSortOrder = .ascending
+    public var removeDuplicates: Bool = true
+    public var caseInsensitive: Bool = true
+    public var trimWhitespace: Bool = true
+    public var removeEmptyLines: Bool = true
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("lineSortDedupe"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("lineSortDedupe"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputText: outputText.projectedValue
-            )
-        }
+    @ObservationIgnored
+    @Dependency(\.lineSortDedupe) private var lineSortDedupe
 
-        var config: LineSortDedupeConfig {
-            LineSortDedupeConfig(
-                sortOrder: sortOrder,
-                removeDuplicates: removeDuplicates,
-                caseInsensitive: caseInsensitive,
-                trimWhitespace: trimWhitespace,
-                removeEmptyLines: removeEmptyLines
-            )
-        }
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
+
+    public var config: LineSortDedupeConfig {
+        LineSortDedupeConfig(
+            sortOrder: sortOrder,
+            removeDuplicates: removeDuplicates,
+            caseInsensitive: caseInsensitive,
+            trimWhitespace: trimWhitespace,
+            removeEmptyLines: removeEmptyLines
+        )
     }
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case inputOutput(InputOutputEditorsReducer.Action)
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("lineSortDedupe"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("lineSortDedupe"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    @Dependency(\.lineSortDedupe) var lineSortDedupe
-    private enum CancelID { case conversionRequest }
-
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                let input = state.inputOutput.input.text
-                let config = state.config
-                return .run { [lineSortDedupe] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await lineSortDedupe.convert(input, config)
-                            }
-                        )
-                    )
-                }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(result)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(error.localizedDescription)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
-            }
-        }
-
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputEditorsReducer()
-        }
-    }
-}
-
-public struct LineSortDedupeView: View {
-    @Bindable var store: StoreOf<LineSortDedupeReducer>
-
-    public init(store: StoreOf<LineSortDedupeReducer>) {
-        self.store = store
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("lineSortDedupe"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("lineSortDedupe"))
+        self._inputText = inputText
+        self._outputText = outputText
     }
 
-    // MARK: - Reusable Controls
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        isConversionRequestInFlight = true
+        let input = inputText
+        let config = self.config
 
-    private var sortOrderPicker: some View {
-        Picker("Order", selection: $store.sortOrder) {
-            ForEach(LineSortOrder.allCases) { order in
-                Text(order.rawValue)
-                    .tag(order)
-            }
-        }
-        .pickerStyle(.segmented)
-        .labelsHidden()
-    }
-
-    private var caseInsensitiveToggle: some View {
-        Toggle("Case-insensitive", isOn: $store.caseInsensitive)
-    }
-
-    private var trimWhitespaceToggle: some View {
-        Toggle("Trim whitespace", isOn: $store.trimWhitespace)
-    }
-
-    private var removeDuplicatesToggle: some View {
-        Toggle("Remove duplicates", isOn: $store.removeDuplicates)
-    }
-
-    private var removeEmptyLinesToggle: some View {
-        Toggle("Remove empty lines", isOn: $store.removeEmptyLines)
-    }
-
-    private var processButton: some View {
-        LoadingButton("Process", isLoading: store.isConversionRequestInFlight) {
-            store.send(.convertButtonTouched)
-        }
-        .keyboardShortcut(.return, modifiers: [.command])
-        .help("Process (⌘ Return)")
-    }
-
-    public var body: some View {
-        VStack(spacing: 0) {
-            #if os(iOS)
-            VStack(spacing: 10) {
-                sortOrderPicker
-                caseInsensitiveToggle
-                trimWhitespaceToggle
-                removeDuplicatesToggle
-                removeEmptyLinesToggle
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            processButton
-                .padding(.vertical, 8)
-            #else
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
-                    ConfigLabel("Sort by")
-                    sortOrderPicker
-                        .frame(width: 200)
-                    caseInsensitiveToggle
-                        .toggleStyle(.checkbox)
-                    trimWhitespaceToggle
-                        .toggleStyle(.checkbox)
-                }
-
-                GridRow {
-                    ConfigLabel("Options")
-                    removeDuplicatesToggle
-                        .toggleStyle(.checkbox)
-                    removeEmptyLinesToggle
-                        .toggleStyle(.checkbox)
+        conversionTask = Task { [weak self, input = input, config = config, lineSortDedupe = lineSortDedupe] in
+            guard let self else { return }
+            do {
+                let result = try await lineSortDedupe.convert(input, config)
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = result }
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-
-            processButton
-                .padding(.vertical, 8)
-            #endif
-
-            Divider()
-
-            InputOutputEditorsView(
-                store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                inputEditorTitle: "Input",
-                outputEditorTitle: "Output",
-                keyForFraction: SettingsKey.LineSortDedupe.splitViewFraction,
-                keyForLayout: SettingsKey.LineSortDedupe.splitViewLayout
-            )
+            catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = error.localizedDescription }
+                }
+            }
         }
+    }
+
+    public func setSortOrder(_ value: LineSortOrder) {
+        sortOrder = value
+    }
+
+    public func setCaseInsensitive(_ value: Bool) {
+        caseInsensitive = value
+    }
+
+    public func setTrimWhitespace(_ value: Bool) {
+        trimWhitespace = value
+    }
+
+    public func setRemoveDuplicates(_ value: Bool) {
+        removeDuplicates = value
+    }
+
+    public func setRemoveEmptyLines(_ value: Bool) {
+        removeEmptyLines = value
+    }
+
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
 struct LineSortDedupeView_Previews: PreviewProvider {
     static var previews: some View {
-        LineSortDedupeView(store: .init(initialState: .init()) { LineSortDedupeReducer() })
+        LineSortDedupeModelView(model: .init())
+    }
+}
+
+public struct LineSortDedupeModelView: View {
+    @Bindable var model: LineSortDedupeModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
+
+    public init(
+        model: LineSortDedupeModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
+        self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
+    }
+
+    private var configurationView: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            GridRow {
+                ConfigLabel("Sort by")
+                Picker("Order", selection: $model.sortOrder) {
+                    ForEach(LineSortOrder.allCases) { order in Text(order.rawValue).tag(order) }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .frame(width: 200)
+                Toggle("Case-insensitive", isOn: $model.caseInsensitive).toggleStyle(.automatic)
+                Toggle("Trim whitespace", isOn: $model.trimWhitespace).toggleStyle(.automatic)
+            }
+            GridRow {
+                ConfigLabel("Options")
+                Toggle("Remove duplicates", isOn: $model.removeDuplicates).toggleStyle(.automatic)
+                Toggle("Remove empty lines", isOn: $model.removeEmptyLines).toggleStyle(.automatic)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+    }
+    public var body: some View {
+        TwoPaneToolView(
+            actionTitle: "Process",
+            actionHelp: "Process (⌘ Return)",
+            isLoading: model.isConversionRequestInFlight,
+            performAction: model.convertButtonTouched,
+            splitSettings: .init(
+                fractionKey: SettingsKey.LineSortDedupe.splitViewFraction,
+                layoutKey: SettingsKey.LineSortDedupe.splitViewLayout,
+                primaryLabel: "Input",
+                secondaryLabel: "Output"
+            )
+        ) {
+            configurationView
+        } primary: {
+            PlainInputTextPane(title: "Input", text: inputTextBinding)
+        } secondary: {
+            PlainOutputTextPane(
+                title: "Output",
+                text: outputTextBinding,
+                onSendToTool: sendOutputToTool
+            )
+        }
+    }
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else { return nil }
+        return { tool in onSendOutputToTool(model.outputText, tool) }
+    }
+
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
+        )
+    }
+
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }

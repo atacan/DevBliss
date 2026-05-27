@@ -1,16 +1,12 @@
 import BlissTheme
-import ComposableArchitecture
 import Demark
 import Dependencies
-import DependenciesAdditions
-import Foundation
-import HtmlToMarkdownClient
-import InputOutput
 import MarkdownUI
 import SharedModels
-import SplitView
+import InputOutput
 import SwiftUI
 import SyntaxHighlightClient
+import Sharing
 
 // MARK: - FileStorage Key for Configuration
 
@@ -28,190 +24,129 @@ extension SharedReaderKey where Self == FileStorageKey<HtmlToMarkdownConfig> {
     }
 }
 
-@Reducer
-public struct HtmlToMarkdownReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class HtmlToMarkdownModel {
+    @ObservationIgnored
+    @Shared(.toolInput("htmlToMarkdown")) public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("htmlToMarkdown")) public var inputText = ""
-        @Shared(.toolOutput("htmlToMarkdown")) public var outputText = ""
-        @Shared(.htmlToMarkdownConfig) public var configuration = HtmlToMarkdownConfig()
-        public var inputOutput: InputOutputAttributedEditorsReducer.State
-        var isConversionRequestInFlight = false
-        var showMarkdownPreview = false
+    @ObservationIgnored
+    @Shared(.toolOutput("htmlToMarkdown")) public var outputText = ""
 
-        public init(
-            inputOutput: InputOutputAttributedEditorsReducer.State = .init(),
-            configuration: HtmlToMarkdownConfig = .init()
-        ) {
-            let inputText = Shared(wrappedValue: "", .toolInput("htmlToMarkdown"))
-            let outputText = Shared(wrappedValue: "", .toolOutput("htmlToMarkdown"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputRawText: outputText.projectedValue
-            )
+    @ObservationIgnored
+    @Shared(.htmlToMarkdownConfig) public var configuration = HtmlToMarkdownConfig()
 
-            self.isConversionRequestInFlight = false
-            // Configuration is loaded from file storage automatically via @Shared
-        }
+    public var isConversionRequestInFlight = false
+    public var showMarkdownPreview = false
+    public var errorMessage: String?
 
-        public init(input: String, output: String = "") {
-            let inputText = Shared(wrappedValue: input, .toolInput("htmlToMarkdown"))
-            let outputText = Shared(wrappedValue: output, .toolOutput("htmlToMarkdown"))
-            self._inputText = inputText
-            self._outputText = outputText
-            self.inputOutput = InputOutputAttributedEditorsReducer.State(
-                inputText: inputText.projectedValue,
-                outputRawText: outputText.projectedValue
-            )
+    private var conversionTask: Task<Void, Never>?
 
-            self.isConversionRequestInFlight = false
-            // Configuration is loaded from file storage automatically via @Shared
-        }
-    }
+    @ObservationIgnored
+    @Dependency(\.htmlToMarkdown) private var htmlToMarkdown
+    @ObservationIgnored
+    @Dependency(\.syntaxHighlight) private var syntaxHighlight
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case conversionResponse(TaskResult<String>)
-        case highlightResponse(NSAttributedString)
-        case inputOutput(InputOutputAttributedEditorsReducer.Action)
-    }
-
-    @Dependency(\.htmlToMarkdown) var htmlToMarkdown
-    @Dependency(\.syntaxHighlight) var syntaxHighlight
-    private enum CancelID { case conversionRequest, highlightRequest }
     private static let maxHighlightCharacters = 100_000
-    @Dependency(\.mainQueue) var mainQueue
 
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .convertButtonTouched:
-                state.isConversionRequestInFlight = true
-                return
-                    .run { [input = state.inputOutput.input.text, config = state.configuration] send in
-                        await send(
-                            .conversionResponse(
-                                TaskResult {
-                                    try await htmlToMarkdown.convert(input, config)
-                                }
-                            )
-                        )
-                    }
-                    .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
+    public init() {
+        let inputText = Shared(wrappedValue: "", .toolInput("htmlToMarkdown"))
+        let outputText = Shared(wrappedValue: "", .toolOutput("htmlToMarkdown"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
 
-            case let .conversionResponse(.success(markdown)):
-                state.isConversionRequestInFlight = false
-                let showPlainText = state.inputOutput.output.updateText(markdown)
-                    .map { Action.inputOutput(.output($0)) }
+    public init(input: String, output: String = "") {
+        let inputText = Shared(wrappedValue: input, .toolInput("htmlToMarkdown"))
+        let outputText = Shared(wrappedValue: output, .toolOutput("htmlToMarkdown"))
+        self._inputText = inputText
+        self._outputText = outputText
+    }
 
-                guard markdown.count <= Self.maxHighlightCharacters else {
-                    return showPlainText
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        errorMessage = nil
+        isConversionRequestInFlight = true
+        let input = inputText
+        let config = configuration
+        let htmlToMarkdown = htmlToMarkdown
+
+        conversionTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                let markdown = try await htmlToMarkdown.convert(input, config)
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.$outputText.withLock { $0 = markdown }
                 }
-
-                return .merge(
-                    showPlainText,
-                    .run { [syntaxHighlight] send in
-                        let highlighted = await syntaxHighlight.highlightMarkdown(markdown)
-                        if highlighted.length > 0 {
-                            await send(.highlightResponse(highlighted))
-                        }
-                    }
-                    .cancellable(id: CancelID.highlightRequest, cancelInFlight: true)
-                )
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                return state.inputOutput.output.updateText(errorAttributedString(error.localizedDescription))
-                    .map { Action.inputOutput(.output($0)) }
-
-            case let .highlightResponse(highlighted):
-                return state.inputOutput.output.updateText(highlighted)
-                    .map { Action.inputOutput(.output($0)) }
-
-            case .inputOutput:
-                return .none
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    self.isConversionRequestInFlight = false
+                    self.errorMessage = error.localizedDescription
+                    self.$outputText.withLock { $0 = error.localizedDescription }
+                }
             }
         }
+    }
 
-        Scope(state: \.inputOutput, action: \.inputOutput) {
-            InputOutputAttributedEditorsReducer()
-        }
+    public func setEngine(_ engine: ConversionEngine) {
+        var configuration = configuration
+        configuration.engine = engine
+        $configuration.withLock { $0 = configuration }
+    }
+
+    public func setHeadingStyle(_ style: DemarkHeadingStyle) {
+        var configuration = configuration
+        configuration.headingStyle = style
+        $configuration.withLock { $0 = configuration }
+    }
+
+    public func setBulletListMarker(_ marker: String) {
+        var configuration = configuration
+        configuration.bulletListMarker = marker
+        $configuration.withLock { $0 = configuration }
+    }
+
+    public func setCodeBlockStyle(_ style: DemarkCodeBlockStyle) {
+        var configuration = configuration
+        configuration.codeBlockStyle = style
+        $configuration.withLock { $0 = configuration }
+    }
+
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
     }
 }
 
-public struct HtmlToMarkdownView: View {
-    @Bindable var store: StoreOf<HtmlToMarkdownReducer>
+public struct HtmlToMarkdownModelView: View {
+    @Bindable var model: HtmlToMarkdownModel
+    private let onSendOutputToTool: ((String, Tool) -> Void)?
 
-    public init(store: StoreOf<HtmlToMarkdownReducer>) {
-        self.store = store
+    public init(
+        model: HtmlToMarkdownModel,
+        onSendOutputToTool: ((String, Tool) -> Void)? = nil
+    ) {
+        self.model = model
+        self.onSendOutputToTool = onSendOutputToTool
     }
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Configuration panel
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                // Row 1: Engine and Heading Style
-                GridRow {
-                    ConfigLabel("Engine")
-                    Picker("Engine", selection: $store.configuration.engine) {
-                        Text("Turndown (Accurate)").tag(ConversionEngine.turndown)
-                        Text("html-to-md (Fast)").tag(ConversionEngine.htmlToMd)
-                    }
-                    .blissMenuPicker(width: 180)
-                    .help("Turndown for complex HTML, html-to-md for speed")
+            configurationView
 
-                    ConfigLabel("Heading Style")
-                    Picker("Heading Style", selection: $store.configuration.headingStyle) {
-                        Text("ATX (# Heading)").tag(DemarkHeadingStyle.atx)
-                        Text("Setext (Underline)").tag(DemarkHeadingStyle.setext)
-                    }
-                    .blissMenuPicker(width: 160)
-                    .help("ATX uses # prefix, Setext uses underlines")
-                }
-
-                // Row 2: Bullet Marker and Code Block Style
-                GridRow {
-                    ConfigLabel("Bullet Marker")
-                    Picker("Bullet Marker", selection: $store.configuration.bulletListMarker) {
-                        Text("Dash (-)").tag("-")
-                        Text("Asterisk (*)").tag("*")
-                        Text("Plus (+)").tag("+")
-                    }
-                    .blissMenuPicker(width: 180)
-                    .help("Character for unordered list items")
-
-                    ConfigLabel("Code Blocks")
-                    Picker("Code Block Style", selection: $store.configuration.codeBlockStyle) {
-                        Text("Fenced (```)").tag(DemarkCodeBlockStyle.fenced)
-                        Text("Indented").tag(DemarkCodeBlockStyle.indented)
-                    }
-                    .blissMenuPicker(width: 160)
-                    .help("Fenced uses triple backticks, Indented uses 4 spaces")
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            
-            
-            LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
-                store.send(.convertButtonTouched)
+            LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
+                model.convertButtonTouched()
             }
             .keyboardShortcut(.return, modifiers: [.command])
             .help("Convert HTML to Markdown (⌘ Return)")
 
             HStack(spacing: 12) {
-
                 Spacer()
 
-                Toggle("Preview", isOn: $store.showMarkdownPreview)
+                Toggle("Preview", isOn: $model.showMarkdownPreview)
                     .toggleStyle(.switch)
                     .controlSize(.small)
                     .help("Toggle between raw markdown and rendered preview")
@@ -221,83 +156,189 @@ public struct HtmlToMarkdownView: View {
 
             Divider()
 
-            if store.showMarkdownPreview {
+            if model.showMarkdownPreview {
                 markdownPreviewSplitView
             } else {
-                InputOutputAttributedEditorsView(
-                    store: store.scope(state: \.inputOutput, action: \.inputOutput),
-                    inputEditorTitle: "HTML Input",
-                    outputEditorTitle: "Markdown Output",
-                    keyForFraction: SettingsKey.HtmlToMarkdown.splitViewFraction,
-                    keyForLayout: SettingsKey.HtmlToMarkdown.splitViewLayout
-                )
+                SideBySideView(
+                    fractionKey: SettingsKey.HtmlToMarkdown.splitViewFraction,
+                    layoutKey: SettingsKey.HtmlToMarkdown.splitViewLayout,
+                    primaryLabel: "HTML Input",
+                    secondaryLabel: "Markdown Output"
+                ) {
+                    PlainInputTextPane(title: "HTML Input", text: inputTextBinding)
+                } secondary: {
+                    PlainOutputTextPane(
+                        title: "Markdown Output",
+                        text: outputTextBinding,
+                        onSendToTool: sendOutputToTool
+                    )
+                }
             }
         }
     }
 
+    private var configurationView: some View {
+        ViewThatFits(in: .horizontal) {
+            regularConfigurationView
+            compactConfigurationView
+        }
+        .padding(.horizontal, configurationHorizontalPadding)
+        .padding(.vertical, configurationVerticalPadding)
+    }
+
+    private var regularConfigurationView: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            GridRow {
+                ConfigLabel("Engine")
+                enginePicker
+                    .blissMenuPicker(width: 180)
+
+                ConfigLabel("Heading Style")
+                headingStylePicker
+                    .blissMenuPicker(width: 160)
+            }
+
+            GridRow {
+                ConfigLabel("Bullet Marker")
+                bulletMarkerPicker
+                    .blissMenuPicker(width: 180)
+
+                ConfigLabel("Code Blocks")
+                codeBlockStylePicker
+                    .blissMenuPicker(width: 160)
+            }
+        }
+    }
+
+    private var compactConfigurationView: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                enginePicker
+                    .blissMenuPicker(width: 152)
+                headingStylePicker
+                    .blissMenuPicker(width: 152)
+            }
+
+            HStack(spacing: 8) {
+                bulletMarkerPicker
+                    .blissMenuPicker(width: 152)
+                codeBlockStylePicker
+                    .blissMenuPicker(width: 152)
+            }
+        }
+    }
+
+    private var enginePicker: some View {
+        Picker(
+            "Engine",
+            selection: Binding(
+                get: { model.configuration.engine },
+                set: { model.setEngine($0) }
+            )
+        ) {
+            Text("Turndown").tag(ConversionEngine.turndown)
+            Text("html-to-md").tag(ConversionEngine.htmlToMd)
+        }
+        .help("Turndown for complex HTML, html-to-md for speed")
+    }
+
+    private var headingStylePicker: some View {
+        Picker(
+            "Heading Style",
+            selection: Binding(
+                get: { model.configuration.headingStyle },
+                set: { model.setHeadingStyle($0) }
+            )
+        ) {
+            Text("ATX (#)").tag(DemarkHeadingStyle.atx)
+            Text("Setext").tag(DemarkHeadingStyle.setext)
+        }
+        .help("ATX uses # prefix, Setext uses underlines")
+    }
+
+    private var bulletMarkerPicker: some View {
+        Picker(
+            "Bullet Marker",
+            selection: Binding(
+                get: { model.configuration.bulletListMarker },
+                set: { model.setBulletListMarker($0) }
+            )
+        ) {
+            Text("Dash (-)").tag("-")
+            Text("Asterisk (*)").tag("*")
+            Text("Plus (+)").tag("+")
+        }
+        .help("Character for unordered list items")
+    }
+
+    private var codeBlockStylePicker: some View {
+        Picker(
+            "Code Blocks",
+            selection: Binding(
+                get: { model.configuration.codeBlockStyle },
+                set: { model.setCodeBlockStyle($0) }
+            )
+        ) {
+            Text("Fenced").tag(DemarkCodeBlockStyle.fenced)
+            Text("Indented").tag(DemarkCodeBlockStyle.indented)
+        }
+        .help("Fenced uses triple backticks, Indented uses 4 spaces")
+    }
+
+    private var configurationHorizontalPadding: CGFloat {
+        #if os(iOS)
+            return 10
+        #else
+            return 16
+        #endif
+    }
+
+    private var configurationVerticalPadding: CGFloat {
+        #if os(iOS)
+            return 6
+        #else
+            return 8
+        #endif
+    }
+
     @ViewBuilder
     private var markdownPreviewSplitView: some View {
-        let fraction = FractionHolder.usingUserDefaults(0.5, key: SettingsKey.HtmlToMarkdown.splitViewFraction)
-        let layout = LayoutHolder.usingUserDefaults(.horizontal, key: SettingsKey.HtmlToMarkdown.splitViewLayout)
-        let hide = SideHolder()
+        ScrollView {
+            Markdown(model.outputText)
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(ThemeColor.Background.textBackground)
+    }
 
-        Split(
-            primary: {
-                // Input side
-                VStack(spacing: 0) {
-                    HStack {
-                        Text("HTML Input")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(ThemeColor.Background.controlBackground)
+    private var sendOutputToTool: ((Tool) -> Void)? {
+        guard let onSendOutputToTool else {
+            return nil
+        }
 
-                    Divider()
+        return { tool in
+            onSendOutputToTool(model.outputText, tool)
+        }
+    }
 
-                    InputEditorView(
-                        store: store.scope(state: \.inputOutput.input, action: \.inputOutput.input),
-                        title: ""
-                    )
-                }
-            },
-            secondary: {
-                // Output side with markdown preview
-                VStack(spacing: 0) {
-                    HStack {
-                        Text("Markdown Preview")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(ThemeColor.Background.controlBackground)
-
-                    Divider()
-
-                    ScrollView {
-                        Markdown(store.outputText)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(ThemeColor.Background.textBackground)
-                }
-            }
+    private var inputTextBinding: Binding<String> {
+        Binding(
+            get: { model.inputText },
+            set: { newValue in model.$inputText.withLock { $0 = newValue } }
         )
-        .fraction(fraction)
-        .layout(layout)
-        .hide(hide)
-        .styling(visibleThickness: 2)
+    }
+
+    private var outputTextBinding: Binding<String> {
+        Binding(
+            get: { model.outputText },
+            set: { newValue in model.$outputText.withLock { $0 = newValue } }
+        )
     }
 }
 
-// Preview
-struct HtmlToMarkdownReducer_Previews: PreviewProvider {
+struct HtmlToMarkdownModelView_Previews: PreviewProvider {
     static var previews: some View {
-        HtmlToMarkdownView(store: .init(initialState: .init()) { HtmlToMarkdownReducer() })
+        HtmlToMarkdownModelView(model: .init())
     }
 }

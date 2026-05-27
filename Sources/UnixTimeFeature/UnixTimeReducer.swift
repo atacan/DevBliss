@@ -1,114 +1,109 @@
 import BlissTheme
-import ComposableArchitecture
+import Dependencies
+import Foundation
+import Sharing
 import SharedModels
 import SwiftUI
-import UnixTimeClient
 
-@Reducer
-public struct UnixTimeReducer {
-    public init() {}
+@MainActor
+@Observable
+public final class UnixTimeModel {
+    @ObservationIgnored
+    @Shared(.toolInput("unixTime"))
+    public var inputText = ""
 
-    @ObservableState
-    public struct State: Equatable {
-        @Shared(.toolInput("unixTime")) public var inputText = ""
-        @Shared(.toolOutput("unixTime")) public var outputText = ""
-        var isConversionRequestInFlight = false
-        var mode: UnixTimeMode = .unixToDate
-        var autoDetect: Bool = true
-        var selectedTimezone: String = "UTC"
-        var result: UnixTimeResult?
-        var errorMessage: String?
+    @ObservationIgnored
+    @Shared(.toolOutput("unixTime"))
+    public var outputText = ""
 
-        // Input is derived from inputText for persistence
-        public var input: String {
-            get { inputText }
-            set { $inputText.withLock { $0 = newValue } }
-        }
+    public var isConversionRequestInFlight = false
+    public var mode: UnixTimeMode = .unixToDate
+    public var autoDetect: Bool = true
+    public var selectedTimezone: String = "UTC"
+    public var result: UnixTimeResult?
+    public var errorMessage: String?
 
-        public init() {}
+    @ObservationIgnored
+    @Dependency(\.unixTime) private var unixTime
 
-        public init(input: String, output: String = "") {
-            self._inputText = Shared(wrappedValue: input, .toolInput("unixTime"))
-            self._outputText = Shared(wrappedValue: output, .toolOutput("unixTime"))
-        }
-    }
+    @ObservationIgnored
+    private var conversionTask: Task<Void, Never>?
 
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case convertButtonTouched
-        case nowButtonTouched
-        case conversionResponse(TaskResult<UnixTimeResult>)
-    }
-
-    @Dependency(\.unixTime) var unixTime
-    private enum CancelID { case conversionRequest }
-
-    public var body: some Reducer<State, Action> {
-        BindingReducer()
-        Reduce<State, Action> { state, action in
-            switch action {
-            case .binding(\.input):
-                // Auto-detect input type if enabled
-                if state.autoDetect {
-                    let input = state.input.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if let _ = Double(input) {
-                        state.mode = .unixToDate
-                    } else if !input.isEmpty {
-                        state.mode = .dateToUnix
-                    }
-                }
-                return .none
-
-            case .binding:
-                return .none
-
-            case .nowButtonTouched:
-                let timestamp = unixTime.currentTimestamp()
-                let timestampString = String(Int(timestamp))
-                state.mode = .unixToDate
-                state.$inputText.withLock { $0 = timestampString }
-                return .send(.convertButtonTouched)
-
-            case .convertButtonTouched:
-                state.errorMessage = nil
-                let input = state.input.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard !input.isEmpty else {
-                    state.errorMessage = "Please enter a value"
-                    return .none
-                }
-                state.isConversionRequestInFlight = true
-                let mode = state.mode
-                return .run { [unixTime] send in
-                    await send(
-                        .conversionResponse(
-                            TaskResult {
-                                try await unixTime.convert(input, mode)
-                            }
-                        )
-                    )
-                }
-                .cancellable(id: CancelID.conversionRequest, cancelInFlight: true)
-
-            case let .conversionResponse(.success(result)):
-                state.isConversionRequestInFlight = false
-                state.result = result
-                return .none
-
-            case let .conversionResponse(.failure(error)):
-                state.isConversionRequestInFlight = false
-                state.result = nil
-                state.errorMessage = error.localizedDescription
-                return .none
+    public var input: String {
+        get { inputText }
+        set {
+            $inputText.withLock { $0 = newValue }
+            guard autoDetect else { return }
+            let input = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let _ = Double(input) {
+                mode = .unixToDate
+            } else if !input.isEmpty {
+                mode = .dateToUnix
             }
         }
     }
+
+    public init() {}
+
+    public init(input: String, output: String = "") {
+        self._inputText = Shared(wrappedValue: input, .toolInput("unixTime"))
+        self._outputText = Shared(wrappedValue: output, .toolOutput("unixTime"))
+    }
+
+    public func nowButtonTouched() {
+        mode = .unixToDate
+        $inputText.withLock { $0 = String(Int(unixTime.currentTimestamp())) }
+        convertButtonTouched()
+    }
+
+    public func convertButtonTouched() {
+        conversionTask?.cancel()
+        errorMessage = nil
+
+        let input = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !input.isEmpty else {
+            errorMessage = "Please enter a value"
+            result = nil
+            $outputText.withLock { $0 = "" }
+            isConversionRequestInFlight = false
+            return
+        }
+
+        isConversionRequestInFlight = true
+        let mode = self.mode
+
+        conversionTask = Task { [unixTime, input, mode] in
+            do {
+                let output = try await unixTime.convert(input, mode)
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    result = output
+                    $outputText.withLock { $0 = output.localTimeWithTimezone }
+                }
+            } catch {
+                if error is CancellationError { return }
+                await MainActor.run {
+                    isConversionRequestInFlight = false
+                    result = nil
+                    errorMessage = error.localizedDescription
+                    $outputText.withLock { $0 = "" }
+                }
+            }
+        }
+    }
+
+    public func cancel() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isConversionRequestInFlight = false
+    }
 }
 
-public struct UnixTimeView: View {
-    @Bindable var store: StoreOf<UnixTimeReducer>
+public struct UnixTimeModelView: View {
+    @Bindable var model: UnixTimeModel
 
-    public init(store: StoreOf<UnixTimeReducer>) {
-        self.store = store
+    public init(model: UnixTimeModel) {
+        self.model = model
     }
 
     private static let commonTimezones: [(String, String)] = [
@@ -126,19 +121,20 @@ public struct UnixTimeView: View {
         ("Australia/Sydney", "Sydney (AEST/AEDT)"),
     ]
 
-    // MARK: - Reusable Controls
-
     private var inputField: some View {
-        TextField("Enter Unix timestamp or date", text: $store.input)
+        TextField("Enter Unix timestamp or date", text: Binding(
+            get: { model.input },
+            set: { model.input = $0 }
+        ))
             .blissTextField()
             .onSubmit {
-                store.send(.convertButtonTouched)
+                model.convertButtonTouched()
             }
     }
 
     private var nowButton: some View {
         Button {
-            store.send(.nowButtonTouched)
+            model.nowButtonTouched()
         } label: {
             Label("Now", systemImage: "clock")
         }
@@ -148,16 +144,16 @@ public struct UnixTimeView: View {
     }
 
     private var convertButton: some View {
-        LoadingButton("Convert", isLoading: store.isConversionRequestInFlight) {
-            store.send(.convertButtonTouched)
+        LoadingButton("Convert", isLoading: model.isConversionRequestInFlight) {
+            model.convertButtonTouched()
         }
         .keyboardShortcut(.return, modifiers: [.command])
         .help("Convert (⌘ Return)")
-        .disabled(store.input.isEmpty || store.isConversionRequestInFlight)
+        .disabled(model.input.isEmpty || model.isConversionRequestInFlight)
     }
 
     private var modePicker: some View {
-        Picker("Mode", selection: $store.mode) {
+        Picker("Mode", selection: $model.mode) {
             ForEach(UnixTimeMode.allCases) { mode in
                 Text(mode.rawValue)
                     .tag(mode)
@@ -168,12 +164,12 @@ public struct UnixTimeView: View {
     }
 
     private var autoDetectToggle: some View {
-        Toggle("Auto-detect", isOn: $store.autoDetect)
+        Toggle("Auto-detect", isOn: $model.autoDetect)
             .help("Automatically detect if input is Unix timestamp or date")
     }
 
     private var timezonePicker: some View {
-        Picker("Timezone", selection: $store.selectedTimezone) {
+        Picker("Timezone", selection: $model.selectedTimezone) {
             ForEach(Self.commonTimezones, id: \.0) { tz in
                 Text(tz.1).tag(tz.0)
             }
@@ -182,8 +178,7 @@ public struct UnixTimeView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Error message
-            if let errorMessage = store.errorMessage {
+            if let errorMessage = model.errorMessage {
                 ErrorMessageView(errorMessage)
             }
 
@@ -210,7 +205,6 @@ public struct UnixTimeView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             #else
-            // Input section: TextField + Now + Convert
             HStack(spacing: 12) {
                 inputField
                 nowButton
@@ -219,7 +213,6 @@ public struct UnixTimeView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
 
-            // Options row
             Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                 GridRow {
                     ConfigLabel("Mode")
@@ -239,8 +232,7 @@ public struct UnixTimeView: View {
 
             Divider()
 
-            // Results display
-            if let result = store.result {
+            if let result = model.result {
                 ScrollView {
                     resultCardsView(result)
                         .padding()
@@ -272,7 +264,13 @@ public struct UnixTimeView: View {
     }
 }
 
-struct ResultCard: View {
+struct UnixTimeModelView_Previews: PreviewProvider {
+    static var previews: some View {
+        UnixTimeModelView(model: UnixTimeModel())
+    }
+}
+
+private struct ResultCard: View {
     let title: String
     let value: String
     let icon: String
@@ -286,46 +284,14 @@ struct ResultCard: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                 Spacer()
-                Button {
-                    #if os(macOS)
-                    NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(value, forType: .string)
-                    #else
-                    UIPasteboard.general.string = value
-                    #endif
-                } label: {
-                    Image(systemName: "doc.on.doc")
-                        .font(.caption)
-                }
-                .buttonStyle(.borderless)
-                .help("Copy to clipboard")
             }
 
             Text(value)
                 .font(.system(.body, design: .monospaced))
                 .textSelection(.enabled)
-                .lineLimit(2)
-                .minimumScaleFactor(0.8)
         }
         .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        #if os(macOS)
-        .background(ThemeColor.Background.controlBackground)
-        #else
-        .background(Color(uiColor: .secondarySystemBackground))
-        #endif
-        .cornerRadius(8)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-        )
-    }
-}
-
-// MARK: - Preview
-
-struct UnixTimeReducer_Previews: PreviewProvider {
-    static var previews: some View {
-        UnixTimeView(store: .init(initialState: .init()) { UnixTimeReducer() })
+        .background(Color.secondary.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 }
