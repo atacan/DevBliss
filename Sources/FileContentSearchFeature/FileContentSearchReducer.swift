@@ -75,7 +75,7 @@ public final class FileContentSearchModel {
                     self.isSearching = false
                     self.foundFiles = found
                     self.selectedFiles = []
-                    self.outputText = "\\(found.count) files found."
+                    self.outputText = "\(found.count) files found."
                 }
             } catch {
                 await MainActor.run {
@@ -141,7 +141,14 @@ public struct FileContentSearchView: View {
             VStack(alignment: .center) {
                 inputView
 
-                Table(model.foundFiles, selection: $model.selectedFiles, sortOrder: $sortOrder) {
+                Table(
+                    model.foundFiles,
+                    selection: Binding(
+                        get: { model.selectedFiles },
+                        set: { model.setSelectedFiles($0) }
+                    ),
+                    sortOrder: $sortOrder
+                ) {
                     TableColumn(NSLocalizedString("File Path", bundle: Bundle.module, comment: ""), value: \.fileURL.absoluteString)
                         .width(min: nil, ideal: 400, max: nil)
                     TableColumn(NSLocalizedString("Lines", bundle: Bundle.module, comment: ""), value: \.lines)
@@ -223,6 +230,7 @@ public struct FileContentSearchView: View {
             .help(NSLocalizedString("Start searching (Cmd+Return)", bundle: Bundle.module, comment: ""))
             .padding(.bottom, 2)
         }
+        .padding(.horizontal, 8)
     }
 }
 
