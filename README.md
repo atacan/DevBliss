@@ -1,5 +1,7 @@
 # Blissum - Your Local Development Helper for macOS and iOS
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/atacan/DevBliss)
+
 <table align="center" border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td align="center" style="border: none;">
