@@ -40,6 +40,7 @@ public enum Tool: Int, CaseIterable, Identifiable {
     case urlEncode
     case jwtDebugger
     case stringDiff
+    case filesToMarkdown
 
     public var id: Self { self }
 
@@ -123,6 +124,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return NSLocalizedString("JWT Debugger", bundle: Bundle.module, comment: "")
         case .stringDiff:
             return NSLocalizedString("String Diff", bundle: Bundle.module, comment: "")
+        case .filesToMarkdown:
+            return NSLocalizedString("Files to Markdown", bundle: Bundle.module, comment: "")
         }
     }
 
@@ -206,6 +209,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return true
         case .stringDiff:
             return true
+        case .filesToMarkdown:
+            return false
         }
     }
 
@@ -214,6 +219,12 @@ public enum Tool: Int, CaseIterable, Identifiable {
         case .uuidGenerator:
             return false
         case .fileContentSearch:
+            #if os(macOS)
+                return true
+            #else
+                return false
+            #endif
+        case .filesToMarkdown:
             #if os(macOS)
                 return true
             #else
@@ -388,5 +399,17 @@ public enum SettingsKey {
     public enum StringDiff {
         public static var splitViewFraction = "StringDiff_splitViewFraction"
         public static var splitViewLayout = "StringDiff_splitViewLayout"
+    }
+
+    public enum FilesToMarkdown {
+        public static var selectedPath = "FilesToMarkdown_selectedPath"
+        public static var includeHidden = "FilesToMarkdown_includeHidden"
+        public static var respectGitignore = "FilesToMarkdown_respectGitignore"
+        public static var extensionFilter = "FilesToMarkdown_extensionFilter"
+        public static var includeFileList = "FilesToMarkdown_includeFileList"
+        public static var prefixText = "FilesToMarkdown_prefixText"
+        public static var suffixText = "FilesToMarkdown_suffixText"
+        public static var splitViewFraction = "FilesToMarkdown_splitViewFraction"
+        public static var splitViewLayout = "FilesToMarkdown_splitViewLayout"
     }
 }

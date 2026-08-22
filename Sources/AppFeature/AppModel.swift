@@ -38,6 +38,7 @@ import RegexMatchesFeature
 import NameGeneratorFeature
 import StringDiffFeature
 import FileContentSearchFeature
+import FilesToMarkdownFeature
 import StringInspectorFeature
 
     @MainActor
@@ -122,6 +123,8 @@ import StringInspectorFeature
         #if os(macOS)
         case .fileContentSearch:
             return .fileContentSearch
+        case .filesToMarkdown:
+            return .filesToMarkdown
         #endif
         case .urlToMarkdown:
             return .urlToMarkdown
@@ -198,6 +201,8 @@ import StringInspectorFeature
             model.setBase64String(outputText)
         #if os(macOS)
         case .fileContentSearch:
+            break
+        case .filesToMarkdown:
             break
         #endif
         case .htmlToSwift(let model):
@@ -303,6 +308,12 @@ import StringInspectorFeature
             #else
             return .none
             #endif
+        case .filesToMarkdown:
+            #if os(macOS)
+            return .filesToMarkdown(FilesToMarkdownModel())
+            #else
+            return .none
+            #endif
         }
     }
 }
@@ -349,5 +360,6 @@ public enum AppDestination {
     case uuidGenerator(UUIDGeneratorModel)
     #if os(macOS)
     case fileContentSearch(FileContentSearchModel)
+    case filesToMarkdown(FilesToMarkdownModel)
     #endif
 }

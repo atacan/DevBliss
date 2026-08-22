@@ -25,6 +25,7 @@ let package = Package(
         .library(name: "FileContentSearchFeature", targets: ["FileContentSearchFeature"]),
         .library(name: "FilePanelsClient", targets: ["FilePanelsClient"]),
         .library(name: "FilesClient", targets: ["FilesClient"]),
+        .library(name: "FilesToMarkdownFeature", targets: ["FilesToMarkdownFeature"]),
         .library(name: "HashGeneratorFeature", targets: ["HashGeneratorFeature"]),
         .library(name: "HexToAsciiFeature", targets: ["HexToAsciiFeature"]),
         .library(name: "HtmlBeautifyFeature", targets: ["HtmlBeautifyFeature"]),
@@ -99,6 +100,7 @@ let package = Package(
                 "ColorConverterFeature",
                 "CssBeautifyFeature",
                 "FileContentSearchFeature",
+                "FilesToMarkdownFeature",
                 "HashGeneratorFeature",
                 "HexToAsciiFeature",
                 "HtmlBeautifyFeature",
@@ -329,6 +331,24 @@ let package = Package(
             dependencies: [
                 "FileContentSearchFeature",
                 .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "FilesToMarkdownFeature",
+            dependencies: [
+                "FilePanelsClient",
+                "CommandLineClient",
+                "InputOutput",
+                "SharedModels",
+                "BlissTheme",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
+            ]
+        ),
+        .testTarget(
+            name: "FilesToMarkdownFeatureTests",
+            dependencies: [
+                "FilesToMarkdownFeature",
             ]
         ),
         .target(

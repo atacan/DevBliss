@@ -76,6 +76,7 @@ Boost your efficiency with our generators:
 ### File Handling
 
 1. **File Content Search:** Search for a string in a folder and get the line number, and preview the file content.
+1. **Files to Markdown:** Pick a file or folder and combine every text file into one Markdown document with fenced code blocks (macOS only).
 
 ### Formatters
 
