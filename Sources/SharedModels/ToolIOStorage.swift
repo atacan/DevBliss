@@ -369,7 +369,23 @@ public enum ToolDebugSamples {
         ("base64", "DevBliss sample text"),
         ("unixTime", "1704067200"),
         ("urlEncode", "https://example.com/search?q=dev bliss&sort=latest"),
-        ("jwtDebugger", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZXZibGlzcyIsIm5hbWUiOiJEZWJ1ZyBTYW1wbGUiLCJpYXQiOjE3MDQwNjcyMDB9.signature")
+        ("jwtDebugger", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZXZibGlzcyIsIm5hbWUiOiJEZWJ1ZyBTYW1wbGUiLCJpYXQiOjE3MDQwNjcyMDB9.signature"),
+        ("markdownPreview", """
+        # DevBliss Sample
+
+        Preview **Markdown** with _rich_ rendering.
+
+        - Headings, lists, and tables
+        - `inline code` and code blocks
+
+        ```swift
+        let greeting = "Hello, DevBliss!"
+        ```
+
+        | Tool | Status |
+        |------|--------|
+        | Markdown Preview | Active |
+        """)
     ]
 
     private static let regexMatchesInput = """

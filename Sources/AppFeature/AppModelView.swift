@@ -27,6 +27,7 @@ import SwiftPrettyFeature
 import JwtDebuggerFeature
 import HtmlToSwiftFeature
 import FileContentSearchFeature
+import FilesToMarkdownFeature
 import UuidUlidFeature
 import RandomStringGeneratorFeature
 import NameGeneratorFeature
@@ -35,6 +36,7 @@ import RegExpTesterFeature
 import RegexMatchesFeature
 import StringInspectorFeature
 import StringDiffFeature
+import MarkdownPreviewFeature
 import JsonPrettyFeature
 import CertificateDecoderFeature
 import QrCodeToolFeature
@@ -245,6 +247,9 @@ public struct AppModelView: View {
         case .stringDiff(let model):
             StringDiffModelView(model: model)
                 .padding(.top)
+        case .markdownPreview(let model):
+            MarkdownPreviewModelView(model: model)
+                .padding(.top)
         case .unixTime(let model):
             UnixTimeModelView(model: model)
                 .padding(.top)
@@ -266,6 +271,9 @@ public struct AppModelView: View {
         #if os(macOS)
         case .fileContentSearch(let model):
             FileContentSearchView(model: model)
+                .padding(.top)
+        case .filesToMarkdown(let model):
+            FilesToMarkdownModelView(model: model, onSendOutputToTool: self.model.sendOutputToOtherTool)
                 .padding(.top)
         #endif
         }
@@ -303,6 +311,8 @@ public struct AppModelView: View {
                 .font(.system(size: 8, design: .monospaced))
         case .fileContentSearch:
             Image(systemName: "doc.text.magnifyingglass")
+        case .filesToMarkdown:
+            Image(systemName: "doc.on.doc")
         case .hashGenerator:
             Image(systemName: "lock.shield")
         case .hexToAscii:
@@ -364,6 +374,16 @@ public struct AppModelView: View {
                 .font(.system(size: 8, design: .monospaced))
         case .stringDiff:
             Image(systemName: "arrow.triangle.2.circlepath")
+        case .markdownPreview:
+            ZStack(alignment: .leading) {
+                Text("M↓")
+                    .font(.monospaced(Font.system(size: 14))())
+                    .fontWeight(.medium)
+                    .offset(CGSize(width: 5, height: 0))
+                Image(systemName: "eye")
+                    .font(.system(size: 10))
+                    .offset(CGSize(width: 0, height: -7))
+            }
         case .stringInspector:
             Image(systemName: "text.magnifyingglass")
         case .svgToCss:
