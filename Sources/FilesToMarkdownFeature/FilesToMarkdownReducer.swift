@@ -269,7 +269,7 @@
                 PlainOutputTextPane(
                     title: "Markdown",
                     text: outputTextBinding,
-                    minHeight: 140,
+                    minHeight: 40,
                     onSendToTool: sendOutputToTool
                 )
             }
@@ -342,7 +342,10 @@
         }
 
         private var fileListPane: some View {
-            TextPane(title: "Included Files (\(model.discoveredFiles.count))") {
+            TextPane(
+                title: "Included Files (\(model.discoveredFiles.count))",
+                minHeight: 40
+            ) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 2) {
                         ForEach(model.discoveredFiles) { file in
