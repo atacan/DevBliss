@@ -1,6 +1,5 @@
 #if os(macOS)
 import BlissTheme
-import CommandLineClient
 import Dependencies
 import FilePanelsClient
 import FilesClient
@@ -155,8 +154,6 @@ public struct FileContentSearchView: View {
                         .width(min: nil, ideal: 80, max: nil)
                     TableColumn(NSLocalizedString("Modified", bundle: Bundle.module, comment: ""), value: \.modifiedTimeString)
                         .width(min: nil, ideal: 100, max: nil)
-                    TableColumn(NSLocalizedString("Git User", bundle: Bundle.module, comment: ""), value: \.gitUsernameCleaned)
-                        .width(min: nil, ideal: 100, max: nil)
                 }
                 .onChange(of: sortOrder) { _, newValue in
                     model.sortFoundFiles(newValue)
@@ -260,14 +257,12 @@ public struct FoundFile: Equatable, Identifiable {
     public let fileURL: URL
     public let lineNumbers: [Int]
     public let modifiedTime: Date
-    public let gitUsername: String?
     public let id = UUID()
 
-    public init(fileURL: URL, lineNumbers: [Int], modifiedTime: Date, gitUsername: String?) {
+    public init(fileURL: URL, lineNumbers: [Int], modifiedTime: Date) {
         self.fileURL = fileURL
         self.lineNumbers = lineNumbers
         self.modifiedTime = modifiedTime
-        self.gitUsername = gitUsername
     }
 
     public var lines: String {
@@ -279,8 +274,6 @@ public struct FoundFile: Equatable, Identifiable {
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return formatter.string(from: modifiedTime)
     }
-
-    public var gitUsernameCleaned: String { gitUsername ?? "" }
 }
 
 @MainActor
@@ -293,8 +286,7 @@ public struct FileContentSearchModelPreview: PreviewProvider {
                     FoundFile(
                         fileURL: URL(string: "Users/example/projects/file.swift")!,
                         lineNumbers: [23, 34, 43],
-                        modifiedTime: Date(timeIntervalSince1970: 12300),
-                        gitUsername: "developer"
+                        modifiedTime: Date(timeIntervalSince1970: 12300)
                     )
                 ]
             )
@@ -372,7 +364,7 @@ private func grepFile(options: SearchOptions, fileUrl: URL) async throws -> Foun
 
     guard !lineNumbers.isEmpty else { return nil }
     let modificationTime = try getModificationTime(for: fileUrl)
-    return try await FoundFile(fileURL: fileUrl, lineNumbers: lineNumbers, modifiedTime: modificationTime, gitUsername: getLastCommitAuthor(for: fileUrl))
+    return FoundFile(fileURL: fileUrl, lineNumbers: lineNumbers, modifiedTime: modificationTime)
 }
 
 private func getModificationTime(for url: URL) throws -> Date {
@@ -381,13 +373,6 @@ private func getModificationTime(for url: URL) throws -> Date {
         throw NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to get modification time"])
     }
     return date
-}
-
-private func getLastCommitAuthor(for fileURL: URL) async throws -> String? {
-    @Dependency(\.commandLine) var commandLine
-    let command = "cd \\(fileURL.deletingLastPathComponent().path) && git log -1 --pretty=format:%an -- \\(fileURL.lastPathComponent)"
-    let output = try await commandLine.run(command)
-    return output.text.trimmingCharacters(in: .whitespacesAndNewlines)
 }
 
 private func walkDirectory(

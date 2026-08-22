@@ -13,14 +13,12 @@ final class FileContentSearchFeatureTests: XCTestCase {
                     FoundFile(
                         fileURL: URL(fileURLWithPath: "/tmp/first.swift"),
                         lineNumbers: [1],
-                        modifiedTime: Date(timeIntervalSince1970: 0),
-                        gitUsername: nil
+                        modifiedTime: Date(timeIntervalSince1970: 0)
                     ),
                     FoundFile(
                         fileURL: URL(fileURLWithPath: "/tmp/second.swift"),
                         lineNumbers: [2],
-                        modifiedTime: Date(timeIntervalSince1970: 0),
-                        gitUsername: nil
+                        modifiedTime: Date(timeIntervalSince1970: 0)
                     )
                 ]
             }
@@ -42,8 +40,7 @@ final class FileContentSearchFeatureTests: XCTestCase {
         let foundFile = FoundFile(
             fileURL: fileURL,
             lineNumbers: [3],
-            modifiedTime: Date(timeIntervalSince1970: 0),
-            gitUsername: nil
+            modifiedTime: Date(timeIntervalSince1970: 0)
         )
 
         await withDependencies {

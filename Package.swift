@@ -317,7 +317,6 @@ let package = Package(
             name: "FileContentSearchFeature",
             dependencies: [
                 "FilePanelsClient",
-                "CommandLineClient",
                 "InputOutput",
                 "FilesClient",
                 "BlissTheme",
