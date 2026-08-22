@@ -37,6 +37,7 @@ import RegExpTesterFeature
 import RegexMatchesFeature
 import NameGeneratorFeature
 import StringDiffFeature
+import MarkdownPreviewFeature
 import FileContentSearchFeature
 import FilesToMarkdownFeature
 import StringInspectorFeature
@@ -108,6 +109,8 @@ import StringInspectorFeature
             return .regexMatches
         case .stringDiff:
             return .stringDiff
+        case .markdownPreview:
+            return .markdownPreview
         case .regExpTester:
             return .regExpTester
         case .nameGenerator:
@@ -241,6 +244,8 @@ import StringInspectorFeature
             model.$inputText.withLock { $0 = outputText }
         case .stringDiff(let model):
             model.setOldText(outputText)
+        case .markdownPreview(let model):
+            model.$inputText.withLock { $0 = outputText }
         case .certificateDecoder(let model):
             model.$inputText.withLock { $0 = outputText }
         case .qrCodeTool(let model):
@@ -286,6 +291,7 @@ import StringInspectorFeature
         case .uuidUlid: return .uuidUlid(UuidUlidModel())
         case .regexMatches: return .regexMatches(RegexMatchesModel())
         case .stringDiff: return .stringDiff(StringDiffModel())
+        case .markdownPreview: return .markdownPreview(MarkdownPreviewModel())
         case .regExpTester: return .regExpTester(RegExpTesterModel())
         case .nameGenerator: return .nameGenerator(NameGeneratorModel())
         case .randomStringGenerator: return .randomStringGenerator(RandomStringGeneratorModel())
@@ -346,6 +352,7 @@ public enum AppDestination {
     case xmlFormat(XmlFormatModel)
     case uuidUlid(UuidUlidModel)
     case stringDiff(StringDiffModel)
+    case markdownPreview(MarkdownPreviewModel)
     case randomStringGenerator(RandomStringGeneratorModel)
     case regExpTester(RegExpTesterModel)
     case certificateDecoder(CertificateDecoderModel)

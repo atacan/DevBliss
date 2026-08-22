@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -7,8 +7,8 @@ let package = Package(
     name: "DevBliss",
     defaultLocalization: "en",
     platforms: [
-        .macOS(.v14),
-        .iOS(.v17),
+        .macOS(.v15),
+        .iOS(.v18),
     ],
     products: [
         .library(name: "AppFeature", targets: ["AppFeature"]),
@@ -38,6 +38,7 @@ let package = Package(
         .library(name: "JsonToYamlFeature", targets: ["JsonToYamlFeature"]),
         .library(name: "JwtDebuggerFeature", targets: ["JwtDebuggerFeature"]),
         .library(name: "LineSortDedupeFeature", targets: ["LineSortDedupeFeature"]),
+        .library(name: "MarkdownPreviewFeature", targets: ["MarkdownPreviewFeature"]),
         .library(name: "NameGeneratorFeature", targets: ["NameGeneratorFeature"]),
         .library(name: "NumberBaseConverterFeature", targets: ["NumberBaseConverterFeature"]),
         .library(name: "PrefixSuffixFeature", targets: ["PrefixSuffixFeature"]),
@@ -75,6 +76,7 @@ let package = Package(
         .package(url: "https://github.com/dagronf/DSFQuickActionBar", branch: "main"),
         .package(url: "https://github.com/dagronf/QRCode", from: "11.0.0"),
         .package(url: "https://github.com/gonzalezreal/swift-markdown-ui", from: "2.0.0"),
+        .package(url: "https://github.com/gonzalezreal/textual", from: "0.1.0"),
         .package(url: "https://github.com/jpsim/Yams", from: "6.0.1"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.51.0"),
         .package(url: "https://github.com/pointfreeco/swift-sharing", from: "1.0.0"),
@@ -112,6 +114,7 @@ let package = Package(
                 "JsonToYamlFeature",
                 "JwtDebuggerFeature",
                 "LineSortDedupeFeature",
+                "MarkdownPreviewFeature",
                 "NameGeneratorFeature",
                 "NumberBaseConverterFeature",
                 "PrefixSuffixFeature",
@@ -147,6 +150,18 @@ let package = Package(
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "Sharing", package: "swift-sharing"),
+                "InputOutput",
+                "SharedModels",
+                "BlissTheme",
+            ]
+        ),
+        .target(
+            name: "MarkdownPreviewFeature",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Sharing", package: "swift-sharing"),
+                .product(name: "SplitView", package: "SplitView"),
+                .product(name: "Textual", package: "textual"),
                 "InputOutput",
                 "SharedModels",
                 "BlissTheme",
@@ -762,5 +777,6 @@ let package = Package(
             resources: [.process("Resources")]
         ),
 
-    ]
+    ],
+    swiftLanguageModes: [.v5]
 )

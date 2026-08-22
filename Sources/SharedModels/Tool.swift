@@ -40,6 +40,7 @@ public enum Tool: Int, CaseIterable, Identifiable {
     case urlEncode
     case jwtDebugger
     case stringDiff
+    case markdownPreview
     case filesToMarkdown
 
     public var id: Self { self }
@@ -124,6 +125,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
             return NSLocalizedString("JWT Debugger", bundle: Bundle.module, comment: "")
         case .stringDiff:
             return NSLocalizedString("String Diff", bundle: Bundle.module, comment: "")
+        case .markdownPreview:
+            return NSLocalizedString("Markdown Preview", bundle: Bundle.module, comment: "")
         case .filesToMarkdown:
             return NSLocalizedString("Files to Markdown", bundle: Bundle.module, comment: "")
         }
@@ -208,6 +211,8 @@ public enum Tool: Int, CaseIterable, Identifiable {
         case .jwtDebugger:
             return true
         case .stringDiff:
+            return true
+        case .markdownPreview:
             return true
         case .filesToMarkdown:
             return false
@@ -399,6 +404,11 @@ public enum SettingsKey {
     public enum StringDiff {
         public static var splitViewFraction = "StringDiff_splitViewFraction"
         public static var splitViewLayout = "StringDiff_splitViewLayout"
+    }
+
+    public enum MarkdownPreview {
+        public static var splitViewFraction = "MarkdownPreview_splitViewFraction"
+        public static var splitViewLayout = "MarkdownPreview_splitViewLayout"
     }
 
     public enum FilesToMarkdown {
