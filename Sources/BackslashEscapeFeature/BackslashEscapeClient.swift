@@ -33,96 +33,172 @@ extension DependencyValues {
 }
 
 private func escapeString(_ input: String) -> String {
-    input
-        .replacingOccurrences(of: "\\", with: "\\\\")
-        .replacingOccurrences(of: "\"", with: "\\\"")
-        .replacingOccurrences(of: "\n", with: "\\n")
-        .replacingOccurrences(of: "\r", with: "\\r")
-        .replacingOccurrences(of: "\t", with: "\\t")
-        .replacingOccurrences(of: "\0", with: "\\0")
-}
-
-private func unescapeString(_ input: String) -> String {
     var result = ""
-    var iterator = input.makeIterator()
 
-    while let char = iterator.next() {
-        if char != "\\" {
-            result.append(char)
-            continue
-        }
-
-        guard let next = iterator.next() else {
-            result.append("\\")
-            break
-        }
-
-        switch next {
+    for scalar in input.unicodeScalars {
+        switch scalar {
         case "\\":
-            result.append("\\")
+            result += "\\\\"
         case "\"":
-            result.append("\"")
-        case "n":
-            result.append("\n")
-        case "r":
-            result.append("\r")
-        case "t":
-            result.append("\t")
-        case "0":
-            result.append("\0")
-        case "u":
-            if let unicode = parseUnicodeEscape(&iterator) {
-                result.append(unicode)
-            } else {
-                result.append("\\u")
-            }
-        case "x":
-            if let byte = parseHexByte(&iterator) {
-                if let scalar = UnicodeScalar(Int(byte)) {
-                    result.append(Character(scalar))
-                }
-            } else {
-                result.append("\\x")
-            }
+            result += "\\\""
+        case "\n":
+            result += "\\n"
+        case "\r":
+            result += "\\r"
+        case "\t":
+            result += "\\t"
+        case "\u{08}":
+            result += "\\b"
+        case "\u{0C}":
+            result += "\\f"
         default:
-            result.append(next)
+            if scalar.value < 0x20 {
+                result += "\\u" + hexString(scalar.value, digits: 4)
+            } else {
+                result.unicodeScalars.append(scalar)
+            }
         }
     }
 
     return result
 }
 
-private func parseUnicodeEscape(_ iterator: inout String.Iterator) -> Character? {
-    var buffer = ""
+private func unescapeString(_ input: String) -> String {
+    var result = ""
+    let scalars = Array(input.unicodeScalars)
+    var index = 0
 
-    guard let first = iterator.next() else { return nil }
-
-    if first == "{" {
-        while let char = iterator.next() {
-            if char == "}" { break }
-            buffer.append(char)
+    while index < scalars.count {
+        guard scalars[index] == "\\" else {
+            result.unicodeScalars.append(scalars[index])
+            index += 1
+            continue
         }
-        guard let value = UInt32(buffer, radix: 16), let scalar = UnicodeScalar(value) else { return nil }
-        return Character(scalar)
+
+        guard index + 1 < scalars.count else {
+            result += "\\"
+            break
+        }
+
+        switch scalars[index + 1] {
+        case "\\":
+            result += "\\"
+            index += 2
+        case "\"":
+            result += "\""
+            index += 2
+        case "/":
+            result += "/"
+            index += 2
+        case "b":
+            result += "\u{08}"
+            index += 2
+        case "f":
+            result += "\u{0C}"
+            index += 2
+        case "n":
+            result += "\n"
+            index += 2
+        case "r":
+            result += "\r"
+            index += 2
+        case "t":
+            result += "\t"
+            index += 2
+        case "0":
+            result += "\0"
+            index += 2
+        case "u":
+            index = parseUnicodeEscape(scalars, at: index, into: &result)
+        case "x":
+            index = parseHexByteEscape(scalars, at: index, into: &result)
+        default:
+            result += "\\"
+            result.unicodeScalars.append(scalars[index + 1])
+            index += 2
+        }
     }
 
-    buffer.append(first)
-    buffer.append(contentsOf: collect(iterator: &iterator, count: 3))
-    guard buffer.count == 4, let value = UInt32(buffer, radix: 16), let scalar = UnicodeScalar(value) else { return nil }
-    return Character(scalar)
+    return result
 }
 
-private func parseHexByte(_ iterator: inout String.Iterator) -> UInt8? {
-    let chars = collect(iterator: &iterator, count: 2)
-    guard chars.count == 2 else { return nil }
-    return UInt8(chars, radix: 16)
-}
+private func parseUnicodeEscape(_ scalars: [Unicode.Scalar], at start: Int, into result: inout String) -> Int {
+    let hexStart = start + 2
+    let afterFirst = hexStart + 4
 
-private func collect(iterator: inout String.Iterator, count: Int) -> String {
-    var buffer = ""
-    for _ in 0..<count {
-        guard let char = iterator.next() else { break }
-        buffer.append(char)
+    guard let first = hexValue(in: scalars, at: hexStart, length: 4) else {
+        result += "\\u"
+        return start + 2
     }
-    return buffer
+
+    if isHighSurrogate(first),
+        scalars.count >= afterFirst + 6,
+        scalars[afterFirst] == "\\",
+        scalars[afterFirst + 1] == "u",
+        let second = hexValue(in: scalars, at: afterFirst + 2, length: 4),
+        isLowSurrogate(second)
+    {
+        let combined = 0x10000 + ((first - 0xD800) << 10) + (second - 0xDC00)
+        result.unicodeScalars.append(Unicode.Scalar(combined)!)
+        return afterFirst + 6
+    }
+
+    if let scalar = Unicode.Scalar(first) {
+        result.unicodeScalars.append(scalar)
+        return afterFirst
+    }
+
+    for offset in start..<afterFirst {
+        result.unicodeScalars.append(scalars[offset])
+    }
+    return afterFirst
+}
+
+private func parseHexByteEscape(_ scalars: [Unicode.Scalar], at start: Int, into result: inout String) -> Int {
+    let hexStart = start + 2
+
+    guard let value = hexValue(in: scalars, at: hexStart, length: 2), let scalar = Unicode.Scalar(value) else {
+        result += "\\x"
+        return start + 2
+    }
+
+    result.unicodeScalars.append(scalar)
+    return hexStart + 2
+}
+
+private func hexValue(in scalars: [Unicode.Scalar], at start: Int, length: Int) -> UInt32? {
+    guard start + length <= scalars.count else { return nil }
+
+    var value: UInt32 = 0
+    for offset in start..<(start + length) {
+        guard let digit = hexDigit(of: scalars[offset]) else { return nil }
+        value = value << 4 | digit
+    }
+    return value
+}
+
+private func hexDigit(of scalar: Unicode.Scalar) -> UInt32? {
+    switch scalar {
+    case "0"..."9":
+        return scalar.value - 48
+    case "a"..."f":
+        return scalar.value - 87
+    case "A"..."F":
+        return scalar.value - 55
+    default:
+        return nil
+    }
+}
+
+private func hexString(_ value: UInt32, digits: Int) -> String {
+    let hex = String(value, radix: 16, uppercase: false)
+    return String(repeating: "0", count: max(0, digits - hex.count)) + hex
+}
+
+private func isHighSurrogate(_ value: UInt32) -> Bool {
+    (0xD800...0xDBFF).contains(value)
+}
+
+private func isLowSurrogate(_ value: UInt32) -> Bool {
+    (0xDC00...0xDFFF).contains(value)
 }

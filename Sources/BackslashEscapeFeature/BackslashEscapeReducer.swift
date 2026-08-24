@@ -101,6 +101,8 @@ public struct BackslashEscapeModelView: View {
                 secondaryLabel: "Output"
             )
         ) {
+            configurationView
+        } primary: {
             PlainInputTextPane(title: "Input", text: inputTextBinding)
         } secondary: {
             PlainOutputTextPane(
@@ -109,6 +111,28 @@ public struct BackslashEscapeModelView: View {
                 onSendToTool: sendOutputToTool
             )
         }
+    }
+
+    private var configurationView: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            GridRow {
+                ConfigLabel("Mode")
+                Picker(
+                    "Mode",
+                    selection: Binding(
+                        get: { model.mode },
+                        set: { model.setMode($0) }
+                    )
+                ) {
+                    ForEach(BackslashEscapeMode.allCases) { mode in
+                        Text(mode.rawValue).tag(mode)
+                    }
+                }
+                .blissMenuPicker(width: 140)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 
     private var sendOutputToTool: ((Tool) -> Void)? {
