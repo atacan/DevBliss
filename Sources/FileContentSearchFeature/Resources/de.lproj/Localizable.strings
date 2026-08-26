@@ -39,3 +39,9 @@
 /* No comment provided by engineer. */
 "term to search inside the file..." = "Suchbegriff in Datei suchen...";
 
+
+/* No comment provided by engineer. */
+"Invalid search pattern: %@" = "Ungültiges Suchmuster: %@";
+
+/* No comment provided by engineer. */
+"Invalid search folder: %@" = "Ungültiger Suchordner: %@";

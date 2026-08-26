@@ -39,3 +39,9 @@
 /* No comment provided by engineer. */
 "term to search inside the file..." = "termine da cercare all'interno del file...";
 
+
+/* No comment provided by engineer. */
+"Invalid search pattern: %@" = "Pattern di ricerca non valido: %@";
+
+/* No comment provided by engineer. */
+"Invalid search folder: %@" = "Cartella di ricerca non valida: %@";
