@@ -4,9 +4,9 @@ import Dependencies
 import FilePanelsClient
 import FilesClient
 import Foundation
+import Ripgrep
 import SplitView
 import SwiftUI
-import UniformTypeIdentifiers
 
 @MainActor
 @Observable
@@ -316,55 +316,54 @@ extension DependencyValues {
 @Sendable
 private func grepFolder(options: SearchOptions) async throws -> [FoundFile] {
     let folderUrl = URL(fileURLWithPath: options.folder)
-    var fmOptions: FileManager.DirectoryEnumerationOptions = []
-    if !options.searchHiddenFiles { fmOptions.insert(.skipsHiddenFiles) }
-    if !options.searchInsidePackages { fmOptions.insert(.skipsPackageDescendants) }
-    if !options.searchInsideSubdirectories { fmOptions.insert(.skipsSubdirectoryDescendants) }
 
-    let files = walkDirectory(
-        at: folderUrl,
-        options: fmOptions
-    ) { url in
-        guard let typeIdentifier = try? url.resourceValues(forKeys: [.contentTypeKey]).contentType,
-              let isHidden = try? url.resourceValues(forKeys: [.isHiddenKey]).isHidden,
-              (isHidden == options.searchHiddenFiles) || options.searchHiddenFiles else {
-            return false
-        }
-        return typeIdentifier.conforms(to: UTType.text)
-    }
+    var rgOptions = RipgrepOptions()
+    rgOptions.includeHidden = options.searchHiddenFiles
 
-    let found = try await withThrowingTaskGroup(of: FoundFile?.self, returning: [FoundFile].self) { group in
-        var i = 0
-        for await file in files {
-            group.addTask {
-                try await grepFile(options: options, fileUrl: file)
+    // A line containing several matches yields one match per match; group them into line numbers per file.
+    var lineNumbersByFile: [URL: [Int]] = [:]
+    do {
+        for try await match in Ripgrep.search(options.term, in: folderUrl, options: rgOptions) {
+            guard isIncluded(match.fileURL, root: folderUrl, options: options) else { continue }
+            let lineNumber = Int(match.lineNumber)
+            if lineNumbersByFile[match.fileURL]?.last != lineNumber {
+                lineNumbersByFile[match.fileURL, default: []].append(lineNumber)
             }
-            i += 1
-            if i % 100 == 0 { await Task.yield() }
         }
-        return try await group.reduce(into: []) { result, file in
-            if let file { result.append(file) }
-        }
+    } catch let error as RipgrepError {
+        throw error.asNSError
     }
-    return found
+
+    return try lineNumbersByFile
+        .sorted { $0.key.path < $1.key.path }
+        .map { fileURL, lineNumbers in
+            FoundFile(
+                fileURL: fileURL,
+                lineNumbers: lineNumbers,
+                modifiedTime: try getModificationTime(for: fileURL)
+            )
+        }
 }
 
-@Sendable
-private func grepFile(options: SearchOptions, fileUrl: URL) async throws -> FoundFile? {
-    var lineNumbers: [Int] = []
-    var lineNumber = 1
-
-    let qfle = QFile(fileURL: fileUrl)
-    defer { qfle.close() }
-    try qfle.open()
-    while let line = try qfle.readLine() {
-        if line.contains(options.term) { lineNumbers.append(lineNumber) }
-        lineNumber += 1
+/// Ripgrep always traverses recursively and has no concept of macOS packages,
+/// so `searchInsideSubdirectories` and `searchInsidePackages` are enforced by
+/// filtering the matches after the search.
+private func isIncluded(_ fileURL: URL, root: URL, options: SearchOptions) -> Bool {
+    if !options.searchInsideSubdirectories, fileURL.deletingLastPathComponent().path != root.path {
+        return false
     }
+    guard !options.searchInsidePackages else { return true }
 
-    guard !lineNumbers.isEmpty else { return nil }
-    let modificationTime = try getModificationTime(for: fileUrl)
-    return FoundFile(fileURL: fileUrl, lineNumbers: lineNumbers, modifiedTime: modificationTime)
+    var directory = fileURL.deletingLastPathComponent()
+    while directory.path.hasPrefix(root.path), directory.path != root.path {
+        if (try? directory.resourceValues(forKeys: [.isPackageKey]))?.isPackage == true {
+            return false
+        }
+        let parent = directory.deletingLastPathComponent()
+        if parent.path == directory.path { break }
+        directory = parent
+    }
+    return true
 }
 
 private func getModificationTime(for url: URL) throws -> Date {
@@ -375,61 +374,22 @@ private func getModificationTime(for url: URL) throws -> Date {
     return date
 }
 
-private func walkDirectory(
-    at url: URL,
-    options fmOptions: FileManager.DirectoryEnumerationOptions,
-    fileCondition: @escaping (URL) -> Bool
-) -> AsyncStream<URL> {
-    AsyncStream { continuation in
-        if let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: fmOptions) {
-            for case let fileURL as URL in enumerator {
-                do {
-                    let fileAttributes = try fileURL.resourceValues(forKeys: [.isRegularFileKey])
-                    if fileAttributes.isRegularFile!, fileCondition(fileURL) {
-                        continuation.yield(fileURL)
-                    }
-                } catch {
-                    print(error, fileURL)
-                }
-            }
-            continuation.finish()
-        } else {
-            continuation.finish()
+extension RipgrepError {
+    /// The model displays `error.localizedDescription`, which is unhelpful for
+    /// plain `Error` values.
+    var asNSError: NSError {
+        let message: String
+        switch self {
+        case .invalidPattern(let description):
+            message = String(format: NSLocalizedString("Invalid search pattern: %@", bundle: Bundle.module, comment: ""), description)
+        case .invalidArgument(let description):
+            message = String(format: NSLocalizedString("Invalid search folder: %@", bundle: Bundle.module, comment: ""), description)
+        case .io(let description):
+            message = description
+        case .internalError(let description):
+            message = description
         }
-    }
-}
-
-private class QFile {
-    init(fileURL: URL) { self.fileURL = fileURL }
-    deinit {
-        precondition(self.file == nil)
-    }
-
-    let fileURL: URL
-    private var file: UnsafeMutablePointer<FILE>?
-
-    func open() throws {
-        guard let f = fopen(fileURL.path, "r") else {
-            throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil)
-        }
-        file = f
-    }
-
-    func close() {
-        if let f = file {
-            file = nil
-            _ = fclose(f) == 0
-        }
-    }
-
-    func readLine(maxLength: Int = 1024) throws -> String? {
-        guard let f = file else { throw NSError(domain: NSPOSIXErrorDomain, code: Int(EBADF), userInfo: nil) }
-        var buffer = [CChar](repeating: 0, count: maxLength)
-        guard fgets(&buffer, Int32(maxLength), f) != nil else {
-            if feof(f) != 0 { return nil }
-            throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno), userInfo: nil)
-        }
-        return String(cString: buffer)
+        return NSError(domain: "FileContentSearch", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
     }
 }
 #else

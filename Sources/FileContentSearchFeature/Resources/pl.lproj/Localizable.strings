@@ -39,3 +39,9 @@
 /* No comment provided by engineer. */
 "term to search inside the file..." = "termin do wyszukiwania w pliku...";
 
+
+/* No comment provided by engineer. */
+"Invalid search pattern: %@" = "Nieprawidłowy wzorzec wyszukiwania: %@";
+
+/* No comment provided by engineer. */
+"Invalid search folder: %@" = "Nieprawidłowy folder wyszukiwania: %@";

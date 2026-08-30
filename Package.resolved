@@ -1,5 +1,5 @@
 {
-  "originHash" : "a8dabfd0bffcf9db8092937f890bf13b7251d7b8a01ac3f0ca1fe193f8d9f0f0",
+  "originHash" : "95f133c73ddcf382a6c300751f559e06b589a9961ea94a3454116253bc76424f",
   "pins" : [
     {
       "identity" : "binarybirds-swift-html",
@@ -124,6 +124,15 @@
       "state" : {
         "revision" : "fbc9a1d13a71205631ba46b018c562a2eb9d6c06",
         "version" : "11.4.0"
+      }
+    },
+    {
+      "identity" : "ripgrepswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/RipgrepSwift.git",
+      "state" : {
+        "revision" : "69d636df2d4d48434afcab6e9301f048dd958e1a",
+        "version" : "0.1.2"
       }
     },
     {

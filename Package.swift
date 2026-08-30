@@ -81,6 +81,7 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-sharing", from: "1.0.0"),
         .package(url: "https://github.com/nkristek/Highlight.git", branch: "master"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.10.0"),
+        .package(url: "https://github.com/atacan/RipgrepSwift.git", from: "0.1.2"),
         .package(url: "https://github.com/stevengharris/SplitView", from: "3.1.0"),
         .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", branch: "xcode26"),
         .package(url: "https://github.com/yaslab/ULID.swift", from: "1.2.0"),
@@ -336,6 +337,7 @@ let package = Package(
                 "InputOutput",
                 "FilesClient",
                 "BlissTheme",
+                .product(name: "Ripgrep", package: "RipgrepSwift", condition: .when(platforms: [.macOS])),
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "Sharing", package: "swift-sharing"),
             ]

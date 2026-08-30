@@ -39,3 +39,9 @@
 /* No comment provided by engineer. */
 "term to search inside the file..." = "在文件中搜索的术语...";
 
+
+/* No comment provided by engineer. */
+"Invalid search pattern: %@" = "无效的搜索模式：%@";
+
+/* No comment provided by engineer. */
+"Invalid search folder: %@" = "无效的搜索文件夹：%@";
