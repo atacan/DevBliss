@@ -63,9 +63,8 @@ let package = Package(
         .library(name: "YamlToJsonFeature", targets: ["YamlToJsonFeature"]),
     ],
     dependencies: [
-//        .package(url: "https://github.com/atacan/JSBeautify.git", branch: "main"),
-        .package(path: "/Users/atacan/Developer/Repositories/JSBeautify"),
-        .package(path: "/Users/atacan/Developer/Repositories/JSDiff"),
+        .package(url: "https://github.com/atacan/JSBeautify.git", revision: "dd73e2ed6553e9240c1239efadb14898b07ea5d5"),
+        .package(url: "https://github.com/atacan/swift-jsdiff.git", revision: "ad68d189b35ea9b57ed02c8aa7ebe0a0d138193a"),
         .package(url: "https://github.com/atacan/swift-highlight.git", branch: "main"),
         .package(url: "https://github.com/apple/swift-asn1", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-certificates", from: "1.11.0"),
@@ -647,8 +646,8 @@ let package = Package(
                 "SharedModels",
                 "BlissTheme",
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "JSDiff", package: "JSDiff"),
-                .product(name: "JSDiffUI", package: "JSDiff"),
+                .product(name: "JSDiff", package: "swift-jsdiff"),
+                .product(name: "JSDiffUI", package: "swift-jsdiff"),
                 .product(name: "SplitView", package: "SplitView"),
                 .product(name: "Sharing", package: "swift-sharing"),
             ]

@@ -1,4 +1,5 @@
 {
+  "originHash" : "a8dabfd0bffcf9db8092937f890bf13b7251d7b8a01ac3f0ca1fe193f8d9f0f0",
   "pins" : [
     {
       "identity" : "binarybirds-swift-html",
@@ -61,6 +62,14 @@
       "state" : {
         "branch" : "main",
         "revision" : "579334004f05d5f910639a07c3df6cb32051f2d9"
+      }
+    },
+    {
+      "identity" : "jsbeautify",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/JSBeautify.git",
+      "state" : {
+        "revision" : "dd73e2ed6553e9240c1239efadb14898b07ea5d5"
       }
     },
     {
@@ -244,6 +253,14 @@
       }
     },
     {
+      "identity" : "swift-jsdiff",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atacan/swift-jsdiff.git",
+      "state" : {
+        "revision" : "ad68d189b35ea9b57ed02c8aa7ebe0a0d138193a"
+      }
+    },
+    {
       "identity" : "swift-markdown-ui",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/gonzalezreal/swift-markdown-ui",
@@ -361,5 +378,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
